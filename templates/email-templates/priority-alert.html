@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALLERTA PRIORITARIA: Incidente Stradale Grave</title>
+    <style type="text/css">
+        /* Client-specific styles */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; }
+
+        /* Reset styles */
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+        /* iOS blue links */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+
+        /* Gmail blue links */
+        u + #body a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+
+        /* Samsung blue links */
+        #MessageViewBody a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+
+        /* Universal styles */
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333333;
+        }
+
+        /* Animated pulse effect for urgent alerts */
+        @keyframes pulse {
+            0% { background-color: #d63384; }
+            50% { background-color: #b52b6f; }
+            100% { background-color: #d63384; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Media queries */
+        @media screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+            }
+            .fluid {
+                max-width: 100% !important;
+                height: auto !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            .stack-column,
+            .stack-column-center {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                direction: ltr !important;
+            }
+            .stack-column-center {
+                text-align: center !important;
+            }
+            .center-on-narrow {
+                text-align: center !important;
+                display: block !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                float: none !important;
+            }
+            table.center-on-narrow {
+                display: inline-block !important;
+            }
+        }
+    </style>
+</head>
+<body bgcolor="#f4f4f4" width="100%" style="margin: 0;" yahoo="yahoo">
+    <table bgcolor="#f4f4f4" cellpadding="0" cellspacing="0" border="0" height="100%" width="100%" style="border-collapse:collapse;">
+        <tr>
+            <td valign="top">
+                <center style="width: 100%;">
+                    <!-- Email Header -->
+                    <table align="center" width="600" class="email-container" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" style="margin: auto;">
+                        <tr>
+                            <td style="padding: 20px; text-align: center; background-color: #d63384;" class="pulse">
+                                <img src="{{logo_url}}" width="200" height="50" alt="Incidenti Stradali" border="0" style="height: auto; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #ffffff;" />
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Email Body -->
+                    <table align="center" width="600" class="email-container" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" style="margin: auto;">
+                        <!-- Emergency Alert Banner -->
+                        <tr>
+                            <td style="padding: 20px; text-align: center; font-family: sans-serif; font-size: 18px; line-height: 24px; color: #ffffff; background-color: #d63384; border-bottom: 5px dashed #ffffff;">
+                                <p style="margin: 0; font-weight: bold; font-size: 24px;">⚠️ ALLERTA PRIORITARIA ⚠️</p>
+                                <p style="margin: 5px 0 0 0;">INCIDENTE STRADALE GRAVE - RICHIESTA ATTENZIONE IMMEDIATA</p>
+                            </td>
+                        </tr>
+                        <!-- Critical Information -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #ffffff; text-align: left; background-color: #333333;">
+                                <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">INFORMAZIONI CRITICHE:</p>
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                    <tr>
+                                        <td width="50%" valign="top" style="padding-right: 10px;">
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">ID Incidente:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{id_incidente}}</p>
+                                            
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Data e Ora:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{data_incidente}} - {{ora_incidente}}</p>
+                                            
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Località:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{comune_incidente}} ({{provincia_incidente}})</p>
+                                        </td>
+                                        <td width="50%" valign="top" style="padding-left: 10px;">
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Strada:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{denominazione_strada}}</p>
+                                            
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Coordinate:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{latitudine}}, {{longitudine}}</p>
+                                            
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Livello Priorità:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff; font-weight: bold;">{{livello_priorita}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Casualties Summary -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: left; background-color: #ffebf1; border-bottom: 2px solid #d63384;">
+                                <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #d63384;">RIEPILOGO VITTIME:</p>
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                    <tr>
+                                        <td width="25%" align="center" valign="top" style="padding: 10px;">
+                                            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="min-width: 100%; border-radius: 5px;" bgcolor="#ffffff">
+                                                <tr>
+                                                    <td style="padding: 15px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: center;">
+                                                        <p style="margin: 0; font-size: 24px; font-weight: bold; color: #0073aa;">{{veicoli_coinvolti}}</p>
+                                                        <p style="margin: 0; font-size: 14px;">Veicoli</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td width="25%" align="center" valign="top" style="padding: 10px;">
+                                            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="min-width: 100%; border-radius: 5px;" bgcolor="#ffffff">
+                                                <tr>
+                                                    <td style="padding: 15px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: center;">
+                                                        <p style="margin: 0; font-size: 24px; font-weight: bold; color: #d63384;">{{morti}}</p>
+                                                        <p style="margin: 0; font-size: 14px;">Morti</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td width="25%" align="center" valign="top" style="padding: 10px;">
+                                            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="min-width: 100%; border-radius: 5px;" bgcolor="#ffffff">
+                                                <tr>
+                                                    <td style="padding: 15px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: center;">
+                                                        <p style="margin: 0; font-size: 24px; font-weight: bold; color: #fd7e14;">{{feriti_gravi}}</p>
+                                                        <p style="margin: 0; font-size: 14px;">Feriti Gravi</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td width="25%" align="center" valign="top" style="padding: 10px;">
+                                            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="min-width: 100%; border-radius: 5px;" bgcolor="#ffffff">
+                                                <tr>
+                                                    <td style="padding: 15px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: center;">
+                                                        <p style="margin: 0; font-size: 24px; font-weight: bold; color: #ffc107;">{{feriti_lievi}}</p>
+                                                        <p style="margin: 0; font-size: 14px;">Feriti Lievi</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Emergency Services -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: left; background-color: #f8f8f8;">
+                                <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #333333;">SERVIZI DI EMERGENZA COINVOLTI:</p>
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="min-width: 100%;">
+                                    <tr>
+                                        {{servizi_emergenza}}
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Map Location -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: left;">
+                                <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #333333;">LOCALIZZAZIONE:</p>
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="min-width: 100%;">
+                                    <tr>
+                                        <td style="padding: 0; text-align: center;">
+                                            <img src="{{mappa_url}}" width="520" height="300" alt="Mappa dell'incidente" border="0" style="width: 100%; max-width: 520px; height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;" class="fluid" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Incident Description -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: left; background-color: #f8f8f8;">
+                                <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #333333;">DESCRIZIONE DELL'INCIDENTE:</p>
+                                <p style="margin: 0 0 15px 0;">{{descrizione_incidente}}</p>
+                            </td>
+                        </tr>
+                        <!-- Action Buttons -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: center; background-color: #ffffff;">
+                                <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #d63384;">AZIONI RICHIESTE:</p>
+                                <table cellspacing="0" cellpadding="0" border="0" align="center" style="margin: auto;">
+                                    <tr>
+                                        <td style="border-radius: 4px; background: #d63384; text-align: center; padding: 0 10px;" class="button-td">
+                                            <a href="{{url_dettagli}}" style="background: #d63384; border: 15px solid #d63384; font-family: sans-serif; font-size: 15px; line-height: 15px; text-align: center; text-decoration: none; display: block; border-radius: 4px; font-weight: bold;" class="button-a">
+                                                <span style="color:#ffffff;" class="button-link">VISUALIZZA DETTAGLI</span>
+                                            </a>
+                                        </td>
+                                        <td width="20">&nbsp;</td>
+                                        <td style="border-radius: 4px; background: #0073aa; text-align: center; padding: 0 10px;" class="button-td">
+                                            <a href="{{url_conferma}}" style="background: #0073aa; border: 15px solid #0073aa; font-family: sans-serif; font-size: 15px; line-height: 15px; text-align: center; text-decoration: none; display: block; border-radius: 4px; font-weight: bold;" class="button-a">
+                                                <span style="color:#ffffff;" class="button-link">CONFERMA RICEZIONE</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Emergency Contacts -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #ffffff; text-align: left; background-color: #333333;">
+                                <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #ffffff;">CONTATTI DI EMERGENZA:</p>
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                    <tr>
+                                        <td width="50%" valign="top" style="padding-right: 10px;">
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Coordinatore Emergenza:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{nome_coordinatore}}</p>
+                                            
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Telefono:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{telefono_coordinatore}}</p>
+                                        </td>
+                                        <td width="50%" valign="top" style="padding-left: 10px;">
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Centro Operativo:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{centro_operativo}}</p>
+                                            
+                                            <p style="margin: 0 0 5px 0; font-weight: bold; color: #ffffff;">Telefono Centro Operativo:</p>
+                                            <p style="margin: 0 0 15px 0; color: #ffffff;">{{telefono_centro}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- Additional Information -->
+                        <tr>
+                            <td style="padding: 20px 40px; font-family: sans-serif; font-size: 15px; line-height: 22px; color: #555555; text-align: left; background-color: #f8f8f8; border-top: 1px solid #dddddd;">
+                                <p style="margin: 0 0 10px 0;">
+                                    Questa è una notifica automatica di alta priorità inviata a tutti i responsabili dell'area interessata. Si prega di confermare la ricezione di questa allerta e di intraprendere le azioni necessarie secondo i protocolli stabiliti.
+                                </p>
+                                <p style="margin: 0 0 10px 0;">
+                                    Ricevi questa notifica perché sei registrato come responsabile per il comune di <strong>{{comune_incidente}}</strong> o sei parte del team di risposta alle emergenze.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Email Footer -->
+                    <table align="center" width="600" class="email-container" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" style="margin: auto; border-top: 1px solid #dddddd;">
+                        <tr>
+                            <td style="padding: 20px; text-align: center; font-family: sans-serif; font-size: 12px; line-height: 18px; color: #888888;">
+                                <p style="margin: 0 0 10px 0;">Questo è un messaggio automatico di alta priorità, si prega di non rispondere.</p>
+                                <p style="margin: 0 0 10px 0;">
+                                    &copy; {{anno_corrente}} Sistema Gestione Incidenti Stradali<br/>
+                                    <a href="{{url_privacy}}" style="color: #888888; text-decoration: underline;">Privacy Policy</a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </center>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

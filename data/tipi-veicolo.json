@@ -1,0 +1,286 @@
+{
+  "tipi_veicolo": {
+    "1": {
+      "codice": "01",
+      "descrizione": "Autovettura privata",
+      "categoria": "autovetture",
+      "richiede_patente": true,
+      "tipo_patente": ["B", "B1"],
+      "peso_massimo": null
+    },
+    "2": {
+      "codice": "02", 
+      "descrizione": "Autovettura privata con rimorchio",
+      "categoria": "autovetture",
+      "richiede_patente": true,
+      "tipo_patente": ["B", "BE"],
+      "peso_massimo": null
+    },
+    "3": {
+      "codice": "03",
+      "descrizione": "Autovettura pubblica",
+      "categoria": "autovetture",
+      "richiede_patente": true,
+      "tipo_patente": ["B"],
+      "peso_massimo": null
+    },
+    "4": {
+      "codice": "04",
+      "descrizione": "Autovettura di soccorso o di polizia", 
+      "categoria": "autovetture",
+      "richiede_patente": true,
+      "tipo_patente": ["B"],
+      "peso_massimo": null
+    },
+    "5": {
+      "codice": "05",
+      "descrizione": "Autobus o filobus in servizio urbano",
+      "categoria": "autobus",
+      "richiede_patente": true,
+      "tipo_patente": ["D", "D1"],
+      "peso_massimo": null
+    },
+    "6": {
+      "codice": "06",
+      "descrizione": "Autobus di linea o non di linea in extraurbana",
+      "categoria": "autobus", 
+      "richiede_patente": true,
+      "tipo_patente": ["D", "D1"],
+      "peso_massimo": null
+    },
+    "7": {
+      "codice": "07",
+      "descrizione": "Tram",
+      "categoria": "trasporto_pubblico",
+      "richiede_patente": true,
+      "tipo_patente": ["speciale"],
+      "peso_massimo": null
+    },
+    "8": {
+      "codice": "08", 
+      "descrizione": "Autocarro",
+      "categoria": "merci",
+      "richiede_patente": true,
+      "tipo_patente": ["C", "C1"],
+      "peso_massimo": 35000
+    },
+    "9": {
+      "codice": "09",
+      "descrizione": "Autotreno con rimorchio",
+      "categoria": "merci",
+      "richiede_patente": true,
+      "tipo_patente": ["CE", "C1E"],
+      "peso_massimo": 44000
+    },
+    "10": {
+      "codice": "10",
+      "descrizione": "Autosnodato o autoarticolato",
+      "categoria": "merci", 
+      "richiede_patente": true,
+      "tipo_patente": ["CE"],
+      "peso_massimo": 44000
+    },
+    "11": {
+      "codice": "11",
+      "descrizione": "Veicoli speciali",
+      "categoria": "speciali",
+      "richiede_patente": true,
+      "tipo_patente": ["B", "C"],
+      "peso_massimo": null
+    },
+    "12": {
+      "codice": "12",
+      "descrizione": "Trattore stradale o motrice",
+      "categoria": "merci",
+      "richiede_patente": true,
+      "tipo_patente": ["C", "CE"],
+      "peso_massimo": null
+    },
+    "13": {
+      "codice": "13",
+      "descrizione": "Macchina agricola", 
+      "categoria": "agricole",
+      "richiede_patente": false,
+      "tipo_patente": ["B", "patente_guida_macchine_agricole"],
+      "peso_massimo": null
+    },
+    "14": {
+      "codice": "14",
+      "descrizione": "Velocipede",
+      "categoria": "biciclette",
+      "richiede_patente": false,
+      "tipo_patente": [],
+      "peso_massimo": null
+    },
+    "15": {
+      "codice": "15",
+      "descrizione": "Ciclomotore",
+      "categoria": "motocicli",
+      "richiede_patente": true,
+      "tipo_patente": ["AM", "A1", "A2", "A", "B"],
+      "peso_massimo": null
+    },
+    "16": {
+      "codice": "16",
+      "descrizione": "Motociclo a solo",
+      "categoria": "motocicli",
+      "richiede_patente": true,
+      "tipo_patente": ["A1", "A2", "A"],
+      "peso_massimo": null
+    },
+    "17": {
+      "codice": "17",
+      "descrizione": "Motociclo con passeggero",
+      "categoria": "motocicli",
+      "richiede_patente": true,
+      "tipo_patente": ["A1", "A2", "A"],
+      "peso_massimo": null
+    },
+    "18": {
+      "codice": "18",
+      "descrizione": "Motocarro o motofurgone",
+      "categoria": "motocicli",
+      "richiede_patente": true,
+      "tipo_patente": ["A1", "B"],
+      "peso_massimo": 1000
+    },
+    "19": {
+      "codice": "19",
+      "descrizione": "Veicolo a trazione animale o a braccia",
+      "categoria": "speciali",
+      "richiede_patente": false,
+      "tipo_patente": [],
+      "peso_massimo": null
+    },
+    "20": {
+      "codice": "20",
+      "descrizione": "Veicolo ignoto perché datosi alla fuga",
+      "categoria": "ignoto",
+      "richiede_patente": null,
+      "tipo_patente": [],
+      "peso_massimo": null
+    },
+    "21": {
+      "codice": "21",
+      "descrizione": "Quadriciclo",
+      "categoria": "quadricicli",
+      "richiede_patente": true,
+      "tipo_patente": ["AM", "B1", "B"],
+      "peso_massimo": 400
+    },
+    "22": {
+      "codice": "22",
+      "descrizione": "Monopattino elettrico",
+      "categoria": "micromobilita",
+      "richiede_patente": false,
+      "tipo_patente": [],
+      "peso_massimo": null
+    },
+    "23": {
+      "codice": "23",
+      "descrizione": "Bicicletta elettrica",
+      "categoria": "biciclette",
+      "richiede_patente": false,
+      "tipo_patente": [],
+      "peso_massimo": null
+    }
+  },
+  "categorie": {
+    "autovetture": {
+      "nome": "Autovetture",
+      "descrizione": "Veicoli per trasporto persone fino a 9 posti compreso il conducente",
+      "icona": "🚗"
+    },
+    "autobus": {
+      "nome": "Autobus",
+      "descrizione": "Veicoli per trasporto pubblico di persone oltre 9 posti",
+      "icona": "🚌"
+    },
+    "merci": {
+      "nome": "Veicoli Merci",
+      "descrizione": "Veicoli destinati al trasporto di merci",
+      "icona": "🚛"
+    },
+    "motocicli": {
+      "nome": "Motocicli",
+      "descrizione": "Veicoli a motore a due o tre ruote",
+      "icona": "🏍️"
+    },
+    "biciclette": {
+      "nome": "Biciclette",
+      "descrizione": "Velocipedi a pedalata muscolare o assistita",
+      "icona": "🚲"
+    },
+    "quadricicli": {
+      "nome": "Quadricicli",
+      "descrizione": "Veicoli a motore a quattro ruote leggeri",
+      "icona": "🛺"
+    },
+    "micromobilita": {
+      "nome": "Micromobilità",
+      "descrizione": "Dispositivi di micromobilità elettrica",
+      "icona": "🛴"
+    },
+    "agricole": {
+      "nome": "Macchine Agricole", 
+      "descrizione": "Veicoli destinati ad attività agricole",
+      "icona": "🚜"
+    },
+    "speciali": {
+      "nome": "Veicoli Speciali",
+      "descrizione": "Veicoli per usi specifici o non classificabili",
+      "icona": "🚧"
+    },
+    "trasporto_pubblico": {
+      "nome": "Trasporto Pubblico",
+      "descrizione": "Veicoli per trasporto pubblico su rotaia",
+      "icona": "🚊"
+    },
+    "ignoto": {
+      "nome": "Ignoto",
+      "descrizione": "Veicolo non identificato",
+      "icona": "❓"
+    }
+  },
+  "cilindrate_comuni": {
+    "ciclomotori": [50],
+    "motocicli_125": [125],
+    "motocicli_medi": [250, 300, 400, 500, 600],
+    "motocicli_grandi": [750, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000],
+    "autovetture_piccole": [800, 900, 1000, 1100, 1200],
+    "autovetture_medie": [1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000],
+    "autovetture_grandi": [2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3500, 4000, 5000, 6000]
+  },
+  "pesi_massimi": {
+    "autovetture": 3500,
+    "autocarri_leggeri": 7500,
+    "autocarri_medi": 18000,
+    "autocarri_pesanti": 26000,
+    "autotreni": 44000,
+    "autobus_urbani": 18000,
+    "autobus_extraurbani": 26000
+  },
+  "regole_validazione": {
+    "cilindrata": {
+      "min": 0,
+      "max": 10000,
+      "obbligatoria_per": ["15", "16", "17", "18"]
+    },
+    "peso_totale": {
+      "min": 0,
+      "max": 50000,
+      "obbligatorio_per": ["8", "9", "10", "12"]
+    },
+    "anno_immatricolazione": {
+      "min": 1900,
+      "max": "current_year",
+      "obbligatorio_per": ["1", "2", "3", "4", "5", "6", "8", "9", "10", "11", "12", "15", "16", "17", "18", "21"]
+    }
+  },
+  "meta": {
+    "versione": "1.0.0",
+    "data_aggiornamento": "2024-01-01",
+    "fonte": "Ministero delle Infrastrutture e dei Trasporti - ISTAT",
+    "note": "Codici utilizzati per la rilevazione statistica degli incidenti stradali secondo il modello ISTAT CTT/INC"
+  }
+}

@@ -1,0 +1,376 @@
+{
+  "description": "Codici ISTAT delle province e città metropolitane italiane",
+  "version": "2024.1",
+  "last_updated": "2024-01-01",
+  "source": "ISTAT - Istituto Nazionale di Statistica",
+  "regioni": {
+    "01": {
+      "nome": "Piemonte",
+      "capoluogo": "Torino",
+      "province": {
+        "001": {
+          "nome": "Torino",
+          "tipo": "Città metropolitana",
+          "sigla": "TO",
+          "capoluogo": "Torino",
+          "superficie_kmq": 6829.1,
+          "popolazione": 2161000
+        },
+        "002": {
+          "nome": "Vercelli", 
+          "tipo": "Provincia",
+          "sigla": "VC",
+          "capoluogo": "Vercelli",
+          "superficie_kmq": 2088.3,
+          "popolazione": 170000
+        },
+        "003": {
+          "nome": "Novara",
+          "tipo": "Provincia", 
+          "sigla": "NO",
+          "capoluogo": "Novara",
+          "superficie_kmq": 1339.2,
+          "popolazione": 365000
+        },
+        "004": {
+          "nome": "Cuneo",
+          "tipo": "Provincia",
+          "sigla": "CN", 
+          "capoluogo": "Cuneo",
+          "superficie_kmq": 6903.0,
+          "popolazione": 587000
+        },
+        "005": {
+          "nome": "Asti",
+          "tipo": "Provincia",
+          "sigla": "AT",
+          "capoluogo": "Asti", 
+          "superficie_kmq": 1511.5,
+          "popolazione": 213000
+        },
+        "006": {
+          "nome": "Alessandria",
+          "tipo": "Provincia",
+          "sigla": "AL",
+          "capoluogo": "Alessandria",
+          "superficie_kmq": 3560.0,
+          "popolazione": 425000
+        },
+        "096": {
+          "nome": "Biella",
+          "tipo": "Provincia", 
+          "sigla": "BI",
+          "capoluogo": "Biella",
+          "superficie_kmq": 913.5,
+          "popolazione": 175000
+        },
+        "103": {
+          "nome": "Verbano-Cusio-Ossola",
+          "tipo": "Provincia",
+          "sigla": "VB", 
+          "capoluogo": "Verbania",
+          "superficie_kmq": 2255.3,
+          "popolazione": 158000
+        }
+      }
+    },
+    "02": {
+      "nome": "Valle d'Aosta",
+      "capoluogo": "Aosta",
+      "province": {
+        "007": {
+          "nome": "Valle d'Aosta/Vallée d'Aoste",
+          "tipo": "Regione autonoma",
+          "sigla": "AO",
+          "capoluogo": "Aosta",
+          "superficie_kmq": 3263.2,
+          "popolazione": 125000
+        }
+      }
+    },
+    "03": {
+      "nome": "Lombardia", 
+      "capoluogo": "Milano",
+      "province": {
+        "015": {
+          "nome": "Milano",
+          "tipo": "Città metropolitana", 
+          "sigla": "MI",
+          "capoluogo": "Milano",
+          "superficie_kmq": 1575.7,
+          "popolazione": 3250000
+        },
+        "016": {
+          "nome": "Bergamo",
+          "tipo": "Provincia",
+          "sigla": "BG", 
+          "capoluogo": "Bergamo",
+          "superficie_kmq": 2722.5,
+          "popolazione": 1114000
+        },
+        "017": {
+          "nome": "Brescia",
+          "tipo": "Provincia",
+          "sigla": "BS",
+          "capoluogo": "Brescia",
+          "superficie_kmq": 4784.4,
+          "popolazione": 1265000
+        },
+        "018": {
+          "nome": "Como",
+          "tipo": "Provincia",
+          "sigla": "CO",
+          "capoluogo": "Como", 
+          "superficie_kmq": 1288.3,
+          "popolazione": 594000
+        },
+        "019": {
+          "nome": "Cremona",
+          "tipo": "Provincia",
+          "sigla": "CR",
+          "capoluogo": "Cremona",
+          "superficie_kmq": 1771.3,
+          "popolazione": 358000
+        },
+        "020": {
+          "nome": "Pavia",
+          "tipo": "Provincia",
+          "sigla": "PV", 
+          "capoluogo": "Pavia",
+          "superficie_kmq": 2968.6,
+          "popolazione": 545000
+        },
+        "097": {
+          "nome": "Varese",
+          "tipo": "Provincia",
+          "sigla": "VA",
+          "capoluogo": "Varese",
+          "superficie_kmq": 1198.1,
+          "popolazione": 883000
+        },
+        "098": {
+          "nome": "Sondrio",
+          "tipo": "Provincia", 
+          "sigla": "SO",
+          "capoluogo": "Sondrio",
+          "superficie_kmq": 3212.0,
+          "popolazione": 181000
+        },
+        "108": {
+          "nome": "Mantova",
+          "tipo": "Provincia",
+          "sigla": "MN",
+          "capoluogo": "Mantova",
+          "superficie_kmq": 2339.7,
+          "popolazione": 412000
+        },
+        "097": {
+          "nome": "Lecco",
+          "tipo": "Provincia",
+          "sigla": "LC", 
+          "capoluogo": "Lecco",
+          "superficie_kmq": 816.2,
+          "popolazione": 337000
+        },
+        "098": {
+          "nome": "Lodi",
+          "tipo": "Provincia",
+          "sigla": "LO",
+          "capoluogo": "Lodi",
+          "superficie_kmq": 782.9,
+          "popolazione": 230000
+        },
+        "014": {
+          "nome": "Monza e della Brianza", 
+          "tipo": "Provincia",
+          "sigla": "MB",
+          "capoluogo": "Monza",
+          "superficie_kmq": 405.4,
+          "popolazione": 873000
+        }
+      }
+    },
+    "12": {
+      "nome": "Lazio",
+      "capoluogo": "Roma", 
+      "province": {
+        "058": {
+          "nome": "Roma",
+          "tipo": "Città metropolitana",
+          "sigla": "RM",
+          "capoluogo": "Roma",
+          "superficie_kmq": 5352.0,
+          "popolazione": 4342000
+        },
+        "059": {
+          "nome": "Latina",
+          "tipo": "Provincia",
+          "sigla": "LT",
+          "capoluogo": "Latina", 
+          "superficie_kmq": 2250.5,
+          "popolazione": 579000
+        },
+        "060": {
+          "nome": "Frosinone", 
+          "tipo": "Provincia",
+          "sigla": "FR",
+          "capoluogo": "Frosinone",
+          "superficie_kmq": 3244.0,
+          "popolazione": 488000
+        },
+        "061": {
+          "nome": "Viterbo",
+          "tipo": "Provincia",
+          "sigla": "VT",
+          "capoluogo": "Viterbo",
+          "superficie_kmq": 3612.5,
+          "popolazione": 320000
+        },
+        "062": {
+          "nome": "Rieti",
+          "tipo": "Provincia", 
+          "sigla": "RI",
+          "capoluogo": "Rieti",
+          "superficie_kmq": 2749.9,
+          "popolazione": 153000
+        }
+      }
+    },
+    "15": {
+      "nome": "Campania",
+      "capoluogo": "Napoli",
+      "province": {
+        "063": {
+          "nome": "Napoli",
+          "tipo": "Città metropolitana",
+          "sigla": "NA", 
+          "capoluogo": "Napoli",
+          "superficie_kmq": 1171.1,
+          "popolazione": 3084000
+        },
+        "064": {
+          "nome": "Avellino",
+          "tipo": "Provincia",
+          "sigla": "AV",
+          "capoluogo": "Avellino",
+          "superficie_kmq": 2792.0,
+          "popolazione": 422000
+        },
+        "065": {
+          "nome": "Benevento",
+          "tipo": "Provincia",
+          "sigla": "BN", 
+          "capoluogo": "Benevento",
+          "superficie_kmq": 2071.4,
+          "popolazione": 275000
+        },
+        "061": {
+          "nome": "Caserta",
+          "tipo": "Provincia",
+          "sigla": "CE",
+          "capoluogo": "Caserta",
+          "superficie_kmq": 2639.2,
+          "popolazione": 924000
+        },
+        "065": {
+          "nome": "Salerno",
+          "tipo": "Provincia",
+          "sigla": "SA",
+          "capoluogo": "Salerno", 
+          "superficie_kmq": 4954.2,
+          "popolazione": 1103000
+        }
+      }
+    },
+    "19": {
+      "nome": "Sicilia",
+      "capoluogo": "Palermo",
+      "province": {
+        "081": {
+          "nome": "Palermo",
+          "tipo": "Città metropolitana",
+          "sigla": "PA",
+          "capoluogo": "Palermo",
+          "superficie_kmq": 5009.0,
+          "popolazione": 1252000
+        },
+        "082": {
+          "nome": "Trapani",
+          "tipo": "Provincia",
+          "sigla": "TP", 
+          "capoluogo": "Trapani",
+          "superficie_kmq": 2469.6,
+          "popolazione": 430000
+        },
+        "083": {
+          "nome": "Agrigento",
+          "tipo": "Provincia",
+          "sigla": "AG",
+          "capoluogo": "Agrigento",
+          "superficie_kmq": 3041.9,
+          "popolazione": 434000
+        },
+        "084": {
+          "nome": "Caltanissetta",
+          "tipo": "Provincia",
+          "sigla": "CL",
+          "capoluogo": "Caltanissetta",
+          "superficie_kmq": 2128.2,
+          "popolazione": 262000
+        },
+        "085": {
+          "nome": "Enna", 
+          "tipo": "Provincia",
+          "sigla": "EN",
+          "capoluogo": "Enna",
+          "superficie_kmq": 2562.2,
+          "popolazione": 164000
+        },
+        "087": {
+          "nome": "Catania",
+          "tipo": "Città metropolitana",
+          "sigla": "CT",
+          "capoluogo": "Catania",
+          "superficie_kmq": 3552.2,
+          "popolazione": 1116000
+        },
+        "088": {
+          "nome": "Messina",
+          "tipo": "Città metropolitana", 
+          "sigla": "ME",
+          "capoluogo": "Messina",
+          "superficie_kmq": 3247.4,
+          "popolazione": 626000
+        },
+        "089": {
+          "nome": "Siracusa",
+          "tipo": "Provincia",
+          "sigla": "SR",
+          "capoluogo": "Siracusa",
+          "superficie_kmq": 2109.0,
+          "popolazione": 397000
+        },
+        "086": {
+          "nome": "Ragusa",
+          "tipo": "Provincia",
+          "sigla": "RG",
+          "capoluogo": "Ragusa", 
+          "superficie_kmq": 1614.4,
+          "popolazione": 320000
+        }
+      }
+    }
+  },
+  "citta_metropolitane": [
+    "001", "015", "027", "037", "048", "058", "063", "072", "080", "087", "010", "081", "092", "082", "083"
+  ],
+  "province_autonome": [
+    "021", "022"
+  ],
+  "note": {
+    "formato": "Codice provincia di 3 cifre secondo classificazione ISTAT",
+    "aggiornamento": "Aggiornato con le modifiche amministrative più recenti",
+    "citta_metropolitane": "Le città metropolitane hanno sostituito alcune province nel 2014",
+    "utilizzo": "Utilizzare per il campo provincia_incidente negli incidenti stradali"
+  }
+}

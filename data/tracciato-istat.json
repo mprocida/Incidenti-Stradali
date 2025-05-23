@@ -1,0 +1,695 @@
+{
+  "tracciato_istat": {
+    "versione": "2019",
+    "nome": "Rilevazione degli incidenti stradali con lesioni a persone",
+    "codice_rilevazione": "IST-00142",
+    "lunghezza_record": 1024,
+    "descrizione": "Tracciato record per l'invio dei dati degli incidenti stradali all'ISTAT secondo il modello CTT/INC",
+    "campi": [
+      {
+        "posizione": 1,
+        "nome": "anno",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Anno di rilevazione (ultime 2 cifre)",
+        "formato": "YY",
+        "obbligatorio": true,
+        "fonte": "data_incidente",
+        "trasformazione": "substr(data_incidente, 2, 2)",
+        "padding": "0",
+        "validazione": {
+          "min": 0,
+          "max": 99
+        }
+      },
+      {
+        "posizione": 2,
+        "nome": "mese",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Mese di rilevazione",
+        "formato": "MM",
+        "obbligatorio": true,
+        "fonte": "data_incidente",
+        "trasformazione": "substr(data_incidente, 5, 2)",
+        "padding": "0",
+        "validazione": {
+          "min": 1,
+          "max": 12
+        }
+      },
+      {
+        "posizione": 3,
+        "nome": "provincia",
+        "lunghezza": 3,
+        "tipo": "numerico",
+        "descrizione": "Codice ISTAT provincia",
+        "formato": "NNN",
+        "obbligatorio": true,
+        "fonte": "provincia_incidente",
+        "padding": "0",
+        "validazione": {
+          "min": 1,
+          "max": 999
+        }
+      },
+      {
+        "posizione": 4,
+        "nome": "comune",
+        "lunghezza": 3,
+        "tipo": "numerico",
+        "descrizione": "Codice ISTAT comune",
+        "formato": "NNN",
+        "obbligatorio": true,
+        "fonte": "comune_incidente",
+        "padding": "0",
+        "validazione": {
+          "min": 1,
+          "max": 999
+        }
+      },
+      {
+        "posizione": 5,
+        "nome": "numero_ordine",
+        "lunghezza": 4,
+        "tipo": "numerico",
+        "descrizione": "Numero d'ordine progressivo",
+        "formato": "NNNN",
+        "obbligatorio": true,
+        "fonte": "post_id",
+        "trasformazione": "str_pad(post_id, 4, '0')",
+        "padding": "0",
+        "validazione": {
+          "min": 1,
+          "max": 9999
+        }
+      },
+      {
+        "posizione": 6,
+        "nome": "giorno",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Giorno del mese",
+        "formato": "DD",
+        "obbligatorio": true,
+        "fonte": "data_incidente",
+        "trasformazione": "substr(data_incidente, -2)",
+        "padding": "0",
+        "validazione": {
+          "min": 1,
+          "max": 31
+        }
+      },
+      {
+        "posizione": 7,
+        "nome": "ora",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Ora dell'incidente (25 se sconosciuta)",
+        "formato": "HH",
+        "obbligatorio": true,
+        "fonte": "ora_incidente",
+        "default": "25",
+        "padding": "0",
+        "validazione": {
+          "min": 0,
+          "max": 25
+        }
+      },
+      {
+        "posizione": 8,
+        "nome": "organo_rilevazione",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Organo di rilevazione",
+        "formato": "N",
+        "obbligatorio": true,
+        "fonte": "organo_rilevazione",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4, 5, 6]
+        },
+        "note": "Se > 4 viene convertito in 5 (Altri)"
+      },
+      {
+        "posizione": 9,
+        "nome": "numero_progressivo_anno",
+        "lunghezza": 5,
+        "tipo": "numerico",
+        "descrizione": "Numero progressivo nell'anno",
+        "formato": "NNNNN",
+        "obbligatorio": true,
+        "fonte": "post_id",
+        "padding": "0",
+        "validazione": {
+          "min": 1,
+          "max": 99999
+        }
+      },
+      {
+        "posizione": 10,
+        "nome": "organo_coordinatore",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Organo coordinatore",
+        "formato": "N",
+        "obbligatorio": false,
+        "fonte": "organo_coordinatore",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4]
+        }
+      },
+      {
+        "posizione": 11,
+        "nome": "localizzazione_incidente",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Localizzazione dell'incidente",
+        "formato": "N",
+        "obbligatorio": true,
+        "fonte": "tipo_strada",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        }
+      },
+      {
+        "posizione": 12,
+        "nome": "denominazione_strada",
+        "lunghezza": 3,
+        "tipo": "alfanumerico",
+        "descrizione": "Denominazione della strada",
+        "formato": "AAA",
+        "obbligatorio": false,
+        "fonte": "numero_strada",
+        "trasformazione": "str_pad(substr(numero_strada, 0, 3), 3, '~')",
+        "padding": "~",
+        "default": "~~~"
+      },
+      {
+        "posizione": 13,
+        "nome": "progressiva_chilometrica",
+        "lunghezza": 3,
+        "tipo": "numerico",
+        "descrizione": "Progressiva chilometrica",
+        "formato": "NNN",
+        "obbligatorio": false,
+        "fonte": "progressiva_km",
+        "trasformazione": "str_pad(substr(progressiva_km, 0, 3), 3, '0')",
+        "padding": "0",
+        "default": "000"
+      },
+      {
+        "posizione": 14,
+        "nome": "tronco_strada",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Tronco di strada statale o autostrada",
+        "formato": "NN",
+        "obbligatorio": false,
+        "fonte": "tronco_strada",
+        "default": "00",
+        "padding": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        }
+      },
+      {
+        "posizione": 15,
+        "nome": "tipo_strada",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Tipo di strada (geometria)",
+        "formato": "N",
+        "obbligatorio": false,
+        "fonte": "geometria_strada",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4]
+        }
+      },
+      {
+        "posizione": 16,
+        "nome": "pavimentazione",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Pavimentazione",
+        "formato": "N",
+        "obbligatorio": false,
+        "fonte": "pavimentazione_strada",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3]
+        }
+      },
+      {
+        "posizione": 17,
+        "nome": "intersezione",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Intersezione o non intersezione",
+        "formato": "NN",
+        "obbligatorio": false,
+        "fonte": "intersezione_tronco",
+        "default": "00",
+        "padding": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        }
+      },
+      {
+        "posizione": 18,
+        "nome": "fondo_stradale",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Fondo stradale",
+        "formato": "N",
+        "obbligatorio": false,
+        "fonte": "stato_fondo_strada",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4, 5]
+        }
+      },
+      {
+        "posizione": 19,
+        "nome": "segnaletica",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Segnaletica",
+        "formato": "N",
+        "obbligatorio": false,
+        "fonte": "segnaletica_strada",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4, 5]
+        }
+      },
+      {
+        "posizione": 20,
+        "nome": "condizioni_meteorologiche",
+        "lunghezza": 1,
+        "tipo": "numerico",
+        "descrizione": "Condizioni meteorologiche",
+        "formato": "N",
+        "obbligatorio": false,
+        "fonte": "condizioni_meteo",
+        "default": "0",
+        "validazione": {
+          "valori_ammessi": [0, 1, 2, 3, 4, 5, 6, 7]
+        }
+      },
+      {
+        "posizione": 21,
+        "nome": "natura_incidente",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Natura dell'incidente",
+        "formato": "NN",
+        "obbligatorio": true,
+        "fonte": "dettaglio_natura",
+        "default": "00",
+        "padding": "0",
+        "validazione": {
+          "min": 1,
+          "max": 76
+        }
+      }
+    ],
+    "sezioni_veicoli": {
+      "numero_veicoli": 3,
+      "campi_per_veicolo": [
+        {
+          "nome": "tipo_veicolo",
+          "lunghezza": 2,
+          "tipo": "alfanumerico",
+          "descrizione": "Tipo di veicolo",
+          "formato": "AA",
+          "fonte": "veicolo_X_tipo",
+          "padding": "~",
+          "default": "~~",
+          "validazione": {
+            "valori_ammessi": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
+          }
+        },
+        {
+          "nome": "cilindrata",
+          "lunghezza": 4,
+          "tipo": "alfanumerico",
+          "descrizione": "Cilindrata del veicolo",
+          "formato": "AAAA",
+          "fonte": "veicolo_X_cilindrata",
+          "trasformazione": "round(cilindrata)",
+          "padding": "~",
+          "default": "~~~~"
+        },
+        {
+          "nome": "peso_totale",
+          "lunghezza": 4,
+          "tipo": "alfanumerico",
+          "descrizione": "Peso totale a pieno carico",
+          "formato": "AAAA",
+          "fonte": "veicolo_X_peso_totale",
+          "trasformazione": "round(peso)",
+          "padding": "~",
+          "default": "~~~~"
+        }
+      ]
+    },
+    "sezioni_conducenti": {
+      "numero_conducenti": 3,
+      "campi_per_conducente": [
+        {
+          "nome": "eta_conducente",
+          "lunghezza": 2,
+          "tipo": "numerico",
+          "descrizione": "Età del conducente",
+          "formato": "NN",
+          "fonte": "conducente_X_eta",
+          "padding": "0",
+          "default": "00",
+          "validazione": {
+            "min": 14,
+            "max": 120
+          }
+        },
+        {
+          "nome": "sesso_conducente",
+          "lunghezza": 1,
+          "tipo": "alfanumerico",
+          "descrizione": "Sesso del conducente",
+          "formato": "A",
+          "fonte": "conducente_X_sesso",
+          "default": "~",
+          "validazione": {
+            "valori_ammessi": ["1", "2", "~"]
+          },
+          "mappatura": {
+            "1": "1",
+            "2": "2",
+            "": "~"
+          }
+        },
+        {
+          "nome": "esito_conducente",
+          "lunghezza": 1,
+          "tipo": "alfanumerico",
+          "descrizione": "Esito del conducente",
+          "formato": "A",
+          "fonte": "conducente_X_esito",
+          "default": "~",
+          "validazione": {
+            "valori_ammessi": ["1", "2", "3", "4", "~"]
+          }
+        },
+        {
+          "nome": "tipo_patente",
+          "lunghezza": 1,
+          "tipo": "alfanumerico",
+          "descrizione": "Tipo di patente",
+          "formato": "A",
+          "fonte": "conducente_X_tipo_patente",
+          "default": "~",
+          "validazione": {
+            "valori_ammessi": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "~"]
+          }
+        },
+        {
+          "nome": "anno_patente",
+          "lunghezza": 2,
+          "tipo": "alfanumerico",
+          "descrizione": "Anno di rilascio patente (ultime 2 cifre)",
+          "formato": "AA",
+          "fonte": "conducente_X_anno_patente",
+          "trasformazione": "substr(anno_patente, -2)",
+          "padding": "~",
+          "default": "~~"
+        }
+      ]
+    },
+    "sezioni_pedoni": {
+      "numero_pedoni": 4,
+      "campi_per_pedone": [
+        {
+          "nome": "sesso_pedone_morto",
+          "lunghezza": 1,
+          "tipo": "alfanumerico",
+          "descrizione": "Sesso del pedone morto",
+          "formato": "A",
+          "fonte": "pedone_X_sesso",
+          "condizione": "esito = '3' OR esito = '4'",
+          "default": "~"
+        },
+        {
+          "nome": "eta_pedone_morto",
+          "lunghezza": 2,
+          "tipo": "alfanumerico",
+          "descrizione": "Età del pedone morto",
+          "formato": "AA",
+          "fonte": "pedone_X_eta",
+          "condizione": "esito = '3' OR esito = '4'",
+          "padding": "~",
+          "default": "~~"
+        },
+        {
+          "nome": "sesso_pedone_ferito",
+          "lunghezza": 1,
+          "tipo": "alfanumerico",
+          "descrizione": "Sesso del pedone ferito",
+          "formato": "A",
+          "fonte": "pedone_X_sesso",
+          "condizione": "esito = '2'",
+          "default": "~"
+        },
+        {
+          "nome": "eta_pedone_ferito",
+          "lunghezza": 2,
+          "tipo": "alfanumerico",
+          "descrizione": "Età del pedone ferito",
+          "formato": "AA",
+          "fonte": "pedone_X_eta",
+          "condizione": "esito = '2'",
+          "padding": "~",
+          "default": "~~"
+        }
+      ]
+    },
+    "sezioni_aggiuntive": [
+      {
+        "nome": "altri_veicoli_coinvolti",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Altri veicoli coinvolti oltre ai veicoli A, B e C",
+        "formato": "NN",
+        "fonte": "numero_altri_veicoli_coinvolti",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "altri_morti_maschi",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Altri morti maschi",
+        "formato": "NN",
+        "fonte": "altri_morti_coinvolti_maschi",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "altri_morti_femmine",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Altri morti femmine",
+        "formato": "NN",
+        "fonte": "altri_morti_coinvolti_femmine",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "altri_feriti_maschi",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Altri feriti maschi",
+        "formato": "NN",
+        "fonte": "altri_feriti_coinvolti_maschi",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "altri_feriti_femmine",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Altri feriti femmine",
+        "formato": "NN",
+        "fonte": "altri_feriti_coinvolti_femmine",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "morti_entro_24_ore",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Morti entro 24 ore",
+        "formato": "NN",
+        "fonte": "morti_entro_24_ore",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "morti_dal_2_al_30_giorno",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Morti dal 2° al 30° giorno",
+        "formato": "NN",
+        "fonte": "morti_dal_2_al_30_giorno",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "feriti_totali",
+        "lunghezza": 2,
+        "tipo": "numerico",
+        "descrizione": "Feriti totali",
+        "formato": "NN",
+        "fonte": "feriti",
+        "padding": "0",
+        "default": "00"
+      },
+      {
+        "nome": "spazi_riservati",
+        "lunghezza": 9,
+        "tipo": "alfanumerico",
+        "descrizione": "Spazi riservati",
+        "formato": "AAAAAAAAA",
+        "default": "         "
+      },
+      {
+        "nome": "denominazione_strada_completa",
+        "lunghezza": 57,
+        "tipo": "alfanumerico",
+        "descrizione": "Denominazione completa della strada",
+        "formato": "A(57)",
+        "fonte": "denominazione_strada",
+        "trasformazione": "str_pad(substr(denominazione_strada, 0, 57), 57, '~', STR_PAD_RIGHT)",
+        "padding": "~"
+      },
+      {
+        "nome": "spazi_100",
+        "lunghezza": 100,
+        "tipo": "alfanumerico",
+        "descrizione": "100 spazi riservati",
+        "formato": "A(100)",
+        "default": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+      }
+    ],
+    "sezioni_nominativi": {
+      "morti": {
+        "numero_massimo": 4,
+        "campi": [
+          {
+            "nome": "nome_morto",
+            "lunghezza": 30,
+            "tipo": "alfanumerico",
+            "descrizione": "Nome del morto",
+            "formato": "A(30)",
+            "fonte": "mod_altri_deceduti_nome_X",
+            "padding": "~"
+          },
+          {
+            "nome": "cognome_morto",
+            "lunghezza": 30,
+            "tipo": "alfanumerico",
+            "descrizione": "Cognome del morto",
+            "formato": "A(30)",
+            "fonte": "mod_altri_deceduti_cognome_X",
+            "padding": "~"
+          }
+        ]
+      },
+      "feriti": {
+        "numero_massimo": 8,
+        "campi": [
+          {
+            "nome": "nome_ferito",
+            "lunghezza": 30,
+            "tipo": "alfanumerico",
+            "descrizione": "Nome del ferito",
+            "formato": "A(30)",
+            "fonte": "mod_altri_feriti_nome_X",
+            "padding": "~"
+          },
+          {
+            "nome": "cognome_ferito",
+            "lunghezza": 30,
+            "tipo": "alfanumerico",
+            "descrizione": "Cognome del ferito",
+            "formato": "A(30)",
+            "fonte": "mod_altri_feriti_cognome_X",
+            "padding": "~"
+          },
+          {
+            "nome": "istituto_ricovero",
+            "lunghezza": 30,
+            "tipo": "alfanumerico",
+            "descrizione": "Istituto di ricovero",
+            "formato": "A(30)",
+            "fonte": "mod_altri_feriti_istituto_X",
+            "padding": "~"
+          }
+        ]
+      }
+    }
+  },
+  "regole_generazione": {
+    "sostituzione_spazi": {
+      "carattere_sostituzione": " ",
+      "carattere_originale": "~"
+    },
+    "terminatore_record": "\r\n",
+    "encoding": "UTF-8",
+    "controllo_lunghezza": {
+      "abilita": true,
+      "lunghezza_attesa": 1024,
+      "gestione_errori": "log_e_continua"
+    },
+    "validazione_coerenza": {
+      "abilita": true,
+      "controlli": [
+        "ora_valida",
+        "data_valida",
+        "codici_istat_validi",
+        "natura_dettaglio_coerente",
+        "veicoli_conducenti_coerenti"
+      ]
+    }
+  },
+  "mappature_codici": {
+    "organo_rilevazione": {
+      "1": "Agente di Polizia Stradale",
+      "2": "Carabiniere", 
+      "3": "Agente di Pubblica Sicurezza",
+      "4": "Agente di Polizia Municipale o Locale",
+      "5": "Altri",
+      "6": "Agente di Polizia Provinciale"
+    },
+    "sesso": {
+      "1": "Maschio",
+      "2": "Femmina"
+    },
+    "esito_persona": {
+      "1": "Incolume",
+      "2": "Ferito",
+      "3": "Morto entro 24 ore",
+      "4": "Morto dal 2° al 30° giorno"
+    }
+  },
+  "meta": {
+    "versione_tracciato": "2019",
+    "data_creazione": "2024-01-01",
+    "ultima_modifica": "2024-01-01",
+    "fonte_ufficiale": "ISTAT - Istituto Nazionale di Statistica",
+    "riferimento_normativo": "D.Lgs. 322/1989, DPR 166/2010",
+    "note": "Tracciato per la rilevazione degli incidenti stradali con lesioni a persone secondo il modello CTT/INC edizione 2019"
+  }
+}

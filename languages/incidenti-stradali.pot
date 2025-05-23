@@ -1,0 +1,1011 @@
+# Copyright (C) 2023 Incidenti Stradali
+# This file is distributed under the same license as the Incidenti Stradali package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Incidenti Stradali 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/incidenti-stradali\n"
+"POT-Creation-Date: 2023-05-22 12:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2023-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: WP-CLI 2.7.1\n"
+"X-Domain: incidenti-stradali\n"
+
+#: single-incidente_stradale.php:73
+msgid "Localizzazione"
+msgstr ""
+
+#: single-incidente_stradale.php:146
+#: incidenti-statistics.php:382
+#: archive-incidente_stradale.php:456
+msgid "Informazioni Generali"
+msgstr ""
+
+#: single-incidente_stradale.php:149
+#: incidenti-statistics.php:385
+msgid "Provincia"
+msgstr ""
+
+#: single-incidente_stradale.php:153
+#: incidenti-statistics.php:389
+#: incidenti-map.php:302
+msgid "Comune"
+msgstr ""
+
+#: single-incidente_stradale.php:157
+msgid "Localizzazione"
+msgstr ""
+
+#: single-incidente_stradale.php:161
+msgid "Nell'abitato"
+msgstr ""
+
+#: single-incidente_stradale.php:161
+msgid "Fuori dall'abitato"
+msgstr ""
+
+#: single-incidente_stradale.php:166
+#: incidenti-map.php:307
+msgid "Tipo Strada"
+msgstr ""
+
+#: single-incidente_stradale.php:171
+#: incidenti-statistics.php:407
+#: incidenti-map.php:312
+#: archive-incidente_stradale.php:461
+msgid "Strada urbana"
+msgstr ""
+
+#: single-incidente_stradale.php:172
+#: incidenti-statistics.php:408
+#: incidenti-map.php:313
+#: archive-incidente_stradale.php:462
+msgid "Provinciale entro l'abitato"
+msgstr ""
+
+#: single-incidente_stradale.php:173
+#: incidenti-statistics.php:409
+#: incidenti-map.php:314
+#: archive-incidente_stradale.php:463
+msgid "Statale entro l'abitato"
+msgstr ""
+
+#: single-incidente_stradale.php:174
+#: incidenti-statistics.php:410
+#: incidenti-map.php:315
+#: archive-incidente_stradale.php:464
+msgid "Regionale entro l'abitato"
+msgstr ""
+
+#: single-incidente_stradale.php:175
+#: incidenti-statistics.php:411
+#: incidenti-map.php:316
+#: archive-incidente_stradale.php:465
+msgid "Comunale extraurbana"
+msgstr ""
+
+#: single-incidente_stradale.php:176
+#: incidenti-statistics.php:412
+#: incidenti-map.php:317
+#: archive-incidente_stradale.php:466
+msgid "Provinciale"
+msgstr ""
+
+#: single-incidente_stradale.php:177
+#: incidenti-statistics.php:413
+#: incidenti-map.php:318
+#: archive-incidente_stradale.php:467
+msgid "Statale"
+msgstr ""
+
+#: single-incidente_stradale.php:178
+#: incidenti-statistics.php:414
+#: incidenti-map.php:319
+#: archive-incidente_stradale.php:468
+msgid "Autostrada"
+msgstr ""
+
+#: single-incidente_stradale.php:179
+#: incidenti-statistics.php:415
+#: incidenti-map.php:320
+#: archive-incidente_stradale.php:469
+msgid "Altra strada"
+msgstr ""
+
+#: single-incidente_stradale.php:180
+#: incidenti-statistics.php:416
+#: incidenti-map.php:321
+#: archive-incidente_stradale.php:470
+msgid "Regionale"
+msgstr ""
+
+#: single-incidente_stradale.php:186
+msgid "Denominazione Strada"
+msgstr ""
+
+#: single-incidente_stradale.php:194
+msgid "Progressiva Chilometrica"
+msgstr ""
+
+#: single-incidente_stradale.php:197
+msgid "Km"
+msgstr ""
+
+#: single-incidente_stradale.php:199
+msgid "m"
+msgstr ""
+
+#: single-incidente_stradale.php:210
+msgid "Caratteristiche dell'Incidente"
+msgstr ""
+
+#: single-incidente_stradale.php:213
+msgid "Natura Incidente"
+msgstr ""
+
+#: single-incidente_stradale.php:221
+#: incidenti-statistics.php:425
+#: incidenti-map.php:330
+#: archive-incidente_stradale.php:479
+msgid "Tra veicoli in marcia"
+msgstr ""
+
+#: single-incidente_stradale.php:222
+#: incidenti-statistics.php:426
+#: incidenti-map.php:331
+#: archive-incidente_stradale.php:480
+msgid "Tra veicolo e pedoni"
+msgstr ""
+
+#: single-incidente_stradale.php:223
+#: incidenti-statistics.php:427
+#: incidenti-map.php:332
+#: archive-incidente_stradale.php:481
+msgid "Veicolo in marcia che urta veicolo fermo o altro"
+msgstr ""
+
+#: single-incidente_stradale.php:224
+#: incidenti-statistics.php:428
+#: incidenti-map.php:333
+#: archive-incidente_stradale.php:482
+msgid "Veicolo in marcia senza urto"
+msgstr ""
+
+#: single-incidente_stradale.php:228
+msgid "Scontro frontale"
+msgstr ""
+
+#: single-incidente_stradale.php:229
+msgid "Scontro frontale-laterale"
+msgstr ""
+
+#: single-incidente_stradale.php:230
+msgid "Scontro laterale"
+msgstr ""
+
+#: single-incidente_stradale.php:231
+msgid "Tamponamento"
+msgstr ""
+
+#: single-incidente_stradale.php:232
+msgid "Investimento di pedoni"
+msgstr ""
+
+#: single-incidente_stradale.php:233
+msgid "Urto con veicolo in fermata o in arresto"
+msgstr ""
+
+#: single-incidente_stradale.php:234
+msgid "Urto con veicolo in sosta"
+msgstr ""
+
+#: single-incidente_stradale.php:235
+msgid "Urto con ostacolo"
+msgstr ""
+
+#: single-incidente_stradale.php:236
+msgid "Urto con treno"
+msgstr ""
+
+#: single-incidente_stradale.php:237
+msgid "Fuoriuscita (sbandamento, ...)"
+msgstr ""
+
+#: single-incidente_stradale.php:238
+msgid "Infortunio per frenata improvvisa"
+msgstr ""
+
+#: single-incidente_stradale.php:239
+msgid "Infortunio per caduta da veicolo"
+msgstr ""
+
+#: single-incidente_stradale.php:252
+msgid "Condizioni Meteo"
+msgstr ""
+
+#: single-incidente_stradale.php:257
+#: incidenti-statistics.php:438
+#: incidenti-map.php:343
+msgid "Sereno"
+msgstr ""
+
+#: single-incidente_stradale.php:258
+#: incidenti-statistics.php:439
+#: incidenti-map.php:344
+msgid "Nebbia"
+msgstr ""
+
+#: single-incidente_stradale.php:259
+#: incidenti-statistics.php:440
+#: incidenti-map.php:345
+msgid "Pioggia"
+msgstr ""
+
+#: single-incidente_stradale.php:260
+#: incidenti-statistics.php:441
+#: incidenti-map.php:346
+msgid "Grandine"
+msgstr ""
+
+#: single-incidente_stradale.php:261
+#: incidenti-statistics.php:442
+#: incidenti-map.php:347
+msgid "Neve"
+msgstr ""
+
+#: single-incidente_stradale.php:262
+#: incidenti-statistics.php:443
+#: incidenti-map.php:348
+msgid "Vento forte"
+msgstr ""
+
+#: single-incidente_stradale.php:263
+#: incidenti-statistics.php:444
+#: incidenti-map.php:349
+msgid "Altro"
+msgstr ""
+
+#: single-incidente_stradale.php:271
+msgid "Fondo Stradale"
+msgstr ""
+
+#: single-incidente_stradale.php:276
+msgid "Asciutto"
+msgstr ""
+
+#: single-incidente_stradale.php:277
+msgid "Bagnato"
+msgstr ""
+
+#: single-incidente_stradale.php:278
+msgid "Sdrucciolevole"
+msgstr ""
+
+#: single-incidente_stradale.php:279
+msgid "Ghiacciato"
+msgstr ""
+
+#: single-incidente_stradale.php:280
+msgid "Innevato"
+msgstr ""
+
+#: single-incidente_stradale.php:288
+msgid "Segnaletica"
+msgstr ""
+
+#: single-incidente_stradale.php:293
+msgid "Assente"
+msgstr ""
+
+#: single-incidente_stradale.php:294
+msgid "Verticale"
+msgstr ""
+
+#: single-incidente_stradale.php:295
+msgid "Orizzontale"
+msgstr ""
+
+#: single-incidente_stradale.php:296
+msgid "Verticale e orizzontale"
+msgstr ""
+
+#: single-incidente_stradale.php:297
+msgid "Temporanea di cantiere"
+msgstr ""
+
+#: single-incidente_stradale.php:312
+msgid "Veicoli Coinvolti"
+msgstr ""
+
+#: single-incidente_stradale.php:323
+msgid "Autovettura privata"
+msgstr ""
+
+#: single-incidente_stradale.php:324
+msgid "Autovettura con rimorchio"
+msgstr ""
+
+#: single-incidente_stradale.php:325
+msgid "Autovettura pubblica"
+msgstr ""
+
+#: single-incidente_stradale.php:326
+msgid "Autovettura di soccorso o di polizia"
+msgstr ""
+
+#: single-incidente_stradale.php:327
+msgid "Autocarro"
+msgstr ""
+
+#: single-incidente_stradale.php:328
+msgid "Velocipede"
+msgstr ""
+
+#: single-incidente_stradale.php:329
+msgid "Ciclomotore"
+msgstr ""
+
+#: single-incidente_stradale.php:330
+msgid "Motociclo a solo"
+msgstr ""
+
+#: single-incidente_stradale.php:331
+msgid "Motociclo con passeggero"
+msgstr ""
+
+#: single-incidente_stradale.php:332
+msgid "Quadriciclo"
+msgstr ""
+
+#: single-incidente_stradale.php:333
+msgid "Monopattino elettrico"
+msgstr ""
+
+#: single-incidente_stradale.php:334
+msgid "Bicicletta elettrica"
+msgstr ""
+
+#: single-incidente_stradale.php:343
+msgid "Maschio"
+msgstr ""
+
+#: single-incidente_stradale.php:344
+msgid "Femmina"
+msgstr ""
+
+#: single-incidente_stradale.php:348
+msgid "Incolume"
+msgstr ""
+
+#: single-incidente_stradale.php:349
+msgid "Ferito"
+msgstr ""
+
+#: single-incidente_stradale.php:350
+msgid "Morto entro 24 ore"
+msgstr ""
+
+#: single-incidente_stradale.php:351
+msgid "Morto dal 2° al 30° giorno"
+msgstr ""
+
+#: single-incidente_stradale.php:356
+msgid "Veicolo %s"
+msgstr ""
+
+#: single-incidente_stradale.php:360
+msgid "Tipo Veicolo"
+msgstr ""
+
+#: single-incidente_stradale.php:366
+msgid "Conducente"
+msgstr ""
+
+#: single-incidente_stradale.php:373
+msgid "Età: %s"
+msgstr ""
+
+#: single-incidente_stradale.php:412
+msgid "Pedoni Coinvolti"
+msgstr ""
+
+#: single-incidente_stradale.php:417
+msgid "Pedone %d"
+msgstr ""
+
+#: single-incidente_stradale.php:458
+msgid "Riepilogo Vittime"
+msgstr ""
+
+#: single-incidente_stradale.php:461
+#: incidenti-statistics.php:219
+#: incidenti-map.php:193
+msgid "Morti"
+msgstr ""
+
+#: single-incidente_stradale.php:465
+#: incidenti-statistics.php:224
+#: incidenti-map.php:198
+msgid "Feriti"
+msgstr ""
+
+#: single-incidente_stradale.php:469
+#: incidenti-map.php:203
+msgid "Veicoli"
+msgstr ""
+
+#: single-incidente_stradale.php:482
+msgid "ID Incidente: %s"
+msgstr ""
+
+#: single-incidente_stradale.php:486
+#: archive-incidente_stradale.php:606
+msgid "Modifica"
+msgstr ""
+
+#: incidenti-statistics.php:83
+msgid "Statistiche Incidenti Stradali"
+msgstr ""
+
+#: incidenti-statistics.php:89
+#: incidenti-map.php:89
+msgid "Periodo:"
+msgstr ""
+
+#: incidenti-statistics.php:91
+#: incidenti-map.php:91
+msgid "Ultimo mese"
+msgstr ""
+
+#: incidenti-statistics.php:92
+#: incidenti-map.php:92
+msgid "Ultimi 3 mesi"
+msgstr ""
+
+#: incidenti-statistics.php:93
+#: incidenti-map.php:93
+msgid "Ultimo anno"
+msgstr ""
+
+#: incidenti-statistics.php:94
+#: incidenti-map.php:94
+msgid "Anno corrente"
+msgstr ""
+
+#: incidenti-statistics.php:95
+#: incidenti-map.php:95
+msgid "Personalizzato"
+msgstr ""
+
+#: incidenti-statistics.php:100
+#: incidenti-map.php:100
+msgid "Comune:"
+msgstr ""
+
+#: incidenti-statistics.php:101
+#: incidenti-map.php:101
+msgid "Codice ISTAT comune"
+msgstr ""
+
+#: incidenti-statistics.php:105
+#: incidenti-map.php:105
+msgid "Filtra"
+msgstr ""
+
+#: incidenti-statistics.php:106
+#: incidenti-map.php:106
+msgid "Reset"
+msgstr ""
+
+#: incidenti-statistics.php:112
+#: incidenti-map.php:112
+msgid "Da:"
+msgstr ""
+
+#: incidenti-statistics.php:116
+#: incidenti-map.php:116
+msgid "A:"
+msgstr ""
+
+#: incidenti-statistics.php:129
+msgid "Incidenti Totali"
+msgstr ""
+
+#: incidenti-statistics.php:214
+msgid "Incidenti per Mese"
+msgstr ""
+
+#: incidenti-statistics.php:229
+msgid "Solo Danni"
+msgstr ""
+
+#: incidenti-statistics.php:238
+msgid "Incidenti per Giorno della Settimana"
+msgstr ""
+
+#: incidenti-statistics.php:262
+msgid "Incidenti per Ora del Giorno"
+msgstr ""
+
+#: incidenti-statistics.php:286
+msgid "Incidenti per Tipo di Strada"
+msgstr ""
+
+#: incidenti-statistics.php:301
+msgid "Incidenti per Comune"
+msgstr ""
+
+#: incidenti-statistics.php:305
+msgid "Incidenti"
+msgstr ""
+
+#: incidenti-statistics.php:329
+msgid "Mappa degli Incidenti"
+msgstr ""
+
+#: incidenti-statistics.php:334
+msgid "Esporta Dati"
+msgstr ""
+
+#: incidenti-statistics.php:335
+msgid "Scarica i dati statistici in formato CSV o PDF."
+msgstr ""
+
+#: incidenti-statistics.php:338
+msgid "Esporta CSV"
+msgstr ""
+
+#: incidenti-statistics.php:339
+msgid "Esporta PDF"
+msgstr ""
+
+#: incidenti-statistics.php:358
+msgid "Gen"
+msgstr ""
+
+#: incidenti-statistics.php:359
+msgid "Feb"
+msgstr ""
+
+#: incidenti-statistics.php:360
+msgid "Mar"
+msgstr ""
+
+#: incidenti-statistics.php:361
+msgid "Apr"
+msgstr ""
+
+#: incidenti-statistics.php:362
+msgid "Mag"
+msgstr ""
+
+#: incidenti-statistics.php:363
+msgid "Giu"
+msgstr ""
+
+#: incidenti-statistics.php:364
+msgid "Lug"
+msgstr ""
+
+#: incidenti-statistics.php:365
+msgid "Ago"
+msgstr ""
+
+#: incidenti-statistics.php:366
+msgid "Set"
+msgstr ""
+
+#: incidenti-statistics.php:367
+msgid "Ott"
+msgstr ""
+
+#: incidenti-statistics.php:368
+msgid "Nov"
+msgstr ""
+
+#: incidenti-statistics.php:369
+msgid "Dic"
+msgstr ""
+
+#: incidenti-statistics.php:398
+msgid "Lun"
+msgstr ""
+
+#: incidenti-statistics.php:399
+msgid "Mar"
+msgstr ""
+
+#: incidenti-statistics.php:400
+msgid "Mer"
+msgstr ""
+
+#: incidenti-statistics.php:401
+msgid "Gio"
+msgstr ""
+
+#: incidenti-statistics.php:402
+msgid "Ven"
+msgstr ""
+
+#: incidenti-statistics.php:403
+msgid "Sab"
+msgstr ""
+
+#: incidenti-statistics.php:404
+msgid "Dom"
+msgstr ""
+
+#: incidenti-statistics.php:583
+msgid "Strada non specificata"
+msgstr ""
+
+#: incidenti-statistics.php:584
+#: incidenti-map.php:584
+msgid "morti"
+msgstr ""
+
+#: incidenti-statistics.php:587
+#: incidenti-map.php:587
+msgid "feriti"
+msgstr ""
+
+#: incidenti-statistics.php:590
+#: incidenti-map.php:590
+msgid "Solo danni"
+msgstr ""
+
+#: incidenti-statistics.php:592
+msgid "Dettagli"
+msgstr ""
+
+#: incidenti-statistics.php:603
+msgid "Funzionalità di esportazione CSV non ancora implementata."
+msgstr ""
+
+#: incidenti-statistics.php:608
+msgid "Funzionalità di esportazione PDF non ancora implementata."
+msgstr ""
+
+#: incidenti-statistics.php:614
+msgid "Nessun incidente trovato per i filtri selezionati."
+msgstr ""
+
+#: incidenti-map.php:83
+msgid "Mappa Incidenti Stradali"
+msgstr ""
+
+#: incidenti-map.php:87
+msgid "Filtri"
+msgstr ""
+
+#: incidenti-map.php:124
+msgid "Provincia:"
+msgstr ""
+
+#: incidenti-map.php:125
+msgid "Codice provincia"
+msgstr ""
+
+#: incidenti-map.php:132
+msgid "Tipo Strada:"
+msgstr ""
+
+#: incidenti-map.php:134
+#: incidenti-map.php:143
+#: incidenti-map.php:152
+#: incidenti-map.php:161
+msgid "Tutti"
+msgstr ""
+
+#: incidenti-map.php:141
+msgid "Natura Incidente:"
+msgstr ""
+
+#: incidenti-map.php:150
+msgid "Condizioni Meteo:"
+msgstr ""
+
+#: incidenti-map.php:159
+msgid "Gravità:"
+msgstr ""
+
+#: incidenti-map.php:162
+msgid "Con morti"
+msgstr ""
+
+#: incidenti-map.php:163
+msgid "Con feriti"
+msgstr ""
+
+#: incidenti-map.php:164
+msgid "Solo danni"
+msgstr ""
+
+#: incidenti-map.php:169
+msgid "Applica Filtri"
+msgstr ""
+
+#: incidenti-map.php:177
+msgid "Riepilogo"
+msgstr ""
+
+#: incidenti-map.php:180
+msgid "Incidenti"
+msgstr ""
+
+#: incidenti-map.php:208
+msgid "Visualizzazione"
+msgstr ""
+
+#: incidenti-map.php:211
+msgid "Tipo di Mappa:"
+msgstr ""
+
+#: incidenti-map.php:213
+msgid "Marcatori"
+msgstr ""
+
+#: incidenti-map.php:214
+msgid "Mappa di Calore"
+msgstr ""
+
+#: incidenti-map.php:215
+msgid "Cluster"
+msgstr ""
+
+#: incidenti-map.php:220
+msgid "Sfondo Mappa:"
+msgstr ""
+
+#: incidenti-map.php:222
+msgid "Stradale"
+msgstr ""
+
+#: incidenti-map.php:223
+msgid "Satellite"
+msgstr ""
+
+#: incidenti-map.php:224
+msgid "Ibrido"
+msgstr ""
+
+#: incidenti-map.php:231
+msgid "Legenda"
+msgstr ""
+
+#: incidenti-map.php:234
+msgid "Incidenti con morti"
+msgstr ""
+
+#: incidenti-map.php:238
+msgid "Incidenti con feriti"
+msgstr ""
+
+#: incidenti-map.php:242
+msgid "Incidenti con soli danni"
+msgstr ""
+
+#: incidenti-map.php:249
+msgid "Azioni"
+msgstr ""
+
+#: incidenti-map.php:252
+msgid "Stampa Mappa"
+msgstr ""
+
+#: incidenti-map.php:255
+msgid "Esporta Dati"
+msgstr ""
+
+#: incidenti-map.php:593
+msgid "Visualizza Dettagli"
+msgstr ""
+
+#: archive-incidente_stradale.php:83
+msgid "Archivio Incidenti Stradali"
+msgstr ""
+
+#: archive-incidente_stradale.php:88
+msgid "Vista Lista"
+msgstr ""
+
+#: archive-incidente_stradale.php:91
+msgid "Vista Griglia"
+msgstr ""
+
+#: archive-incidente_stradale.php:94
+msgid "Vista Mappa"
+msgstr ""
+
+#: archive-incidente_stradale.php:100
+msgid "Aggiungi Nuovo"
+msgstr ""
+
+#: archive-incidente_stradale.php:108
+msgid "Filtri"
+msgstr ""
+
+#: archive-incidente_stradale.php:121
+msgid "Tutti"
+msgstr ""
+
+#: archive-incidente_stradale.php:122
+msgid "Ultimo mese"
+msgstr ""
+
+#: archive-incidente_stradale.php:123
+msgid "Ultimi 3 mesi"
+msgstr ""
+
+#: archive-incidente_stradale.php:124
+msgid "Ultimo anno"
+msgstr ""
+
+#: archive-incidente_stradale.php:125
+msgid "Anno corrente"
+msgstr ""
+
+#: archive-incidente_stradale.php:126
+msgid "Personalizzato"
+msgstr ""
+
+#: archive-incidente_stradale.php:132
+msgid "Da:"
+msgstr ""
+
+#: archive-incidente_stradale.php:135
+msgid "A:"
+msgstr ""
+
+#: archive-incidente_stradale.php:141
+msgid "Provincia:"
+msgstr ""
+
+#: archive-incidente_stradale.php:142
+msgid "Codice provincia"
+msgstr ""
+
+#: archive-incidente_stradale.php:147
+msgid "Comune:"
+msgstr ""
+
+#: archive-incidente_stradale.php:148
+msgid "Codice ISTAT comune"
+msgstr ""
+
+#: archive-incidente_stradale.php:153
+msgid "Tipo Strada:"
+msgstr ""
+
+#: archive-incidente_stradale.php:155
+msgid "Tutti"
+msgstr ""
+
+#: archive-incidente_stradale.php:164
+msgid "Natura Incidente:"
+msgstr ""
+
+#: archive-incidente_stradale.php:166
+msgid "Tutti"
+msgstr ""
+
+#: archive-incidente_stradale.php:175
+msgid "Gravità:"
+msgstr ""
+
+#: archive-incidente_stradale.php:177
+msgid "Tutti"
+msgstr ""
+
+#: archive-incidente_stradale.php:178
+msgid "Con morti"
+msgstr ""
+
+#: archive-incidente_stradale.php:179
+msgid "Con feriti"
+msgstr ""
+
+#: archive-incidente_stradale.php:180
+msgid "Solo danni"
+msgstr ""
+
+#: archive-incidente_stradale.php:185
+msgid "Ordina per:"
+msgstr ""
+
+#: archive-incidente_stradale.php:187
+msgid "Data"
+msgstr ""
+
+#: archive-incidente_stradale.php:188
+msgid "Comune"
+msgstr ""
+
+#: archive-incidente_stradale.php:189
+msgid "Provincia"
+msgstr ""
+
+#: archive-incidente_stradale.php:195
+msgid "Ordinamento:"
+msgstr ""
+
+#: archive-incidente_stradale.php:197
+msgid "Decrescente"
+msgstr ""
+
+#: archive-incidente_stradale.php:198
+msgid "Crescente"
+msgstr ""
+
+#: archive-incidente_stradale.php:205
+msgid "Applica Filtri"
+msgstr ""
+
+#: archive-incidente_stradale.php:206
+msgid "Reset"
+msgstr ""
+
+#: archive-incidente_stradale.php:226
+msgid "Trovato %s incidente"
+msgid_plural "Trovati %s incidenti"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive-incidente_stradale.php:583
+msgid "Morto"
+msgid_plural "Morti"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive-incidente_stradale.php:590
+msgid "Ferito"
+msgid_plural "Feriti"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive-incidente_stradale.php:597
+msgid "Solo danni"
+msgstr ""
+
+#: archive-incidente_stradale.php:604
+msgid "Visualizza"
+msgstr ""
+
+#: archive-incidente_stradale.php:651
+msgid "Precedente"
+msgstr ""
+
+#: archive-incidente_stradale.php:652
+msgid "Successivo"
+msgstr ""
+
+#: archive-incidente_stradale.php:658
+msgid "Nessun incidente trovato con i criteri di ricerca specificati."
+msgstr ""
+
+#: archive-incidente_stradale.php:726
+msgid "Strada non specificata"
+msgstr ""
+
+#. Plugin Name of the plugin
+msgid "Incidenti Stradali"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://example.com/incidenti-stradali"
+msgstr ""
+
+#. Description of the plugin
+msgid "Plugin per la gestione degli incidenti stradali"
+msgstr ""
+
+#. Author of the plugin
+msgid "Your Name"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://example.com"
+msgstr ""

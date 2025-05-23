@@ -1,0 +1,654 @@
+/**
+ * Admin JavaScript for Incidenti Stradali Plugin
+ */
+
+jQuery(document).ready(function($) {
+    'use strict';
+    
+    // Global variables
+    var validationTimeout;
+    var coordinateMap;
+    
+    /**
+     * Initialize admin functionality
+     */
+    function initializeAdmin() {
+        initializeFieldValidation();
+        initializeFieldDependencies();
+        initializeCoordinateMap();
+        initializeDatePickers();
+        initializeFormSections();
+        initializeBulkActions();
+        initializeExportFunctions();
+        initializeTooltips();
+    }
+    
+    /**
+     * Initialize real-time field validation
+     */
+    function initializeFieldValidation() {
+        // Required fields validation
+        $('input[required], select[required]').on('blur', function() {
+            validateField($(this));
+        });
+        
+        // Real-time validation for specific fields
+        $('#data_incidente').on('change', function() {
+            validateDate($(this));
+        });
+        
+        $('#ora_incidente').on('change', function() {
+            validateHour($(this));
+        });
+        
+        $('#provincia_incidente, #comune_incidente').on('input', function() {
+            clearTimeout(validationTimeout);
+            var $field = $(this);
+            
+            validationTimeout = setTimeout(function() {
+                validateIstatCode($field);
+            }, 500);
+        });
+        
+        $('#latitudine').on('input', function() {
+            validateLatitude($(this));
+        });
+        
+        $('#longitudine').on('input', function() {
+            validateLongitude($(this));
+        });
+        
+        // Form submission validation
+        $('#post').on('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                showValidationSummary();
+            }
+        });
+    }
+    
+    /**
+     * Validate individual field
+     */
+    function validateField($field) {
+        var fieldName = $field.attr('name');
+        var value = $field.val();
+        var isValid = true;
+        var message = '';
+        
+        // Remove previous validation styling
+        $field.removeClass('incidenti-validation-error');
+        $field.siblings('.incidenti-field-error').remove();
+        
+        // Required field check
+        if ($field.prop('required') && !value.trim()) {
+            isValid = false;
+            message = 'Questo campo è obbligatorio.';
+        }
+        
+        // Field-specific validation
+        switch (fieldName) {
+            case 'data_incidente':
+                if (value && !isValidDate(value)) {
+                    isValid = false;
+                    message = 'Formato data non valido.';
+                }
+                break;
+                
+            case 'ora_incidente':
+                var hour = parseInt(value);
+                if (value && (hour < 0 || hour > 24)) {
+                    isValid = false;
+                    message = 'L\'ora deve essere compresa tra 0 e 24.';
+                }
+                break;
+                
+            case 'provincia_incidente':
+            case 'comune_incidente':
+                if (value && !isValidIstatCode(value, 3)) {
+                    isValid = false;
+                    message = 'Codice ISTAT deve essere di 3 cifre.';
+                }
+                break;
+        }
+        
+        // Show validation result
+        if (!isValid) {
+            $field.addClass('incidenti-validation-error');
+            $field.after('<span class="incidenti-field-error">' + message + '</span>');
+        }
+        
+        return isValid;
+    }
+    
+    /**
+     * Initialize field dependencies
+     */
+    function initializeFieldDependencies() {
+        // Natura incidente -> Dettaglio natura
+        $('#natura_incidente').on('change', function() {
+            updateDettaglioNatura($(this).val());
+        });
+        
+        // Numero veicoli -> Sezioni veicoli
+        $('#numero_veicoli_coinvolti').on('change', function() {
+            updateVeicoliSections(parseInt($(this).val()) || 1);
+        });
+        
+        // Numero pedoni -> Sezioni pedoni
+        $('#numero_pedoni_coinvolti').on('change', function() {
+            updatePedoniSections(parseInt($(this).val()) || 0);
+        });
+        
+        // Periodo filtro -> Date personalizzate
+        $('[id$="-periodo-filter"]').on('change', function() {
+            var $customDates = $(this).closest('.incidenti-map-filters').find('.custom-dates');
+            
+            if ($(this).val() === 'custom') {
+                $customDates.show();
+            } else {
+                $customDates.hide();
+            }
+        });
+        
+        // Trigger initial state
+        $('#natura_incidente').trigger('change');
+    }
+    
+    /**
+     * Update dettaglio natura options
+     */
+    function updateDettaglioNatura(natura) {
+        var $dettaglio = $('#dettaglio_natura');
+        var options = {
+            'A': {
+                '1': 'Scontro frontale',
+                '2': 'Scontro frontale-laterale',
+                '3': 'Scontro laterale',
+                '4': 'Tamponamento'
+            },
+            'B': {
+                '5': 'Investimento di pedoni'
+            },
+            'C': {
+                '6': 'Urto con veicolo in fermata o in arresto',
+                '7': 'Urto con veicolo in sosta',
+                '8': 'Urto con ostacolo',
+                '9': 'Urto con treno'
+            },
+            'D': {
+                '10': 'Fuoriuscita (sbandamento, ...)',
+                '11': 'Infortunio per frenata improvvisa',
+                '12': 'Infortunio per caduta da veicolo'
+            }
+        };
+        
+        $dettaglio.empty().append('<option value="">Seleziona dettaglio</option>');
+        
+        if (natura && options[natura]) {
+            $.each(options[natura], function(value, text) {
+                $dettaglio.append('<option value="' + value + '">' + text + '</option>');
+            });
+        }
+        
+        // Show/hide numero veicoli based on natura
+        var $numeroVeicoli = $('#numero_veicoli_row');
+        if (natura === 'A' || (natura === 'C')) {
+            $numeroVeicoli.show();
+        } else {
+            $numeroVeicoli.hide();
+            $('#numero_veicoli_coinvolti').val('1');
+        }
+    }
+    
+    /**
+     * Update veicoli sections visibility
+     */
+    function updateVeicoliSections(numVeicoli) {
+        for (var i = 1; i <= 3; i++) {
+            var $section = $('#veicolo-' + i + ', #conducente-' + i);
+            
+            if (i <= numVeicoli) {
+                $section.show();
+            } else {
+                $section.hide();
+                // Clear hidden fields
+                $section.find('input, select').val('');
+            }
+        }
+    }
+    
+    /**
+     * Update pedoni sections visibility
+     */
+    function updatePedoniSections(numPedoni) {
+        for (var i = 1; i <= 4; i++) {
+            var $section = $('#pedone-' + i);
+            
+            if (i <= numPedoni) {
+                $section.show();
+            } else {
+                $section.hide();
+                // Clear hidden fields
+                $section.find('input, select').val('');
+            }
+        }
+    }
+    
+    /**
+     * Initialize coordinate map
+     */
+    function initializeCoordinateMap() {
+        var $mapDiv = $('#coordinate-map');
+        
+        if ($mapDiv.length === 0) {
+            return;
+        }
+        
+        // Initialize map
+        var lat = parseFloat($('#latitudine').val()) || 41.9028;
+        var lng = parseFloat($('#longitudine').val()) || 12.4964;
+        
+        coordinateMap = L.map('coordinate-map').setView([lat, lng], lat === 41.9028 ? 6 : 15);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(coordinateMap);
+        
+        var marker = null;
+        
+        // Add existing marker if coordinates are set
+        if ($('#latitudine').val() && $('#longitudine').val()) {
+            marker = L.marker([lat, lng]).addTo(coordinateMap);
+        }
+        
+        // Click handler to set coordinates
+        coordinateMap.on('click', function(e) {
+            var newLat = e.latlng.lat;
+            var newLng = e.latlng.lng;
+            
+            $('#latitudine').val(newLat.toFixed(6));
+            $('#longitudine').val(newLng.toFixed(6));
+            
+            if (marker) {
+                coordinateMap.removeLayer(marker);
+            }
+            
+            marker = L.marker([newLat, newLng]).addTo(coordinateMap);
+            
+            // Trigger validation
+            validateLatitude($('#latitudine'));
+            validateLongitude($('#longitudine'));
+        });
+        
+        // Update marker when coordinates change manually
+        $('#latitudine, #longitudine').on('change', function() {
+            var newLat = parseFloat($('#latitudine').val());
+            var newLng = parseFloat($('#longitudine').val());
+            
+            if (newLat && newLng) {
+                if (marker) {
+                    coordinateMap.removeLayer(marker);
+                }
+                
+                marker = L.marker([newLat, newLng]).addTo(coordinateMap);
+                coordinateMap.setView([newLat, newLng], 15);
+            }
+        });
+    }
+    
+    /**
+     * Initialize date pickers
+     */
+    function initializeDatePickers() {
+        if ($.datepicker) {
+            $('.incidenti-datepicker').datepicker({
+                dateFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1950:' + new Date().getFullYear()
+            });
+        }
+    }
+    
+    /**
+     * Initialize collapsible form sections
+     */
+    function initializeFormSections() {
+        $('.incidenti-toggle-header').on('click', function() {
+            var $header = $(this);
+            var $content = $header.next('.incidenti-toggle-content');
+            var $arrow = $header.find('.incidenti-toggle-arrow');
+            
+            $content.slideToggle();
+            $arrow.toggleClass('open');
+        });
+    }
+    
+    /**
+     * Initialize bulk actions
+     */
+    function initializeBulkActions() {
+        // Handle bulk export actions
+        $('select[name="action"], select[name="action2"]').on('change', function() {
+            var action = $(this).val();
+            
+            if (action === 'export_istat' || action === 'export_excel') {
+                // Show confirmation dialog
+                if (!confirm('Sei sicuro di voler esportare gli elementi selezionati?')) {
+                    $(this).val('-1');
+                }
+            }
+        });
+    }
+    
+    /**
+     * Initialize export functions
+     */
+    function initializeExportFunctions() {
+        // Export form submissions
+        $('form[action*="export_incidenti"]').on('submit', function() {
+            var $form = $(this);
+            var $button = $form.find('input[type="submit"]');
+            
+            $button.prop('disabled', true).val('Esportazione in corso...');
+            
+            // Re-enable button after delay (in case of errors)
+            setTimeout(function() {
+                $button.prop('disabled', false).val('Esporta');
+            }, 10000);
+        });
+        
+        // Download progress simulation
+        $('a[href*="download_export"]').on('click', function() {
+            var $link = $(this);
+            $link.text('Download in corso...');
+            
+            setTimeout(function() {
+                $link.text('Scarica Export');
+            }, 3000);
+        });
+    }
+    
+    /**
+     * Initialize tooltips and help text
+     */
+    function initializeTooltips() {
+        // Add help icons with tooltips
+        $('[data-help]').each(function() {
+            var $element = $(this);
+            var helpText = $element.data('help');
+            
+            $element.after('<span class="incidenti-help-icon" title="' + helpText + '">?</span>');
+        });
+        
+        // Initialize tooltips if available
+        if ($.fn.tooltip) {
+            $('.incidenti-help-icon').tooltip();
+        }
+    }
+    
+    /**
+     * Validation helper functions
+     */
+    function isValidDate(dateString) {
+        var regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(dateString)) return false;
+        
+        var date = new Date(dateString);
+        return date instanceof Date && !isNaN(date);
+    }
+    
+    function isValidIstatCode(code, length) {
+        var regex = new RegExp('^\\d{' + length + '}$');
+        return regex.test(code);
+    }
+    
+    function validateDate($field) {
+        var value = $field.val();
+        var isValid = !value || isValidDate(value);
+        
+        updateFieldValidation($field, isValid, 'Formato data non valido (YYYY-MM-DD)');
+        return isValid;
+    }
+    
+    function validateHour($field) {
+        var value = parseInt($field.val());
+        var isValid = !$field.val() || (value >= 0 && value <= 24);
+        
+        updateFieldValidation($field, isValid, 'L\'ora deve essere compresa tra 0 e 24');
+        return isValid;
+    }
+    
+    function validateIstatCode($field) {
+        var value = $field.val();
+        var length = $field.attr('name').includes('provincia') ? 3 : 3;
+        var isValid = !value || isValidIstatCode(value, length);
+        
+        updateFieldValidation($field, isValid, 'Codice ISTAT deve essere di ' + length + ' cifre');
+        return isValid;
+    }
+    
+    function validateLatitude($field) {
+        var value = parseFloat($field.val());
+        var isValid = !$field.val() || (value >= -90 && value <= 90);
+        
+        updateFieldValidation($field, isValid, 'Latitudine deve essere tra -90 e 90');
+        return isValid;
+    }
+    
+    function validateLongitude($field) {
+        var value = parseFloat($field.val());
+        var isValid = !$field.val() || (value >= -180 && value <= 180);
+        
+        updateFieldValidation($field, isValid, 'Longitudine deve essere tra -180 e 180');
+        return isValid;
+    }
+    
+    function updateFieldValidation($field, isValid, message) {
+        $field.removeClass('incidenti-validation-error');
+        $field.siblings('.incidenti-field-error').remove();
+        
+        if (!isValid) {
+            $field.addClass('incidenti-validation-error');
+            $field.after('<span class="incidenti-field-error">' + message + '</span>');
+        }
+    }
+    
+    /**
+     * Validate entire form
+     */
+    function validateForm() {
+        var isValid = true;
+        var $firstError = null;
+        
+        // Validate required fields
+        $('input[required], select[required]').each(function() {
+            if (!validateField($(this))) {
+                isValid = false;
+                if (!$firstError) {
+                    $firstError = $(this);
+                }
+            }
+        });
+        
+        // Scroll to first error
+        if ($firstError) {
+            $('html, body').animate({
+                scrollTop: $firstError.offset().top - 100
+            }, 500);
+            $firstError.focus();
+        }
+        
+        return isValid;
+    }
+    
+    /**
+     * Show validation summary
+     */
+    function showValidationSummary() {
+        var errors = [];
+        
+        $('.incidenti-field-error').each(function() {
+            errors.push($(this).text());
+        });
+        
+        if (errors.length > 0) {
+            var message = 'Correggere i seguenti errori:\n\n' + errors.join('\n');
+            alert(message);
+        }
+    }
+    
+    /**
+     * Auto-save functionality
+     */
+    function initializeAutoSave() {
+        var autoSaveInterval;
+        var hasChanges = false;
+        
+        // Track changes
+        $('#post input, #post select, #post textarea').on('change input', function() {
+            hasChanges = true;
+        });
+        
+        // Auto-save every 2 minutes if there are changes
+        autoSaveInterval = setInterval(function() {
+            if (hasChanges && $('#post').length) {
+                // Trigger WordPress auto-save
+                if (typeof wp !== 'undefined' && wp.autosave) {
+                    wp.autosave.server.triggerSave();
+                    hasChanges = false;
+                }
+            }
+        }, 120000); // 2 minutes
+    }
+    
+    /**
+     * Handle window beforeunload
+     */
+    function handlePageLeave() {
+        var hasUnsavedChanges = false;
+        
+        $('#post input, #post select, #post textarea').on('change', function() {
+            hasUnsavedChanges = true;
+        });
+        
+        $('#post').on('submit', function() {
+            hasUnsavedChanges = false;
+        });
+        
+        $(window).on('beforeunload', function() {
+            if (hasUnsavedChanges) {
+                return 'Ci sono modifiche non salvate. Vuoi davvero uscire?';
+            }
+        });
+    }
+    
+    /**
+     * Initialize dashboard widgets
+     */
+    function initializeDashboardWidget() {
+        // Refresh dashboard stats
+        $('.incidenti-dashboard-refresh').on('click', function() {
+            var $widget = $(this).closest('.incidenti-dashboard-widget');
+            
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'refresh_incidenti_dashboard',
+                    nonce: $(this).data('nonce')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $widget.find('.widget-content').html(response.data);
+                    }
+                }
+            });
+        });
+    }
+    
+    // Initialize everything
+    initializeAdmin();
+    initializeAutoSave();
+    handlePageLeave();
+    initializeDashboardWidget();
+    
+    // Expose public functions
+    window.IncidentiAdmin = {
+        validateForm: validateForm,
+        updateVeicoliSections: updateVeicoliSections,
+        updatePedoniSections: updatePedoniSections,
+        // Add more public methods as needed
+    };
+});
+
+/**
+ * Additional admin utilities
+ */
+(function($) {
+    'use strict';
+    
+    /**
+     * Settings page functionality
+     */
+    if ($('.incidenti-settings-page').length) {
+        // Test export path writability
+        $('#test-export-path').on('click', function() {
+            var path = $('input[name="incidenti_export_path"]').val();
+            
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'test_export_path',
+                    path: path,
+                    nonce: $(this).data('nonce')
+                },
+                success: function(response) {
+                    var message = response.success ? 
+                        'Percorso accessibile in scrittura.' : 
+                        'Errore: ' + response.data;
+                    
+                    alert(message);
+                }
+            });
+        });
+        
+        // Import functionality
+        $('#import-data-btn').on('click', function() {
+            var fileInput = $('#import-file')[0];
+            var file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Seleziona un file da importare.');
+                return;
+            }
+            
+            var formData = new FormData();
+            formData.append('file', file);
+            formData.append('action', 'import_incidenti_data');
+            formData.append('nonce', $(this).data('nonce'));
+            
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        alert('Importazione completata: ' + response.data.imported + ' record importati.');
+                        location.reload();
+                    } else {
+                        alert('Errore durante l\'importazione: ' + response.data);
+                    }
+                },
+                error: function() {
+                    alert('Errore di comunicazione durante l\'importazione.');
+                }
+            });
+        });
+    }
+    
+})(jQuery);

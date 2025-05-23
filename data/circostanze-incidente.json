@@ -1,0 +1,1045 @@
+{
+  "metadata": {
+    "title": "Circostanze Presunte di Incidente - Codici ISTAT",
+    "description": "Codificazione completa delle circostanze presunte di incidente secondo le specifiche ISTAT per la rilevazione degli incidenti stradali",
+    "version": "2024.1",
+    "last_updated": "2024-03-15",
+    "source": "ISTAT - Rilevazione degli incidenti stradali con lesioni a persone",
+    "reference_document": "IST-00142 ISTAT CTT/INC - Edizione 2019"
+  },
+  
+  "circostanze_incidente": {
+    "inconvenienti_circolazione": {
+      "description": "Circostanze presunte dell'incidente per inconvenienti di circolazione",
+      "categoria": "1",
+      "sottocategorie": {
+        
+        "incidente_intersezione": {
+          "description": "Incidente sull'intersezione stradale (incrocio)",
+          "codici": {
+            "01": {
+              "descrizione": "Procedeva regolarmente senza svoltare",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
+            "02": {
+              "descrizione": "Procedeva con guida distratta e andamento indeciso",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "comportamentale"
+            },
+            "03": {
+              "descrizione": "Procedeva senza mantenere la distanza di sicurezza",
+              "articolo_cds": "art. 149",
+              "gravita": "media",
+              "tipo_violazione": "codice_strada"
+            },
+            "04": {
+              "descrizione": "Procedeva senza dare la precedenza al veicolo proveniente da destra",
+              "articolo_cds": "art. 145",
+              "gravita": "alta",
+              "tipo_violazione": "precedenza"
+            },
+            "05": {
+              "descrizione": "Procedeva senza rispettare lo stop",
+              "articolo_cds": "art. 145",
+              "gravita": "alta",
+              "tipo_violazione": "segnaletica"
+            },
+            "06": {
+              "descrizione": "Procedeva senza rispettare il segnale di dare precedenza",
+              "articolo_cds": "art. 145",
+              "gravita": "alta",
+              "tipo_violazione": "segnaletica"
+            },
+            "07": {
+              "descrizione": "Procedeva contromano",
+              "articolo_cds": "art. 143",
+              "gravita": "molto_alta",
+              "tipo_violazione": "direzione_marcia"
+            },
+            "08": {
+              "descrizione": "Procedeva senza rispettare le segnalazioni semaforiche o dell'agente",
+              "articolo_cds": "artt. 41-43",
+              "gravita": "alta",
+              "tipo_violazione": "segnaletica"
+            },
+            "10": {
+              "descrizione": "Procedeva senza rispettare i segnali di divieto di transito o di accesso",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "segnaletica"
+            },
+            "11": {
+              "descrizione": "Procedeva con eccesso di velocità",
+              "articolo_cds": "art. 141",
+              "gravita": "alta",
+              "tipo_violazione": "velocita"
+            },
+            "12": {
+              "descrizione": "Procedeva senza rispettare i limiti di velocità",
+              "articolo_cds": "art. 142",
+              "gravita": "alta",
+              "tipo_violazione": "velocita"
+            },
+            "13": {
+              "descrizione": "Procedeva con le luci abbaglianti incrociando altri veicoli",
+              "articolo_cds": "art. 153",
+              "gravita": "media",
+              "tipo_violazione": "illuminazione"
+            },
+            "14": {
+              "descrizione": "Svoltava a destra regolarmente",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
+            "15": {
+              "descrizione": "Svoltava a destra irregolarmente",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "manovra"
+            },
+            "16": {
+              "descrizione": "Svoltava a sinistra regolarmente",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
+            "17": {
+              "descrizione": "Svoltava a sinistra irregolarmente",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "manovra"
+            },
+            "18": {
+              "descrizione": "Sorpassava (all'incrocio)",
+              "articolo_cds": "art. 148",
+              "gravita": "molto_alta",
+              "tipo_violazione": "sorpasso"
+            }
+          }
+        },
+        
+        "incidente_non_intersezione": {
+          "description": "Incidente non all'intersezione stradale",
+          "codici": {
+            "20": {
+              "descrizione": "Procedeva regolarmente",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
+            "21": {
+              "descrizione": "Procedeva con guida distratta e andamento indeciso",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "comportamentale"
+            },
+            "22": {
+              "descrizione": "Procedeva senza mantenere la distanza di sicurezza",
+              "articolo_cds": "art. 149",
+              "gravita": "media",
+              "tipo_violazione": "codice_strada"
+            },
+            "23": {
+              "descrizione": "Procedeva con eccesso di velocità",
+              "articolo_cds": "art. 141",
+              "gravita": "alta",
+              "tipo_violazione": "velocita"
+            },
+            "24": {
+              "descrizione": "Procedeva senza rispettare i limiti di velocità",
+              "articolo_cds": "art. 142",
+              "gravita": "alta",
+              "tipo_violazione": "velocita"
+            },
+            "25": {
+              "descrizione": "Procedeva non in prossimità del margine destro della carreggiata",
+              "articolo_cds": "art. 143",
+              "gravita": "media",
+              "tipo_violazione": "posizione_carreggiata"
+            },
+            "26": {
+              "descrizione": "Procedeva contromano",
+              "articolo_cds": "art. 143",
+              "gravita": "molto_alta",
+              "tipo_violazione": "direzione_marcia"
+            },
+            "27": {
+              "descrizione": "Procedeva senza rispettare i segnali di divieto di transito o di accesso",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "segnaletica"
+            },
+            "28": {
+              "descrizione": "Procedeva con le luci abbaglianti incrociando altri veicoli",
+              "articolo_cds": "art. 153",
+              "gravita": "media",
+              "tipo_violazione": "illuminazione"
+            },
+            "29": {
+              "descrizione": "Sorpassava regolarmente",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
+            "30": {
+              "descrizione": "Sorpassava irregolarmente a destra",
+              "articolo_cds": "art. 148",
+              "gravita": "alta",
+              "tipo_violazione": "sorpasso"
+            },
+            "31": {
+              "descrizione": "Sorpassava in curva, su dosso o in condizione di insufficiente visibilità",
+              "articolo_cds": "art. 148",
+              "gravita": "molto_alta",
+              "tipo_violazione": "sorpasso"
+            },
+            "32": {
+              "descrizione": "Sorpassava un veicolo che ne stava sorpassando un altro",
+              "articolo_cds": "art. 148",
+              "gravita": "molto_alta",
+              "tipo_violazione": "sorpasso"
+            },
+            "33": {
+              "descrizione": "Sorpassava senza osservare l'apposito segnale di divieto",
+              "articolo_cds": null,
+              "gravita": "alta",
+              "tipo_violazione": "sorpasso"
+            },
+            "34": {
+              "descrizione": "Manovrava in retrocessione o conversione",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "manovra"
+            },
+            "35": {
+              "descrizione": "Manovrava per immettersi nel flusso della circolazione",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "manovra"
+            },
+            "36": {
+              "descrizione": "Manovrava per voltare a sinistra (passaggio privato, distributore, ecc.)",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "manovra"
+            },
+            "37": {
+              "descrizione": "Manovrava regolarmente per fermarsi o sostare",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
+            "38": {
+              "descrizione": "Manovrava irregolarmente per fermarsi o sostare",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "manovra"
+            },
+            "39": {
+              "descrizione": "Si affiancava ad altri veicoli a due ruote irregolarmente",
+              "articolo_cds": null,
+              "gravita": "media",
+              "tipo_violazione": "comportamentale"
+            }
+          }
+        }
+      }
+    },
+    
+    "incidenti_tra_veicoli_marcia": {
+      "description": "Incidenti tra veicoli in marcia",
+      "categoria": "A",
+      "veicolo_coinvolto": {
+        "codici": {
+          "40": {
+            "descrizione": "Procedeva regolarmente",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "tipo_violazione": null
+          },
+          "41": {
+            "descrizione": "Procedeva con eccesso di velocità",
+            "articolo_cds": "art. 141",
+            "gravita": "alta",
+            "tipo_violazione": "velocita"
+          },
+          "42": {
+            "descrizione": "Procedeva senza rispettare i limiti di velocità",
+            "articolo_cds": "art. 142",
+            "gravita": "alta",
+            "tipo_violazione": "velocita"
+          },
+          "43": {
+            "descrizione": "Procedeva contromano",
+            "articolo_cds": "art. 143",
+            "gravita": "molto_alta",
+            "tipo_violazione": "direzione_marcia"
+          },
+          "44": {
+            "descrizione": "Sorpassava veicolo in marcia",
+            "articolo_cds": null,
+            "gravita": "media",
+            "tipo_violazione": "sorpasso"
+          },
+          "45": {
+            "descrizione": "Manovrava",
+            "articolo_cds": null,
+            "gravita": "media",
+            "tipo_violazione": "manovra"
+          },
+          "46": {
+            "descrizione": "Non rispettava le segnalazioni semaforiche o dell'agente",
+            "articolo_cds": "art. 41-43",
+            "gravita": "alta",
+            "tipo_violazione": "segnaletica"
+          },
+          "47": {
+            "descrizione": "Usciva senza precauzioni da passo carrabile",
+            "articolo_cds": null,
+            "gravita": "media",
+            "tipo_violazione": "manovra"
+          },
+          "48": {
+            "descrizione": "Fuoriusciva dalla carreggiata",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "perdita_controllo"
+          },
+          "49": {
+            "descrizione": "Non dava la precedenza al pedone sugli appositi attraversamenti",
+            "articolo_cds": "art. 191",
+            "gravita": "molto_alta",
+            "tipo_violazione": "precedenza_pedoni"
+          },
+          "50": {
+            "descrizione": "Sorpassava un veicolo fermatosi per consentire l'attraversamento dei pedoni",
+            "articolo_cds": null,
+            "gravita": "molto_alta",
+            "tipo_violazione": "sorpasso"
+          },
+          "51": {
+            "descrizione": "Urtava con il carico il pedone",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "carico"
+          },
+          "52": {
+            "descrizione": "Superava irregolarmente un tram fermo per la salita e discesa dei passeggeri",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "trasporto_pubblico"
+          }
+        }
+      }
+    },
+    
+    "investimento_pedone": {
+      "description": "Investimento di pedone",
+      "categoria": "B",
+      "veicolo_coinvolto": {
+        "codici": {
+          "40": {
+            "descrizione": "Procedeva regolarmente",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "tipo_violazione": null
+          },
+          "41": {
+            "descrizione": "Procedeva con eccesso di velocità",
+            "articolo_cds": "art. 141",
+            "gravita": "molto_alta",
+            "tipo_violazione": "velocita"
+          },
+          "42": {
+            "descrizione": "Procedeva senza rispettare i limiti di velocità",
+            "articolo_cds": "art. 142",
+            "gravita": "molto_alta",
+            "tipo_violazione": "velocita"
+          },
+          "43": {
+            "descrizione": "Procedeva contromano",
+            "articolo_cds": "art. 143",
+            "gravita": "molto_alta",
+            "tipo_violazione": "direzione_marcia"
+          },
+          "44": {
+            "descrizione": "Sorpassava veicolo in marcia",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "sorpasso"
+          },
+          "45": {
+            "descrizione": "Manovrava",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "manovra"
+          },
+          "46": {
+            "descrizione": "Non rispettava le segnalazioni semaforiche o dell'agente",
+            "articolo_cds": "art. 41-43",
+            "gravita": "molto_alta",
+            "tipo_violazione": "segnaletica"
+          },
+          "47": {
+            "descrizione": "Usciva senza precauzioni da passo carrabile",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "manovra"
+          },
+          "48": {
+            "descrizione": "Fuoriusciva dalla carreggiata investendo il pedone",
+            "articolo_cds": null,
+            "gravita": "molto_alta",
+            "tipo_violazione": "perdita_controllo"
+          },
+          "49": {
+            "descrizione": "Non dava la precedenza al pedone sugli appositi attraversamenti",
+            "articolo_cds": "art. 191",
+            "gravita": "molto_alta",
+            "tipo_violazione": "precedenza_pedoni"
+          },
+          "50": {
+            "descrizione": "Sorpassava un veicolo fermatosi per consentire l'attraversamento",
+            "articolo_cds": null,
+            "gravita": "molto_alta",
+            "tipo_violazione": "sorpasso"
+          },
+          "51": {
+            "descrizione": "Urtava con il carico il pedone",
+            "articolo_cds": null,
+            "gravita": "molto_alta",
+            "tipo_violazione": "carico"
+          },
+          "52": {
+            "descrizione": "Superava irregolarmente un tram alla fermata",
+            "articolo_cds": null,
+            "gravita": "molto_alta",
+            "tipo_violazione": "trasporto_pubblico"
+          }
+        }
+      },
+      "pedone_investito": {
+        "codici": {
+          "40": {
+            "descrizione": "Camminava o sostava mantenendosi su marciapiede, banchina, ecc.",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "responsabilita": "veicolo"
+          },
+          "41": {
+            "descrizione": "Camminava regolarmente sul margine della carreggiata",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "responsabilita": "mista"
+          },
+          "42": {
+            "descrizione": "Camminava contromano",
+            "articolo_cds": "art. 190",
+            "gravita": "media",
+            "responsabilita": "pedone"
+          },
+          "43": {
+            "descrizione": "Camminava in mezzo alla carreggiata",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "responsabilita": "pedone"
+          },
+          "44": {
+            "descrizione": "Sostava, indugiava, o giocava sulla carreggiata",
+            "articolo_cds": "art. 190",
+            "gravita": "alta",
+            "responsabilita": "pedone"
+          },
+          "45": {
+            "descrizione": "Lavorava sulla carreggiata protetto da apposito segnale",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "responsabilita": "veicolo"
+          },
+          "46": {
+            "descrizione": "Lavorava sulla carreggiata non protetto da apposito segnale",
+            "articolo_cds": null,
+            "gravita": "media",
+            "responsabilita": "mista"
+          },
+          "47": {
+            "descrizione": "Saliva su veicolo in marcia",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "responsabilita": "pedone"
+          },
+          "48": {
+            "descrizione": "Discendeva da veicolo con prudenza",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "responsabilita": "veicolo"
+          },
+          "49": {
+            "descrizione": "Discendeva da veicolo con imprudenza",
+            "articolo_cds": null,
+            "gravita": "media",
+            "responsabilita": "pedone"
+          },
+          "50": {
+            "descrizione": "Veniva fuori improvvisamente da dietro o davanti un veicolo in sosta o fermata",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "responsabilita": "pedone"
+          },
+          "51": {
+            "descrizione": "Attraversava la strada ad un passaggio pedonale protetto da semaforo, o da agente rispettando le segnalazioni",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "responsabilita": "veicolo"
+          },
+          "52": {
+            "descrizione": "Attraversava la strada ad un passaggio pedonale protetto da semaforo, o da agente non rispettando le segnalazioni",
+            "articolo_cds": "art. 41-43",
+            "gravita": "alta",
+            "responsabilita": "pedone"
+          },
+          "53": {
+            "descrizione": "Attraversava la strada ad un passaggio pedonale non protetto da semaforo o da agente",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "responsabilita": "veicolo"
+          },
+          "54": {
+            "descrizione": "Attraversava la strada regolarmente, non ad un passaggio pedonale",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "responsabilita": "mista"
+          },
+          "55": {
+            "descrizione": "Attraversava la strada irregolarmente",
+            "articolo_cds": "art. 190",
+            "gravita": "alta",
+            "responsabilita": "pedone"
+          }
+        }
+      }
+    },
+    
+    "veicolo_urta_fermo": {
+      "description": "Veicolo in marcia che urta veicolo fermo o altro ostacolo",
+      "categoria": "C",
+      "veicolo_marcia": {
+        "codici": {
+          "60": {
+            "descrizione": "Procedeva regolarmente",
+            "articolo_cds": null,
+            "gravita": "normale",
+            "tipo_violazione": null
+          },
+          "61": {
+            "descrizione": "Procedeva con guida distratta e andamento indeciso",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "comportamentale"
+          },
+          "62": {
+            "descrizione": "Procedeva senza mantenere la distanza di sicurezza",
+            "articolo_cds": "art. 149",
+            "gravita": "alta",
+            "tipo_violazione": "codice_strada"
+          },
+          "63": {
+            "descrizione": "Procedeva contromano",
+            "articolo_cds": "art. 143",
+            "gravita": "molto_alta",
+            "tipo_violazione": "direzione_marcia"
+          },
+          "64": {
+            "descrizione": "Procedeva con eccesso di velocità",
+            "articolo_cds": "art. 141",
+            "gravita": "molto_alta",
+            "tipo_violazione": "velocita"
+          },
+          "65": {
+            "descrizione": "Procedeva senza rispettare i limiti di velocità",
+            "articolo_cds": "art. 142",
+            "gravita": "molto_alta",
+            "tipo_violazione": "velocita"
+          },
+          "66": {
+            "descrizione": "Procedeva senza rispettare i segnali di divieto di transito o di accesso",
+            "articolo_cds": null,
+            "gravita": "media",
+            "tipo_violazione": "segnaletica"
+          },
+          "67": {
+            "descrizione": "Sorpassava un altro veicolo in marcia",
+            "articolo_cds": null,
+            "gravita": "alta",
+            "tipo_violazione": "sorpasso"
+          },
+          "68": {
+            "descrizione": "Attraversava imprudentemente il passaggio a livello",
+            "articolo_cds": "art. 147",
+            "gravita": "molto_alta",
+            "tipo_violazione": "passaggio_livello"
+          }
+        }
+      },
+      "veicolo_fermo_ostacolo": {
+        "codici": {
+          "60": {
+            "descrizione": "Ostacolo accidentale",
+            "responsabilita": "accidentale",
+            "prevedibilita": "bassa"
+          },
+          "61": {
+            "descrizione": "Veicolo fermo in posizione regolare",
+            "responsabilita": "veicolo_marcia",
+            "prevedibilita": "alta"
+          },
+          "62": {
+            "descrizione": "Veicolo fermo in posizione irregolare",
+            "articolo_cds": "art. 158",
+            "responsabilita": "mista",
+            "prevedibilita": "media"
+          },
+          "63": {
+            "descrizione": "Veicolo fermo senza che sia stato collocato il prescritto segnale",
+            "articolo_cds": "art. 162",
+            "responsabilita": "veicolo_fermo",
+            "prevedibilita": "media"
+          },
+          "64": {
+            "descrizione": "Veicolo fermo regolarmente segnalato",
+            "responsabilita": "veicolo_marcia",
+            "prevedibilita": "alta"
+          },
+          "65": {
+            "descrizione": "Ostacolo fisso nella carreggiata (isole, colonnine, transenne, ecc.)",
+            "responsabilita": "veicolo_marcia",
+            "prevedibilita": "alta"
+          },
+          "66": {
+            "descrizione": "Treno in passaggio a livello",
+            "responsabilita": "veicolo_marcia",
+            "prevedibilita": "molto_alta"
+          },
+          "67": {
+            "descrizione": "Animale domestico o d'affezione, da reddito, da lavoro",
+            "responsabilita": "proprietario_animale",
+            "prevedibilita": "media"
+          },
+          "68": {
+            "descrizione": "Animale selvatico",
+            "responsabilita": "accidentale",
+            "prevedibilita": "bassa"
+          },
+          "69": {
+            "descrizione": "Buca",
+            "responsabilita": "ente_gestore",
+            "prevedibilita": "media"
+          }
+        }
+      }
+    },
+    
+    "veicolo_senza_urto": {
+      "description": "Veicolo in marcia senza urto con veicolo o ostacolo sulla carreggiata",
+      "categoria": "D",
+      "veicolo_coinvolto": {
+        "codici": {
+          "70": {
+            "descrizione": "Sbandamento con fuoriuscita per evitare l'urto",
+            "tipo": "evasiva",
+            "gravita": "media"
+          },
+          "71": {
+            "descrizione": "Sbandamento con fuoriuscita per guida distratta e andamento indeciso",
+            "tipo": "comportamentale",
+            "gravita": "alta"
+          },
+          "72": {
+            "descrizione": "Sbandamento con fuoriuscita per eccesso di velocità",
+            "tipo": "velocita",
+            "gravita": "molto_alta"
+          },
+          "73": {
+            "descrizione": "Frenata improvvisa con conseguenza ai trasportati",
+            "tipo": "frenata",
+            "gravita": "media"
+          },
+          "74": {
+            "descrizione": "Caduta di persona da veicolo per apertura di portiera",
+            "tipo": "caduta",
+            "gravita": "alta"
+          },
+          "75": {
+            "descrizione": "Caduta di persona da veicolo per discesa da veicolo in moto",
+            "tipo": "caduta",
+            "gravita": "alta"
+          },
+          "76": {
+            "descrizione": "Caduta di persona da veicolo per essersi aggrappata o sistemata inadeguatamente",
+            "tipo": "caduta",
+            "gravita": "alta"
+          }
+        }
+      },
+      "ostacolo_non_urtato": {
+        "codici": {
+          "70": {
+            "descrizione": "Ostacolo accidentale",
+            "tipo": "ostacolo",
+            "prevedibilita": "bassa"
+          },
+          "71": {
+            "descrizione": "Pedone",
+            "tipo": "pedone",
+            "prevedibilita": "media"
+          },
+          "72": {
+            "descrizione": "Animale",
+            "tipo": "animale",
+            "prevedibilita": "bassa"
+          },
+          "73": {
+            "descrizione": "Veicolo",
+            "tipo": "veicolo",
+            "prevedibilita": "media"
+          },
+          "74": {
+            "descrizione": "Buche, ecc.",
+            "tipo": "strada",
+            "prevedibilita": "media"
+          },
+          "75": {
+            "descrizione": "Senza ostacolo né pedone né altro veicolo",
+            "tipo": "nessuno",
+            "prevedibilita": "nulla"
+          },
+          "76": {
+            "descrizione": "Ostacolo fisso",
+            "tipo": "fisso",
+            "prevedibilita": "alta"
+          }
+        }
+      }
+    }
+  },
+  
+  "difetti_avarie_veicolo": {
+    "description": "Circostanze presunte dell'incidente per difetti o avarie del veicolo",
+    "categoria": "2",
+    "codici": {
+      "80": {
+        "descrizione": "Rottura o insufficienza dei freni",
+        "componente": "freni",
+        "gravita": "molto_alta",
+        "manutenzione": "periodica_obbligatoria"
+      },
+      "81": {
+        "descrizione": "Rottura o guasto allo sterzo",
+        "componente": "sterzo",
+        "gravita": "molto_alta",
+        "manutenzione": "periodica_obbligatoria"
+      },
+      "82": {
+        "descrizione": "Scoppio o eccessiva usura dei pneumatici",
+        "componente": "pneumatici",
+        "gravita": "molto_alta",
+        "manutenzione": "controllo_frequente"
+      },
+      "83": {
+        "descrizione": "Mancanza o insufficienza dei fari o delle luci di posizione",
+        "componente": "illuminazione",
+        "gravita": "alta",
+        "manutenzione": "controllo_frequente"
+      },
+      "84": {
+        "descrizione": "Mancanza o insufficienza dei lampeggiatori o delle segnalazioni luminose di arresto",
+        "componente": "segnalazione",
+        "gravita": "alta",
+        "manutenzione": "controllo_frequente"
+      },
+      "85": {
+        "descrizione": "Rottura degli organi di agganciamento dei rimorchi",
+        "componente": "aggancio",
+        "gravita": "molto_alta",
+        "manutenzione": "controllo_prima_uso"
+      },
+      "86": {
+        "descrizione": "Deficienza delle attrezzature per trasporto di merci pericolose (carburante, esplosivi, gas compressi, ecc.)",
+        "componente": "sicurezza_trasporto",
+        "gravita": "molto_alta",
+        "manutenzione": "controllo_specializzato"
+      },
+      "87": {
+        "descrizione": "Mancanza o insufficienza degli adattamenti prescritti per i veicoli condotti da mutilati o minorati fisici",
+        "componente": "adattamenti_disabili",
+        "gravita": "alta",
+        "manutenzione": "controllo_specializzato"
+      },
+      "88": {
+        "descrizione": "Distacco di ruota",
+        "componente": "ruote",
+        "gravita": "molto_alta",
+        "manutenzione": "controllo_periodico"
+      },
+      "89": {
+        "descrizione": "Mancanza o insufficienza dei dispositivi visivi dei velocipedi",
+        "componente": "segnalazione_velocipedi",
+        "gravita": "media",
+        "manutenzione": "controllo_utente"
+      }
+    }
+  },
+  
+  "stato_psicofisico": {
+    "description": "Condizioni presunte dell'incidente per stato psico-fisico del conducente o del pedone",
+    "categoria": "3",
+    "codici": {
+      "90": {
+        "descrizione": "Anormale per ebbrezza da alcool",
+        "articolo_cds": "art. 186",
+        "tipo": "sostanze",
+        "gravita": "molto_alta",
+        "rilevamento": "etilometro",
+        "sanzioni": "penali_amministrative"
+      },
+      "91": {
+        "descrizione": "Anormale per condizioni morbose in atto",
+        "tipo": "medico",
+        "gravita": "alta",
+        "rilevamento": "certificato_medico",
+        "sanzioni": "amministrative"
+      },
+      "92": {
+        "descrizione": "Anormale per improvviso malore",
+        "tipo": "medico",
+        "gravita": "media",
+        "rilevamento": "accertamento_medico",
+        "sanzioni": "nessuna"
+      },
+      "93": {
+        "descrizione": "Anormale per sonno",
+        "tipo": "fisiologico",
+        "gravita": "molto_alta",
+        "rilevamento": "osservazione",
+        "sanzioni": "amministrative"
+      },
+      "94": {
+        "descrizione": "Anormale per ingestione di sostanze stupefacenti o psicotrope",
+        "articolo_cds": "art. 187",
+        "tipo": "sostanze",
+        "gravita": "molto_alta",
+        "rilevamento": "test_tossicologico",
+        "sanzioni": "penali_amministrative"
+      },
+      "95": {
+        "descrizione": "Mancato uso di lenti correttive o apparecchi di protesi",
+        "articolo_cds": "art. 173",
+        "tipo": "dispositivi_medici",
+        "gravita": "alta",
+        "rilevamento": "controllo_patente",
+        "sanzioni": "amministrative"
+      },
+      "96": {
+        "descrizione": "Abbagliato",
+        "tipo": "ambientale",
+        "gravita": "media",
+        "rilevamento": "dichiarazione",
+        "sanzioni": "nessuna"
+      },
+      "97": {
+        "descrizione": "Per aver superato i periodi di guida prescritti",
+        "articolo_cds": "art. 174",
+        "tipo": "affaticamento",
+        "gravita": "alta",
+        "rilevamento": "controllo_tachigrafo",
+        "sanzioni": "amministrative"
+      }
+    }
+  },
+  
+  "mappature": {
+    "description": "Mappature per facilitare l'uso dei codici",
+    "natura_incidente_to_circostanze": {
+      "A": {
+        "name": "Tra veicoli in marcia",
+        "circostanze_valide": ["01-18", "20-39", "40-52"],
+        "circostanze_comuni": ["01", "02", "11", "22", "23", "40", "41"]
+      },
+      "B": {
+        "name": "Tra veicolo e pedoni",
+        "circostanze_valide": ["40-52", "40-55"],
+        "circostanze_comuni": ["40", "41", "49", "51", "53", "55"]
+      },
+      "C": {
+        "name": "Veicolo in marcia che urta veicolo fermo o altro",
+        "circostanze_valide": ["60-68", "60-69"],
+        "circostanze_comuni": ["61", "62", "64", "65"]
+      },
+      "D": {
+        "name": "Veicolo in marcia senza urto",
+        "circostanze_valide": ["70-76", "70-76"],
+        "circostanze_comuni": ["70", "71", "72", "73"]
+      }
+    },
+    
+    "gravita_levels": {
+      "normale": {
+        "descrizione": "Situazione normale o regolare",
+        "colore": "#28a745",
+        "priorita": 1
+      },
+      "media": {
+        "descrizione": "Infrazione media o situazione di attenzione",
+        "colore": "#ffc107",
+        "priorita": 2
+      },
+      "alta": {
+        "descrizione": "Infrazione grave o situazione pericolosa",
+        "colore": "#fd7e14",
+        "priorita": 3
+      },
+      "molto_alta": {
+        "descrizione": "Infrazione molto grave o situazione estremamente pericolosa",
+        "colore": "#dc3545",
+        "priorita": 4
+      }
+    },
+    
+    "tipi_violazione": {
+      "comportamentale": "Comportamento di guida inadeguato",
+      "codice_strada": "Violazione specifica del Codice della Strada",
+      "precedenza": "Mancato rispetto delle precedenze",
+      "segnaletica": "Inosservanza della segnaletica stradale",
+      "direzione_marcia": "Errori nella direzione di marcia",
+      "velocita": "Eccesso di velocità o velocità inadeguata",
+      "illuminazione": "Uso scorretto dei dispositivi di illuminazione",
+      "manovra": "Manovre irregolari o pericolose",
+      "sorpasso": "Sorpassi irregolari o in zone vietate",
+      "posizione_carreggiata": "Posizione scorretta sulla carreggiata",
+      "perdita_controllo": "Perdita del controllo del veicolo",
+      "precedenza_pedoni": "Mancato rispetto della precedenza ai pedoni",
+      "carico": "Problemi legati al carico del veicolo",
+      "trasporto_pubblico": "Interferenza con il trasporto pubblico",
+      "passaggio_livello": "Attraversamento irregolare di passaggi a livello"
+    }
+  },
+  
+  "statistiche_utilizzo": {
+    "description": "Statistiche sull'utilizzo dei codici circostanze (dati indicativi)",
+    "piu_frequenti": {
+      "inconvenienti_circolazione": ["01", "02", "11", "20", "21", "22", "23"],
+      "difetti_veicolo": ["82", "83", "88"],
+      "stato_psicofisico": ["90", "93", "96"]
+    },
+    "piu_gravi": {
+      "inconvenienti_circolazione": ["07", "18", "26", "31", "32"],
+      "difetti_veicolo": ["80", "81", "82", "85"],
+      "stato_psicofisico": ["90", "93", "94"]
+    },
+    "correlazioni_natura": {
+      "scontro_frontale": ["11", "23", "26", "41", "42", "43"],
+      "tamponamento": ["03", "22", "61", "62"],
+      "investimento_pedone": ["41", "42", "49", "51", "55"],
+      "fuoriuscita": ["70", "71", "72"]
+    }
+  },
+  
+  "validazione": {
+    "description": "Regole di validazione per l'uso dei codici",
+    "regole_combinazione": {
+      "incompatibili": {
+        "01": ["02", "11", "15", "17"],
+        "20": ["21", "23", "26"],
+        "40": ["41", "42", "43", "44", "45"]
+      },
+      "richiede_dettagli": {
+        "90": "Valore etilometro e/o certificazione",
+        "94": "Tipo di sostanza e test effettuato",
+        "82": "Stato degli pneumatici",
+        "86": "Tipo di merce pericolosa"
+      }
+    },
+    "controlli_coerenza": {
+      "natura_A": {
+        "circostanze_minime": 2,
+        "veicoli_minimi": 2,
+        "note": "Devono essere specificate le circostanze per almeno due veicoli"
+      },
+      "natura_B": {
+        "circostanze_minime": 2,
+        "pedoni_minimi": 1,
+        "note": "Deve essere specificata la circostanza del veicolo e del pedone"
+      },
+      "natura_C": {
+        "circostanze_minime": 2,
+        "note": "Deve essere specificata la circostanza del veicolo in marcia e dell'ostacolo/veicolo fermo"
+      },
+      "natura_D": {
+        "circostanze_minime": 1,
+        "note": "Può essere specificata solo la circostanza del veicolo coinvolto"
+      }
+    }
+  },
+  
+  "helper_texts": {
+    "description": "Testi di aiuto per gli operatori",
+    "come_scegliere": {
+      "passo_1": "Identificare la natura dell'incidente (A, B, C, D)",
+      "passo_2": "Per la natura A: specificare le circostanze di ogni veicolo coinvolto",
+      "passo_3": "Per la natura B: specificare le circostanze del veicolo E del pedone",
+      "passo_4": "Per la natura C: specificare le circostanze del veicolo in marcia E dell'ostacolo",
+      "passo_5": "Per la natura D: specificare le circostanze del veicolo coinvolto",
+      "passo_6": "Se applicabile, aggiungere circostanze per difetti del veicolo",
+      "passo_7": "Se applicabile, aggiungere circostanze per stato psico-fisico alterato"
+    },
+    "esempi_pratici": {
+      "tamponamento_semplice": {
+        "descrizione": "Veicolo A tampona veicolo B fermo al semaforo",
+        "natura": "A",
+        "veicolo_A": "22 - Procedeva senza mantenere la distanza di sicurezza",
+        "veicolo_B": "01 - Procedeva regolarmente senza svoltare"
+      },
+      "investimento_sulle_strisce": {
+        "descrizione": "Auto investe pedone sulle strisce pedonali",
+        "natura": "B",
+        "veicolo": "49 - Non dava la precedenza al pedone sugli appositi attraversamenti",
+        "pedone": "51 - Attraversava rispettando le segnalazioni"
+      },
+      "urto_con_veicolo_in_sosta": {
+        "descrizione": "Auto urta veicolo parcheggiato regolarmente",
+        "natura": "C",
+        "veicolo_marcia": "61 - Procedeva con guida distratta",
+        "veicolo_fermo": "61 - Veicolo fermo in posizione regolare"
+      },
+      "sbandamento_per_velocita": {
+        "descrizione": "Auto sbanda e finisce fuori strada per eccesso di velocità",
+        "natura": "D",
+        "veicolo": "72 - Sbandamento con fuoriuscita per eccesso di velocità",
+        "ostacolo": "75 - Senza ostacolo né pedone né altro veicolo"
+      }
+    }
+  },
+  
+  "note_implementazione": {
+    "description": "Note per gli sviluppatori del plugin",
+    "uso_nel_plugin": {
+      "validazione_frontend": "Usare le regole di validazione per controlli real-time",
+      "help_texts": "Mostrare gli helper texts negli tooltip dei campi",
+      "colorazione": "Usare i colori di gravità per evidenziare situazioni critiche",
+      "statistiche": "Implementare dashboard con le circostanze più frequenti",
+      "export_istat": "I codici numerici vanno esportati nel tracciato ISTAT"
+    },
+    "campi_database": {
+      "circostanza_veicolo_a": "Circostanza del primo veicolo coinvolto",
+      "circostanza_veicolo_b": "Circostanza del secondo veicolo o pedone/ostacolo",
+      "circostanza_veicolo_c": "Circostanza del terzo veicolo (se presente)",
+      "difetto_veicolo": "Eventuale difetto o avaria del veicolo",
+      "stato_psicofisico_a": "Stato psico-fisico del conducente veicolo A",
+      "stato_psicofisico_b": "Stato psico-fisico del conducente veicolo B"
+    }
+  }
+}

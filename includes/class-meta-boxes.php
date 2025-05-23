@@ -807,7 +807,7 @@ class IncidentiMetaBoxes {
         }
     }
     
-    public function save_meta_boxes($post_id) {
+        public function save_meta_boxes($post_id) {
         // Verify nonce
         if (!isset($_POST['incidente_meta_box_nonce']) || !wp_verify_nonce($_POST['incidente_meta_box_nonce'], 'incidente_meta_box')) {
             return;
@@ -828,6 +828,9 @@ class IncidentiMetaBoxes {
             return;
         }
         
+        // IMPORTANTE: Previeni loop infiniti
+        remove_action('save_post', array($this, 'save_meta_boxes'));
+        
         // Check date restrictions
         $data_blocco = get_option('incidenti_data_blocco_modifica');
         if ($data_blocco && isset($_POST['data_incidente'])) {
@@ -838,7 +841,7 @@ class IncidentiMetaBoxes {
             }
         }
         
-        // Array of all meta fields to save
+        // Array of all meta fields to save - ottimizzato per ridurre memoria
         $meta_fields = array(
             'data_incidente', 'ora_incidente', 'minuti_incidente', 'provincia_incidente', 'comune_incidente',
             'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
@@ -848,48 +851,98 @@ class IncidentiMetaBoxes {
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa'
         );
         
-        // Save vehicle fields (up to 3 vehicles)
-        for ($i = 1; $i <= 3; $i++) {
-            $meta_fields[] = 'veicolo_' . $i . '_tipo';
-            $meta_fields[] = 'veicolo_' . $i . '_targa';
-            $meta_fields[] = 'veicolo_' . $i . '_anno_immatricolazione';
-            $meta_fields[] = 'veicolo_' . $i . '_cilindrata';
-            $meta_fields[] = 'veicolo_' . $i . '_peso_totale';
-        }
-        
-        // Save driver fields (up to 3 drivers)
-        for ($i = 1; $i <= 3; $i++) {
-            $meta_fields[] = 'conducente_' . $i . '_eta';
-            $meta_fields[] = 'conducente_' . $i . '_sesso';
-            $meta_fields[] = 'conducente_' . $i . '_esito';
-            $meta_fields[] = 'conducente_' . $i . '_tipo_patente';
-            $meta_fields[] = 'conducente_' . $i . '_anno_patente';
-        }
-        
-        // Save pedestrian fields (up to 4 pedestrians)
-        for ($i = 1; $i <= 4; $i++) {
-            $meta_fields[] = 'pedone_' . $i . '_eta';
-            $meta_fields[] = 'pedone_' . $i . '_sesso';
-            $meta_fields[] = 'pedone_' . $i . '_esito';
-        }
-        
-        // Save all meta fields
+        // Save all meta fields in batch
         foreach ($meta_fields as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
+            } else {
+                // Per checkbox non selezionate
+                if ($field === 'mostra_in_mappa') {
+                    delete_post_meta($post_id, $field);
+                }
             }
         }
         
-        // Update post title based on location and date
-        if (isset($_POST['data_incidente']) && isset($_POST['denominazione_strada'])) {
-            $title = sprintf(__('Incidente del %s - %s', 'incidenti-stradali'), 
-                           $_POST['data_incidente'], 
-                           $_POST['denominazione_strada'] ?: __('Strada non specificata', 'incidenti-stradali'));
-            
-            wp_update_post(array(
-                'ID' => $post_id,
-                'post_title' => $title
-            ));
+        // Save vehicle and driver fields with optimization
+        $numero_veicoli = isset($_POST['numero_veicoli_coinvolti']) ? intval($_POST['numero_veicoli_coinvolti']) : 1;
+        for ($i = 1; $i <= 3; $i++) {
+            if ($i <= $numero_veicoli) {
+                // Salva solo se il veicolo è attivo
+                $vehicle_fields = array('tipo', 'targa', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
+                $driver_fields = array('eta', 'sesso', 'esito', 'tipo_patente', 'anno_patente');
+                
+                foreach ($vehicle_fields as $field) {
+                    $key = 'veicolo_' . $i . '_' . $field;
+                    if (isset($_POST[$key])) {
+                        update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
+                    }
+                }
+                
+                foreach ($driver_fields as $field) {
+                    $key = 'conducente_' . $i . '_' . $field;
+                    if (isset($_POST[$key])) {
+                        update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
+                    }
+                }
+            } else {
+                // Rimuovi dati per veicoli non utilizzati
+                $all_fields = array(
+                    'veicolo_' . $i . '_tipo', 'veicolo_' . $i . '_targa', 
+                    'veicolo_' . $i . '_anno_immatricolazione', 'veicolo_' . $i . '_cilindrata', 
+                    'veicolo_' . $i . '_peso_totale',
+                    'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 
+                    'conducente_' . $i . '_esito', 'conducente_' . $i . '_tipo_patente', 
+                    'conducente_' . $i . '_anno_patente'
+                );
+                
+                foreach ($all_fields as $field) {
+                    delete_post_meta($post_id, $field);
+                }
+            }
         }
+        
+        // Save pedestrian fields with optimization
+        $numero_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? intval($_POST['numero_pedoni_coinvolti']) : 0;
+        for ($i = 1; $i <= 4; $i++) {
+            if ($i <= $numero_pedoni) {
+                $pedestrian_fields = array('eta', 'sesso', 'esito');
+                foreach ($pedestrian_fields as $field) {
+                    $key = 'pedone_' . $i . '_' . $field;
+                    if (isset($_POST[$key])) {
+                        update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
+                    }
+                }
+            } else {
+                // Rimuovi dati per pedoni non utilizzati
+                $fields_to_remove = array('pedone_' . $i . '_eta', 'pedone_' . $i . '_sesso', 'pedone_' . $i . '_esito');
+                foreach ($fields_to_remove as $field) {
+                    delete_post_meta($post_id, $field);
+                }
+            }
+        }
+        
+        // Update post title only if needed
+        if (isset($_POST['data_incidente'])) {
+            $current_title = get_the_title($post_id);
+            $denominazione = isset($_POST['denominazione_strada']) ? $_POST['denominazione_strada'] : __('Strada non specificata', 'incidenti-stradali');
+            $new_title = sprintf(__('Incidente del %s - %s', 'incidenti-stradali'), 
+                            $_POST['data_incidente'], 
+                            $denominazione);
+            
+            if ($current_title !== $new_title) {
+                // Usa direttamente il database per evitare hook ricorsivi
+                global $wpdb;
+                $wpdb->update(
+                    $wpdb->posts,
+                    array('post_title' => $new_title),
+                    array('ID' => $post_id),
+                    array('%s'),
+                    array('%d')
+                );
+            }
+        }
+        
+        // Re-aggiungi l'action
+        add_action('save_post', array($this, 'save_meta_boxes'));
     }
 }

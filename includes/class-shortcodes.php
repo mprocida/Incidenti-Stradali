@@ -6,13 +6,40 @@
 class IncidentiShortcodes {
     
     public function __construct() {
+        // Registra shortcodes
         add_shortcode('incidenti_mappa', array($this, 'render_mappa_shortcode'));
         add_shortcode('incidenti_statistiche', array($this, 'render_statistiche_shortcode'));
         add_shortcode('incidenti_lista', array($this, 'render_lista_shortcode'));
+        
+        // AJAX handlers
         add_action('wp_ajax_get_incidenti_markers', array($this, 'ajax_get_markers'));
         add_action('wp_ajax_nopriv_get_incidenti_markers', array($this, 'ajax_get_markers'));
         add_action('wp_ajax_get_incidente_details', array($this, 'ajax_get_incidente_details'));
         add_action('wp_ajax_nopriv_get_incidente_details', array($this, 'ajax_get_incidente_details'));
+        
+        // Enqueue scripts for shortcodes
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_shortcode_scripts'));
+    }
+
+    // Aggiungi questo nuovo metodo
+    public function enqueue_shortcode_scripts() {
+        global $post;
+        
+        // Controlla se la pagina contiene uno shortcode del plugin
+        if (is_a($post, 'WP_Post') && 
+            (has_shortcode($post->post_content, 'incidenti_mappa') || 
+            has_shortcode($post->post_content, 'incidenti_statistiche') || 
+            has_shortcode($post->post_content, 'incidenti_lista'))) {
+            
+            // Enqueue Leaflet
+            wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
+            wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
+            
+            // Enqueue marker cluster if needed
+            wp_enqueue_script('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', array('leaflet'), '1.4.1', true);
+            wp_enqueue_style('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', array('leaflet'), '1.4.1');
+            wp_enqueue_style('leaflet-markercluster-default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', array('leaflet-markercluster'), '1.4.1');
+        }
     }
     
     /**

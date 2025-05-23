@@ -75,16 +75,13 @@ class IncidentiStradaliPlugin {
         }
     }
     
-    public function init() {
-        // Debug: Log what's happening
-        error_log('Incidenti Plugin: init() called');
+        public function init() {
+        // Load text domain FIRST
+        load_plugin_textdomain('incidenti-stradali', false, dirname(plugin_basename(__FILE__)) . '/languages');
         
-        // Initialize all classes only if they exist
+        // Initialize all classes
         if (class_exists('IncidentiCustomPostType')) {
-            error_log('Incidenti Plugin: Initializing IncidentiCustomPostType');
             new IncidentiCustomPostType();
-        } else {
-            error_log('Incidenti Plugin: IncidentiCustomPostType class not found');
         }
         
         if (class_exists('IncidentiMetaBoxes')) {
@@ -111,17 +108,11 @@ class IncidentiStradaliPlugin {
             new IncidentiAdminSettings();
         }
         
-        // Load text domain for translations
-        load_plugin_textdomain('incidenti-stradali', false, dirname(plugin_basename(__FILE__)) . '/languages');
-        
-        // Debug: Check if post type is registered
-        add_action('admin_init', function() {
-            if (post_type_exists('incidente_stradale')) {
-                error_log('Incidenti Plugin: Post type incidente_stradale is registered');
-            } else {
-                error_log('Incidenti Plugin: Post type incidente_stradale is NOT registered');
-            }
-        });
+        // Flush rewrite rules if needed
+        if (get_option('incidenti_flush_rewrite_rules')) {
+            flush_rewrite_rules();
+            delete_option('incidenti_flush_rewrite_rules');
+        }
     }
     
     public function enqueue_scripts() {

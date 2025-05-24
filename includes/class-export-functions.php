@@ -516,53 +516,281 @@ class IncidentiExportFunctions {
     public function generate_excel_csv($incidenti) {
         $output = '';
         
-        // Header CSV
+        // Header CSV per formato Polizia (basato su Form_Inserimento_Incidenti_PLultimaversione)
         $headers = array(
-            'ID', 'Data', 'Ora', 'Provincia', 'Comune', 'Tipo Strada', 'Denominazione Strada',
-            'Natura Incidente', 'Num Veicoli', 'Morti', 'Feriti', 'Latitudine', 'Longitudine'
+            // Identificativi
+            'Anno',
+            'Mese', 
+            'Provincia',
+            'Comune',
+            'Numero Ordine',
+            'Giorno',
+            'Ora',
+            'Minuti',
+            'Organo Rilevazione',
+            'Numero Progressivo Anno',
+            'Organo Coordinatore',
+            
+            // Localizzazione
+            'Localizzazione Incidente',
+            'Denominazione Strada',
+            'Numero Strada',
+            'Progressiva KM',
+            'Progressiva MT',
+            'Tronco Strada',
+            
+            // Caratteristiche luogo
+            'Tipo Strada',
+            'Pavimentazione',
+            'Intersezione',
+            'Fondo Stradale',
+            'Segnaletica',
+            'Condizioni Meteo',
+            'Illuminazione',
+            
+            // Natura incidente
+            'Natura Incidente',
+            'Dettaglio Natura',
+            
+            // Veicoli (3 veicoli)
+            'Tipo Veicolo A',
+            'Targa Veicolo A',
+            'Anno Immatricolazione A',
+            'Cilindrata A',
+            'Peso Totale A',
+            'Circostanza A',
+            
+            'Tipo Veicolo B',
+            'Targa Veicolo B', 
+            'Anno Immatricolazione B',
+            'Cilindrata B',
+            'Peso Totale B',
+            'Circostanza B',
+            
+            'Tipo Veicolo C',
+            'Targa Veicolo C',
+            'Anno Immatricolazione C',
+            'Cilindrata C',
+            'Peso Totale C',
+            'Circostanza C',
+            
+            // Conducenti (3 conducenti)
+            'Età Conducente A',
+            'Sesso Conducente A',
+            'Esito Conducente A',
+            'Tipo Patente A',
+            'Anno Patente A',
+            'Nazionalità A',
+            
+            'Età Conducente B',
+            'Sesso Conducente B',
+            'Esito Conducente B',
+            'Tipo Patente B',
+            'Anno Patente B',
+            'Nazionalità B',
+            
+            'Età Conducente C',
+            'Sesso Conducente C',
+            'Esito Conducente C',
+            'Tipo Patente C',
+            'Anno Patente C',
+            'Nazionalità C',
+            
+            // Pedoni (4 pedoni)
+            'Sesso Pedone 1',
+            'Età Pedone 1',
+            'Esito Pedone 1',
+            'Circostanza Pedone 1',
+            
+            'Sesso Pedone 2',
+            'Età Pedone 2',
+            'Esito Pedone 2',
+            'Circostanza Pedone 2',
+            
+            'Sesso Pedone 3',
+            'Età Pedone 3',
+            'Esito Pedone 3',
+            'Circostanza Pedone 3',
+            
+            'Sesso Pedone 4',
+            'Età Pedone 4',
+            'Esito Pedone 4',
+            'Circostanza Pedone 4',
+            
+            // Coordinate
+            'Tipo Coordinata',
+            'Latitudine',
+            'Longitudine',
+            
+            // Riepilogo
+            'Numero Veicoli Coinvolti',
+            'Numero Pedoni Coinvolti',
+            'Totale Morti',
+            'Totale Feriti',
+            'Morti Entro 24 Ore',
+            'Morti 2-30 Giorni',
+            
+            // Altri dati
+            'Note',
+            'Mostra in Mappa'
         );
         
+        // Scrivi header con separatore punto e virgola
         $output .= implode(';', $headers) . "\n";
         
+        // Elabora ogni incidente
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
-            
-            // Conta morti e feriti
-            $morti = 0;
-            $feriti = 0;
-            
-            for ($i = 1; $i <= 3; $i++) {
-                $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
-                if ($esito == '3' || $esito == '4') $morti++;
-                if ($esito == '2') $feriti++;
-            }
-            
-            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
-            for ($i = 1; $i <= $num_pedoni; $i++) {
-                $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
-                if ($esito == '3' || $esito == '4') $morti++;
-                if ($esito == '2') $feriti++;
-            }
-            
             $row = array();
-            $row[] = $post_id;
-            $row[] = get_post_meta($post_id, 'data_incidente', true);
-            $row[] = get_post_meta($post_id, 'ora_incidente', true) . ':00';
+            
+            // Data incidente
+            $data_incidente = get_post_meta($post_id, 'data_incidente', true);
+            
+            // Identificativi
+            $row[] = $data_incidente ? substr($data_incidente, 0, 4) : ''; // Anno
+            $row[] = $data_incidente ? substr($data_incidente, 5, 2) : ''; // Mese
             $row[] = get_post_meta($post_id, 'provincia_incidente', true);
             $row[] = get_post_meta($post_id, 'comune_incidente', true);
+            $row[] = str_pad($post_id, 4, '0', STR_PAD_LEFT); // Numero ordine
+            $row[] = $data_incidente ? substr($data_incidente, -2) : ''; // Giorno
+            $row[] = get_post_meta($post_id, 'ora_incidente', true);
+            $row[] = get_post_meta($post_id, 'minuti_incidente', true) ?: '00';
+            $row[] = get_post_meta($post_id, 'organo_rilevazione', true);
+            $row[] = str_pad($post_id, 5, '0', STR_PAD_LEFT); // Numero progressivo anno
+            $row[] = get_post_meta($post_id, 'organo_coordinatore', true);
+            
+            // Localizzazione
             $row[] = get_post_meta($post_id, 'tipo_strada', true);
-            $row[] = '"' . str_replace('"', '""', get_post_meta($post_id, 'denominazione_strada', true)) . '"';
+            $row[] = get_post_meta($post_id, 'denominazione_strada', true);
+            $row[] = get_post_meta($post_id, 'numero_strada', true);
+            $row[] = get_post_meta($post_id, 'progressiva_km', true);
+            $row[] = get_post_meta($post_id, 'progressiva_m', true);
+            $row[] = get_post_meta($post_id, 'tronco_strada', true);
+            
+            // Caratteristiche luogo
+            $row[] = get_post_meta($post_id, 'geometria_strada', true);
+            $row[] = get_post_meta($post_id, 'pavimentazione_strada', true);
+            $row[] = get_post_meta($post_id, 'intersezione_tronco', true);
+            $row[] = get_post_meta($post_id, 'stato_fondo_strada', true);
+            $row[] = get_post_meta($post_id, 'segnaletica_strada', true);
+            $row[] = get_post_meta($post_id, 'condizioni_meteo', true);
+            $row[] = get_post_meta($post_id, 'illuminazione', true);
+            
+            // Natura incidente
             $row[] = get_post_meta($post_id, 'natura_incidente', true);
-            $row[] = get_post_meta($post_id, 'numero_veicoli_coinvolti', true);
-            $row[] = $morti;
-            $row[] = $feriti;
+            $row[] = get_post_meta($post_id, 'dettaglio_natura', true);
+            
+            // Veicoli e conducenti (fino a 3)
+            for ($i = 1; $i <= 3; $i++) {
+                // Dati veicolo
+                $row[] = get_post_meta($post_id, 'veicolo_' . $i . '_tipo', true);
+                $row[] = get_post_meta($post_id, 'veicolo_' . $i . '_targa', true);
+                $row[] = get_post_meta($post_id, 'veicolo_' . $i . '_anno_immatricolazione', true);
+                $row[] = get_post_meta($post_id, 'veicolo_' . $i . '_cilindrata', true);
+                $row[] = get_post_meta($post_id, 'veicolo_' . $i . '_peso_totale', true);
+                $row[] = get_post_meta($post_id, 'veicolo_' . $i . '_circostanza', true);
+            }
+            
+            // Dati conducenti (fino a 3)
+            for ($i = 1; $i <= 3; $i++) {
+                $row[] = get_post_meta($post_id, 'conducente_' . $i . '_eta', true);
+                $row[] = $this->convert_sesso_code(get_post_meta($post_id, 'conducente_' . $i . '_sesso', true));
+                $row[] = $this->convert_esito_code(get_post_meta($post_id, 'conducente_' . $i . '_esito', true));
+                $row[] = get_post_meta($post_id, 'conducente_' . $i . '_tipo_patente', true);
+                $row[] = get_post_meta($post_id, 'conducente_' . $i . '_anno_patente', true);
+                $row[] = get_post_meta($post_id, 'conducente_' . $i . '_nazionalita', true) ?: 'IT';
+            }
+            
+            // Dati pedoni (fino a 4)
+            for ($i = 1; $i <= 4; $i++) {
+                $row[] = $this->convert_sesso_code(get_post_meta($post_id, 'pedone_' . $i . '_sesso', true));
+                $row[] = get_post_meta($post_id, 'pedone_' . $i . '_eta', true);
+                $row[] = $this->convert_esito_code(get_post_meta($post_id, 'pedone_' . $i . '_esito', true));
+                $row[] = get_post_meta($post_id, 'pedone_' . $i . '_circostanza', true);
+            }
+            
+            // Coordinate
+            $row[] = get_post_meta($post_id, 'tipo_coordinata', true);
             $row[] = get_post_meta($post_id, 'latitudine', true);
             $row[] = get_post_meta($post_id, 'longitudine', true);
             
+            // Riepilogo
+            $num_veicoli = get_post_meta($post_id, 'numero_veicoli_coinvolti', true) ?: 1;
+            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
+            
+            // Conta morti e feriti
+            $totale_morti = 0;
+            $totale_feriti = 0;
+            $morti_24h = 0;
+            $morti_30g = 0;
+            
+            // Conta da conducenti
+            for ($i = 1; $i <= 3; $i++) {
+                $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
+                if ($esito == '2') $totale_feriti++;
+                if ($esito == '3') { $totale_morti++; $morti_24h++; }
+                if ($esito == '4') { $totale_morti++; $morti_30g++; }
+            }
+            
+            // Conta da pedoni
+            for ($i = 1; $i <= 4; $i++) {
+                $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
+                if ($esito == '2') $totale_feriti++;
+                if ($esito == '3') { $totale_morti++; $morti_24h++; }
+                if ($esito == '4') { $totale_morti++; $morti_30g++; }
+            }
+            
+            $row[] = $num_veicoli;
+            $row[] = $num_pedoni;
+            $row[] = $totale_morti;
+            $row[] = $totale_feriti;
+            $row[] = $morti_24h;
+            $row[] = $morti_30g;
+            
+            // Altri dati
+            $row[] = get_post_meta($post_id, 'note_incidente', true);
+            $row[] = get_post_meta($post_id, 'mostra_in_mappa', true) ? 'SI' : 'NO';
+            
+            // Pulisci e formatta i valori
+            $row = array_map(function($value) {
+                // Rimuovi caratteri speciali che potrebbero rompere il CSV
+                $value = str_replace(array(';', "\n", "\r", '"'), array(',', ' ', ' ', '\''), $value);
+                // Se il valore contiene virgole o spazi, racchiudilo tra virgolette
+                if (strpos($value, ',') !== false || strpos($value, ' ') !== false) {
+                    $value = '"' . $value . '"';
+                }
+                return $value;
+            }, $row);
+            
+            // Aggiungi riga al CSV
             $output .= implode(';', $row) . "\n";
         }
         
         return $output;
+    }
+
+    /**
+     * Converte codice sesso in formato testo
+     */
+    private function convert_sesso_code($code) {
+        switch ($code) {
+            case '1': return 'M';
+            case '2': return 'F';
+            default: return '';
+        }
+    }
+
+    /**
+     * Converte codice esito in formato testo
+     */
+    private function convert_esito_code($code) {
+        switch ($code) {
+            case '1': return 'Incolume';
+            case '2': return 'Ferito';
+            case '3': return 'Morto entro 24h';
+            case '4': return 'Morto 2-30gg';
+            default: return '';
+        }
     }
     
     private function log_export($type, $count, $filename) {

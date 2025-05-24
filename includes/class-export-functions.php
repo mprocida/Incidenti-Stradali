@@ -240,50 +240,272 @@ class IncidentiExportFunctions {
         
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
-            $esitoTXT = array();
+            $record = '';
             
-            // Anno (ultime 2 cifre della data rilevazione)
+            // Posizione 1-2: Anno (2 cifre)
             $data_incidente = get_post_meta($post_id, 'data_incidente', true);
-            $esitoTXT[] = str_pad(substr($data_incidente, 2, 2), 2, "0", STR_PAD_LEFT);
+            $anno = substr($data_incidente, 2, 2);
+            $record .= str_pad($anno, 2, '0', STR_PAD_LEFT);
             
-            // Mese
-            $esitoTXT[] = str_pad(substr($data_incidente, 5, 2), 2, "0", STR_PAD_LEFT);
+            // Posizione 3-4: Mese (2 cifre)
+            $mese = substr($data_incidente, 5, 2);
+            $record .= str_pad($mese, 2, '0', STR_PAD_LEFT);
             
-            // Provincia
+            // Posizione 5-7: Provincia (3 cifre)
             $provincia = get_post_meta($post_id, 'provincia_incidente', true);
-            $esitoTXT[] = str_pad($provincia, 3, "0", STR_PAD_LEFT);
+            $record .= str_pad($provincia, 3, '0', STR_PAD_LEFT);
             
-            // Comune
+            // Posizione 8-10: Comune (3 cifre)
             $comune = get_post_meta($post_id, 'comune_incidente', true);
-            $esitoTXT[] = str_pad($comune, 3, "0", STR_PAD_LEFT);
+            $record .= str_pad($comune, 3, '0', STR_PAD_LEFT);
             
-            // Numero d'ordine (usa ID del post)
-            $esitoTXT[] = str_pad($post_id, 4, "0", STR_PAD_LEFT);
+            // Posizione 11-14: Numero d'ordine (4 cifre)
+            $numero_ordine = str_pad($post_id, 4, '0', STR_PAD_LEFT);
+            $record .= $numero_ordine;
             
-            // Giorno
-            $esitoTXT[] = str_pad(substr($data_incidente, -2), 2, "0", STR_PAD_LEFT);
+            // Posizione 15-16: Giorno (2 cifre)
+            $giorno = substr($data_incidente, -2);
+            $record .= str_pad($giorno, 2, '0', STR_PAD_LEFT);
             
-            // Ora
+            // Posizione 17-18: Ora (2 cifre) - 25 se sconosciuta
             $ora = get_post_meta($post_id, 'ora_incidente', true);
-            $esitoTXT[] = str_pad($ora ?: '25', 2, "0", STR_PAD_LEFT);
+            $record .= str_pad($ora ?: '25', 2, '0', STR_PAD_LEFT);
             
-            // Organo di rilevazione
+            // Posizione 19: Organo di rilevazione (1 cifra)
             $organo = get_post_meta($post_id, 'organo_rilevazione', true);
-            $esitoTXT[] = $organo ?: '0';
+            $record .= $organo ?: '0';
             
-            // Numero progressivo nell'anno
-            $esitoTXT[] = str_pad($post_id, 5, "0", STR_PAD_LEFT);
+            // Posizione 20-24: Numero progressivo nell'anno (5 cifre)
+            $record .= str_pad($post_id, 5, '0', STR_PAD_LEFT);
             
-            // Organo coordinatore
+            // Posizione 25: Organo coordinatore (1 cifra)
             $organo_coord = get_post_meta($post_id, 'organo_coordinatore', true);
-            $esitoTXT[] = $organo_coord ?: '0';
+            $record .= $organo_coord ?: '0';
             
-            // ... continua con tutti gli altri campi secondo il tracciato ISTAT
-            // Per brevità, aggiungo solo i campi essenziali
+            // Posizione 26: Localizzazione incidente (1 cifra)
+            $tipo_strada = get_post_meta($post_id, 'tipo_strada', true);
+            $record .= $tipo_strada ?: '0';
             
-            // Compila fino a 1024 caratteri con spazi
-            $record = implode('', $esitoTXT);
-            $record = str_pad($record, 1024, ' ');
+            // Posizione 27-29: Denominazione strada (3 caratteri)
+            $numero_strada = get_post_meta($post_id, 'numero_strada', true);
+            $record .= str_pad(substr($numero_strada, 0, 3), 3, ' ', STR_PAD_RIGHT);
+            
+            // Posizione 30-32: Progressiva chilometrica (3 cifre)
+            $progressiva_km = get_post_meta($post_id, 'progressiva_km', true);
+            $record .= str_pad($progressiva_km ?: '000', 3, '0', STR_PAD_LEFT);
+            
+            // Posizione 33-34: Tronco di strada (2 cifre)
+            $record .= '00';
+            
+            // Posizione 35: Tipo di strada (1 cifra)
+            $geometria = get_post_meta($post_id, 'geometria_strada', true);
+            $record .= $geometria ?: '0';
+            
+            // Posizione 36: Pavimentazione (1 cifra)
+            $pavimentazione = get_post_meta($post_id, 'pavimentazione_strada', true);
+            $record .= $pavimentazione ?: '0';
+            
+            // Posizione 37-38: Intersezione (2 cifre)
+            $intersezione = get_post_meta($post_id, 'intersezione_tronco', true);
+            $record .= str_pad($intersezione ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Posizione 39: Fondo stradale (1 cifra)
+            $fondo = get_post_meta($post_id, 'stato_fondo_strada', true);
+            $record .= $fondo ?: '0';
+            
+            // Posizione 40: Segnaletica (1 cifra)
+            $segnaletica = get_post_meta($post_id, 'segnaletica_strada', true);
+            $record .= $segnaletica ?: '0';
+            
+            // Posizione 41: Condizioni meteorologiche (1 cifra)
+            $meteo = get_post_meta($post_id, 'condizioni_meteo', true);
+            $record .= $meteo ?: '0';
+            
+            // Posizione 42-43: Natura incidente (2 cifre)
+            $natura = get_post_meta($post_id, 'dettaglio_natura', true);
+            $record .= str_pad($natura ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // VEICOLI (3 veicoli, posizioni 44-61)
+            $num_veicoli = (int) get_post_meta($post_id, 'numero_veicoli_coinvolti', true) ?: 1;
+            
+            // Tipo veicolo (2 caratteri per veicolo)
+            for ($i = 1; $i <= 3; $i++) {
+                if ($i <= $num_veicoli) {
+                    $tipo = get_post_meta($post_id, 'veicolo_' . $i . '_tipo', true);
+                    $record .= str_pad($tipo ?: '  ', 2, ' ', STR_PAD_LEFT);
+                } else {
+                    $record .= '  ';
+                }
+            }
+            
+            // Cilindrata (4 cifre per veicolo)
+            for ($i = 1; $i <= 3; $i++) {
+                if ($i <= $num_veicoli) {
+                    $cilindrata = get_post_meta($post_id, 'veicolo_' . $i . '_cilindrata', true);
+                    $record .= str_pad($cilindrata ?: '    ', 4, ' ', STR_PAD_LEFT);
+                } else {
+                    $record .= '    ';
+                }
+            }
+            
+            // Peso totale (4 cifre per veicolo)
+            for ($i = 1; $i <= 3; $i++) {
+                if ($i <= $num_veicoli) {
+                    $peso = get_post_meta($post_id, 'veicolo_' . $i . '_peso_totale', true);
+                    if (is_numeric($peso)) {
+                        $peso = round((float) $peso);
+                    } else {
+                        $peso = 0;
+                    }
+                    $record .= str_pad($peso ?: '    ', 4, ' ', STR_PAD_LEFT);
+                } else {
+                    $record .= '    ';
+                }
+            }
+
+            
+            // CONDUCENTI (3 conducenti, posizioni 62-81)
+            for ($i = 1; $i <= 3; $i++) {
+                if ($i <= $num_veicoli) {
+                    // Età (2 cifre)
+                    $eta = get_post_meta($post_id, 'conducente_' . $i . '_eta', true);
+                    $record .= str_pad($eta ?: '00', 2, '0', STR_PAD_LEFT);
+                    
+                    // Sesso (1 carattere)
+                    $sesso = get_post_meta($post_id, 'conducente_' . $i . '_sesso', true);
+                    $record .= $sesso ?: ' ';
+                    
+                    // Esito (1 carattere)
+                    $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
+                    $record .= $esito ?: ' ';
+                    
+                    // Tipo patente (1 carattere)
+                    $patente = get_post_meta($post_id, 'conducente_' . $i . '_tipo_patente', true);
+                    $record .= $patente ?: ' ';
+                    
+                    // Anno patente (2 cifre)
+                    $anno_patente = get_post_meta($post_id, 'conducente_' . $i . '_anno_patente', true);
+                    $anno_patente = $anno_patente ? substr($anno_patente, -2) : '  ';
+                    $record .= str_pad($anno_patente, 2, ' ', STR_PAD_LEFT);
+                } else {
+                    $record .= '00     '; // 7 caratteri vuoti
+                }
+            }
+            
+            // PEDONI (4 pedoni, posizioni 82-97)
+            $num_pedoni = (int) get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
+            
+            for ($i = 1; $i <= 4; $i++) {
+                if ($i <= $num_pedoni) {
+                    $esito_pedone = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
+                    $eta_pedone = get_post_meta($post_id, 'pedone_' . $i . '_eta', true);
+                    $sesso_pedone = get_post_meta($post_id, 'pedone_' . $i . '_sesso', true);
+                    
+                    $is_morto = ($esito_pedone == '3' || $esito_pedone == '4');
+                    $is_ferito = ($esito_pedone == '2');
+                    
+                    // Sesso pedone morto (1 carattere)
+                    $record .= $is_morto ? $sesso_pedone : ' ';
+                    
+                    // Età pedone morto (2 cifre)
+                    $record .= $is_morto ? str_pad($eta_pedone ?: '  ', 2, ' ', STR_PAD_LEFT) : '  ';
+                    
+                    // Sesso pedone ferito (1 carattere)
+                    $record .= $is_ferito ? $sesso_pedone : ' ';
+                    
+                    // Età pedone ferito (2 cifre)
+                    $record .= $is_ferito ? str_pad($eta_pedone ?: '  ', 2, ' ', STR_PAD_LEFT) : '  ';
+                } else {
+                    $record .= '      '; // 6 caratteri vuoti
+                }
+            }
+            
+            // CIRCOSTANZE (posizioni 98-103)
+            // Circostanze veicolo A
+            $circostanza_a = get_post_meta($post_id, 'circostanza_veicolo_a', true);
+            $record .= str_pad($circostanza_a ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Circostanze veicolo B
+            $circostanza_b = get_post_meta($post_id, 'circostanza_veicolo_b', true);
+            $record .= str_pad($circostanza_b ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Circostanze veicolo C
+            $circostanza_c = get_post_meta($post_id, 'circostanza_veicolo_c', true);
+            $record .= str_pad($circostanza_c ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // ALTRI CAMPI (posizioni 104-150)
+            // Altri veicoli coinvolti
+            $record .= '00';
+            
+            // Altri morti maschi
+            $record .= '00';
+            
+            // Altri morti femmine
+            $record .= '00';
+            
+            // Altri feriti maschi
+            $record .= '00';
+            
+            // Altri feriti femmine
+            $record .= '00';
+            
+            // Morti entro 24 ore
+            $morti_24h = 0;
+            for ($i = 1; $i <= 3; $i++) {
+                if (get_post_meta($post_id, 'conducente_' . $i . '_esito', true) == '3') $morti_24h++;
+            }
+            for ($i = 1; $i <= 4; $i++) {
+                if (get_post_meta($post_id, 'pedone_' . $i . '_esito', true) == '3') $morti_24h++;
+            }
+            $record .= str_pad($morti_24h, 2, '0', STR_PAD_LEFT);
+            
+            // Morti dal 2° al 30° giorno
+            $morti_30g = 0;
+            for ($i = 1; $i <= 3; $i++) {
+                if (get_post_meta($post_id, 'conducente_' . $i . '_esito', true) == '4') $morti_30g++;
+            }
+            for ($i = 1; $i <= 4; $i++) {
+                if (get_post_meta($post_id, 'pedone_' . $i . '_esito', true) == '4') $morti_30g++;
+            }
+            $record .= str_pad($morti_30g, 2, '0', STR_PAD_LEFT);
+            
+            // Feriti totali
+            $feriti = 0;
+            for ($i = 1; $i <= 3; $i++) {
+                if (get_post_meta($post_id, 'conducente_' . $i . '_esito', true) == '2') $feriti++;
+            }
+            for ($i = 1; $i <= 4; $i++) {
+                if (get_post_meta($post_id, 'pedone_' . $i . '_esito', true) == '2') $feriti++;
+            }
+            $record .= str_pad($feriti, 2, '0', STR_PAD_LEFT);
+            
+            // Spazi riservati (9 caratteri)
+            $record .= str_repeat(' ', 9);
+            
+            // Denominazione strada completa (57 caratteri)
+            $denominazione = get_post_meta($post_id, 'denominazione_strada', true);
+            $record .= str_pad(substr($denominazione, 0, 57), 57, ' ', STR_PAD_RIGHT);
+            
+            // 100 spazi
+            $record .= str_repeat(' ', 100);
+            
+            // Nominativi morti e feriti (32 record di 30 caratteri ciascuno)
+            // 4 morti (nome + cognome)
+            for ($i = 1; $i <= 4; $i++) {
+                $record .= str_repeat(' ', 30); // nome
+                $record .= str_repeat(' ', 30); // cognome
+            }
+            
+            // 8 feriti (nome + cognome + istituto)
+            for ($i = 1; $i <= 8; $i++) {
+                $record .= str_repeat(' ', 30); // nome
+                $record .= str_repeat(' ', 30); // cognome
+                $record .= str_repeat(' ', 30); // istituto
+            }
+            
+            // Assicurati che il record sia esattamente di 1024 caratteri
+            $record = str_pad($record, 1024, ' ', STR_PAD_RIGHT);
+            $record = substr($record, 0, 1024);
             
             $output .= $record . "\r\n";
         }

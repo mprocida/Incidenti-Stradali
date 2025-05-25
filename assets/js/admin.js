@@ -21,6 +21,8 @@ jQuery(document).ready(function($) {
         initializeBulkActions();
         initializeExportFunctions();
         initializeTooltips();
+        initializeTransportatiSections();
+        initializeCircostanzeFields();
     }
     
     /**
@@ -153,6 +155,45 @@ jQuery(document).ready(function($) {
         
         // Trigger initial state
         $('#natura_incidente').trigger('change');
+    }
+
+    function initializeTransportatiSections() {
+        // Per ogni veicolo
+        for (var v = 1; v <= 3; v++) {
+            (function(vehicleNum) {
+                $('#veicolo_' + vehicleNum + '_numero_trasportati').on('change', function() {
+                    var numTrasportati = parseInt($(this).val()) || 0;
+                    
+                    for (var t = 1; t <= 9; t++) {
+                        if (t <= numTrasportati) {
+                            $('#trasportato-' + vehicleNum + '-' + t).show();
+                        } else {
+                            $('#trasportato-' + vehicleNum + '-' + t).hide();
+                            // Clear hidden fields
+                            $('#trasportato-' + vehicleNum + '-' + t).find('input, select').val('');
+                        }
+                    }
+                });
+                
+                // Trigger on load
+                $('#veicolo_' + vehicleNum + '_numero_trasportati').trigger('change');
+            })(v);
+        }
+    }
+
+    // Aggiungi questa funzione per le circostanze
+    function initializeCircostanzeFields() {
+        // Carica dinamicamente le opzioni delle circostanze basate sulla natura dell'incidente
+        $('#natura_incidente').on('change', function() {
+            var natura = $(this).val();
+            updateCircostanzeOptions(natura);
+        });
+        
+        // Helper per aggiornare le opzioni delle circostanze
+        function updateCircostanzeOptions(natura) {
+            // Qui potresti caricare via AJAX le circostanze appropriate
+            // basate sulla natura dell'incidente selezionata
+        }
     }
     
     /**

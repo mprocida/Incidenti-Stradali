@@ -391,6 +391,91 @@ class IncidentiExportFunctions {
                     $record .= '00     '; // 7 caratteri vuoti
                 }
             }
+
+            // TRASPORTATI (posizioni dopo i conducenti)
+            // Per ogni veicolo, esporta i dati dei trasportati
+            for ($v = 1; $v <= 3; $v++) {
+                $num_trasportati = get_post_meta($post_id, 'veicolo_' . $v . '_numero_trasportati', true) ?: 0;
+                
+                // Numero trasportati morti maschi
+                $morti_maschi = 0;
+                // Numero trasportati morti femmine  
+                $morti_femmine = 0;
+                // Numero trasportati feriti maschi
+                $feriti_maschi = 0;
+                // Numero trasportati feriti femmine
+                $feriti_femmine = 0;
+                
+                for ($t = 1; $t <= $num_trasportati; $t++) {
+                    $prefix = 'veicolo_' . $v . '_trasportato_' . $t . '_';
+                    $sesso = get_post_meta($post_id, $prefix . 'sesso', true);
+                    $esito = get_post_meta($post_id, $prefix . 'esito', true);
+                    
+                    if ($esito == '3' || $esito == '4') { // Morto
+                        if ($sesso == '1') $morti_maschi++;
+                        if ($sesso == '2') $morti_femmine++;
+                    } elseif ($esito == '2') { // Ferito
+                        if ($sesso == '1') $feriti_maschi++;
+                        if ($sesso == '2') $feriti_femmine++;
+                    }
+                }
+                
+                // Scrivi i conteggi nel record (2 cifre ciascuno)
+                $record .= str_pad($morti_maschi, 2, '0', STR_PAD_LEFT);
+                $record .= str_pad($morti_femmine, 2, '0', STR_PAD_LEFT);
+                $record .= str_pad($feriti_maschi, 2, '0', STR_PAD_LEFT);
+                $record .= str_pad($feriti_femmine, 2, '0', STR_PAD_LEFT);
+            }
+            
+            // CIRCOSTANZE (posizioni 98-103)
+            // Circostanze presunte generali
+            $circostanza_1 = get_post_meta($post_id, 'circostanza_presunta_1', true);
+            $record .= str_pad($circostanza_1 ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            $circostanza_2 = get_post_meta($post_id, 'circostanza_presunta_2', true);
+            $record .= str_pad($circostanza_2 ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            $circostanza_3 = get_post_meta($post_id, 'circostanza_presunta_3', true);
+            $record .= str_pad($circostanza_3 ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Circostanze per veicolo
+            for ($v = 1; $v <= 3; $v++) {
+                $circostanza_veicolo = get_post_meta($post_id, 'circostanza_veicolo_' . $v, true);
+                $record .= str_pad($circostanza_veicolo ?: '00', 2, '0', STR_PAD_LEFT);
+            }
+            
+            // ALTRI CAMPI AGGIUNTIVI (posizioni successive)
+            // Altri veicoli coinvolti
+            $altri_veicoli = get_post_meta($post_id, 'numero_altri_veicoli', true);
+            $record .= str_pad($altri_veicoli ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Altri morti maschi
+            $altri_morti_maschi = get_post_meta($post_id, 'altri_morti_maschi', true);
+            $record .= str_pad($altri_morti_maschi ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Altri morti femmine
+            $altri_morti_femmine = get_post_meta($post_id, 'altri_morti_femmine', true);
+            $record .= str_pad($altri_morti_femmine ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Altri feriti maschi
+            $altri_feriti_maschi = get_post_meta($post_id, 'altri_feriti_maschi', true);
+            $record .= str_pad($altri_feriti_maschi ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Altri feriti femmine
+            $altri_feriti_femmine = get_post_meta($post_id, 'altri_feriti_femmine', true);
+            $record .= str_pad($altri_feriti_femmine ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Localizzazione extraurbana (se fuori abitato)
+            $localizzazione_extra = get_post_meta($post_id, 'localizzazione_extra_ab', true);
+            $record .= $localizzazione_extra ?: '0';
+            
+            // Illuminazione
+            $illuminazione = get_post_meta($post_id, 'illuminazione', true);
+            $record .= $illuminazione ?: '0';
+            
+            // Tipo di collisione
+            $tipo_collisione = get_post_meta($post_id, 'tipo_collisione', true);
+            $record .= str_pad($tipo_collisione ?: '00', 2, '0', STR_PAD_LEFT);
             
             // PEDONI (4 pedoni, posizioni 82-97)
             $num_pedoni = (int) get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
@@ -632,7 +717,41 @@ class IncidentiExportFunctions {
             
             // Altri dati
             'Note',
-            'Mostra in Mappa'
+            'Mostra in Mappa',
+
+            // Nuovi headers
+            'Illuminazione',
+            'Visibilità',
+            'Traffico',
+            'Segnaletica Semaforica',
+            'Circostanza Presunta 1',
+            'Circostanza Presunta 2',
+            'Circostanza Presunta 3',
+            
+            // Per ogni veicolo
+            'Numero Trasportati Veicolo A',
+            'Trasportati Morti Veicolo A',
+            'Trasportati Feriti Veicolo A',
+            'Circostanza Veicolo A',
+            
+            'Numero Trasportati Veicolo B',
+            'Trasportati Morti Veicolo B',
+            'Trasportati Feriti Veicolo B',
+            'Circostanza Veicolo B',
+            
+            'Numero Trasportati Veicolo C',
+            'Trasportati Morti Veicolo C',
+            'Trasportati Feriti Veicolo C',
+            'Circostanza Veicolo C',
+            
+            // Altri dati
+            'Altri Veicoli Coinvolti',
+            'Altri Morti Maschi',
+            'Altri Morti Femmine',
+            'Altri Feriti Maschi',
+            'Altri Feriti Femmine',
+            'Localizzazione Extraurbana',
+            'Chilometrica Strada'
         );
         
         // Scrivi header con separatore punto e virgola
@@ -750,6 +869,46 @@ class IncidentiExportFunctions {
             // Altri dati
             $row[] = get_post_meta($post_id, 'note_incidente', true);
             $row[] = get_post_meta($post_id, 'mostra_in_mappa', true) ? 'SI' : 'NO';
+
+            // Nuovi campi
+            $row[] = $this->convert_illuminazione_code(get_post_meta($post_id, 'illuminazione', true));
+            $row[] = $this->convert_visibilita_code(get_post_meta($post_id, 'visibilita', true));
+            $row[] = $this->convert_traffico_code(get_post_meta($post_id, 'traffico', true));
+            $row[] = $this->convert_segnaletica_semaforica_code(get_post_meta($post_id, 'segnaletica_semaforica', true));
+            
+            // Circostanze
+            $row[] = $this->get_circostanza_description(get_post_meta($post_id, 'circostanza_presunta_1', true));
+            $row[] = $this->get_circostanza_description(get_post_meta($post_id, 'circostanza_presunta_2', true));
+            $row[] = $this->get_circostanza_description(get_post_meta($post_id, 'circostanza_presunta_3', true));
+            
+            // Trasportati per veicolo
+            for ($v = 1; $v <= 3; $v++) {
+                $num_trasportati = get_post_meta($post_id, 'veicolo_' . $v . '_numero_trasportati', true) ?: 0;
+                $morti_trasportati = 0;
+                $feriti_trasportati = 0;
+                
+                for ($t = 1; $t <= $num_trasportati; $t++) {
+                    $prefix = 'veicolo_' . $v . '_trasportato_' . $t . '_';
+                    $esito = get_post_meta($post_id, $prefix . 'esito', true);
+                    
+                    if ($esito == '3' || $esito == '4') $morti_trasportati++;
+                    if ($esito == '2') $feriti_trasportati++;
+                }
+                
+                $row[] = $num_trasportati;
+                $row[] = $morti_trasportati;
+                $row[] = $feriti_trasportati;
+                $row[] = $this->get_circostanza_description(get_post_meta($post_id, 'circostanza_veicolo_' . $v, true));
+            }
+            
+            // Altri dati
+            $row[] = get_post_meta($post_id, 'numero_altri_veicoli', true) ?: 0;
+            $row[] = get_post_meta($post_id, 'altri_morti_maschi', true) ?: 0;
+            $row[] = get_post_meta($post_id, 'altri_morti_femmine', true) ?: 0;
+            $row[] = get_post_meta($post_id, 'altri_feriti_maschi', true) ?: 0;
+            $row[] = get_post_meta($post_id, 'altri_feriti_femmine', true) ?: 0;
+            $row[] = $this->convert_localizzazione_extra_code(get_post_meta($post_id, 'localizzazione_extra_ab', true));
+            $row[] = get_post_meta($post_id, 'chilometrica_strada', true);
             
             // Pulisci e formatta i valori
             $row = array_map(function($value) {
@@ -769,6 +928,76 @@ class IncidentiExportFunctions {
         return $output;
     }
 
+    // Aggiungi funzioni helper per le conversioni
+    private function convert_illuminazione_code($code) {
+        $codes = array(
+            '1' => 'Giorno',
+            '2' => 'Alba o crepuscolo',
+            '3' => 'Notte - illuminazione presente e funzionante',
+            '4' => 'Notte - illuminazione presente ma spenta',
+            '5' => 'Notte - illuminazione assente'
+        );
+        return isset($codes[$code]) ? $codes[$code] : '';
+    }
+
+    private function convert_visibilita_code($code) {
+        $codes = array(
+            '1' => 'Buona',
+            '2' => 'Ridotta per condizioni atmosferiche',
+            '3' => 'Ridotta per altre cause'
+        );
+        return isset($codes[$code]) ? $codes[$code] : '';
+    }
+
+    private function convert_traffico_code($code) {
+        $codes = array(
+            '1' => 'Scarso',
+            '2' => 'Normale',
+            '3' => 'Intenso'
+        );
+        return isset($codes[$code]) ? $codes[$code] : '';
+    }
+
+    private function convert_segnaletica_semaforica_code($code) {
+        $codes = array(
+            '1' => 'Assente',
+            '2' => 'In funzione',
+            '3' => 'Lampeggiante',
+            '4' => 'Spenta'
+        );
+        return isset($codes[$code]) ? $codes[$code] : '';
+    }
+
+    private function get_circostanza_description($code) {
+        // Carica le descrizioni dal file JSON
+        $json_file = INCIDENTI_PLUGIN_PATH . 'data/circostanze-incidente.json';
+        static $circostanze = null;
+        
+        if ($circostanze === null && file_exists($json_file)) {
+            $circostanze = json_decode(file_get_contents($json_file), true);
+        }
+        
+        // Cerca la descrizione nei vari gruppi
+        if ($circostanze && $code) {
+            foreach ($circostanze['circostanze_incidente'] as $gruppo) {
+                if (isset($gruppo['codici'][$code])) {
+                    return $code . ' - ' . $gruppo['codici'][$code]['descrizione'];
+                }
+            }
+        }
+        
+        return $code ?: '';
+    }
+
+    private function convert_localizzazione_extra_code($code) {
+        $codes = array(
+            '1' => 'Su strada statale fuori dall\'autostrada',
+            '2' => 'Su autostrada',
+            '3' => 'Su raccordo autostradale'
+        );
+        return isset($codes[$code]) ? $codes[$code] : '';
+    }
+
     /**
      * Converte codice sesso in formato testo
      */
@@ -780,18 +1009,18 @@ class IncidentiExportFunctions {
         }
     }
 
-    /**
-     * Converte codice esito in formato testo
-     */
-    private function convert_esito_code($code) {
-        switch ($code) {
-            case '1': return 'Incolume';
-            case '2': return 'Ferito';
-            case '3': return 'Morto entro 24h';
-            case '4': return 'Morto 2-30gg';
-            default: return '';
-        }
+/**
+ * Converte codice esito in formato testo
+ */
+private function convert_esito_code($code) {
+    switch ($code) {
+        case '1': return 'Incolume';
+        case '2': return 'Ferito';
+        case '3': return 'Morto entro 24h';
+        case '4': return 'Morto 2-30gg';
+        default: return '';
     }
+}
     
     private function log_export($type, $count, $filename) {
         global $wpdb;

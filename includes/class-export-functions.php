@@ -6,7 +6,7 @@
 class IncidentiExportFunctions {
     
     public function __construct() {
-        add_action('admin_menu', array($this, 'add_export_menu'));
+        add_action('admin_menu', array($this, 'add_export_menu'), 20); // Priority 20 to ensure it runs after other menus
         add_action('admin_post_export_incidenti_istat', array($this, 'export_istat_txt'));
         add_action('admin_post_nopriv_export_incidenti_istat', array($this, 'export_istat_txt'));
         add_action('admin_post_export_incidenti_excel', array($this, 'export_excel'));
@@ -1149,6 +1149,3 @@ private function convert_esito_code($code) {
         return $redirect_to;
     }
 }
-
-// Inizializza la classe
-new IncidentiExportFunctions();

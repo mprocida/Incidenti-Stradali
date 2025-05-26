@@ -485,6 +485,457 @@ jQuery(document).ready(function($) {
         $('.incidente-dettagli').hide();
         $('.incidenti-toggle-content').hide();
     });
+    /**
+     * Initialize shortcode functionality
+     */
+    function initializeShortcodes() {
+        initializeStatisticsCharts();
+        initializeIncidentList();
+        initializeStatisticsCards();
+    }
+    
+    /**
+     * Initialize statistics charts
+     */
+    function initializeStatisticsCharts() {
+        // Check if Chart.js is available
+        if (typeof Chart === 'undefined') {
+            // Try to load Chart.js dynamically
+            loadChartJS().then(function() {
+                renderCharts();
+            }).catch(function() {
+                console.warn('Chart.js not available. Charts will not be displayed.');
+            });
+        } else {
+            renderCharts();
+        }
+    }
+    
+    /**
+     * Load Chart.js dynamically
+     */
+    function loadChartJS() {
+        return new Promise(function(resolve, reject) {
+            if (typeof Chart !== 'undefined') {
+                resolve();
+                return;
+            }
+            
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+    
+    /**
+     * Render all charts
+     */
+    function renderCharts() {
+        $('.stats-charts canvas[data-chart]').each(function() {
+            var $canvas = $(this);
+            var chartData = $canvas.data('chart');
+            
+            if (!chartData) return;
+            
+            var ctx = this.getContext('2d');
+            var chartType = $canvas.data('chart-type') || 'bar';
+            
+            // Default chart configuration
+            var config = {
+                type: chartType,
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    var label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y;
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            // Create chart
+            new Chart(ctx, config);
+        });
+    }
+    
+    /**
+     * Initialize incident list functionality
+     */
+    function initializeIncidentList() {
+        // Expandable details
+        $('.incidenti-lista .incidente-item').on('click', function(e) {
+            // Don't expand if clicking on a link or button
+            if ($(e.target).is('a, button, input, select')) {
+                return;
+            }
+            
+            var $item = $(this);
+            var $details = $item.find('.incidente-dettagli');
+            
+            if ($details.length) {
+                $details.slideToggle(300);
+                $item.toggleClass('expanded');
+            }
+        });
+        
+        // Add severity classes based on casualties
+        $('.incidenti-lista .incidente-item').each(function() {
+            var $item = $(this);
+            var $morti = $item.find('.badge-morti');
+            var $feriti = $item.find('.badge-feriti');
+            
+            if ($morti.length) {
+                $item.attr('data-severity', 'fatal');
+            } else if ($feriti.length) {
+                $item.attr('data-severity', 'injury');
+            } else {
+                $item.attr('data-severity', 'damage');
+            }
+        });
+        
+        // Lazy loading for long lists
+        initializeLazyLoading();
+    }
+    
+    /**
+     * Initialize statistics cards
+     */
+    function initializeStatisticsCards() {
+        // Add counter animation
+        $('.stat-number').each(function() {
+            var $counter = $(this);
+            var target = parseInt($counter.text());
+            var current = 0;
+            var increment = target / 50;
+            var duration = 1000; // 1 second
+            var stepTime = duration / 50;
+            
+            // Only animate if element is in viewport
+            if (isElementInViewport(this)) {
+                animateCounter($counter, current, target, increment, stepTime);
+            } else {
+                // Animate when scrolled into view
+                $(window).on('scroll', function() {
+                    if (isElementInViewport($counter[0]) && !$counter.hasClass('animated')) {
+                        $counter.addClass('animated');
+                        animateCounter($counter, current, target, increment, stepTime);
+                    }
+                });
+            }
+        });
+        
+        // Add hover effects
+        $('.stat-card').hover(
+            function() {
+                $(this).css('transform', 'scale(1.05)');
+            },
+            function() {
+                $(this).css('transform', 'scale(1)');
+            }
+        );
+    }
+    
+    /**
+     * Animate counter
+     */
+    function animateCounter($element, current, target, increment, stepTime) {
+        var timer = setInterval(function() {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            $element.text(Math.floor(current));
+        }, stepTime);
+    }
+    
+    /**
+     * Check if element is in viewport
+     */
+    function isElementInViewport(element) {
+        var rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+    
+    /**
+     * Initialize lazy loading for incident lists
+     */
+    function initializeLazyLoading() {
+        var $lists = $('.incidenti-lista');
+        
+        $lists.each(function() {
+            var $list = $(this);
+            var $items = $list.find('.incidente-item');
+            var itemsPerPage = 10;
+            var currentPage = 1;
+            
+            if ($items.length <= itemsPerPage) {
+                return; // No need for lazy loading
+            }
+            
+            // Hide items beyond first page
+            $items.slice(itemsPerPage).hide();
+            
+            // Add load more button
+            var $loadMoreBtn = $('<button class="load-more-btn">Carica altri incidenti</button>');
+            $list.append($loadMoreBtn);
+            
+            $loadMoreBtn.on('click', function() {
+                var start = currentPage * itemsPerPage;
+                var end = start + itemsPerPage;
+                var $nextItems = $items.slice(start, end);
+                
+                $nextItems.fadeIn(300);
+                currentPage++;
+                
+                // Hide button if no more items
+                if (end >= $items.length) {
+                    $loadMoreBtn.hide();
+                }
+            });
+        });
+    }
+    
+    /**
+     * Add filtering functionality to lists
+     */
+    function addListFilters() {
+        $('.incidenti-lista').each(function() {
+            var $list = $(this);
+            var $items = $list.find('.incidente-item');
+            
+            // Add filter controls
+            var $filterContainer = $('<div class="incidenti-filter-controls"></div>');
+            var $severityFilter = $('<select class="severity-filter"><option value="">Tutti i tipi</option><option value="fatal">Solo mortali</option><option value="injury">Con feriti</option><option value="damage">Solo danni</option></select>');
+            var $searchInput = $('<input type="text" class="search-input" placeholder="Cerca per strada...">');
+            
+            $filterContainer.append($searchInput, $severityFilter);
+            $list.prepend($filterContainer);
+            
+            // Search functionality
+            $searchInput.on('input', function() {
+                var searchTerm = $(this).val().toLowerCase();
+                filterItems(searchTerm, $severityFilter.val());
+            });
+            
+            // Severity filter
+            $severityFilter.on('change', function() {
+                var severity = $(this).val();
+                filterItems($searchInput.val().toLowerCase(), severity);
+            });
+            
+            function filterItems(searchTerm, severity) {
+                $items.each(function() {
+                    var $item = $(this);
+                    var text = $item.text().toLowerCase();
+                    var itemSeverity = $item.attr('data-severity');
+                    
+                    var matchesSearch = !searchTerm || text.includes(searchTerm);
+                    var matchesSeverity = !severity || itemSeverity === severity;
+                    
+                    if (matchesSearch && matchesSeverity) {
+                        $item.show();
+                    } else {
+                        $item.hide();
+                    }
+                });
+            }
+        });
+    }
+    
+    /**
+     * Export functionality for statistics
+     */
+    function addExportFunctionality() {
+        $('.incidenti-statistics').each(function() {
+            var $stats = $(this);
+            
+            // Add export button
+            var $exportBtn = $('<button class="export-stats-btn">Esporta Statistiche</button>');
+            $stats.append($exportBtn);
+            
+            $exportBtn.on('click', function() {
+                exportStatistics($stats);
+            });
+        });
+    }
+    
+    /**
+     * Export statistics to CSV
+     */
+    function exportStatistics($statsContainer) {
+        var data = [];
+        
+        // Extract data from cards or table
+        if ($statsContainer.find('.stats-cards').length) {
+            $statsContainer.find('.stat-card').each(function() {
+                var $card = $(this);
+                var label = $card.find('.stat-label').text();
+                var value = $card.find('.stat-number').text();
+                data.push([label, value]);
+            });
+        } else if ($statsContainer.find('.incidenti-stats-table').length) {
+            $statsContainer.find('.incidenti-stats-table tr').each(function() {
+                var row = [];
+                $(this).find('td, th').each(function() {
+                    row.push($(this).text());
+                });
+                data.push(row);
+            });
+        }
+        
+        // Convert to CSV
+        var csv = data.map(function(row) {
+            return row.join(',');
+        }).join('\n');
+        
+        // Download
+        downloadCSV(csv, 'statistiche_incidenti.csv');
+    }
+    
+    /**
+     * Download CSV file
+     */
+    function downloadCSV(csv, filename) {
+        var blob = new Blob([csv], { type: 'text/csv' });
+        var url = window.URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }
+    
+    /**
+     * Add print functionality
+     */
+    function addPrintFunctionality() {
+        $('.incidenti-statistics, .incidenti-lista').each(function() {
+            var $container = $(this);
+            
+            // Add print button
+            var $printBtn = $('<button class="print-btn">Stampa</button>');
+            $container.append($printBtn);
+            
+            $printBtn.on('click', function() {
+                printContainer($container);
+            });
+        });
+    }
+    
+    /**
+     * Print specific container
+     */
+    function printContainer($container) {
+        var originalContents = document.body.innerHTML;
+        var printContents = $container[0].outerHTML;
+        
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        
+        // Re-initialize after restoring content
+        setTimeout(function() {
+            initializeShortcodes();
+        }, 100);
+    }
+    
+    /**
+     * Add refresh functionality for real-time data
+     */
+    function addRefreshFunctionality() {
+        $('.incidenti-statistics, .incidenti-lista').each(function() {
+            var $container = $(this);
+            
+            // Add refresh button
+            var $refreshBtn = $('<button class="refresh-btn">Aggiorna</button>');
+            $container.append($refreshBtn);
+            
+            $refreshBtn.on('click', function() {
+                refreshShortcodeData($container);
+            });
+        });
+    }
+    
+    /**
+     * Refresh shortcode data via AJAX
+     */
+    function refreshShortcodeData($container) {
+        var $refreshBtn = $container.find('.refresh-btn');
+        var originalText = $refreshBtn.text();
+        
+        $refreshBtn.text('Aggiornamento...').prop('disabled', true);
+        
+        // This would need to be implemented with proper AJAX calls
+        // For now, just simulate refresh
+        setTimeout(function() {
+            $refreshBtn.text(originalText).prop('disabled', false);
+            
+            // Add visual feedback
+            $container.addClass('updated');
+            setTimeout(function() {
+                $container.removeClass('updated');
+            }, 1000);
+        }, 2000);
+    }
+    
+    // Initialize all functionality
+    initializeShortcodes();
+    
+    // Optional: Add enhanced features
+    if (typeof window.IncidentiEnhanced !== 'undefined' && window.IncidentiEnhanced) {
+        addListFilters();
+        addExportFunctionality();
+        addPrintFunctionality();
+        addRefreshFunctionality();
+    }
+    
+    // Public API
+    window.IncidentiShortcodes = {
+        init: initializeShortcodes,
+        refreshCharts: renderCharts,
+        exportStats: exportStatistics,
+        printContainer: printContainer
+    };
 });
 
 /**
@@ -528,3 +979,93 @@ window.IncidentiUtils = {
         );
     }
 };
+
+/**
+ * CSS aggiuntivo per i controlli JavaScript
+ */
+var additionalCSS = `
+<style>
+.incidenti-filter-controls {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.incidenti-filter-controls input,
+.incidenti-filter-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.incidenti-filter-controls input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.load-more-btn,
+.export-stats-btn,
+.print-btn,
+.refresh-btn {
+    background: #0073aa;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 10px 5px;
+    transition: background-color 0.3s;
+}
+
+.load-more-btn:hover,
+.export-stats-btn:hover,
+.print-btn:hover,
+.refresh-btn:hover {
+    background: #005a87;
+}
+
+.load-more-btn:disabled,
+.refresh-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.incidenti-statistics.updated,
+.incidenti-lista.updated {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.stat-card {
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .incidenti-filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .incidenti-filter-controls input {
+        min-width: auto;
+    }
+}
+</style>
+`;
+
+// Inject additional CSS
+if (document.head) {
+    document.head.insertAdjacentHTML('beforeend', additionalCSS);
+}

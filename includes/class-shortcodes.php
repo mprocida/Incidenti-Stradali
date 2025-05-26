@@ -294,20 +294,73 @@ class IncidentiShortcodes {
                     <div class="stat-label"><?php _e('Solo Danni', 'incidenti-stradali'); ?></div>
                 </div>
             </div>
+            <?php elseif ($atts['style'] === 'table'): ?>
+            <table class="incidenti-stats-table">
+                <tr>
+                    <th><?php _e('Tipo', 'incidenti-stradali'); ?></th>
+                    <th><?php _e('Numero', 'incidenti-stradali'); ?></th>
+                    <th><?php _e('Percentuale', 'incidenti-stradali'); ?></th>
+                </tr>
+                <tr>
+                    <td><?php _e('Totali', 'incidenti-stradali'); ?></td>
+                    <td><?php echo $stats['totale']; ?></td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td><?php _e('Con morti', 'incidenti-stradali'); ?></td>
+                    <td><?php echo $stats['morti']; ?></td>
+                    <td><?php echo $stats['totale'] > 0 ? round(($stats['morti'] / $stats['totale']) * 100, 1) : 0; ?>%</td>
+                </tr>
+                <tr>
+                    <td><?php _e('Con feriti', 'incidenti-stradali'); ?></td>
+                    <td><?php echo $stats['feriti']; ?></td>
+                    <td><?php echo $stats['totale'] > 0 ? round(($stats['feriti'] / $stats['totale']) * 100, 1) : 0; ?>%</td>
+                </tr>
+                <tr>
+                    <td><?php _e('Solo danni', 'incidenti-stradali'); ?></td>
+                    <td><?php echo $stats['solo_danni']; ?></td>
+                    <td><?php echo $stats['totale'] > 0 ? round(($stats['solo_danni'] / $stats['totale']) * 100, 1) : 0; ?>%</td>
+                </tr>
+            </table>
             <?php endif; ?>
             
-            <?php if ($atts['show_charts'] === 'true'): ?>
+            <?php if ($atts['show_charts'] === 'true' && !empty($stats['chart_data'])): ?>
             <div class="stats-charts" style="margin-top: 30px;">
                 <div class="chart-container">
                     <h4><?php _e('Incidenti per Mese', 'incidenti-stradali'); ?></h4>
-                    <canvas id="chart-mesi-<?php echo uniqid(); ?>" width="400" height="200"></canvas>
+                    <canvas id="chart-mesi-<?php echo uniqid(); ?>" width="400" height="200" data-chart="<?php echo esc_attr(json_encode($stats['chart_data']['monthly'])); ?>"></canvas>
                 </div>
                 
                 <div class="chart-container">
-                    <h4><?php _e('Incidenti per Tipo di Strada', 'incidenti-stradali'); ?></h4>
-                    <canvas id="chart-strade-<?php echo uniqid(); ?>" width="400" height="200"></canvas>
+                    <h4><?php _e('Incidenti per Giorno della Settimana', 'incidenti-stradali'); ?></h4>
+                    <canvas id="chart-giorni-<?php echo uniqid(); ?>" width="400" height="200" data-chart="<?php echo esc_attr(json_encode($stats['chart_data']['weekly'])); ?>"></canvas>
                 </div>
             </div>
+            
+            <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                // Carica Chart.js se disponibile
+                if (typeof Chart !== 'undefined') {
+                    $('.stats-charts canvas').each(function() {
+                        var ctx = this.getContext('2d');
+                        var chartData = $(this).data('chart');
+                        
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: chartData,
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+            </script>
             <?php endif; ?>
             
         </div>
@@ -335,30 +388,30 @@ class IncidentiShortcodes {
         
         <div class="incidenti-lista">
             <?php if (empty($incidenti)): ?>
-                <p><?php _e('Nessun incidente trovato.', 'incidenti-stradali'); ?></p>
+                <p class="no-incidents"><?php _e('Nessun incidente trovato.', 'incidenti-stradali'); ?></p>
             <?php else: ?>
                 <div class="incidenti-items">
                     <?php foreach ($incidenti as $incidente): ?>
-                        <div class="incidente-item">
+                        <div class="incidente-item" data-id="<?php echo $incidente['id']; ?>">
                             <div class="incidente-data">
                                 <strong><?php echo date('d/m/Y', strtotime($incidente['data'])); ?></strong>
-                                <span class="incidente-ora"><?php echo $incidente['ora']; ?></span>
+                                <span class="incidente-ora"><?php echo $incidente['ora']; ?>:<?php echo $incidente['minuti'] ?: '00'; ?></span>
                             </div>
                             
                             <div class="incidente-location">
                                 <span class="location-icon">📍</span>
                                 <?php echo esc_html($incidente['denominazione_strada'] ?: __('Strada non specificata', 'incidenti-stradali')); ?>
-                                <?php if ($incidente['comune']): ?>
-                                    <small>(Comune: <?php echo esc_html($incidente['comune']); ?>)</small>
+                                <?php if ($incidente['comune_nome']): ?>
+                                    <small>(<?php echo esc_html($incidente['comune_nome']); ?>)</small>
                                 <?php endif; ?>
                             </div>
                             
                             <div class="incidente-gravita">
                                 <?php if ($incidente['morti'] > 0): ?>
-                                    <span class="badge badge-morti"><?php echo $incidente['morti']; ?> morti</span>
+                                    <span class="badge badge-morti"><?php echo $incidente['morti']; ?> <?php _e('morti', 'incidenti-stradali'); ?></span>
                                 <?php endif; ?>
                                 <?php if ($incidente['feriti'] > 0): ?>
-                                    <span class="badge badge-feriti"><?php echo $incidente['feriti']; ?> feriti</span>
+                                    <span class="badge badge-feriti"><?php echo $incidente['feriti']; ?> <?php _e('feriti', 'incidenti-stradali'); ?></span>
                                 <?php endif; ?>
                                 <?php if ($incidente['morti'] == 0 && $incidente['feriti'] == 0): ?>
                                     <span class="badge badge-danni"><?php _e('Solo danni', 'incidenti-stradali'); ?></span>
@@ -367,21 +420,87 @@ class IncidentiShortcodes {
                             
                             <?php if ($atts['mostra_dettagli'] === 'true'): ?>
                                 <div class="incidente-dettagli">
-                                    <p><strong><?php _e('Natura:', 'incidenti-stradali'); ?></strong> <?php echo esc_html($incidente['natura']); ?></p>
+                                    <?php if ($incidente['natura']): ?>
+                                    <p><strong><?php _e('Natura:', 'incidenti-stradali'); ?></strong> <?php echo esc_html($this->get_natura_label($incidente['natura'])); ?></p>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($incidente['num_veicoli']): ?>
                                     <p><strong><?php _e('Veicoli coinvolti:', 'incidenti-stradali'); ?></strong> <?php echo $incidente['num_veicoli']; ?></p>
+                                    <?php endif; ?>
+                                    
                                     <?php if ($incidente['condizioni_meteo']): ?>
-                                        <p><strong><?php _e('Meteo:', 'incidenti-stradali'); ?></strong> <?php echo esc_html($incidente['condizioni_meteo']); ?></p>
+                                    <p><strong><?php _e('Meteo:', 'incidenti-stradali'); ?></strong> <?php echo esc_html($this->get_meteo_label($incidente['condizioni_meteo'])); ?></p>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($incidente['tipo_strada']): ?>
+                                    <p><strong><?php _e('Tipo strada:', 'incidenti-stradali'); ?></strong> <?php echo esc_html($this->get_strada_label($incidente['tipo_strada'])); ?></p>
                                     <?php endif; ?>
                                 </div>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
+                
+                <?php if (count($incidenti) >= intval($atts['limite'])): ?>
+                <div class="incidenti-pagination">
+                    <p><em><?php printf(__('Mostrati %d incidenti. Potrebbero essercene altri.', 'incidenti-stradali'), count($incidenti)); ?></em></p>
+                </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         
         <?php
         return ob_get_clean();
+    }
+
+    /**
+     * Metodi helper per le etichette
+     */
+    private function get_natura_label($natura) {
+        $labels = array(
+            'A' => __('Tra veicoli in marcia', 'incidenti-stradali'),
+            'B' => __('Tra veicolo e pedoni', 'incidenti-stradali'),
+            'C' => __('Veicolo in marcia che urta veicolo fermo o altro', 'incidenti-stradali'),
+            'D' => __('Veicolo in marcia senza urto', 'incidenti-stradali')
+        );
+        
+        return $labels[$natura] ?? $natura;
+    }
+
+    private function get_meteo_label($meteo) {
+        $labels = array(
+            '1' => __('Sereno', 'incidenti-stradali'),
+            '2' => __('Nebbia', 'incidenti-stradali'),
+            '3' => __('Pioggia', 'incidenti-stradali'),
+            '4' => __('Grandine', 'incidenti-stradali'),
+            '5' => __('Neve', 'incidenti-stradali'),
+            '6' => __('Vento forte', 'incidenti-stradali'),
+            '7' => __('Altro', 'incidenti-stradali')
+        );
+        
+        return $labels[$meteo] ?? $meteo;
+    }
+
+    private function get_strada_label($tipo) {
+        $labels = array(
+            '1' => __('Strada urbana', 'incidenti-stradali'),
+            '2' => __('Provinciale entro l\'abitato', 'incidenti-stradali'),
+            '3' => __('Statale entro l\'abitato', 'incidenti-stradali'),
+            '4' => __('Comunale extraurbana', 'incidenti-stradali'),
+            '5' => __('Provinciale', 'incidenti-stradali'),
+            '6' => __('Statale', 'incidenti-stradali'),
+            '7' => __('Autostrada', 'incidenti-stradali'),
+            '8' => __('Altra strada', 'incidenti-stradali'),
+            '9' => __('Regionale', 'incidenti-stradali')
+        );
+        
+        return $labels[$tipo] ?? $tipo;
+    }
+
+    private function get_comune_name($codice) {
+        // Qui potresti implementare una lookup dei nomi comuni
+        // Per ora restituisce solo il codice
+        return $codice;
     }
     
     public function ajax_get_markers() {
@@ -611,30 +730,222 @@ class IncidentiShortcodes {
         }
     }
     
+    /**
+     * Implementazione completa di get_incidenti_statistics
+    */
     private function get_incidenti_statistics($atts) {
-        // Implement statistics calculation
+        // Costruisci query base
         $args = array(
             'post_type' => 'incidente_stradale',
             'post_status' => 'publish',
-            'posts_per_page' => -1
+            'posts_per_page' => -1,
+            'meta_query' => array()
         );
         
-        // Apply filters based on attributes
-        // ... (implementation similar to ajax_get_markers)
+        // Applica filtro comune
+        if (!empty($atts['comune'])) {
+            $args['meta_query'][] = array(
+                'key' => 'comune_incidente',
+                'value' => sanitize_text_field($atts['comune']),
+                'compare' => '='
+            );
+        }
         
-        return array(
-            'totale' => 0,
+        // Applica filtro periodo
+        if (!empty($atts['periodo'])) {
+            $date_query = $this->get_date_query_for_period($atts['periodo']);
+            if ($date_query) {
+                $args['meta_query'][] = $date_query;
+            }
+        }
+        
+        $incidenti = get_posts($args);
+        
+        $stats = array(
+            'totale' => count($incidenti),
             'morti' => 0,
             'feriti' => 0,
-            'solo_danni' => 0
+            'solo_danni' => 0,
+            'chart_data' => array(
+                'monthly' => array(),
+                'weekly' => array()
+            )
         );
+        
+        $monthly_data = array();
+        $weekly_data = array_fill(0, 7, 0); // 0=Domenica, 1=Lunedì, etc.
+        
+        foreach ($incidenti as $incidente) {
+            $post_id = $incidente->ID;
+            
+            // Conta vittime
+            $morti_incidente = 0;
+            $feriti_incidente = 0;
+            
+            // Conta conducenti
+            for ($i = 1; $i <= 3; $i++) {
+                $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
+                if ($esito == '3' || $esito == '4') $morti_incidente++;
+                if ($esito == '2') $feriti_incidente++;
+            }
+            
+            // Conta pedoni
+            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
+            for ($i = 1; $i <= $num_pedoni; $i++) {
+                $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
+                if ($esito == '3' || $esito == '4') $morti_incidente++;
+                if ($esito == '2') $feriti_incidente++;
+            }
+            
+            $stats['morti'] += $morti_incidente;
+            $stats['feriti'] += $feriti_incidente;
+            
+            if ($morti_incidente == 0 && $feriti_incidente == 0) {
+                $stats['solo_danni']++;
+            }
+            
+            // Dati per grafici
+            $data_incidente = get_post_meta($post_id, 'data_incidente', true);
+            if ($data_incidente) {
+                // Dati mensili
+                $month_key = date('Y-m', strtotime($data_incidente));
+                $monthly_data[$month_key] = ($monthly_data[$month_key] ?? 0) + 1;
+                
+                // Dati settimanali
+                $day_of_week = date('w', strtotime($data_incidente));
+                $weekly_data[$day_of_week]++;
+            }
+        }
+        
+        // Prepara dati per grafici
+        if (!empty($monthly_data)) {
+            ksort($monthly_data);
+            $stats['chart_data']['monthly'] = array(
+                'labels' => array_keys($monthly_data),
+                'datasets' => array(array(
+                    'label' => __('Incidenti per Mese', 'incidenti-stradali'),
+                    'data' => array_values($monthly_data),
+                    'backgroundColor' => 'rgba(54, 162, 235, 0.6)',
+                    'borderColor' => 'rgba(54, 162, 235, 1)',
+                    'borderWidth' => 1
+                ))
+            );
+        }
+        
+        $days_labels = array(
+            __('Domenica', 'incidenti-stradali'),
+            __('Lunedì', 'incidenti-stradali'),
+            __('Martedì', 'incidenti-stradali'),
+            __('Mercoledì', 'incidenti-stradali'),
+            __('Giovedì', 'incidenti-stradali'),
+            __('Venerdì', 'incidenti-stradali'),
+            __('Sabato', 'incidenti-stradali')
+        );
+        
+        $stats['chart_data']['weekly'] = array(
+            'labels' => $days_labels,
+            'datasets' => array(array(
+                'label' => __('Incidenti per Giorno', 'incidenti-stradali'),
+                'data' => $weekly_data,
+                'backgroundColor' => 'rgba(255, 99, 132, 0.6)',
+                'borderColor' => 'rgba(255, 99, 132, 1)',
+                'borderWidth' => 1
+            ))
+        );
+        
+        return $stats;
     }
     
+    /**
+     * Implementazione completa di get_incidenti_list
+     */
     private function get_incidenti_list($atts) {
-        // Implement list retrieval
-        // ... (implementation based on attributes)
+        // Costruisci query
+        $args = array(
+            'post_type' => 'incidente_stradale',
+            'post_status' => 'publish',
+            'posts_per_page' => intval($atts['limite']),
+            'meta_query' => array()
+        );
         
-        return array();
+        // Applica ordinamento
+        switch ($atts['ordinamento']) {
+            case 'data_asc':
+                $args['meta_key'] = 'data_incidente';
+                $args['orderby'] = 'meta_value';
+                $args['order'] = 'ASC';
+                $args['meta_type'] = 'DATE';
+                break;
+            case 'data_desc':
+            default:
+                $args['meta_key'] = 'data_incidente';
+                $args['orderby'] = 'meta_value';
+                $args['order'] = 'DESC';
+                $args['meta_type'] = 'DATE';
+                break;
+        }
+        
+        // Applica filtro comune
+        if (!empty($atts['comune'])) {
+            $args['meta_query'][] = array(
+                'key' => 'comune_incidente',
+                'value' => sanitize_text_field($atts['comune']),
+                'compare' => '='
+            );
+        }
+        
+        // Applica filtro periodo
+        if (!empty($atts['periodo'])) {
+            $date_query = $this->get_date_query_for_period($atts['periodo']);
+            if ($date_query) {
+                $args['meta_query'][] = $date_query;
+            }
+        }
+        
+        $incidenti = get_posts($args);
+        
+        $result = array();
+        
+        foreach ($incidenti as $incidente) {
+            $post_id = $incidente->ID;
+            
+            // Conta vittime
+            $morti = 0;
+            $feriti = 0;
+            
+            // Conta conducenti
+            for ($i = 1; $i <= 3; $i++) {
+                $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
+                if ($esito == '3' || $esito == '4') $morti++;
+                if ($esito == '2') $feriti++;
+            }
+            
+            // Conta pedoni
+            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
+            for ($i = 1; $i <= $num_pedoni; $i++) {
+                $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
+                if ($esito == '3' || $esito == '4') $morti++;
+                if ($esito == '2') $feriti++;
+            }
+            
+            $result[] = array(
+                'id' => $post_id,
+                'data' => get_post_meta($post_id, 'data_incidente', true),
+                'ora' => get_post_meta($post_id, 'ora_incidente', true),
+                'minuti' => get_post_meta($post_id, 'minuti_incidente', true),
+                'denominazione_strada' => get_post_meta($post_id, 'denominazione_strada', true),
+                'comune' => get_post_meta($post_id, 'comune_incidente', true),
+                'comune_nome' => $this->get_comune_name(get_post_meta($post_id, 'comune_incidente', true)),
+                'natura' => get_post_meta($post_id, 'natura_incidente', true),
+                'num_veicoli' => get_post_meta($post_id, 'numero_veicoli_coinvolti', true),
+                'condizioni_meteo' => get_post_meta($post_id, 'condizioni_meteo', true),
+                'tipo_strada' => get_post_meta($post_id, 'tipo_strada', true),
+                'morti' => $morti,
+                'feriti' => $feriti
+            );
+        }
+        
+        return $result;
     }
 
     /**

@@ -363,6 +363,213 @@
     margin: 5px 0;
 }
 
+/* Statistiche Table Style */
+.incidenti-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.incidenti-stats-table th,
+.incidenti-stats-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.incidenti-stats-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+}
+
+.incidenti-stats-table tr:hover {
+    background: #f9f9f9;
+}
+
+/* Charts Container */
+.stats-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-container h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 16px;
+    border-bottom: 2px solid #0073aa;
+    padding-bottom: 8px;
+}
+
+/* Lista Incidenti Enhanced */
+.incidenti-lista .no-incidents {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 40px 20px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.incidenti-lista .incidente-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.incidenti-lista .incidente-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.incidenti-lista .incidente-item.expanded {
+    border-color: #0073aa;
+}
+
+.incidenti-lista .incidente-data {
+    flex-wrap: wrap;
+}
+
+.incidenti-lista .incidente-data strong {
+    color: #0073aa;
+}
+
+.incidenti-lista .incidente-ora {
+    background: #e3f2fd;
+    color: #1976d2;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+.incidenti-lista .incidente-location {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.incidenti-lista .incidente-location small {
+    color: #888;
+    font-weight: normal;
+}
+
+.incidenti-lista .incidente-gravita {
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.incidenti-lista .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
+    margin: 2px 4px 2px 0;
+    white-space: nowrap;
+}
+
+.incidenti-lista .incidente-dettagli {
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-top: 1px solid #e9ecef;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.incidenti-lista .incidente-dettagli p {
+    margin: 8px 0;
+}
+
+.incidenti-lista .incidente-dettagli strong {
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Pagination */
+.incidenti-pagination {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    border-top: 1px solid #eee;
+}
+
+.incidenti-pagination p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Loading States for Lists */
+.incidenti-lista.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.incidenti-lista.loading::before {
+    content: "Caricamento...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+/* Severity Indicators */
+.incidenti-lista .incidente-item[data-severity="fatal"] {
+    border-left: 4px solid #d63384;
+}
+
+.incidenti-lista .incidente-item[data-severity="injury"] {
+    border-left: 4px solid #fd7e14;
+}
+
+.incidenti-lista .incidente-item[data-severity="damage"] {
+    border-left: 4px solid #6c757d;
+}
+
+/* Statistics Cards Enhanced */
+.incidenti-statistics.cards .stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.incidenti-statistics.cards .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0073aa, #005a87);
+}
+
+.incidenti-statistics.cards .stat-card.morti::before {
+    background: linear-gradient(90deg, #d63384, #b02a5b);
+}
+
+.incidenti-statistics.cards .stat-card.feriti::before {
+    background: linear-gradient(90deg, #fd7e14, #e8590c);
+}
+
+.incidenti-statistics.cards .stat-number {
+    font-family: 'Georgia', serif;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .incidente-popup {

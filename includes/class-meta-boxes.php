@@ -101,73 +101,309 @@ class IncidentiMetaBoxes {
             'normal',
             'low'
         );
+
+        add_meta_box(
+            'incidente_circostanze',
+            __('Circostanze Presunte dell\'Incidente', 'incidenti-stradali'),
+            array($this, 'render_circostanze_meta_box'),
+            'incidente_stradale',
+            'normal',
+            'high'
+        );
     }
 
     public function render_circostanze_meta_box($post) {
+        // Get saved values
+        $circostanza_presunta_1 = get_post_meta($post->ID, 'circostanza_presunta_1', true);
+        $circostanza_presunta_2 = get_post_meta($post->ID, 'circostanza_presunta_2', true);
+        $circostanza_presunta_3 = get_post_meta($post->ID, 'circostanza_presunta_3', true);
+        
+        $circostanza_veicolo_a = get_post_meta($post->ID, 'circostanza_veicolo_a', true);
+        $circostanza_veicolo_b = get_post_meta($post->ID, 'circostanza_veicolo_b', true);
+        $circostanza_veicolo_c = get_post_meta($post->ID, 'circostanza_veicolo_c', true);
+        
         ?>
-        <table class="form-table">
-            <tr>
-                <th><label for="circostanza_presunta_1"><?php _e('Circostanza Presunta 1', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="circostanza_presunta_1" name="circostanza_presunta_1">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <optgroup label="<?php _e('Inconvenienti di circolazione', 'incidenti-stradali'); ?>">
-                            <option value="01" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '01'); ?>>01 - Procedeva regolarmente senza svoltare</option>
-                            <option value="02" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '02'); ?>>02 - Procedeva con guida distratta</option>
-                            <option value="03" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '03'); ?>>03 - Procedeva senza mantenere la distanza di sicurezza</option>
-                            <option value="04" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '04'); ?>>04 - Procedeva senza dare la precedenza al veicolo proveniente da destra</option>
-                            <option value="05" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '05'); ?>>05 - Procedeva senza rispettare lo stop</option>
-                            <option value="06" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '06'); ?>>06 - Procedeva senza rispettare il segnale di dare precedenza</option>
-                            <option value="07" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '07'); ?>>07 - Procedeva contromano</option>
-                            <option value="08" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '08'); ?>>08 - Procedeva senza rispettare le segnalazioni semaforiche</option>
-                            <option value="11" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '11'); ?>>11 - Procedeva con eccesso di velocità</option>
-                            <option value="12" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '12'); ?>>12 - Procedeva senza rispettare i limiti di velocità</option>
-                            <!-- Aggiungi tutte le altre opzioni dal documento circostanze-incidente.json -->
-                        </optgroup>
-                        <optgroup label="<?php _e('Difetti o avarie del veicolo', 'incidenti-stradali'); ?>">
-                            <option value="80" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '80'); ?>>80 - Rottura o insufficienza dei freni</option>
-                            <option value="81" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '81'); ?>>81 - Rottura o guasto allo sterzo</option>
-                            <option value="82" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '82'); ?>>82 - Scoppio o eccessiva usura dei pneumatici</option>
-                            <!-- Altre opzioni -->
-                        </optgroup>
-                        <optgroup label="<?php _e('Stato psico-fisico alterato', 'incidenti-stradali'); ?>">
-                            <option value="90" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '90'); ?>>90 - Anormale per ebbrezza da alcool</option>
-                            <option value="93" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '93'); ?>>93 - Anormale per sonno</option>
-                            <option value="94" <?php selected(get_post_meta($post->ID, 'circostanza_presunta_1', true), '94'); ?>>94 - Anormale per ingestione di sostanze stupefacenti</option>
-                            <!-- Altre opzioni -->
-                        </optgroup>
-                    </select>
-                </td>
-            </tr>
+        <div class="incidenti-circostanze-container">
+            <h4><?php _e('Circostanze Presunte Generali', 'incidenti-stradali'); ?></h4>
+            <p class="description"><?php _e('Seleziona fino a 3 circostanze presunte dell\'incidente.', 'incidenti-stradali'); ?></p>
             
-            <tr>
-                <th><label for="circostanza_presunta_2"><?php _e('Circostanza Presunta 2', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <!-- Stesso select della circostanza 1 -->
-                </td>
-            </tr>
+            <table class="form-table">
+                <tr>
+                    <th><label for="circostanza_presunta_1"><?php _e('Circostanza Presunta 1', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_presunta_1" name="circostanza_presunta_1" class="circostanza-select">
+                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
+                            <?php echo $this->get_circostanze_options($circostanza_presunta_1); ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="circostanza_presunta_2_row" style="display: none;">
+                    <th><label for="circostanza_presunta_2"><?php _e('Circostanza Presunta 2', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_presunta_2" name="circostanza_presunta_2" class="circostanza-select">
+                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
+                            <?php echo $this->get_circostanze_options($circostanza_presunta_2); ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="circostanza_presunta_3_row" style="display: none;">
+                    <th><label for="circostanza_presunta_3"><?php _e('Circostanza Presunta 3', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_presunta_3" name="circostanza_presunta_3" class="circostanza-select">
+                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
+                            <?php echo $this->get_circostanze_options($circostanza_presunta_3); ?>
+                        </select>
+                    </td>
+                </tr>
+            </table>
             
-            <tr>
-                <th><label for="circostanza_presunta_3"><?php _e('Circostanza Presunta 3', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <!-- Stesso select della circostanza 1 -->
-                </td>
-            </tr>
+            <h4><?php _e('Circostanze per Veicolo', 'incidenti-stradali'); ?></h4>
+            <p class="description"><?php _e('Specifica le circostanze per ogni veicolo coinvolto.', 'incidenti-stradali'); ?></p>
             
-            <!-- Per ogni veicolo -->
-            <?php for ($i = 1; $i <= 3; $i++): ?>
-            <tr>
-                <th><label><?php printf(__('Circostanze Veicolo %s', 'incidenti-stradali'), chr(64 + $i)); ?></label></th>
-                <td>
-                    <select name="circostanza_veicolo_<?php echo $i; ?>">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <!-- Opzioni specifiche per veicoli -->
-                    </select>
-                </td>
-            </tr>
-            <?php endfor; ?>
-        </table>
+            <table class="form-table">
+                <tr id="circostanza_veicolo_a_row">
+                    <th><label for="circostanza_veicolo_a"><?php _e('Circostanze Veicolo A', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_veicolo_a" name="circostanza_veicolo_a">
+                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
+                            <?php echo $this->get_circostanze_veicolo_options($circostanza_veicolo_a); ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="circostanza_veicolo_b_row" style="display: none;">
+                    <th><label for="circostanza_veicolo_b"><?php _e('Circostanze Veicolo B', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_veicolo_b" name="circostanza_veicolo_b">
+                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
+                            <?php echo $this->get_circostanze_veicolo_options($circostanza_veicolo_b); ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="circostanza_veicolo_c_row" style="display: none;">
+                    <th><label for="circostanza_veicolo_c"><?php _e('Circostanze Veicolo C', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_veicolo_c" name="circostanza_veicolo_c">
+                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
+                            <?php echo $this->get_circostanze_veicolo_options($circostanza_veicolo_c); ?>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            
+            <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                // Gestisci la visibilità delle circostanze aggiuntive
+                function updateCircostanzeVisibility() {
+                    // Mostra seconda circostanza se la prima è selezionata
+                    if ($('#circostanza_presunta_1').val()) {
+                        $('#circostanza_presunta_2_row').show();
+                    } else {
+                        $('#circostanza_presunta_2_row').hide();
+                        $('#circostanza_presunta_2').val('');
+                    }
+                    
+                    // Mostra terza circostanza se la seconda è selezionata
+                    if ($('#circostanza_presunta_2').val()) {
+                        $('#circostanza_presunta_3_row').show();
+                    } else {
+                        $('#circostanza_presunta_3_row').hide();
+                        $('#circostanza_presunta_3').val('');
+                    }
+                }
+                
+                // Gestisci la visibilità delle circostanze per veicolo
+                function updateVeicoliCircostanzeVisibility() {
+                    var numVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+                    
+                    // Mostra sempre veicolo A
+                    $('#circostanza_veicolo_a_row').show();
+                    
+                    // Mostra/nascondi veicoli B e C
+                    if (numVeicoli >= 2) {
+                        $('#circostanza_veicolo_b_row').show();
+                    } else {
+                        $('#circostanza_veicolo_b_row').hide();
+                        $('#circostanza_veicolo_b').val('');
+                    }
+                    
+                    if (numVeicoli >= 3) {
+                        $('#circostanza_veicolo_c_row').show();
+                    } else {
+                        $('#circostanza_veicolo_c_row').hide();
+                        $('#circostanza_veicolo_c').val('');
+                    }
+                }
+                
+                // Event handlers
+                $('.circostanza-select').on('change', updateCircostanzeVisibility);
+                $('#numero_veicoli_coinvolti').on('change', updateVeicoliCircostanzeVisibility);
+                
+                // Inizializza visibilità
+                updateCircostanzeVisibility();
+                updateVeicoliCircostanzeVisibility();
+            });
+            </script>
+        </div>
         <?php
+    }
+
+    private function get_circostanze_options($selected = '') {
+        $options = array(
+            // Inconvenienti di circolazione
+            'inconvenienti' => array(
+                'label' => __('Inconvenienti di Circolazione', 'incidenti-stradali'),
+                'options' => array(
+                    '80' => __('Rottura o insufficienza dei freni', 'incidenti-stradali'),
+                    '81' => __('Rottura o guasto allo sterzo', 'incidenti-stradali'),
+                    '82' => __('Scoppio o eccessiva usura dei pneumatici', 'incidenti-stradali'),
+                    '83' => __('Mancanza o insufficienza dei fari o delle luci di posizione', 'incidenti-stradali'),
+                    '84' => __('Mancanza o insufficienza dei lampeggiatori', 'incidenti-stradali'),
+                    '85' => __('Rottura degli organi di agganciamento dei rimorchi', 'incidenti-stradali'),
+                    '86' => __('Deficienza attrezzature per trasporto merci pericolose', 'incidenti-stradali'),
+                    '87' => __('Mancanza o insufficienza adattamenti per disabili', 'incidenti-stradali'),
+                    '88' => __('Distacco di ruota', 'incidenti-stradali'),
+                    '89' => __('Mancanza o insufficienza dei dispositivi visivi dei velocipedi', 'incidenti-stradali')
+                )
+            ),
+            // Stato psicofisico
+            'psicofisico' => array(
+                'label' => __('Stato Psicofisico', 'incidenti-stradali'),
+                'options' => array(
+                    '90' => __('Anormale per ebbrezza da alcool', 'incidenti-stradali'),
+                    '91' => __('Anormale per condizioni morbose in atto', 'incidenti-stradali'),
+                    '92' => __('Anormale per improvviso malore', 'incidenti-stradali'),
+                    '93' => __('Anormale per sonno', 'incidenti-stradali'),
+                    '94' => __('Anormale per ingestione di sostanze stupefacenti', 'incidenti-stradali'),
+                    '95' => __('Mancato uso di lenti correttive o apparecchi di protesi', 'incidenti-stradali'),
+                    '96' => __('Abbagliato', 'incidenti-stradali'),
+                    '97' => __('Per aver superato i periodi di guida prescritti', 'incidenti-stradali')
+                )
+            )
+        );
+        
+        $html = '';
+        foreach ($options as $group) {
+            $html .= '<optgroup label="' . esc_attr($group['label']) . '">';
+            foreach ($group['options'] as $value => $label) {
+                $html .= '<option value="' . esc_attr($value) . '"' . selected($selected, $value, false) . '>' . esc_html($label) . '</option>';
+            }
+            $html .= '</optgroup>';
+        }
+        
+        return $html;
+    }
+
+    private function get_circostanze_veicolo_options($selected = '') {
+        $options = array(
+            // All'intersezione
+            'intersezione' => array(
+                'label' => __('All\'intersezione', 'incidenti-stradali'),
+                'options' => array(
+                    '01' => __('Procedeva regolarmente senza svoltare', 'incidenti-stradali'),
+                    '02' => __('Procedeva con guida distratta e andamento indeciso', 'incidenti-stradali'),
+                    '03' => __('Procedeva senza mantenere la distanza di sicurezza', 'incidenti-stradali'),
+                    '04' => __('Procedeva senza dare la precedenza al veicolo proveniente da destra', 'incidenti-stradali'),
+                    '05' => __('Procedeva senza rispettare lo stop', 'incidenti-stradali'),
+                    '06' => __('Procedeva senza rispettare il segnale di dare precedenza', 'incidenti-stradali'),
+                    '07' => __('Procedeva contromano', 'incidenti-stradali'),
+                    '08' => __('Procedeva senza rispettare le segnalazioni semaforiche o dell\'agente', 'incidenti-stradali'),
+                    '10' => __('Procedeva senza rispettare i segnali di divieto di transito', 'incidenti-stradali'),
+                    '11' => __('Procedeva con eccesso di velocità', 'incidenti-stradali'),
+                    '12' => __('Procedeva senza rispettare i limiti di velocità', 'incidenti-stradali'),
+                    '13' => __('Procedeva con le luci abbaglianti incrociando altri veicoli', 'incidenti-stradali'),
+                    '14' => __('Svoltava a destra regolarmente', 'incidenti-stradali'),
+                    '15' => __('Svoltava a destra irregolarmente', 'incidenti-stradali'),
+                    '16' => __('Svoltava a sinistra regolarmente', 'incidenti-stradali'),
+                    '17' => __('Svoltava a sinistra irregolarmente', 'incidenti-stradali'),
+                    '18' => __('Sorpassava (all\'incrocio)', 'incidenti-stradali')
+                )
+            ),
+            // Non all'intersezione
+            'non_intersezione' => array(
+                'label' => __('Non all\'intersezione', 'incidenti-stradali'),
+                'options' => array(
+                    '20' => __('Procedeva regolarmente', 'incidenti-stradali'),
+                    '21' => __('Procedeva con guida distratta e andamento indeciso', 'incidenti-stradali'),
+                    '22' => __('Procedeva senza mantenere la distanza di sicurezza', 'incidenti-stradali'),
+                    '23' => __('Procedeva con eccesso di velocità', 'incidenti-stradali'),
+                    '24' => __('Procedeva senza rispettare i limiti di velocità', 'incidenti-stradali'),
+                    '25' => __('Procedeva non in prossimità del margine destro della carreggiata', 'incidenti-stradali'),
+                    '26' => __('Procedeva contromano', 'incidenti-stradali'),
+                    '27' => __('Procedeva senza rispettare i segnali di divieto di transito', 'incidenti-stradali'),
+                    '28' => __('Procedeva con le luci abbaglianti incrociando altri veicoli', 'incidenti-stradali'),
+                    '29' => __('Sorpassava regolarmente', 'incidenti-stradali'),
+                    '30' => __('Sorpassava irregolarmente a destra', 'incidenti-stradali'),
+                    '31' => __('Sorpassava in curva, su dosso o insufficiente visibilità', 'incidenti-stradali'),
+                    '32' => __('Sorpassava un veicolo che ne stava sorpassando un altro', 'incidenti-stradali'),
+                    '33' => __('Sorpassava senza osservare il segnale di divieto', 'incidenti-stradali'),
+                    '34' => __('Manovrava in retrocessione o conversione', 'incidenti-stradali'),
+                    '35' => __('Manovrava per immettersi nel flusso della circolazione', 'incidenti-stradali'),
+                    '36' => __('Manovrava per voltare a sinistra', 'incidenti-stradali'),
+                    '37' => __('Manovrava regolarmente per fermarsi o sostare', 'incidenti-stradali'),
+                    '38' => __('Manovrava irregolarmente per fermarsi o sostare', 'incidenti-stradali'),
+                    '39' => __('Si affiancava ad altri veicoli a due ruote irregolarmente', 'incidenti-stradali')
+                )
+            ),
+            // Veicolo coinvolto
+            'veicolo_coinvolto' => array(
+                'label' => __('Veicolo coinvolto', 'incidenti-stradali'),
+                'options' => array(
+                    '40' => __('Procedeva regolarmente', 'incidenti-stradali'),
+                    '41' => __('Procedeva con eccesso di velocità', 'incidenti-stradali'),
+                    '42' => __('Procedeva senza rispettare i limiti di velocità', 'incidenti-stradali'),
+                    '43' => __('Procedeva contromano', 'incidenti-stradali'),
+                    '44' => __('Sorpassava veicolo in marcia', 'incidenti-stradali'),
+                    '45' => __('Manovrava', 'incidenti-stradali'),
+                    '46' => __('Non rispettava le segnalazioni semaforiche o dell\'agente', 'incidenti-stradali'),
+                    '47' => __('Usciva senza precauzioni da passo carrabile', 'incidenti-stradali'),
+                    '48' => __('Fuoriusciva dalla carreggiata', 'incidenti-stradali'),
+                    '49' => __('Non dava la precedenza al pedone sugli appositi attraversamenti', 'incidenti-stradali'),
+                    '50' => __('Sorpassava un veicolo fermatosi per l\'attraversamento dei pedoni', 'incidenti-stradali'),
+                    '51' => __('Urtava con il carico il pedone', 'incidenti-stradali'),
+                    '52' => __('Superava irregolarmente un tram fermo per salita/discesa', 'incidenti-stradali')
+                )
+            ),
+            // Veicolo fermo
+            'veicolo_fermo' => array(
+                'label' => __('Veicolo fermo/ostacolo', 'incidenti-stradali'),
+                'options' => array(
+                    '60' => __('Ostacolo accidentale', 'incidenti-stradali'),
+                    '61' => __('Veicolo fermo in posizione regolare', 'incidenti-stradali'),
+                    '62' => __('Veicolo fermo in posizione irregolare', 'incidenti-stradali'),
+                    '63' => __('Veicolo fermo senza il prescritto segnale', 'incidenti-stradali'),
+                    '64' => __('Veicolo fermo regolarmente segnalato', 'incidenti-stradali'),
+                    '65' => __('Ostacolo fisso nella carreggiata', 'incidenti-stradali'),
+                    '66' => __('Treno in passaggio a livello', 'incidenti-stradali'),
+                    '67' => __('Animale domestico o d\'affezione', 'incidenti-stradali'),
+                    '68' => __('Animale selvatico', 'incidenti-stradali'),
+                    '69' => __('Buca', 'incidenti-stradali')
+                )
+            ),
+            // Veicolo senza urto
+            'veicolo_senza_urto' => array(
+                'label' => __('Veicolo senza urto', 'incidenti-stradali'),
+                'options' => array(
+                    '70' => __('Sbandamento con fuoriuscita per evitare l\'urto', 'incidenti-stradali'),
+                    '71' => __('Sbandamento per guida distratta e andamento indeciso', 'incidenti-stradali'),
+                    '72' => __('Sbandamento con fuoriuscita per eccesso di velocità', 'incidenti-stradali'),
+                    '73' => __('Frenata improvvisa con conseguenza ai trasportati', 'incidenti-stradali'),
+                    '74' => __('Caduta di persona da veicolo per apertura di portiera', 'incidenti-stradali'),
+                    '75' => __('Caduta di persona da veicolo per discesa da veicolo in moto', 'incidenti-stradali'),
+                    '76' => __('Caduta di persona da veicolo per essersi aggrappata', 'incidenti-stradali')
+                )
+            )
+        );
+        
+        $html = '';
+        foreach ($options as $group) {
+            $html .= '<optgroup label="' . esc_attr($group['label']) . '">';
+            foreach ($group['options'] as $value => $label) {
+                $html .= '<option value="' . esc_attr($value) . '"' . selected($selected, $value, false) . '>' . esc_html($label) . '</option>';
+            }
+            $html .= '</optgroup>';
+        }
+        
+        return $html;
     }
 
     public function render_dati_aggiuntivi_meta_box($post) {
@@ -343,6 +579,9 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label><?php _e('L\'incidente è avvenuto', 'incidenti-stradali'); ?> *</label></th>
                 <td>
+                    <!-- Campo nascosto per garantire che venga sempre inviato un valore -->
+                    <input type="hidden" name="nell_abitato" value="">
+                    
                     <label>
                         <input type="radio" name="nell_abitato" value="1" <?php checked($abitato, '1'); ?> required>
                         <?php _e('Nell\'abitato', 'incidenti-stradali'); ?>
@@ -1167,7 +1406,9 @@ class IncidentiMetaBoxes {
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa','illuminazione', 'visibilita',
-            'traffico', 'segnaletica_semaforica', 'circostanza_presunta_1', 'circostanza_presunta_2', 'circostanza_presunta_3'
+            'traffico', 'segnaletica_semaforica', 'circostanza_presunta_1', 'circostanza_presunta_2', 'circostanza_presunta_3',
+            'circostanza_presunta_1', 'circostanza_presunta_2', 'circostanza_presunta_3', 'circostanza_veicolo_a',
+            'circostanza_veicolo_b', 'circostanza_veicolo_c'
     );
 
         // Salva circostanze per ogni veicolo

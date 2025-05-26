@@ -469,14 +469,57 @@ class IncidentiShortcodes {
             
             $data = get_post_meta($post_id, 'data_incidente', true);
             $ora = get_post_meta($post_id, 'ora_incidente', true);
-            $denominazione = get_post_meta($post_id, 'denominazione_strada', true);
+            $minuti = get_post_meta($post_id, 'minuti_incidente', true) ?: '00';
+            $comune_codice = get_post_meta($post_id, 'comune_incidente', true);
+            $organo_rilevazione = get_post_meta($post_id, 'organo_rilevazione', true);
             
+            // Get nome comune from codice ISTAT
+            $nome_comune = $this->get_nome_comune_from_codice($comune_codice);
+            
+            // Get organo rilevazione description
+            $organo_desc = $this->get_organo_rilevazione_description($organo_rilevazione);
+            
+            // Format data italiana
+            $data_italiana = '';
+            if ($data) {
+                $data_italiana = date('d/m/Y', strtotime($data));
+            }
+            
+            // Format ora
+            $ora_formattata = $ora . ':' . $minuti;
+            
+            // Generate popup content with new format
             $popup_content = '<div class="incidente-popup">';
-            $popup_content .= '<h4>' . date('d/m/Y', strtotime($data)) . ' - ' . $ora . ':00</h4>';
-            $popup_content .= '<p><strong>' . esc_html($denominazione ?: __('Strada non specificata', 'incidenti-stradali')) . '</strong></p>';
-            if ($morti > 0) $popup_content .= '<p class="morti">💀 ' . $morti . ' ' . __('morti', 'incidenti-stradali') . '</p>';
-            if ($feriti > 0) $popup_content .= '<p class="feriti">🚑 ' . $feriti . ' ' . __('feriti', 'incidenti-stradali') . '</p>';
-            if ($morti == 0 && $feriti == 0) $popup_content .= '<p class="solo-danni">🚗 ' . __('Solo danni', 'incidenti-stradali') . '</p>';
+            
+            // Codice (titolo con link)
+            $edit_link = get_edit_post_link($post_id);
+            $popup_content .= '<h4><a href="' . esc_url($edit_link) . '" target="_blank" style="color: #0073aa; text-decoration: none;">';
+            $popup_content .= '#' . str_pad($post_id, 4, '0', STR_PAD_LEFT) . ': ' . esc_html($incidente->post_title);
+            $popup_content .= '</a></h4>';
+            
+            // Data e ora
+            $popup_content .= '<p><strong>📅 Data/Ora:</strong> ' . $data_italiana . ' ' . $ora_formattata . '</p>';
+            
+            // Comune
+            $popup_content .= '<p><strong>🏛️ Comune:</strong> ' . esc_html($nome_comune) . '</p>';
+            
+            // Ente/Organo rilevazione
+            $popup_content .= '<p><strong>👮 Ente:</strong> ' . esc_html($organo_desc) . '</p>';
+            
+            // Coordinate
+            $popup_content .= '<p><strong>📍 Coordinate:</strong> ' . number_format(floatval($lat), 6) . ', ' . number_format(floatval($lng), 6) . '</p>';
+            
+            // Vittime (se presenti)
+            if ($morti > 0 || $feriti > 0) {
+                $popup_content .= '<hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">';
+                if ($morti > 0) {
+                    $popup_content .= '<p class="morti" style="color: #d63384; font-weight: bold;">💀 ' . $morti . ' ' . _n('morto', 'morti', $morti, 'incidenti-stradali') . '</p>';
+                }
+                if ($feriti > 0) {
+                    $popup_content .= '<p class="feriti" style="color: #fd7e14; font-weight: bold;">🚑 ' . $feriti . ' ' . _n('ferito', 'feriti', $feriti, 'incidenti-stradali') . '</p>';
+                }
+            }
+            
             $popup_content .= '</div>';
             
             $markers[] = array(
@@ -484,17 +527,18 @@ class IncidentiShortcodes {
                 'lng' => floatval($lng),
                 'morti' => $morti,
                 'feriti' => $feriti,
-                'popup' => $popup_content
+                'popup' => $popup_content,
+                'id' => $post_id
             );
             
-            // Update statistics
+            // Update statistics (resto del codice rimane uguale...)
             $stats['totale']++;
             $stats['morti'] += $morti;
             $stats['feriti'] += $feriti;
             if ($morti == 0 && $feriti == 0) $stats['solo_danni']++;
         }
         
-        // Generate stats HTML
+        // Generate stats HTML (resto rimane uguale...)
         $stats_html = '<div class="map-stats-summary">';
         $stats_html .= '<span>' . sprintf(__('Totale: %d incidenti', 'incidenti-stradali'), $stats['totale']) . '</span>';
         $stats_html .= '<span class="morti">' . sprintf(__('Morti: %d', 'incidenti-stradali'), $stats['morti']) . '</span>';
@@ -591,5 +635,52 @@ class IncidentiShortcodes {
         // ... (implementation based on attributes)
         
         return array();
+    }
+
+    /**
+     * Get nome comune from codice ISTAT
+     */
+    private function get_nome_comune_from_codice($codice_comune) {
+        if (empty($codice_comune)) {
+            return __('Non specificato', 'incidenti-stradali');
+        }
+        
+        // Carica il file JSON dei comuni
+        $comuni_file = INCIDENTI_PLUGIN_PATH . 'data/codici-istat-comuni.json';
+        
+        if (!file_exists($comuni_file)) {
+            return $codice_comune; // Fallback al codice se il file non esiste
+        }
+        
+        $comuni_data = json_decode(file_get_contents($comuni_file), true);
+        
+        if (!$comuni_data || !isset($comuni_data['comuni'])) {
+            return $codice_comune;
+        }
+        
+        // Cerca il comune nelle varie province
+        foreach ($comuni_data['comuni'] as $provincia_codice => $comuni_provincia) {
+            if (isset($comuni_provincia[$codice_comune])) {
+                return $comuni_provincia[$codice_comune];
+            }
+        }
+        
+        return $codice_comune; // Fallback se non trovato
+    }
+
+    /**
+     * Get organo rilevazione description
+     */
+    private function get_organo_rilevazione_description($codice_organo) {
+        $organi = array(
+            '1' => __('Polizia Stradale', 'incidenti-stradali'),
+            '2' => __('Carabinieri', 'incidenti-stradali'),
+            '3' => __('Polizia di Stato', 'incidenti-stradali'),
+            '4' => __('Polizia Municipale/Locale', 'incidenti-stradali'),
+            '5' => __('Altri', 'incidenti-stradali'),
+            '6' => __('Polizia Provinciale', 'incidenti-stradali')
+        );
+        
+        return isset($organi[$codice_organo]) ? $organi[$codice_organo] : __('Non specificato', 'incidenti-stradali');
     }
 }

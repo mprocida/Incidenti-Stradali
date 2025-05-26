@@ -157,29 +157,78 @@
 }
 
 /* Popup Styles */
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
 .incidente-popup {
-    min-width: 200px;
+    min-width: 280px;
+    max-width: 350px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .incidente-popup h4 {
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
     font-size: 16px;
     color: #333;
+    border-bottom: 2px solid #0073aa;
+    padding-bottom: 8px;
+}
+
+.incidente-popup h4 a {
+    color: #0073aa !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    display: block;
+}
+
+.incidente-popup h4 a:hover {
+    color: #005a87 !important;
+    text-decoration: underline !important;
 }
 
 .incidente-popup p {
-    margin: 5px 0;
+    margin: 8px 0;
     font-size: 14px;
+    line-height: 1.4;
+    color: #555;
+}
+
+.incidente-popup p strong {
+    color: #333;
+    font-weight: 600;
 }
 
 .incidente-popup .morti {
-    color: #d63384;
-    font-weight: 600;
+    color: #d63384 !important;
+    font-weight: 600 !important;
+    background: #fff5f5;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border-left: 3px solid #d63384;
+    margin: 10px 0 !important;
 }
 
 .incidente-popup .feriti {
-    color: #fd7e14;
-    font-weight: 600;
+    color: #fd7e14 !important;
+    font-weight: 600 !important;
+    background: #fff8f0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border-left: 3px solid #fd7e14;
+    margin: 10px 0 !important;
+}
+
+.incidente-popup hr {
+    margin: 12px 0;
+    border: none;
+    border-top: 1px solid #eee;
+}
+
+/* Stili per le icone emoji */
+.incidente-popup p strong::before {
+    margin-right: 6px;
 }
 
 .incidente-popup .solo-danni {
@@ -316,6 +365,19 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .incidente-popup {
+        min-width: 240px;
+        max-width: 280px;
+    }
+    
+    .incidente-popup p {
+        font-size: 13px;
+    }
+    
+    .incidente-popup h4 {
+        font-size: 15px;
+    }
+
     .incidenti-map-filters .filter-row {
         flex-direction: column;
         align-items: stretch;
@@ -458,4 +520,14 @@
         background: #2c2c2c;
         color: #fff;
     }
+}
+
+/* Stili per coordinate */
+.incidente-popup p[data-type="coordinates"] {
+    font-family: monospace;
+    font-size: 12px;
+    color: #666;
+    background: #f8f9fa;
+    padding: 4px 6px;
+    border-radius: 3px;
 }

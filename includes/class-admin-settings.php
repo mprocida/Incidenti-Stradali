@@ -38,6 +38,10 @@ class IncidentiAdminSettings {
         register_setting('incidenti_settings', 'incidenti_auto_export_enabled');
         register_setting('incidenti_settings', 'incidenti_auto_export_frequency');
         register_setting('incidenti_settings', 'incidenti_auto_export_email');
+
+        // Export notification settings
+        register_setting('incidenti_settings', 'incidenti_notify_export_completion');
+        register_setting('incidenti_settings', 'incidenti_export_notification_email');
         
         // Security settings
         register_setting('incidenti_settings', 'incidenti_restrict_by_ip');
@@ -140,7 +144,33 @@ class IncidentiAdminSettings {
                                     <p class="description"><?php _e('Directory dove salvare i file esportati.', 'incidenti-stradali'); ?></p>
                                 </td>
                             </tr>
-                            
+                            <tr>
+                                <th scope="row">
+                                    <label for="incidenti_notify_export_completion"><?php _e('Notifica Completamento Esportazione', 'incidenti-stradali'); ?></label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" 
+                                        id="incidenti_notify_export_completion" 
+                                        name="incidenti_notify_export_completion" 
+                                        value="1" 
+                                        <?php checked(get_option('incidenti_notify_export_completion', true)); ?>>
+                                    <label for="incidenti_notify_export_completion"><?php _e('Invia email quando un\'esportazione viene completata', 'incidenti-stradali'); ?></label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th scope="row">
+                                    <label for="incidenti_export_notification_email"><?php _e('Email per Notifiche Esportazione', 'incidenti-stradali'); ?></label>
+                                </th>
+                                <td>
+                                    <input type="email" 
+                                        id="incidenti_export_notification_email" 
+                                        name="incidenti_export_notification_email" 
+                                        value="<?php echo esc_attr(get_option('incidenti_export_notification_email', get_option('admin_email'))); ?>" 
+                                        class="regular-text">
+                                    <p class="description"><?php _e('Email a cui inviare le notifiche di completamento esportazione. Lascia vuoto per usare l\'email dell\'utente che esegue l\'esportazione.', 'incidenti-stradali'); ?></p>
+                                </td>
+                            </tr>
                             <tr>
                                 <th scope="row">
                                     <label for="incidenti_auto_export_enabled"><?php _e('Esportazione Automatica', 'incidenti-stradali'); ?></label>
@@ -443,6 +473,8 @@ class IncidentiAdminSettings {
             'incidenti_auto_export_enabled',
             'incidenti_auto_export_frequency',
             'incidenti_auto_export_email',
+            'incidenti_notify_export_completion',
+            'incidenti_export_notification_email',
             'incidenti_restrict_by_ip',
             'incidenti_allowed_ips',
             'incidenti_notify_new_incident',
@@ -471,6 +503,7 @@ class IncidentiAdminSettings {
                         $value = sanitize_text_field($value);
                         break;
                     case 'incidenti_auto_export_email':
+                    case 'incidenti_export_notification_email':
                         $value = sanitize_email($value);
                         break;
                     case 'incidenti_allowed_ips':
@@ -484,12 +517,13 @@ class IncidentiAdminSettings {
                 update_option($setting, $value);
             } else {
                 // Handle checkboxes that might not be set
-                if (strpos($setting, '_enabled') !== false || 
-                    strpos($setting, '_notify') !== false || 
+                if (strpos($setting, '_enabled') !== false ||
+                    strpos($setting, '_notify') !== false ||
                     strpos($setting, '_restrict') !== false ||
                     strpos($setting, '_cluster') !== false ||
                     strpos($setting, '_show') !== false ||
-                    strpos($setting, '_keep') !== false) {
+                    strpos($setting, '_keep') !== false ||
+                    $setting === 'incidenti_notify_export_completion') {
                     update_option($setting, false);
                 }
             }

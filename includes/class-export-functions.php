@@ -152,7 +152,10 @@ class IncidentiExportFunctions {
         
         // Log dell'esportazione
         $this->log_export('ISTAT_TXT', count($incidenti), $filename);
-        
+
+        // Trigger email notification
+        do_action('incidenti_after_export', 'ISTAT_TXT', $filename, count($incidenti), get_current_user_id());
+
         // Download del file
         header('Content-Type: text/plain; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -222,7 +225,10 @@ class IncidentiExportFunctions {
         
         // Log dell'esportazione
         $this->log_export('Excel_CSV', count($incidenti), $filename);
-        
+
+        // Trigger email notification
+        do_action('incidenti_after_export', 'Excel_CSV', $filename, count($incidenti), get_current_user_id());
+
         // Download del file
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');

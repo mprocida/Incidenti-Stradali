@@ -62,7 +62,8 @@ class IncidentiStradaliPlugin {
             'includes/class-export-functions.php',
             'includes/class-validation.php',
             'includes/class-shortcodes.php',
-            'includes/class-admin-settings.php'
+            'includes/class-admin-settings.php',
+            'includes/class-email-notifications.php'
         );
         
         foreach ($files_to_include as $file) {

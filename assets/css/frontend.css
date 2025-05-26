@@ -572,6 +572,23 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .incidenti-statistics.cards .stats-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .incidenti-statistics .stat-card {
+        padding: 15px;
+    }
+    
+    .incidenti-statistics .stat-number {
+        font-size: 2em;
+    }
+    
+    .incidenti-statistics .stat-label {
+        font-size: 0.8em;
+    }
+
     .incidente-popup {
         min-width: 240px;
         max-width: 280px;
@@ -617,6 +634,12 @@
     
     .incidente-gravita {
         flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .incidenti-statistics.cards .stats-cards {
+        grid-template-columns: 1fr;
     }
 }
 

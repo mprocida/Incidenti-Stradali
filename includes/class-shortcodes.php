@@ -16,6 +16,8 @@ class IncidentiShortcodes {
         add_action('wp_ajax_nopriv_get_incidenti_markers', array($this, 'ajax_get_markers'));
         add_action('wp_ajax_get_incidente_details', array($this, 'ajax_get_incidente_details'));
         add_action('wp_ajax_nopriv_get_incidente_details', array($this, 'ajax_get_incidente_details'));
+        add_action('wp_ajax_get_statistiche_data', array($this, 'ajax_get_statistiche_data'));
+        add_action('wp_ajax_nopriv_get_statistiche_data', array($this, 'ajax_get_statistiche_data'));
         
         // Enqueue scripts for shortcodes
         add_action('wp_enqueue_scripts', array($this, 'enqueue_shortcode_scripts'));
@@ -31,14 +33,26 @@ class IncidentiShortcodes {
             has_shortcode($post->post_content, 'incidenti_statistiche') || 
             has_shortcode($post->post_content, 'incidenti_lista'))) {
             
-            // Enqueue Leaflet
-            wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
-            wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
+            // Enqueue Leaflet per le mappe
+            if (has_shortcode($post->post_content, 'incidenti_mappa')) {
+                wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
+                wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
+                
+                wp_enqueue_script('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', array('leaflet'), '1.4.1', true);
+                wp_enqueue_style('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', array('leaflet'), '1.4.1');
+                wp_enqueue_style('leaflet-markercluster-default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', array('leaflet-markercluster'), '1.4.1');
+            }
             
-            // Enqueue marker cluster if needed
-            wp_enqueue_script('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', array('leaflet'), '1.4.1', true);
-            wp_enqueue_style('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', array('leaflet'), '1.4.1');
-            wp_enqueue_style('leaflet-markercluster-default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', array('leaflet-markercluster'), '1.4.1');
+            // Enqueue Chart.js per le statistiche
+            if (has_shortcode($post->post_content, 'incidenti_statistiche')) {
+                wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js', array(), '3.9.1', true);
+            }
+            
+            // Localizzazione AJAX
+            wp_localize_script('jquery', 'incidenti_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('incidenti_nonce')
+            ));
         }
     }
     
@@ -258,8 +272,8 @@ class IncidentiShortcodes {
     }
     
     /**
-     * Shortcode per visualizzare statistiche degli incidenti
-     */
+     * Shortcode per visualizzare statistiche degli incidenti - VERSIONE CORRETTA
+    */
     public function render_statistiche_shortcode($atts) {
         $atts = shortcode_atts(array(
             'periodo' => 'last_year',
@@ -269,6 +283,7 @@ class IncidentiShortcodes {
         ), $atts, 'incidenti_statistiche');
         
         $stats = $this->get_incidenti_statistics($atts);
+        $unique_id = uniqid();
         
         ob_start();
         ?>
@@ -294,71 +309,99 @@ class IncidentiShortcodes {
                     <div class="stat-label"><?php _e('Solo Danni', 'incidenti-stradali'); ?></div>
                 </div>
             </div>
-            <?php elseif ($atts['style'] === 'table'): ?>
-            <table class="incidenti-stats-table">
-                <tr>
-                    <th><?php _e('Tipo', 'incidenti-stradali'); ?></th>
-                    <th><?php _e('Numero', 'incidenti-stradali'); ?></th>
-                    <th><?php _e('Percentuale', 'incidenti-stradali'); ?></th>
-                </tr>
-                <tr>
-                    <td><?php _e('Totali', 'incidenti-stradali'); ?></td>
-                    <td><?php echo $stats['totale']; ?></td>
-                    <td>100%</td>
-                </tr>
-                <tr>
-                    <td><?php _e('Con morti', 'incidenti-stradali'); ?></td>
-                    <td><?php echo $stats['morti']; ?></td>
-                    <td><?php echo $stats['totale'] > 0 ? round(($stats['morti'] / $stats['totale']) * 100, 1) : 0; ?>%</td>
-                </tr>
-                <tr>
-                    <td><?php _e('Con feriti', 'incidenti-stradali'); ?></td>
-                    <td><?php echo $stats['feriti']; ?></td>
-                    <td><?php echo $stats['totale'] > 0 ? round(($stats['feriti'] / $stats['totale']) * 100, 1) : 0; ?>%</td>
-                </tr>
-                <tr>
-                    <td><?php _e('Solo danni', 'incidenti-stradali'); ?></td>
-                    <td><?php echo $stats['solo_danni']; ?></td>
-                    <td><?php echo $stats['totale'] > 0 ? round(($stats['solo_danni'] / $stats['totale']) * 100, 1) : 0; ?>%</td>
-                </tr>
-            </table>
             <?php endif; ?>
             
-            <?php if ($atts['show_charts'] === 'true' && !empty($stats['chart_data'])): ?>
+            <?php if ($atts['show_charts'] === 'true'): ?>
             <div class="stats-charts" style="margin-top: 30px;">
-                <div class="chart-container">
+                <div class="chart-container" style="position: relative; height: 300px; margin-bottom: 30px;">
                     <h4><?php _e('Incidenti per Mese', 'incidenti-stradali'); ?></h4>
-                    <canvas id="chart-mesi-<?php echo uniqid(); ?>" width="400" height="200" data-chart="<?php echo esc_attr(json_encode($stats['chart_data']['monthly'])); ?>"></canvas>
+                    <canvas id="chart-mesi-<?php echo $unique_id; ?>" 
+                            data-chart-type="line"
+                            data-periodo="<?php echo esc_attr($atts['periodo']); ?>"
+                            data-comune="<?php echo esc_attr($atts['comune']); ?>"
+                            style="max-height: 250px;"></canvas>
                 </div>
                 
-                <div class="chart-container">
-                    <h4><?php _e('Incidenti per Giorno della Settimana', 'incidenti-stradali'); ?></h4>
-                    <canvas id="chart-giorni-<?php echo uniqid(); ?>" width="400" height="200" data-chart="<?php echo esc_attr(json_encode($stats['chart_data']['weekly'])); ?>"></canvas>
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <h4><?php _e('Incidenti per Tipo di Strada', 'incidenti-stradali'); ?></h4>
+                    <canvas id="chart-strade-<?php echo $unique_id; ?>" 
+                            data-chart-type="doughnut"
+                            data-periodo="<?php echo esc_attr($atts['periodo']); ?>"
+                            data-comune="<?php echo esc_attr($atts['comune']); ?>"
+                            style="max-height: 250px;"></canvas>
                 </div>
             </div>
             
-            <script type="text/javascript">
+            <script>
             jQuery(document).ready(function($) {
-                // Carica Chart.js se disponibile
-                if (typeof Chart !== 'undefined') {
-                    $('.stats-charts canvas').each(function() {
-                        var ctx = this.getContext('2d');
-                        var chartData = $(this).data('chart');
-                        
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: chartData,
-                            options: {
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
-                                    }
-                                }
+                // Inizializza i grafici quando Chart.js è caricato
+                function initializeCharts() {
+                    if (typeof Chart === 'undefined') {
+                        setTimeout(initializeCharts, 100);
+                        return;
+                    }
+                    
+                    // Grafico per mesi
+                    var ctxMesi = document.getElementById('chart-mesi-<?php echo $unique_id; ?>');
+                    if (ctxMesi) {
+                        loadChartData(ctxMesi, 'mesi');
+                    }
+                    
+                    // Grafico per tipo strada
+                    var ctxStrade = document.getElementById('chart-strade-<?php echo $unique_id; ?>');
+                    if (ctxStrade) {
+                        loadChartData(ctxStrade, 'tipo_strada');
+                    }
+                }
+                
+                function loadChartData(canvas, dataType) {
+                    var $canvas = $(canvas);
+                    
+                    $.ajax({
+                        url: incidenti_ajax.ajax_url,
+                        type: 'POST',
+                        data: {
+                            action: 'get_statistiche_data',
+                            nonce: incidenti_ajax.nonce,
+                            data_type: dataType,
+                            periodo: $canvas.data('periodo'),
+                            comune: $canvas.data('comune')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                createChart(canvas, response.data, $canvas.data('chart-type'));
                             }
-                        });
+                        }
                     });
                 }
+                
+                function createChart(canvas, data, type) {
+                    var config = {
+                        type: type,
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    };
+                    
+                    if (type === 'line') {
+                        config.options.scales = {
+                            y: {
+                                beginAtZero: true
+                            }
+                        };
+                    }
+                    
+                    new Chart(canvas.getContext('2d'), config);
+                }
+                
+                initializeCharts();
             });
             </script>
             <?php endif; ?>
@@ -367,6 +410,199 @@ class IncidentiShortcodes {
         
         <?php
         return ob_get_clean();
+    }
+
+    /**
+     * AJAX handler per ottenere dati statistiche
+     */
+    public function ajax_get_statistiche_data() {
+        check_ajax_referer('incidenti_nonce', 'nonce');
+        
+        $data_type = sanitize_text_field($_POST['data_type']);
+        $periodo = sanitize_text_field($_POST['periodo']);
+        $comune = sanitize_text_field($_POST['comune']);
+        
+        $data = array();
+        
+        switch ($data_type) {
+            case 'mesi':
+                $data = $this->get_monthly_data($periodo, $comune);
+                break;
+            case 'tipo_strada':
+                $data = $this->get_road_type_data($periodo, $comune);
+                break;
+        }
+        
+        wp_send_json_success($data);
+    }
+
+    /**
+     * Ottieni dati mensili per grafico
+     */
+    private function get_monthly_data($periodo, $comune) {
+        $date_range = $this->get_date_range($periodo);
+        
+        $args = array(
+            'post_type' => 'incidente_stradale',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                array(
+                    'key' => 'data_incidente',
+                    'value' => array($date_range['start'], $date_range['end']),
+                    'compare' => 'BETWEEN',
+                    'type' => 'DATE'
+                )
+            )
+        );
+        
+        if (!empty($comune)) {
+            $args['meta_query'][] = array(
+                'key' => 'comune_incidente',
+                'value' => $comune,
+                'compare' => '='
+            );
+        }
+        
+        $incidents = get_posts($args);
+        
+        // Aggrega per mese
+        $monthly_counts = array();
+        $labels = array();
+        
+        // Inizializza array per gli ultimi 12 mesi
+        for ($i = 11; $i >= 0; $i--) {
+            $month = date('Y-m', strtotime("-$i months"));
+            $monthly_counts[$month] = 0;
+            $labels[] = date('M Y', strtotime("-$i months"));
+        }
+        
+        foreach ($incidents as $incident) {
+            $date = get_post_meta($incident->ID, 'data_incidente', true);
+            if ($date) {
+                $month = date('Y-m', strtotime($date));
+                if (isset($monthly_counts[$month])) {
+                    $monthly_counts[$month]++;
+                }
+            }
+        }
+        
+        return array(
+            'labels' => $labels,
+            'datasets' => array(
+                array(
+                    'label' => __('Incidenti', 'incidenti-stradali'),
+                    'data' => array_values($monthly_counts),
+                    'borderColor' => '#0073aa',
+                    'backgroundColor' => 'rgba(0, 115, 170, 0.1)',
+                    'tension' => 0.4
+                )
+            )
+        );
+    }
+
+    /**
+     * Ottieni dati per tipo di strada
+     */
+    private function get_road_type_data($periodo, $comune) {
+        $date_range = $this->get_date_range($periodo);
+        
+        $args = array(
+            'post_type' => 'incidente_stradale',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                array(
+                    'key' => 'data_incidente',
+                    'value' => array($date_range['start'], $date_range['end']),
+                    'compare' => 'BETWEEN',
+                    'type' => 'DATE'
+                )
+            )
+        );
+        
+        if (!empty($comune)) {
+            $args['meta_query'][] = array(
+                'key' => 'comune_incidente',
+                'value' => $comune,
+                'compare' => '='
+            );
+        }
+        
+        $incidents = get_posts($args);
+        
+        $road_types = array(
+            '1' => 'Strada urbana',
+            '2' => 'Provinciale entro abitato',
+            '3' => 'Statale entro abitato',
+            '4' => 'Comunale extraurbana',
+            '5' => 'Provinciale',
+            '6' => 'Statale',
+            '7' => 'Autostrada',
+            '8' => 'Altra strada'
+        );
+        
+        $type_counts = array();
+        $labels = array();
+        $data_values = array();
+        
+        foreach ($incidents as $incident) {
+            $tipo = get_post_meta($incident->ID, 'tipo_strada', true);
+            if ($tipo && isset($road_types[$tipo])) {
+                if (!isset($type_counts[$tipo])) {
+                    $type_counts[$tipo] = 0;
+                }
+                $type_counts[$tipo]++;
+            }
+        }
+        
+        foreach ($type_counts as $tipo => $count) {
+            $labels[] = $road_types[$tipo];
+            $data_values[] = $count;
+        }
+        
+        return array(
+            'labels' => $labels,
+            'datasets' => array(
+                array(
+                    'data' => $data_values,
+                    'backgroundColor' => array(
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40',
+                        '#FF6384',
+                        '#C9CBCF'
+                    )
+                )
+            )
+        );
+    }
+    
+    /**
+     * Ottieni range di date basato sul periodo
+     */
+    private function get_date_range($periodo) {
+        switch ($periodo) {
+            case 'last_month':
+                return array(
+                    'start' => date('Y-m-01', strtotime('-1 month')),
+                    'end' => date('Y-m-t', strtotime('-1 month'))
+                );
+            case 'last_3_months':
+                return array(
+                    'start' => date('Y-m-01', strtotime('-3 months')),
+                    'end' => date('Y-m-d')
+                );
+            case 'last_year':
+            default:
+                return array(
+                    'start' => date('Y-m-d', strtotime('-1 year')),
+                    'end' => date('Y-m-d')
+                );
+        }
     }
     
     /**
@@ -731,68 +967,57 @@ class IncidentiShortcodes {
     }
     
     /**
-     * Implementazione completa di get_incidenti_statistics
-    */
+     * Implementazione corretta di get_incidenti_statistics
+     */
     private function get_incidenti_statistics($atts) {
-        // Costruisci query base
+        $date_range = $this->get_date_range($atts['periodo']);
+        
         $args = array(
             'post_type' => 'incidente_stradale',
             'post_status' => 'publish',
             'posts_per_page' => -1,
-            'meta_query' => array()
+            'meta_query' => array(
+                array(
+                    'key' => 'data_incidente',
+                    'value' => array($date_range['start'], $date_range['end']),
+                    'compare' => 'BETWEEN',
+                    'type' => 'DATE'
+                )
+            )
         );
         
-        // Applica filtro comune
         if (!empty($atts['comune'])) {
             $args['meta_query'][] = array(
                 'key' => 'comune_incidente',
-                'value' => sanitize_text_field($atts['comune']),
+                'value' => $atts['comune'],
                 'compare' => '='
             );
         }
         
-        // Applica filtro periodo
-        if (!empty($atts['periodo'])) {
-            $date_query = $this->get_date_query_for_period($atts['periodo']);
-            if ($date_query) {
-                $args['meta_query'][] = $date_query;
-            }
-        }
-        
-        $incidenti = get_posts($args);
+        $incidents = get_posts($args);
         
         $stats = array(
-            'totale' => count($incidenti),
+            'totale' => count($incidents),
             'morti' => 0,
             'feriti' => 0,
-            'solo_danni' => 0,
-            'chart_data' => array(
-                'monthly' => array(),
-                'weekly' => array()
-            )
+            'solo_danni' => 0
         );
         
-        $monthly_data = array();
-        $weekly_data = array_fill(0, 7, 0); // 0=Domenica, 1=Lunedì, etc.
-        
-        foreach ($incidenti as $incidente) {
-            $post_id = $incidente->ID;
-            
-            // Conta vittime
+        foreach ($incidents as $incident) {
             $morti_incidente = 0;
             $feriti_incidente = 0;
             
-            // Conta conducenti
+            // Conta morti e feriti da conducenti
             for ($i = 1; $i <= 3; $i++) {
-                $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
+                $esito = get_post_meta($incident->ID, 'conducente_' . $i . '_esito', true);
                 if ($esito == '3' || $esito == '4') $morti_incidente++;
                 if ($esito == '2') $feriti_incidente++;
             }
             
-            // Conta pedoni
-            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
+            // Conta morti e feriti da pedoni
+            $num_pedoni = get_post_meta($incident->ID, 'numero_pedoni_coinvolti', true) ?: 0;
             for ($i = 1; $i <= $num_pedoni; $i++) {
-                $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
+                $esito = get_post_meta($incident->ID, 'pedone_' . $i . '_esito', true);
                 if ($esito == '3' || $esito == '4') $morti_incidente++;
                 if ($esito == '2') $feriti_incidente++;
             }
@@ -803,55 +1028,7 @@ class IncidentiShortcodes {
             if ($morti_incidente == 0 && $feriti_incidente == 0) {
                 $stats['solo_danni']++;
             }
-            
-            // Dati per grafici
-            $data_incidente = get_post_meta($post_id, 'data_incidente', true);
-            if ($data_incidente) {
-                // Dati mensili
-                $month_key = date('Y-m', strtotime($data_incidente));
-                $monthly_data[$month_key] = ($monthly_data[$month_key] ?? 0) + 1;
-                
-                // Dati settimanali
-                $day_of_week = date('w', strtotime($data_incidente));
-                $weekly_data[$day_of_week]++;
-            }
         }
-        
-        // Prepara dati per grafici
-        if (!empty($monthly_data)) {
-            ksort($monthly_data);
-            $stats['chart_data']['monthly'] = array(
-                'labels' => array_keys($monthly_data),
-                'datasets' => array(array(
-                    'label' => __('Incidenti per Mese', 'incidenti-stradali'),
-                    'data' => array_values($monthly_data),
-                    'backgroundColor' => 'rgba(54, 162, 235, 0.6)',
-                    'borderColor' => 'rgba(54, 162, 235, 1)',
-                    'borderWidth' => 1
-                ))
-            );
-        }
-        
-        $days_labels = array(
-            __('Domenica', 'incidenti-stradali'),
-            __('Lunedì', 'incidenti-stradali'),
-            __('Martedì', 'incidenti-stradali'),
-            __('Mercoledì', 'incidenti-stradali'),
-            __('Giovedì', 'incidenti-stradali'),
-            __('Venerdì', 'incidenti-stradali'),
-            __('Sabato', 'incidenti-stradali')
-        );
-        
-        $stats['chart_data']['weekly'] = array(
-            'labels' => $days_labels,
-            'datasets' => array(array(
-                'label' => __('Incidenti per Giorno', 'incidenti-stradali'),
-                'data' => $weekly_data,
-                'backgroundColor' => 'rgba(255, 99, 132, 0.6)',
-                'borderColor' => 'rgba(255, 99, 132, 1)',
-                'borderWidth' => 1
-            ))
-        );
         
         return $stats;
     }

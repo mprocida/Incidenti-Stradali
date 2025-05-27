@@ -238,6 +238,111 @@ class IncidentiDashboardWidget {
         
         wp_send_json_success($content);
     }
+
+
+    private function get_comuni_lecce() {
+        return array(
+            '001' => 'Acquarica Del Capo',
+            '002' => 'Alessano', 
+            '003' => 'Alezio',
+            '004' => 'Alliste',
+            '005' => 'Andrano',
+            '006' => 'Aradeo',
+            '007' => 'Arnesano',
+            '008' => 'Bagnolo Del Salento',
+            '009' => 'Botrugno',
+            '010' => 'Calimera Di Lecce',
+            '011' => 'Campi Salentina',
+            '012' => 'Cannole',
+            '013' => 'Caprarica Del Capo',
+            '014' => 'Caprarica Di Lecce',
+            '015' => 'Carmiano',
+            '016' => 'Carpignano Salentino',
+            '017' => 'Casarano',
+            '018' => 'Castri Di Lecce',
+            '019' => 'Castrignano Del Capo',
+            '020' => 'Castrignano De` Greci',
+            '021' => 'Castro',
+            '022' => 'Cavallino',
+            '023' => 'Collepasso',
+            '024' => 'Copertino',
+            '025' => 'Corigliano D`Otranto',
+            '026' => 'Corsano',
+            '027' => 'Cursi',
+            '028' => 'Cutrofiano',
+            '029' => 'Diso',
+            '030' => 'Gagliano Del Capo',
+            '031' => 'Galatina',
+            '032' => 'Galatone',
+            '033' => 'Gallipoli',
+            '034' => 'Giuggianello',
+            '035' => 'Giurdignano',
+            '036' => 'Guagnano',
+            '037' => 'Lecce',
+            '038' => 'Lequile',
+            '039' => 'Leverano',
+            '040' => 'Lizzanello',
+            '041' => 'Maglie',
+            '042' => 'Martano',
+            '043' => 'Martignano',
+            '044' => 'Matino',
+            '045' => 'Melendugno',
+            '046' => 'Melissano',
+            '047' => 'Melpignano',
+            '048' => 'Miggiano',
+            '049' => 'Minervino Di Lecce',
+            '050' => 'Monteroni Di Lecce',
+            '051' => 'Montesano Salentino',
+            '052' => 'Morciano Di Leuca',
+            '053' => 'Muro Leccese',
+            '054' => 'Nardo`',
+            '055' => 'Neviano',
+            '056' => 'Nociglia',
+            '057' => 'Novoli',
+            '058' => 'Ortelle',
+            '059' => 'Otranto',
+            '060' => 'Palmariggi',
+            '061' => 'Parabita',
+            '062' => 'Patu`',
+            '063' => 'Poggiardo',
+            '064' => 'Porto Cesareo',
+            '065' => 'Presicce',
+            '066' => 'Presicce-Acquarica',
+            '067' => 'Racale',
+            '068' => 'Ruffano',
+            '069' => 'Salice Salentino',
+            '070' => 'Salve',
+            '071' => 'San Cassiano Di Lecce',
+            '072' => 'San Cesario Di Lecce',
+            '073' => 'San Donato Di Lecce',
+            '074' => 'San Pietro In Lama',
+            '075' => 'Sanarica',
+            '076' => 'Sannicola',
+            '077' => 'Santa Cesarea Terme',
+            '078' => 'Scorrano',
+            '079' => 'Secli`',
+            '080' => 'Sogliano Cavour',
+            '081' => 'Soleto',
+            '082' => 'Specchia',
+            '083' => 'Spongano',
+            '084' => 'Squinzano',
+            '085' => 'Sternatia',
+            '086' => 'Supersano',
+            '087' => 'Surano',
+            '088' => 'Surbo',
+            '089' => 'Taurisano',
+            '090' => 'Taviano',
+            '091' => 'Tiggiano',
+            '092' => 'Trepuzzi',
+            '093' => 'Tricase',
+            '094' => 'Tuglie',
+            '095' => 'Ugento',
+            '096' => 'Uggiano La Chiesa',
+            '097' => 'Veglie',
+            '098' => 'Vernole',
+            '099' => 'Zollino'
+        );
+    }
     
     private function get_dashboard_stats() {
         $current_user_id = get_current_user_id();
@@ -571,8 +676,12 @@ class IncidentiDashboardWidget {
                 break;
                 
             case 'incidente_comune':
-                $comune = get_post_meta($post_id, 'comune_incidente', true);
-                echo esc_html($comune);
+                $comune_codice = get_post_meta($post_id, 'comune_incidente', true);
+                if ($comune_codice) {
+                    $comuni_lecce = $this->get_comuni_lecce();
+                    $nome_comune = isset($comuni_lecce[$comune_codice]) ? $comuni_lecce[$comune_codice] : $comune_codice;
+                    echo esc_html($nome_comune);
+                }
                 break;
                 
             case 'incidente_gravita':

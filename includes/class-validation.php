@@ -21,6 +21,33 @@ class IncidentiValidation {
         if ($data['post_status'] === 'auto-draft') {
             return $data;
         }
+
+        // CRITICO: Non interferire con operazioni di eliminazione
+        if (isset($_GET['action']) && in_array($_GET['action'], ['trash', 'delete', 'untrash'])) {
+            return $data;
+        }
+        
+        if (isset($_POST['action']) && in_array($_POST['action'], ['trash', 'delete', 'untrash'])) {
+            return $data;
+        }
+        
+        // Non interferire con bulk actions di eliminazione
+        if (isset($_POST['action']) && $_POST['action'] === '-1' && isset($_POST['action2'])) {
+            $action = $_POST['action2'];
+            if (in_array($action, ['trash', 'delete', 'untrash'])) {
+                return $data;
+            }
+        }
+        
+        // Skip validation for auto-drafts
+        if ($data['post_status'] === 'auto-draft') {
+            return $data;
+        }
+        
+        // Skip validation per post già nel cestino
+        if ($data['post_status'] === 'trash') {
+            return $data;
+        }
         
         $errors = array();
         
@@ -36,18 +63,18 @@ class IncidentiValidation {
         );
         
         foreach ($required_fields as $field => $label) {
-        // Controllo speciale per il campo nell_abitato che può essere 0 o 1
-        if ($field === 'nell_abitato') {
-            if (!isset($_POST[$field]) || $_POST[$field] === '') {
-                $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
-            }
-        } else {
-            // Controllo normale per gli altri campi
-            if (empty($_POST[$field])) {
-                $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
+            // Controllo speciale per il campo nell_abitato che può essere 0 o 1
+            if ($field === 'nell_abitato') {
+                if (!isset($_POST[$field]) || $_POST[$field] === '') {
+                    $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
+                }
+            } else {
+                // Controllo normale per gli altri campi
+                if (empty($_POST[$field])) {
+                    $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
+                }
             }
         }
-    }
         
         // Validate data incidente format
         if (!empty($_POST['data_incidente'])) {
@@ -73,8 +100,19 @@ class IncidentiValidation {
         
         // Validate comune (ISTAT code)
         if (!empty($_POST['comune_incidente'])) {
-            if (!$this->validate_istat_code($_POST['comune_incidente'], 3)) {
-                $errors[] = __('Il codice ISTAT del comune deve essere di 3 cifre.', 'incidenti-stradali');
+            $comuni_lecce = array('001', '002', '003', '004', '005', '006', '007', '008', '009', '010',
+                                '011', '012', '013', '014', '015', '016', '017', '018', '019', '020',
+                                '021', '022', '023', '024', '025', '026', '027', '028', '029', '030',
+                                '031', '032', '033', '034', '035', '036', '037', '038', '039', '040',
+                                '041', '042', '043', '044', '045', '046', '047', '048', '049', '050',
+                                '051', '052', '053', '054', '055', '056', '057', '058', '059', '060',
+                                '061', '062', '063', '064', '065', '066', '067', '068', '069', '070',
+                                '071', '072', '073', '074', '075', '076', '077', '078', '079', '080',
+                                '081', '082', '083', '084', '085', '086', '087', '088', '089', '090',
+                                '091', '092', '093', '094', '095', '096', '097', '098', '099');
+            
+            if (!in_array($_POST['comune_incidente'], $comuni_lecce)) {
+                $errors[] = __('Il comune selezionato non è valido.', 'incidenti-stradali');
             }
         }
         

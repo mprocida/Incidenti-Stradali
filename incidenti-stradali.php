@@ -63,7 +63,8 @@ class IncidentiStradaliPlugin {
             'includes/class-validation.php',
             'includes/class-shortcodes.php',
             'includes/class-admin-settings.php',
-            'includes/class-email-notifications.php'
+            'includes/class-email-notifications.php',
+            'includes/class-delete-handler.php'
         );
         
         foreach ($files_to_include as $file) {
@@ -76,7 +77,7 @@ class IncidentiStradaliPlugin {
         }
     }
     
-        public function init() {
+    public function init() {
         // Load text domain FIRST
         load_plugin_textdomain('incidenti-stradali', false, dirname(plugin_basename(__FILE__)) . '/languages');
         
@@ -107,6 +108,11 @@ class IncidentiStradaliPlugin {
         
         if (class_exists('IncidentiAdminSettings')) {
             new IncidentiAdminSettings();
+        }
+        
+        // NUOVO: Inizializza gestore eliminazioni
+        if (class_exists('IncidentiDeleteHandler')) {
+            new IncidentiDeleteHandler();
         }
         
         // Flush rewrite rules if needed

@@ -97,49 +97,56 @@ class IncidentiShortcodes {
         <div class="incidenti-map-container" style="width: <?php echo esc_attr($atts['width']); ?>;">
             
             <?php if ($atts['show_filters'] === 'true'): ?>
-            <div class="incidenti-map-filters" style="margin-bottom: 15px;">
-                <div class="filter-row">
-                    <label for="<?php echo $map_id; ?>-comune-filter">
-                        <?php _e('Comune:', 'incidenti-stradali'); ?>
-                    </label>
-                    <input type="text" 
-                           id="<?php echo $map_id; ?>-comune-filter" 
-                           placeholder="<?php _e('Codice ISTAT comune', 'incidenti-stradali'); ?>"
-                           value="<?php echo esc_attr($atts['comune']); ?>">
+                <div class="incidenti-map-filters" style="margin-bottom: 15px;">
+                    <div class="filter-row">
+                        <label for="<?php echo $map_id; ?>-comune-filter">
+                            <?php _e('Comune:', 'incidenti-stradali'); ?>
+                        </label>
+                        <select id="<?php echo $map_id; ?>-comune-filter" class="regular-text">
+                            <option value=""><?php _e('Tutti i comuni', 'incidenti-stradali'); ?></option>
+                            <?php 
+                            $comuni_lecce = $this->get_comuni_lecce();
+                            $selected_comune = $atts['comune'];
+                            foreach($comuni_lecce as $codice => $nome): ?>
+                                <option value="<?php echo esc_attr($codice); ?>" <?php selected($selected_comune, $codice); ?>>
+                                    <?php echo esc_html($nome); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        
+                        <label for="<?php echo $map_id; ?>-periodo-filter">
+                            <?php _e('Periodo:', 'incidenti-stradali'); ?>
+                        </label>
+                        <select id="<?php echo $map_id; ?>-periodo-filter">
+                            <option value=""><?php _e('Tutti', 'incidenti-stradali'); ?></option>
+                            <option value="last_month" <?php selected($atts['periodo'], 'last_month'); ?>><?php _e('Ultimo mese', 'incidenti-stradali'); ?></option>
+                            <option value="last_3_months" <?php selected($atts['periodo'], 'last_3_months'); ?>><?php _e('Ultimi 3 mesi', 'incidenti-stradali'); ?></option>
+                            <option value="last_year" <?php selected($atts['periodo'], 'last_year'); ?>><?php _e('Ultimo anno', 'incidenti-stradali'); ?></option>
+                            <option value="custom"><?php _e('Personalizzato', 'incidenti-stradali'); ?></option>
+                        </select>
+                        
+                        <button type="button" id="<?php echo $map_id; ?>-filter-btn" class="button">
+                            <?php _e('Filtra', 'incidenti-stradali'); ?>
+                        </button>
+                    </div>
                     
-                    <label for="<?php echo $map_id; ?>-periodo-filter">
-                        <?php _e('Periodo:', 'incidenti-stradali'); ?>
-                    </label>
-                    <select id="<?php echo $map_id; ?>-periodo-filter">
-                        <option value=""><?php _e('Tutti', 'incidenti-stradali'); ?></option>
-                        <option value="last_month" <?php selected($atts['periodo'], 'last_month'); ?>><?php _e('Ultimo mese', 'incidenti-stradali'); ?></option>
-                        <option value="last_3_months" <?php selected($atts['periodo'], 'last_3_months'); ?>><?php _e('Ultimi 3 mesi', 'incidenti-stradali'); ?></option>
-                        <option value="last_year" <?php selected($atts['periodo'], 'last_year'); ?>><?php _e('Ultimo anno', 'incidenti-stradali'); ?></option>
-                        <option value="custom"><?php _e('Personalizzato', 'incidenti-stradali'); ?></option>
-                    </select>
-                    
-                    <button type="button" id="<?php echo $map_id; ?>-filter-btn" class="button">
-                        <?php _e('Filtra', 'incidenti-stradali'); ?>
-                    </button>
+                    <div class="filter-row custom-dates" id="<?php echo $map_id; ?>-custom-dates" style="display: none; margin-top: 10px;">
+                        <label for="<?php echo $map_id; ?>-data-inizio">
+                            <?php _e('Da:', 'incidenti-stradali'); ?>
+                        </label>
+                        <input type="date" 
+                            id="<?php echo $map_id; ?>-data-inizio" 
+                            value="<?php echo esc_attr($atts['data_inizio']); ?>">
+                        
+                        <label for="<?php echo $map_id; ?>-data-fine">
+                            <?php _e('A:', 'incidenti-stradali'); ?>
+                        </label>
+                        <input type="date" 
+                            id="<?php echo $map_id; ?>-data-fine" 
+                            value="<?php echo esc_attr($atts['data_fine']); ?>">
+                    </div>
                 </div>
-                
-                <div class="filter-row custom-dates" id="<?php echo $map_id; ?>-custom-dates" style="display: none; margin-top: 10px;">
-                    <label for="<?php echo $map_id; ?>-data-inizio">
-                        <?php _e('Da:', 'incidenti-stradali'); ?>
-                    </label>
-                    <input type="date" 
-                           id="<?php echo $map_id; ?>-data-inizio" 
-                           value="<?php echo esc_attr($atts['data_inizio']); ?>">
-                    
-                    <label for="<?php echo $map_id; ?>-data-fine">
-                        <?php _e('A:', 'incidenti-stradali'); ?>
-                    </label>
-                    <input type="date" 
-                           id="<?php echo $map_id; ?>-data-fine" 
-                           value="<?php echo esc_attr($atts['data_fine']); ?>">
-                </div>
-            </div>
-            <?php endif; ?>
+                <?php endif; ?>
             
             <div id="<?php echo $map_id; ?>" 
                  class="incidenti-map <?php echo esc_attr($atts['style']); ?>" 
@@ -435,6 +442,110 @@ class IncidentiShortcodes {
         
         wp_send_json_success($data);
     }
+
+    private function get_comuni_lecce() {
+        return array(
+            '001' => 'Acquarica Del Capo',
+            '002' => 'Alessano', 
+            '003' => 'Alezio',
+            '004' => 'Alliste',
+            '005' => 'Andrano',
+            '006' => 'Aradeo',
+            '007' => 'Arnesano',
+            '008' => 'Bagnolo Del Salento',
+            '009' => 'Botrugno',
+            '010' => 'Calimera Di Lecce',
+            '011' => 'Campi Salentina',
+            '012' => 'Cannole',
+            '013' => 'Caprarica Del Capo',
+            '014' => 'Caprarica Di Lecce',
+            '015' => 'Carmiano',
+            '016' => 'Carpignano Salentino',
+            '017' => 'Casarano',
+            '018' => 'Castri Di Lecce',
+            '019' => 'Castrignano Del Capo',
+            '020' => 'Castrignano De` Greci',
+            '021' => 'Castro',
+            '022' => 'Cavallino',
+            '023' => 'Collepasso',
+            '024' => 'Copertino',
+            '025' => 'Corigliano D`Otranto',
+            '026' => 'Corsano',
+            '027' => 'Cursi',
+            '028' => 'Cutrofiano',
+            '029' => 'Diso',
+            '030' => 'Gagliano Del Capo',
+            '031' => 'Galatina',
+            '032' => 'Galatone',
+            '033' => 'Gallipoli',
+            '034' => 'Giuggianello',
+            '035' => 'Giurdignano',
+            '036' => 'Guagnano',
+            '037' => 'Lecce',
+            '038' => 'Lequile',
+            '039' => 'Leverano',
+            '040' => 'Lizzanello',
+            '041' => 'Maglie',
+            '042' => 'Martano',
+            '043' => 'Martignano',
+            '044' => 'Matino',
+            '045' => 'Melendugno',
+            '046' => 'Melissano',
+            '047' => 'Melpignano',
+            '048' => 'Miggiano',
+            '049' => 'Minervino Di Lecce',
+            '050' => 'Monteroni Di Lecce',
+            '051' => 'Montesano Salentino',
+            '052' => 'Morciano Di Leuca',
+            '053' => 'Muro Leccese',
+            '054' => 'Nardo`',
+            '055' => 'Neviano',
+            '056' => 'Nociglia',
+            '057' => 'Novoli',
+            '058' => 'Ortelle',
+            '059' => 'Otranto',
+            '060' => 'Palmariggi',
+            '061' => 'Parabita',
+            '062' => 'Patu`',
+            '063' => 'Poggiardo',
+            '064' => 'Porto Cesareo',
+            '065' => 'Presicce',
+            '066' => 'Presicce-Acquarica',
+            '067' => 'Racale',
+            '068' => 'Ruffano',
+            '069' => 'Salice Salentino',
+            '070' => 'Salve',
+            '071' => 'San Cassiano Di Lecce',
+            '072' => 'San Cesario Di Lecce',
+            '073' => 'San Donato Di Lecce',
+            '074' => 'San Pietro In Lama',
+            '075' => 'Sanarica',
+            '076' => 'Sannicola',
+            '077' => 'Santa Cesarea Terme',
+            '078' => 'Scorrano',
+            '079' => 'Secli`',
+            '080' => 'Sogliano Cavour',
+            '081' => 'Soleto',
+            '082' => 'Specchia',
+            '083' => 'Spongano',
+            '084' => 'Squinzano',
+            '085' => 'Sternatia',
+            '086' => 'Supersano',
+            '087' => 'Surano',
+            '088' => 'Surbo',
+            '089' => 'Taurisano',
+            '090' => 'Taviano',
+            '091' => 'Tiggiano',
+            '092' => 'Trepuzzi',
+            '093' => 'Tricase',
+            '094' => 'Tuglie',
+            '095' => 'Ugento',
+            '096' => 'Uggiano La Chiesa',
+            '097' => 'Veglie',
+            '098' => 'Vernole',
+            '099' => 'Zollino'
+        );
+    }    
 
     /**
      * Ottieni dati mensili per grafico
@@ -1085,6 +1196,8 @@ class IncidentiShortcodes {
         
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
+            $comune_codice = get_post_meta($incidente->ID, 'comune_incidente', true);
+            $nome_comune = isset($comuni_lecce[$comune_codice]) ? $comuni_lecce[$comune_codice] : $comune_codice;
             
             // Conta vittime
             $morti = 0;
@@ -1111,8 +1224,9 @@ class IncidentiShortcodes {
                 'ora' => get_post_meta($post_id, 'ora_incidente', true),
                 'minuti' => get_post_meta($post_id, 'minuti_incidente', true),
                 'denominazione_strada' => get_post_meta($post_id, 'denominazione_strada', true),
-                'comune' => get_post_meta($post_id, 'comune_incidente', true),
-                'comune_nome' => $this->get_comune_name(get_post_meta($post_id, 'comune_incidente', true)),
+                /* 'comune' => get_post_meta($post_id, 'comune_incidente', true),
+                'comune_nome' => $this->get_comune_name(get_post_meta($post_id, 'comune_incidente', true)), */
+                'comune' => $nome_comune, // Ora mostra il nome invece del codice
                 'natura' => get_post_meta($post_id, 'natura_incidente', true),
                 'num_veicoli' => get_post_meta($post_id, 'numero_veicoli_coinvolti', true),
                 'condizioni_meteo' => get_post_meta($post_id, 'condizioni_meteo', true),

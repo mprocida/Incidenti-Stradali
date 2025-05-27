@@ -692,4 +692,72 @@ jQuery(document).ready(function($) {
         });
     }
     
+        function initializeDeleteHandling() {
+        // Conferma eliminazione per azioni individuali
+        $(document).on('click', 'a.submitdelete', function(e) {
+            var href = $(this).attr('href');
+            var isDelete = href.includes('action=delete');
+            
+            var message = isDelete ? 
+                'ATTENZIONE: Stai per eliminare DEFINITIVAMENTE questo incidente. Questa azione non può essere annullata. Continuare?' :
+                'Sei sicuro di voler spostare questo incidente nel cestino?';
+            
+            if (!confirm(message)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Conferma per bulk actions
+        $('#doaction, #doaction2').on('click', function(e) {
+            var $select = $(this).siblings('select');
+            var action = $select.val();
+            var selectedItems = $('.wp-list-table input[name="post[]"]:checked').length;
+            
+            if (selectedItems === 0 && action !== '-1') {
+                alert('Seleziona almeno un elemento.');
+                e.preventDefault();
+                return false;
+            }
+            
+            var confirmMessage = '';
+            switch (action) {
+                case 'trash':
+                    confirmMessage = 'Sei sicuro di voler spostare ' + selectedItems + ' incidenti nel cestino?';
+                    break;
+                case 'delete':
+                    confirmMessage = 'ATTENZIONE: Stai per eliminare DEFINITIVAMENTE ' + selectedItems + ' incidenti. Questa azione non può essere annullata. Continuare?';
+                    break;
+                case 'untrash':
+                    confirmMessage = 'Sei sicuro di voler ripristinare ' + selectedItems + ' incidenti dal cestino?';
+                    break;
+            }
+            
+            if (confirmMessage && !confirm(confirmMessage)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Debug: Log delle operazioni
+        if (typeof console !== 'undefined' && console.log) {
+            $('#posts-filter').on('submit', function() {
+                var action = $('select[name="action"]').val() || $('select[name="action2"]').val();
+                var selectedItems = $('.wp-list-table input[name="post[]"]:checked').length;
+                
+                if (action && action !== '-1' && selectedItems > 0) {
+                    console.log('Bulk action submitted:', {
+                        action: action,
+                        items: selectedItems,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+        }
+    }
+    
+       
+    // Inizializza le funzioni
+    initializeDeleteHandling();
+    
 })(jQuery);

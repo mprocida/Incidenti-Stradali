@@ -9,6 +9,11 @@ class IncidentiMetaBoxes {
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_meta_boxes'));
         add_action('edit_form_after_title', array($this, 'move_meta_boxes_after_title'));
+
+        // NUOVO: Gestione operazioni di eliminazione
+        add_action('wp_trash_post', array($this, 'on_post_trashed'));
+        add_action('before_delete_post', array($this, 'on_post_deleted'));
+        add_action('untrash_post', array($this, 'on_post_untrashed'));
     }
     
     public function add_meta_boxes() {
@@ -491,9 +496,13 @@ class IncidentiMetaBoxes {
         $minuti_incidente = get_post_meta($post->ID, 'minuti_incidente', true);
         $provincia = get_post_meta($post->ID, 'provincia_incidente', true);
         $comune = get_post_meta($post->ID, 'comune_incidente', true);
+        $localita = get_post_meta($post->ID, 'localita_incidente', true); // Nuovo campo
         $organo_rilevazione = get_post_meta($post->ID, 'organo_rilevazione', true);
         $organo_coordinatore = get_post_meta($post->ID, 'organo_coordinatore', true);
-        
+
+        // Carica i comuni di Lecce
+        $comuni_lecce = $this->get_comuni_lecce();
+         
         ?>
         <table class="form-table">
             <tr>
@@ -525,15 +534,30 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="provincia_incidente"><?php _e('Provincia', 'incidenti-stradali'); ?> *</label></th>
                 <td>
-                    <input type="text" id="provincia_incidente" name="provincia_incidente" value="<?php echo esc_attr($provincia); ?>" required>
-                    <p class="description"><?php _e('Codice ISTAT provincia (3 cifre)', 'incidenti-stradali'); ?></p>
+                    <input type="hidden" id="provincia_incidente" name="provincia_incidente" value="075">
+                    <input type="text" value="Lecce (075)" disabled class="regular-text">
+                    <p class="description"><?php _e('Provincia di Lecce - codice ISTAT 075', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
             <tr>
                 <th><label for="comune_incidente"><?php _e('Comune', 'incidenti-stradali'); ?> *</label></th>
                 <td>
-                    <input type="text" id="comune_incidente" name="comune_incidente" value="<?php echo esc_attr($comune); ?>" required>
-                    <p class="description"><?php _e('Codice ISTAT comune (3 cifre)', 'incidenti-stradali'); ?></p>
+                    <select id="comune_incidente" name="comune_incidente" required class="regular-text">
+                        <option value=""><?php _e('Seleziona comune', 'incidenti-stradali'); ?></option>
+                        <?php foreach($comuni_lecce as $codice => $nome): ?>
+                            <option value="<?php echo esc_attr($codice); ?>" <?php selected($comune, $codice); ?>>
+                                <?php echo esc_html($nome); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p class="description"><?php _e('Seleziona il comune dove è avvenuto l\'incidente', 'incidenti-stradali'); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="localita_incidente"><?php _e('Località', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="text" id="localita_incidente" name="localita_incidente" value="<?php echo esc_attr($localita); ?>" class="regular-text">
+                    <p class="description"><?php _e('Frazione o località specifica (opzionale)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
             <tr>
@@ -564,6 +588,113 @@ class IncidentiMetaBoxes {
             </tr>
         </table>
         <?php
+    }
+
+    /**
+     * Metodo per ottenere i comuni di Lecce
+     */
+    private function get_comuni_lecce() {
+        return array(
+            '001' => 'Acquarica Del Capo',
+            '002' => 'Alessano', 
+            '003' => 'Alezio',
+            '004' => 'Alliste',
+            '005' => 'Andrano',
+            '006' => 'Aradeo',
+            '007' => 'Arnesano',
+            '008' => 'Bagnolo Del Salento',
+            '009' => 'Botrugno',
+            '010' => 'Calimera Di Lecce',
+            '011' => 'Campi Salentina',
+            '012' => 'Cannole',
+            '013' => 'Caprarica Del Capo',
+            '014' => 'Caprarica Di Lecce',
+            '015' => 'Carmiano',
+            '016' => 'Carpignano Salentino',
+            '017' => 'Casarano',
+            '018' => 'Castri Di Lecce',
+            '019' => 'Castrignano Del Capo',
+            '020' => 'Castrignano De` Greci',
+            '021' => 'Castro',
+            '022' => 'Cavallino',
+            '023' => 'Collepasso',
+            '024' => 'Copertino',
+            '025' => 'Corigliano D`Otranto',
+            '026' => 'Corsano',
+            '027' => 'Cursi',
+            '028' => 'Cutrofiano',
+            '029' => 'Diso',
+            '030' => 'Gagliano Del Capo',
+            '031' => 'Galatina',
+            '032' => 'Galatone',
+            '033' => 'Gallipoli',
+            '034' => 'Giuggianello',
+            '035' => 'Giurdignano',
+            '036' => 'Guagnano',
+            '037' => 'Lecce',
+            '038' => 'Lequile',
+            '039' => 'Leverano',
+            '040' => 'Lizzanello',
+            '041' => 'Maglie',
+            '042' => 'Martano',
+            '043' => 'Martignano',
+            '044' => 'Matino',
+            '045' => 'Melendugno',
+            '046' => 'Melissano',
+            '047' => 'Melpignano',
+            '048' => 'Miggiano',
+            '049' => 'Minervino Di Lecce',
+            '050' => 'Monteroni Di Lecce',
+            '051' => 'Montesano Salentino',
+            '052' => 'Morciano Di Leuca',
+            '053' => 'Muro Leccese',
+            '054' => 'Nardo`',
+            '055' => 'Neviano',
+            '056' => 'Nociglia',
+            '057' => 'Novoli',
+            '058' => 'Ortelle',
+            '059' => 'Otranto',
+            '060' => 'Palmariggi',
+            '061' => 'Parabita',
+            '062' => 'Patu`',
+            '063' => 'Poggiardo',
+            '064' => 'Porto Cesareo',
+            '065' => 'Presicce',
+            '066' => 'Presicce-Acquarica',
+            '067' => 'Racale',
+            '068' => 'Ruffano',
+            '069' => 'Salice Salentino',
+            '070' => 'Salve',
+            '071' => 'San Cassiano Di Lecce',
+            '072' => 'San Cesario Di Lecce',
+            '073' => 'San Donato Di Lecce',
+            '074' => 'San Pietro In Lama',
+            '075' => 'Sanarica',
+            '076' => 'Sannicola',
+            '077' => 'Santa Cesarea Terme',
+            '078' => 'Scorrano',
+            '079' => 'Secli`',
+            '080' => 'Sogliano Cavour',
+            '081' => 'Soleto',
+            '082' => 'Specchia',
+            '083' => 'Spongano',
+            '084' => 'Squinzano',
+            '085' => 'Sternatia',
+            '086' => 'Supersano',
+            '087' => 'Surano',
+            '088' => 'Surbo',
+            '089' => 'Taurisano',
+            '090' => 'Taviano',
+            '091' => 'Tiggiano',
+            '092' => 'Trepuzzi',
+            '093' => 'Tricase',
+            '094' => 'Tuglie',
+            '095' => 'Ugento',
+            '096' => 'Uggiano La Chiesa',
+            '097' => 'Veglie',
+            '098' => 'Vernole',
+            '099' => 'Zollino'
+        );
     }
     
     public function render_localizzazione_meta_box($post) {
@@ -1364,8 +1495,11 @@ class IncidentiMetaBoxes {
         }
     }
     
-        public function save_meta_boxes($post_id) {
-        // Verify nonce
+    /**
+     * METODO MODIFICATO: Save meta boxes - NON interferisce con eliminazioni
+     */
+    public function save_meta_boxes($post_id) {
+        // Verifica nonce
         if (!isset($_POST['incidente_meta_box_nonce']) || !wp_verify_nonce($_POST['incidente_meta_box_nonce'], 'incidente_meta_box')) {
             return;
         }
@@ -1385,83 +1519,69 @@ class IncidentiMetaBoxes {
             return;
         }
         
+        // CRITICO: Non interferire con operazioni di eliminazione
+        if (isset($_GET['action']) && in_array($_GET['action'], ['trash', 'delete', 'untrash'])) {
+            return;
+        }
+        
+        if (isset($_POST['action']) && in_array($_POST['action'], ['trash', 'delete', 'untrash'])) {
+            return;
+        }
+        
+        // Non interferire con bulk actions di eliminazione
+        if (isset($_POST['action']) && $_POST['action'] === '-1' && isset($_POST['action2'])) {
+            $action = $_POST['action2'];
+            if (in_array($action, ['trash', 'delete', 'untrash'])) {
+                return;
+            }
+        }
+        
+        // Non interferire con post già nel cestino
+        $post = get_post($post_id);
+        if ($post && $post->post_status === 'trash') {
+            return;
+        }
+        
         // IMPORTANTE: Previeni loop infiniti
         remove_action('save_post', array($this, 'save_meta_boxes'));
         
-        // Check date restrictions
+        // Check date restrictions SOLO per operazioni di salvataggio normale
         $data_blocco = get_option('incidenti_data_blocco_modifica');
         if ($data_blocco && isset($_POST['data_incidente'])) {
             if (strtotime($_POST['data_incidente']) < strtotime($data_blocco)) {
                 if (!current_user_can('manage_all_incidenti')) {
+                    // Re-aggiungi l'action prima di uscire
+                    add_action('save_post', array($this, 'save_meta_boxes'));
                     wp_die(__('Non è possibile modificare incidenti avvenuti prima della data di blocco.', 'incidenti-stradali'));
                 }
             }
         }
         
-        // Array of all meta fields to save - ottimizzato per ridurre memoria
+        // Array of all meta fields to save
         $meta_fields = array(
             'data_incidente', 'ora_incidente', 'minuti_incidente', 'provincia_incidente', 'comune_incidente',
-            'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
+            'localita_incidente', 'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
-            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa','illuminazione', 'visibilita',
-            'traffico', 'segnaletica_semaforica', 'circostanza_presunta_1', 'circostanza_presunta_2', 'circostanza_presunta_3',
-            'circostanza_presunta_1', 'circostanza_presunta_2', 'circostanza_presunta_3', 'circostanza_veicolo_a',
-            'circostanza_veicolo_b', 'circostanza_veicolo_c'
-    );
-
-        // Salva circostanze per ogni veicolo
-        for ($i = 1; $i <= 3; $i++) {
-            $meta_fields[] = 'circostanza_veicolo_' . $i;
-        }
+            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa'
+        );
         
-        // Salva dati trasportati
-        for ($v = 1; $v <= 3; $v++) {
-            $meta_fields[] = 'veicolo_' . $v . '_numero_trasportati';
-            
-            $num_trasportati = isset($_POST['veicolo_' . $v . '_numero_trasportati']) ? intval($_POST['veicolo_' . $v . '_numero_trasportati']) : 0;
-            
-            for ($t = 1; $t <= 9; $t++) {
-                if ($t <= $num_trasportati) {
-                    $prefix = 'veicolo_' . $v . '_trasportato_' . $t . '_';
-                    $trasportato_fields = array('sesso', 'eta', 'esito', 'posizione', 'uso_dispositivi');
-                    
-                    foreach ($trasportato_fields as $field) {
-                        $key = $prefix . $field;
-                        if (isset($_POST[$key])) {
-                            update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
-                        }
-                    }
-                } else {
-                    // Rimuovi dati per trasportati non utilizzati
-                    $prefix = 'veicolo_' . $v . '_trasportato_' . $t . '_';
-                    $trasportato_fields = array('sesso', 'eta', 'esito', 'posizione', 'uso_dispositivi');
-                    
-                    foreach ($trasportato_fields as $field) {
-                        delete_post_meta($post_id, $prefix . $field);
-                    }
-                }
-            }
-        }
-        
-        // Save all meta fields in batch
+        // Save all meta fields
         foreach ($meta_fields as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
             } else {
-                // Per checkbox non selezionate
                 if ($field === 'mostra_in_mappa') {
                     delete_post_meta($post_id, $field);
                 }
             }
         }
         
-        // Save vehicle and driver fields with optimization
+        // Save vehicle and driver fields
         $numero_veicoli = isset($_POST['numero_veicoli_coinvolti']) ? intval($_POST['numero_veicoli_coinvolti']) : 1;
         for ($i = 1; $i <= 3; $i++) {
             if ($i <= $numero_veicoli) {
-                // Salva solo se il veicolo è attivo
                 $vehicle_fields = array('tipo', 'targa', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
                 $driver_fields = array('eta', 'sesso', 'esito', 'tipo_patente', 'anno_patente');
                 
@@ -1479,7 +1599,6 @@ class IncidentiMetaBoxes {
                     }
                 }
             } else {
-                // Rimuovi dati per veicoli non utilizzati
                 $all_fields = array(
                     'veicolo_' . $i . '_tipo', 'veicolo_' . $i . '_targa', 
                     'veicolo_' . $i . '_anno_immatricolazione', 'veicolo_' . $i . '_cilindrata', 
@@ -1495,7 +1614,7 @@ class IncidentiMetaBoxes {
             }
         }
         
-        // Save pedestrian fields with optimization
+        // Save pedestrian fields
         $numero_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? intval($_POST['numero_pedoni_coinvolti']) : 0;
         for ($i = 1; $i <= 4; $i++) {
             if ($i <= $numero_pedoni) {
@@ -1507,7 +1626,6 @@ class IncidentiMetaBoxes {
                     }
                 }
             } else {
-                // Rimuovi dati per pedoni non utilizzati
                 $fields_to_remove = array('pedone_' . $i . '_eta', 'pedone_' . $i . '_sesso', 'pedone_' . $i . '_esito');
                 foreach ($fields_to_remove as $field) {
                     delete_post_meta($post_id, $field);
@@ -1524,7 +1642,6 @@ class IncidentiMetaBoxes {
                             $denominazione);
             
             if ($current_title !== $new_title) {
-                // Usa direttamente il database per evitare hook ricorsivi
                 global $wpdb;
                 $wpdb->update(
                     $wpdb->posts,
@@ -1538,5 +1655,32 @@ class IncidentiMetaBoxes {
         
         // Re-aggiungi l'action
         add_action('save_post', array($this, 'save_meta_boxes'));
+    }
+
+    /**
+     * NUOVO: Gestisce quando un post viene spostato nel cestino
+     */
+    public function on_post_trashed($post_id) {
+        if (get_post_type($post_id) === 'incidente_stradale') {
+            error_log("Incidente {$post_id} spostato nel cestino da utente " . get_current_user_id());
+        }
+    }
+
+    /**
+     * NUOVO: Gestisce quando un post viene eliminato definitivamente
+     */
+    public function on_post_deleted($post_id) {
+        if (get_post_type($post_id) === 'incidente_stradale') {
+            error_log("Incidente {$post_id} eliminato definitivamente da utente " . get_current_user_id());
+        }
+    }
+    
+    /**
+     * NUOVO: Gestisce quando un post viene ripristinato dal cestino
+     */
+    public function on_post_untrashed($post_id) {
+        if (get_post_type($post_id) === 'incidente_stradale') {
+            error_log("Incidente {$post_id} ripristinato dal cestino da utente " . get_current_user_id());
+        }
     }
 }

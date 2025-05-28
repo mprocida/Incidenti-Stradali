@@ -1,1 +1,491 @@
-.incidenti-meta-box .form-table{margin-top:0}.incidenti-meta-box .form-table th{width:200px;padding:10px;vertical-align:top}.incidenti-meta-box .form-table td{padding:10px}.incidenti-meta-box input[type=date],.incidenti-meta-box input[type=number],.incidenti-meta-box input[type=text],.incidenti-meta-box select,.incidenti-meta-box textarea{width:100%;max-width:300px}.incidenti-meta-box .description{font-style:italic;color:#666;margin-top:5px}.incidenti-meta-box label[required]::after,.incidenti-meta-box th label:contains("*")::after{content:" *";color:#d63384;font-weight:700}.conducente-section,.incidenti-bulk-actions,.pedone-section,.veicolo-section{background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:15px;margin:15px 0}.conducente-section h4,.pedone-section h5,.veicolo-section h3{margin-top:0;margin-bottom:15px;color:#333;border-bottom:2px solid #0073aa;padding-bottom:5px}.conducente-section .form-table,.pedone-section .form-table,.veicolo-section .form-table{background:#fff;border-radius:4px}#coordinate-map{border:1px solid #ddd;border-radius:4px;margin-top:10px}.incidenti-validation-error{border-left:4px solid #d63384!important;background:#fff5f5!important}.incidenti-validation-error input,.incidenti-validation-error select,.incidenti-validation-error textarea{border-color:#d63384!important}.incidenti-field-error{color:#d63384;font-size:12px;margin-top:3px;display:block}.dependent-field{opacity:.5;transition:opacity .3s}.dependent-field.active{opacity:1}.incidenti-export-page .card{margin:20px 0;padding:20px}.incidenti-export-page .card h2,.incidenti-help-text h4{margin-top:0;color:#0073aa}.incidenti-export-page .form-table th{width:150px}.incidenti-export-page .button-primary{background:#0073aa;border-color:#0073aa;padding:8px 16px;font-size:14px}.incidenti-export-page .button-primary:hover{background:#005a87;border-color:#005a87}.incidenti-export-logs table{width:100%;border-collapse:collapse}.incidenti-export-logs td,.incidenti-export-logs th{padding:8px 12px;text-align:left;border-bottom:1px solid #ddd}.incidenti-export-logs th{background:#f5f5f5;font-weight:600}.incidenti-export-logs tbody tr:hover{background:#f9f9f9}.incidenti-settings-page .form-table th{width:200px;padding:15px 10px}.incidenti-settings-page .form-table td{padding:15px 10px}.incidenti-settings-page fieldset{margin:0;padding:0;border:none}.incidenti-settings-page fieldset label{display:block;margin:8px 0}.incidenti-settings-page textarea{width:100%;max-width:500px}.incidenti-system-stats .stats-row{display:flex;gap:20px;margin-bottom:20px}.incidenti-system-stats .stat-box{background:#f1f1f1;padding:20px;border-radius:4px;text-align:center;flex:1;border-left:4px solid #0073aa}.incidenti-system-stats .stat-number{font-size:2em;font-weight:700;color:#0073aa}.incidenti-system-stats .stat-label{margin-top:5px;font-size:.9em;color:#666;text-transform:uppercase;letter-spacing:.5px}.incidenti-system-stats .recent-activity ul{list-style:none;padding:0;margin:10px 0}.incidenti-system-stats .recent-activity li{padding:8px 0;border-bottom:1px solid #ddd}.incidenti-dashboard-recent li:last-child,.incidenti-system-stats .recent-activity li:last-child{border-bottom:none}.incidenti-dashboard-widget .widget-content{padding:15px}.incidenti-dashboard-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:15px;margin-bottom:20px}.incidenti-dashboard-stat{text-align:center;background:#f5f5f5;padding:15px;border-radius:4px}.incidenti-dashboard-stat .number{font-size:1.5em;font-weight:700;color:#0073aa}.incidenti-dashboard-stat .label{font-size:.8em;color:#666;margin-top:5px}.incidenti-dashboard-recent{border-top:1px solid #ddd;padding-top:15px}.incidenti-dashboard-recent h4{margin:0 0 10px;font-size:14px}.incidenti-dashboard-recent ul{margin:0;padding:0;list-style:none}.incidenti-dashboard-recent li{padding:5px 0;border-bottom:1px solid #eee;font-size:13px}.incidenti-bulk-actions h4{margin-top:0;color:#333}.incidenti-bulk-actions .bulk-action-buttons{display:flex;gap:10px;margin-top:15px}.incidenti-bulk-actions .bulk-action-buttons .button{padding:6px 12px}.wp-list-table .column-incidente_data{width:100px}.wp-list-table .column-incidente_comune{width:80px}.wp-list-table .column-incidente_gravita{width:120px}.wp-list-table .incidente-gravita-badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;color:#fff;margin-right:4px}.wp-list-table .incidente-gravita-badge.morti{background:#d63384}.wp-list-table .incidente-gravita-badge.feriti{background:#fd7e14}.wp-list-table .incidente-gravita-badge.danni{background:#6c757d}@media screen and (max-width:782px){.incidenti-meta-box .form-table td,.incidenti-meta-box .form-table th{display:block;width:100%;padding:10px 0}.incidenti-meta-box .form-table th{border-bottom:none;padding-bottom:5px}.incidenti-meta-box input[type=date],.incidenti-meta-box input[type=number],.incidenti-meta-box input[type=text],.incidenti-meta-box select,.incidenti-meta-box textarea{max-width:100%}.incidenti-bulk-actions .bulk-action-buttons,.incidenti-system-stats .stats-row{flex-direction:column}.incidenti-dashboard-stats{grid-template-columns:1fr 1fr}}.incidenti-admin-loading{position:relative}.incidenti-admin-loading::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.8);z-index:10}.incidenti-admin-loading::after{content:"";position:absolute;top:50%;left:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:2px solid #ddd;border-top:2px solid #0073aa;border-radius:50%;animation:1s linear infinite spin;z-index:11}.incidenti-admin-message{padding:10px 15px;margin:15px 0;border-radius:4px;border-left:4px solid}.incidenti-admin-message.success{background:#f0f8ff;border-left-color:#28a745;color:#155724}.incidenti-admin-message.error{background:#fff5f5;border-left-color:#dc3545;color:#721c24}.incidenti-admin-message.warning{background:#fff8e1;border-left-color:#ffc107;color:#856404}.incidenti-icon{width:16px;height:16px;display:inline-block;margin-right:5px;vertical-align:text-top}.incidenti-icon.danger{color:#d63384}.incidenti-icon.warning{color:#fd7e14}.incidenti-icon.info{color:#0073aa}.incidenti-help-text{background:#f0f8ff;border-left:4px solid #0073aa;padding:10px 15px;margin:15px 0;font-size:14px;line-height:1.5}.incidenti-toggle-section{border:1px solid #ddd;border-radius:4px;margin:10px 0}.incidenti-toggle-header{background:#f5f5f5;padding:10px 15px;border-bottom:1px solid #ddd;cursor:pointer;user-select:none}.incidenti-toggle-header:hover{background:#eee}.incidenti-toggle-header h4{margin:0;display:flex;justify-content:space-between;align-items:center}.incidenti-toggle-content{padding:15px;display:none}.incidenti-toggle-content.active{display:block}.incidenti-toggle-arrow{transition:transform .3s}.incidenti-toggle-arrow.open{transform:rotate(180deg)}@media print{.incidenti-meta-box input,.incidenti-meta-box select,.incidenti-meta-box textarea{border:1px solid #000!important;background:#fff!important}.incidenti-toggle-content{display:block!important}.incidenti-toggle-header{display:none}}
+.incidenti-meta-box .form-table {
+    margin-top: 0
+}
+
+.incidenti-meta-box .form-table th {
+    width: 200px;
+    padding: 10px;
+    vertical-align: top
+}
+
+.incidenti-meta-box .form-table td {
+    padding: 10px
+}
+
+.incidenti-meta-box input[type=date],
+.incidenti-meta-box input[type=number],
+.incidenti-meta-box input[type=text],
+.incidenti-meta-box select,
+.incidenti-meta-box textarea {
+    width: 100%;
+    max-width: 300px
+}
+
+.incidenti-meta-box .description {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px
+}
+
+.incidenti-meta-box label[required]::after,
+.incidenti-meta-box th label:contains("*")::after {
+    content: " *";
+    color: #d63384;
+    font-weight: 700
+}
+
+.conducente-section,
+.incidenti-bulk-actions,
+.pedone-section,
+.veicolo-section {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px 0
+}
+
+.conducente-section h4,
+.pedone-section h5,
+.veicolo-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #0073aa;
+    padding-bottom: 5px
+}
+
+.conducente-section .form-table,
+.pedone-section .form-table,
+.veicolo-section .form-table {
+    background: #fff;
+    border-radius: 4px
+}
+
+#coordinate-map {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 10px
+}
+
+.incidenti-validation-error {
+    border-left: 4px solid #d63384 !important;
+    background: #fff5f5 !important
+}
+
+.incidenti-validation-error input,
+.incidenti-validation-error select,
+.incidenti-validation-error textarea {
+    border-color: #d63384 !important
+}
+
+.incidenti-field-error {
+    color: #d63384;
+    font-size: 12px;
+    margin-top: 3px;
+    display: block
+}
+
+.dependent-field {
+    opacity: .5;
+    transition: opacity .3s
+}
+
+.dependent-field.active {
+    opacity: 1
+}
+
+.incidenti-export-page .card {
+    margin: 20px 0;
+    padding: 20px
+}
+
+.incidenti-export-page .card h2,
+.incidenti-help-text h4 {
+    margin-top: 0;
+    color: #0073aa
+}
+
+.incidenti-export-page .form-table th {
+    width: 150px
+}
+
+.incidenti-export-page .button-primary {
+    background: #0073aa;
+    border-color: #0073aa;
+    padding: 8px 16px;
+    font-size: 14px
+}
+
+.incidenti-export-page .button-primary:hover {
+    background: #005a87;
+    border-color: #005a87
+}
+
+.incidenti-export-logs table {
+    width: 100%;
+    border-collapse: collapse
+}
+
+.incidenti-export-logs td,
+.incidenti-export-logs th {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd
+}
+
+.incidenti-export-logs th {
+    background: #f5f5f5;
+    font-weight: 600
+}
+
+.incidenti-export-logs tbody tr:hover {
+    background: #f9f9f9
+}
+
+.incidenti-settings-page .form-table th {
+    width: 200px;
+    padding: 15px 10px
+}
+
+.incidenti-settings-page .form-table td {
+    padding: 15px 10px
+}
+
+.incidenti-settings-page fieldset {
+    margin: 0;
+    padding: 0;
+    border: none
+}
+
+.incidenti-settings-page fieldset label {
+    display: block;
+    margin: 8px 0
+}
+
+.incidenti-settings-page textarea {
+    width: 100%;
+    max-width: 500px
+}
+
+.incidenti-system-stats .stats-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px
+}
+
+.incidenti-system-stats .stat-box {
+    background: #f1f1f1;
+    padding: 20px;
+    border-radius: 4px;
+    text-align: center;
+    flex: 1;
+    border-left: 4px solid #0073aa
+}
+
+.incidenti-system-stats .stat-number {
+    font-size: 2em;
+    font-weight: 700;
+    color: #0073aa
+}
+
+.incidenti-system-stats .stat-label {
+    margin-top: 5px;
+    font-size: .9em;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: .5px
+}
+
+.incidenti-system-stats .recent-activity ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0
+}
+
+.incidenti-system-stats .recent-activity li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd
+}
+
+.incidenti-dashboard-recent li:last-child,
+.incidenti-system-stats .recent-activity li:last-child {
+    border-bottom: none
+}
+
+.incidenti-dashboard-widget .widget-content {
+    padding: 15px
+}
+
+.incidenti-dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px
+}
+
+.incidenti-dashboard-stat {
+    text-align: center;
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px
+}
+
+.incidenti-dashboard-stat .number {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #0073aa
+}
+
+.incidenti-dashboard-stat .label {
+    font-size: .8em;
+    color: #666;
+    margin-top: 5px
+}
+
+.incidenti-dashboard-recent {
+    border-top: 1px solid #ddd;
+    padding-top: 15px
+}
+
+.incidenti-dashboard-recent h4 {
+    margin: 0 0 10px;
+    font-size: 14px
+}
+
+.incidenti-dashboard-recent ul {
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+
+.incidenti-dashboard-recent li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 13px
+}
+
+.incidenti-bulk-actions h4 {
+    margin-top: 0;
+    color: #333
+}
+
+.incidenti-bulk-actions .bulk-action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px
+}
+
+.incidenti-bulk-actions .bulk-action-buttons .button {
+    padding: 6px 12px
+}
+
+.wp-list-table .column-incidente_data {
+    width: 100px
+}
+
+.wp-list-table .column-incidente_comune {
+    width: 80px
+}
+
+.wp-list-table .column-incidente_gravita {
+    width: 120px
+}
+
+.wp-list-table .incidente-gravita-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    margin-right: 4px
+}
+
+.wp-list-table .incidente-gravita-badge.morti {
+    background: #d63384
+}
+
+.wp-list-table .incidente-gravita-badge.feriti {
+    background: #fd7e14
+}
+
+.wp-list-table .incidente-gravita-badge.danni {
+    background: #6c757d
+}
+
+@media screen and (max-width:782px) {
+
+    .incidenti-meta-box .form-table td,
+    .incidenti-meta-box .form-table th {
+        display: block;
+        width: 100%;
+        padding: 10px 0
+    }
+
+    .incidenti-meta-box .form-table th {
+        border-bottom: none;
+        padding-bottom: 5px
+    }
+
+    .incidenti-meta-box input[type=date],
+    .incidenti-meta-box input[type=number],
+    .incidenti-meta-box input[type=text],
+    .incidenti-meta-box select,
+    .incidenti-meta-box textarea {
+        max-width: 100%
+    }
+
+    .incidenti-bulk-actions .bulk-action-buttons,
+    .incidenti-system-stats .stats-row {
+        flex-direction: column
+    }
+
+    .incidenti-dashboard-stats {
+        grid-template-columns: 1fr 1fr
+    }
+}
+
+.incidenti-admin-loading {
+    position: relative
+}
+
+.incidenti-admin-loading::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, .8);
+    z-index: 10
+}
+
+.incidenti-admin-loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #ddd;
+    border-top: 2px solid #0073aa;
+    border-radius: 50%;
+    animation: 1s linear infinite spin;
+    z-index: 11
+}
+
+.incidenti-admin-message {
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    border-left: 4px solid
+}
+
+.incidenti-admin-message.success {
+    background: #f0f8ff;
+    border-left-color: #28a745;
+    color: #155724
+}
+
+.incidenti-admin-message.error {
+    background: #fff5f5;
+    border-left-color: #dc3545;
+    color: #721c24
+}
+
+.incidenti-admin-message.warning {
+    background: #fff8e1;
+    border-left-color: #ffc107;
+    color: #856404
+}
+
+.incidenti-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: text-top
+}
+
+.incidenti-icon.danger {
+    color: #d63384
+}
+
+.incidenti-icon.warning {
+    color: #fd7e14
+}
+
+.incidenti-icon.info {
+    color: #0073aa
+}
+
+.incidenti-help-text {
+    background: #f0f8ff;
+    border-left: 4px solid #0073aa;
+    padding: 10px 15px;
+    margin: 15px 0;
+    font-size: 14px;
+    line-height: 1.5
+}
+
+.incidenti-toggle-section {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 10px 0
+}
+
+.incidenti-toggle-header {
+    background: #f5f5f5;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    user-select: none
+}
+
+.incidenti-toggle-header:hover {
+    background: #eee
+}
+
+.incidenti-toggle-header h4 {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.incidenti-toggle-content {
+    padding: 15px;
+    display: none
+}
+
+.incidenti-toggle-content.active {
+    display: block
+}
+
+.incidenti-toggle-arrow {
+    transition: transform .3s
+}
+
+.incidenti-toggle-arrow.open {
+    transform: rotate(180deg)
+}
+
+@media print {
+
+    .incidenti-meta-box input,
+    .incidenti-meta-box select,
+    .incidenti-meta-box textarea {
+        border: 1px solid #000 !important;
+        background: #fff !important
+    }
+
+    .incidenti-toggle-content {
+        display: block !important
+    }
+
+    .incidenti-toggle-header {
+        display: none
+    }
+}

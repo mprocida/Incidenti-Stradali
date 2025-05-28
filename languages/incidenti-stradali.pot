@@ -1009,3 +1009,36 @@ msgstr ""
 #. Author URI of the plugin
 msgid "https://example.com"
 msgstr ""
+
+msgid "ORGANO DI RILEVAZIONE"
+msgstr "ORGANO DI RILEVAZIONE"
+
+msgid "Ente"
+msgstr "Ente"
+
+msgid "Rilevatore"
+msgstr "Rilevatore"
+
+msgid "Seleziona ente"
+msgstr "Seleziona ente"
+
+msgid "Polizia Municipale"
+msgstr "Polizia Municipale"
+
+msgid "Altri Enti"
+msgstr "Altri Enti"
+
+msgid "Carabiniere"
+msgstr "Carabiniere"
+
+msgid "Agente di Polizia Stradale"
+msgstr "Agente di Polizia Stradale"
+
+msgid "Polizia Provinciale"
+msgstr "Polizia Provinciale"
+
+msgid "Seleziona l'ente che ha rilevato l'incidente"
+msgstr "Seleziona l'ente che ha rilevato l'incidente"
+
+msgid "Nome e cognome del rilevatore"
+msgstr "Nome e cognome del rilevatore"

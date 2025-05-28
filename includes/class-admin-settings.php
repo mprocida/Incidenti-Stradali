@@ -464,6 +464,12 @@ class IncidentiAdminSettings {
     }
     
     private function save_settings() {
+        // Ottieni i valori attuali dal database
+        $current_settings = $this->get_current_settings();
+        
+        // Array per tenere traccia delle modifiche
+        $changes_made = array();
+        
         // Validate and save all settings
         $settings = array(
             'incidenti_data_blocco_modifica',
@@ -487,53 +493,117 @@ class IncidentiAdminSettings {
         );
         
         foreach ($settings as $setting) {
+            $new_value = '';
+            $is_checkbox = false;
+            
+            // Determina se è un checkbox
+            $checkbox_fields = array(
+                'incidenti_auto_export_enabled',
+                'incidenti_notify_export_completion',
+                'incidenti_restrict_by_ip',
+                'incidenti_notify_new_incident',
+                'incidenti_map_cluster_enabled',
+                'incidenti_show_welcome_notice',
+                'incidenti_keep_data_on_uninstall'
+            );
+            
+            $is_checkbox = in_array($setting, $checkbox_fields);
+            
             if (isset($_POST[$setting])) {
-                $value = $_POST[$setting];
-                
                 // Sanitize based on setting type
                 switch ($setting) {
                     case 'incidenti_data_blocco_modifica':
-                        $value = sanitize_text_field($value);
+                        $new_value = sanitize_text_field($_POST[$setting]);
                         break;
                     case 'incidenti_map_center_lat':
                     case 'incidenti_map_center_lng':
-                        $value = floatval($value);
+                        $new_value = floatval($_POST[$setting]);
                         break;
                     case 'incidenti_export_path':
-                        $value = sanitize_text_field($value);
+                        $new_value = sanitize_text_field($_POST[$setting]);
                         break;
                     case 'incidenti_auto_export_email':
                     case 'incidenti_export_notification_email':
-                        $value = sanitize_email($value);
+                        $new_value = sanitize_email($_POST[$setting]);
                         break;
                     case 'incidenti_allowed_ips':
                     case 'incidenti_notification_emails':
-                        $value = sanitize_textarea_field($value);
+                        $new_value = sanitize_textarea_field($_POST[$setting]);
                         break;
                     default:
-                        $value = sanitize_text_field($value);
+                        $new_value = sanitize_text_field($_POST[$setting]);
                 }
-                
-                update_option($setting, $value);
             } else {
                 // Handle checkboxes that might not be set
-                if (strpos($setting, '_enabled') !== false ||
-                    strpos($setting, '_notify') !== false ||
-                    strpos($setting, '_restrict') !== false ||
-                    strpos($setting, '_cluster') !== false ||
-                    strpos($setting, '_show') !== false ||
-                    strpos($setting, '_keep') !== false ||
-                    $setting === 'incidenti_notify_export_completion') {
-                    update_option($setting, false);
+                if ($is_checkbox) {
+                    $new_value = false;
                 }
+            }
+            
+            // Ottieni il valore attuale
+            $current_value = isset($current_settings[$setting]) ? $current_settings[$setting] : '';
+            
+            // Confronta i valori solo se sono diversi
+            if ($current_value !== $new_value) {
+                update_option($setting, $new_value);
+                $changes_made[] = $setting;
             }
         }
         
-        add_action('admin_notices', function() {
-            echo '<div class="notice notice-success is-dismissible">';
-            echo '<p>' . __('Impostazioni salvate con successo.', 'incidenti-stradali') . '</p>';
-            echo '</div>';
-        });
+        // Mostra messaggio solo se ci sono state modifiche
+        if (!empty($changes_made)) {
+            add_action('admin_notices', function() use ($changes_made) {
+                echo '<div class="notice notice-success is-dismissible">';
+                echo '<p>' . sprintf(
+                    __('Impostazioni salvate con successo. Modificati %d campi.', 'incidenti-stradali'), 
+                    count($changes_made)
+                ) . '</p>';
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    echo '<p><small>Campi modificati: ' . implode(', ', $changes_made) . '</small></p>';
+                }
+                echo '</div>';
+            });
+        } else {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-info is-dismissible">';
+                echo '<p>' . __('Nessuna modifica rilevata nelle impostazioni.', 'incidenti-stradali') . '</p>';
+                echo '</div>';
+            });
+        }
+    }
+
+    /**
+     * Ottieni tutte le impostazioni correnti dal database
+     */
+    private function get_current_settings() {
+        $settings = array(
+            'incidenti_data_blocco_modifica',
+            'incidenti_map_center_lat',
+            'incidenti_map_center_lng',
+            'incidenti_export_path',
+            'incidenti_auto_export_enabled',
+            'incidenti_auto_export_frequency',
+            'incidenti_auto_export_email',
+            'incidenti_notify_export_completion',
+            'incidenti_export_notification_email',
+            'incidenti_restrict_by_ip',
+            'incidenti_allowed_ips',
+            'incidenti_notify_new_incident',
+            'incidenti_notification_emails',
+            'incidenti_map_provider',
+            'incidenti_map_api_key',
+            'incidenti_map_cluster_enabled',
+            'incidenti_show_welcome_notice',
+            'incidenti_keep_data_on_uninstall'
+        );
+        
+        $current_settings = array();
+        
+        foreach ($settings as $setting) {
+            $current_settings[$setting] = get_option($setting);
+        }
+        
+        return $current_settings;
     }
     
     public function admin_notices() {

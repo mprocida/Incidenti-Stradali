@@ -496,13 +496,17 @@ class IncidentiMetaBoxes {
         $minuti_incidente = get_post_meta($post->ID, 'minuti_incidente', true);
         $provincia = get_post_meta($post->ID, 'provincia_incidente', true);
         $comune = get_post_meta($post->ID, 'comune_incidente', true);
-        $localita = get_post_meta($post->ID, 'localita_incidente', true); // Nuovo campo
+        $localita = get_post_meta($post->ID, 'localita_incidente', true);
         $organo_rilevazione = get_post_meta($post->ID, 'organo_rilevazione', true);
         $organo_coordinatore = get_post_meta($post->ID, 'organo_coordinatore', true);
+        
+        // NUOVI CAMPI
+        $ente_rilevatore = get_post_meta($post->ID, 'ente_rilevatore', true);
+        $nome_rilevatore = get_post_meta($post->ID, 'nome_rilevatore', true);
 
         // Carica i comuni di Lecce
         $comuni_lecce = $this->get_comuni_lecce();
-         
+        
         ?>
         <table class="form-table">
             <tr>
@@ -560,8 +564,51 @@ class IncidentiMetaBoxes {
                     <p class="description"><?php _e('Frazione o località specifica (opzionale)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
+            
+            <!-- SEZIONE ORGANO DI RILEVAZIONE -->
             <tr>
-                <th><label for="organo_rilevazione"><?php _e('Organo di Rilevazione', 'incidenti-stradali'); ?></label></th>
+                <th colspan="2">
+                    <h3 style="margin: 20px 0 10px 0; padding: 10px 0; border-bottom: 1px solid #ccc;">
+                        <?php _e('ORGANO DI RILEVAZIONE', 'incidenti-stradali'); ?>
+                    </h3>
+                </th>
+            </tr>
+            <tr>
+                <th><label for="ente_rilevatore"><?php _e('Ente', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <select id="ente_rilevatore" name="ente_rilevatore" class="regular-text">
+                        <option value=""><?php _e('Seleziona ente', 'incidenti-stradali'); ?></option>
+                        
+                        <optgroup label="<?php _e('Polizia Municipale', 'incidenti-stradali'); ?>">
+                            <?php 
+                            $polizie_municipali = $this->get_polizie_municipali();
+                            foreach($polizie_municipali as $polizia): ?>
+                                <option value="<?php echo esc_attr($polizia); ?>" <?php selected($ente_rilevatore, $polizia); ?>>
+                                    <?php echo esc_html($polizia); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                        
+                        <optgroup label="<?php _e('Altri Enti', 'incidenti-stradali'); ?>">
+                            <option value="Carabiniere" <?php selected($ente_rilevatore, 'Carabiniere'); ?>><?php _e('Carabiniere', 'incidenti-stradali'); ?></option>
+                            <option value="Agente di Polizia Stradale" <?php selected($ente_rilevatore, 'Agente di Polizia Stradale'); ?>><?php _e('Agente di Polizia Stradale', 'incidenti-stradali'); ?></option>
+                            <option value="Polizia Provinciale" <?php selected($ente_rilevatore, 'Polizia Provinciale'); ?>><?php _e('Polizia Provinciale', 'incidenti-stradali'); ?></option>
+                        </optgroup>
+                    </select>
+                    <p class="description"><?php _e('Seleziona l\'ente che ha rilevato l\'incidente', 'incidenti-stradali'); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="nome_rilevatore"><?php _e('Rilevatore', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="text" id="nome_rilevatore" name="nome_rilevatore" value="<?php echo esc_attr($nome_rilevatore); ?>" class="regular-text">
+                    <p class="description"><?php _e('Nome e cognome del rilevatore', 'incidenti-stradali'); ?></p>
+                </td>
+            </tr>
+            
+            <!-- CAMPI ESISTENTI (mantieni solo per compatibilità ISTAT) -->
+            <tr style="display: none;">
+                <th><label for="organo_rilevazione"><?php _e('Organo di Rilevazione (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="organo_rilevazione" name="organo_rilevazione">
                         <option value=""><?php _e('Seleziona organo', 'incidenti-stradali'); ?></option>
@@ -574,8 +621,8 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
-            <tr>
-                <th><label for="organo_coordinatore"><?php _e('Organo Coordinatore', 'incidenti-stradali'); ?></label></th>
+            <tr style="display: none;">
+                <th><label for="organo_coordinatore"><?php _e('Organo Coordinatore (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="organo_coordinatore" name="organo_coordinatore">
                         <option value=""><?php _e('Seleziona organo coordinatore', 'incidenti-stradali'); ?></option>
@@ -587,7 +634,140 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
         </table>
+
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                // Sincronizza automaticamente i campi ISTAT con i nuovi campi
+                $('#ente_rilevatore').on('change', function() {
+                    var ente = $(this).val();
+                    var organoValue = '';
+                    
+                    if (ente.includes('POLIZIA MUNICIPALE')) {
+                        organoValue = '4'; // Agente di Polizia Municipale o Locale
+                    } else if (ente === 'Carabiniere') {
+                        organoValue = '2'; // Carabiniere
+                    } else if (ente === 'Agente di Polizia Stradale') {
+                        organoValue = '1'; // Agente di Polizia Stradale
+                    } else if (ente === 'Polizia Provinciale') {
+                        organoValue = '6'; // Agente di Polizia Provinciale
+                    } else {
+                        organoValue = '5'; // Altri
+                    }
+                    
+                    $('#organo_rilevazione').val(organoValue);
+                });
+                
+                // Imposta il valore iniziale se già selezionato
+                $('#ente_rilevatore').trigger('change');
+            });
+            </script>
         <?php
+    }
+
+    /**
+    * Lista delle Polizie Municipali della provincia di Lecce
+     */
+    private function get_polizie_municipali() {
+        return array(
+            'POLIZIA MUNICIPALE DI ACQUARICA DEL CAPO',
+            'POLIZIA MUNICIPALE DI ALESSANO',
+            'POLIZIA MUNICIPALE DI ALEZIO',
+            'POLIZIA MUNICIPALE DI ALLISTE',
+            'POLIZIA MUNICIPALE DI ANDRANO',
+            'POLIZIA MUNICIPALE DI ARADEO',
+            'POLIZIA MUNICIPALE DI ARNESANO',
+            'POLIZIA MUNICIPALE DI BAGNOLO DEL SALENTO',
+            'POLIZIA MUNICIPALE DI BOTRUGNO',
+            'POLIZIA MUNICIPALE DI CALIMERA',
+            'POLIZIA MUNICIPALE DI CAMPI SALENTINA',
+            'POLIZIA MUNICIPALE DI CANNOLE',
+            'POLIZIA MUNICIPALE DI CAPRARICA DI LECCE',
+            'POLIZIA MUNICIPALE DI CARMIANO',
+            'POLIZIA MUNICIPALE DI CARPIGNANO SALENTINO',
+            'POLIZIA MUNICIPALE DI CASARANO',
+            'POLIZIA MUNICIPALE DI CASTRIGNANO DEI GRECI',
+            'POLIZIA MUNICIPALE DI CASTRIGNANO DEL CAPO',
+            'POLIZIA MUNICIPALE DI CASTRI',
+            'POLIZIA MUNICIPALE DI CASTRO',
+            'POLIZIA MUNICIPALE DI CAVALLINO',
+            'POLIZIA MUNICIPALE DI COLLEPASSO',
+            'POLIZIA MUNICIPALE DI COPERTINO',
+            'POLIZIA MUNICIPALE DI CORIGLIANO D\'OTRANTO',
+            'POLIZIA MUNICIPALE DI CORSANO',
+            'POLIZIA MUNICIPALE DI CURSI',
+            'POLIZIA MUNICIPALE DI CUTROFIANO',
+            'POLIZIA MUNICIPALE DI DISO',
+            'POLIZIA MUNICIPALE DI GAGLIANO DEL CAPO',
+            'POLIZIA MUNICIPALE DI GALATINA',
+            'POLIZIA MUNICIPALE DI GALATONE',
+            'POLIZIA MUNICIPALE DI GALLIPOLI',
+            'POLIZIA MUNICIPALE DI GIUGGIANELLO',
+            'POLIZIA MUNICIPALE DI GIURDIGNANO',
+            'POLIZIA MUNICIPALE DI GUAGNANO',
+            'POLIZIA MUNICIPALE DI LECCE',
+            'POLIZIA MUNICIPALE DI LEQUILE',
+            'POLIZIA MUNICIPALE DI LEVERANO',
+            'POLIZIA MUNICIPALE DI LIZZANELLO',
+            'POLIZIA MUNICIPALE DI MAGLIE',
+            'POLIZIA MUNICIPALE DI MARTANO',
+            'POLIZIA MUNICIPALE DI MARTIGNANO',
+            'POLIZIA MUNICIPALE DI MATINO',
+            'POLIZIA MUNICIPALE DI MELENDUGNO',
+            'POLIZIA MUNICIPALE DI MELISSANO',
+            'POLIZIA MUNICIPALE DI MELPIGNANO',
+            'POLIZIA MUNICIPALE DI MIGGIANO',
+            'POLIZIA MUNICIPALE DI MINERVINO DI LECCE',
+            'POLIZIA MUNICIPALE DI MONTERONI DI LECCE',
+            'POLIZIA MUNICIPALE DI MONTESANO SALENTINO',
+            'POLIZIA MUNICIPALE DI MORCIANO DI LEUCA',
+            'POLIZIA MUNICIPALE DI MURO',
+            'POLIZIA MUNICIPALE DI NARDO\'',
+            'POLIZIA MUNICIPALE DI NEVIANO',
+            'POLIZIA MUNICIPALE DI NOCIGLIA',
+            'POLIZIA MUNICIPALE DI NOVOLI',
+            'POLIZIA MUNICIPALE DI ORTELLE',
+            'POLIZIA MUNICIPALE DI OTRANTO',
+            'POLIZIA MUNICIPALE DI PALMARIGGI',
+            'POLIZIA MUNICIPALE DI PARABITA',
+            'POLIZIA MUNICIPALE DI PATU\'',
+            'POLIZIA MUNICIPALE DI POGGIARDO',
+            'POLIZIA MUNICIPALE DI PORTO CESAREO',
+            'POLIZIA MUNICIPALE DI PRESICCE',
+            'POLIZIA MUNICIPALE DI PRESICCE-ACQUARICA',
+            'POLIZIA MUNICIPALE DI RACALE',
+            'POLIZIA MUNICIPALE DI RUFFANO',
+            'POLIZIA MUNICIPALE DI SALICE SALENTINO',
+            'POLIZIA MUNICIPALE DI SALVE',
+            'POLIZIA MUNICIPALE DI SAN CASSIANO',
+            'POLIZIA MUNICIPALE DI SAN CESARIO DI LECCE',
+            'POLIZIA MUNICIPALE DI SAN DONATO DI LECCE',
+            'POLIZIA MUNICIPALE DI SAN PIETRO IN LAMA',
+            'POLIZIA MUNICIPALE DI SANARICA',
+            'POLIZIA MUNICIPALE DI SANNICOLA',
+            'POLIZIA MUNICIPALE DI SANTA CESAREA TERME',
+            'POLIZIA MUNICIPALE DI SCORRANO',
+            'POLIZIA MUNICIPALE DI SECLI\'',
+            'POLIZIA MUNICIPALE DI SOGLIANO CAVOUR',
+            'POLIZIA MUNICIPALE DI SOLETO',
+            'POLIZIA MUNICIPALE DI SPECCHIA',
+            'POLIZIA MUNICIPALE DI SPONGANO',
+            'POLIZIA MUNICIPALE DI SQUINZANO',
+            'POLIZIA MUNICIPALE DI STERNATIA',
+            'POLIZIA MUNICIPALE DI SUPERSANO',
+            'POLIZIA MUNICIPALE DI SURANO',
+            'POLIZIA MUNICIPALE DI SURBO',
+            'POLIZIA MUNICIPALE DI TAURISANO',
+            'POLIZIA MUNICIPALE DI TAVIANO',
+            'POLIZIA MUNICIPALE DI TIGGIANO',
+            'POLIZIA MUNICIPALE DI TREPUZZI',
+            'POLIZIA MUNICIPALE DI TRICASE',
+            'POLIZIA MUNICIPALE DI TUGLIE',
+            'POLIZIA MUNICIPALE DI UGENTO',
+            'POLIZIA MUNICIPALE DI UGGIANO LA CHIESA',
+            'POLIZIA MUNICIPALE DI VEGLIE',
+            'POLIZIA MUNICIPALE DI VERNOLE',
+            'POLIZIA MUNICIPALE DI ZOLLINO'
+        );
     }
 
     /**
@@ -1564,7 +1744,7 @@ class IncidentiMetaBoxes {
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
-            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa'
+            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore'
         );
         
         // Save all meta fields

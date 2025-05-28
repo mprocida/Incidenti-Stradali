@@ -62,14 +62,19 @@ class IncidentiValidation {
         );
         
         foreach ($required_fields as $field => $label) {
-
+            // Controllo speciale per il campo nell_abitato che può essere 0 o 1
+            if ($field === 'nell_abitato') {
+                if (!isset($_POST[$field]) || $_POST[$field] === '') {
+                    $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
+                }
+            } else {
                 // Controllo normale per gli altri campi
                 if (empty($_POST[$field])) {
                     $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
                 }
+            }
         }
-
-       
+        
         // Validate data incidente format
         if (!empty($_POST['data_incidente'])) {
             if (!$this->validate_date($_POST['data_incidente'])) {

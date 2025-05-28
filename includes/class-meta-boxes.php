@@ -1081,11 +1081,12 @@ class IncidentiMetaBoxes {
                 <td>
                     <select id="illuminazione" name="illuminazione">
                         <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($illuminazione, '1'); ?>><?php _e('Giorno', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($illuminazione, '2'); ?>><?php _e('Alba o crepuscolo', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($illuminazione, '3'); ?>><?php _e('Notte - illuminazione pubblica presente e in funzione', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($illuminazione, '4'); ?>><?php _e('Notte - illuminazione pubblica presente ma spenta', 'incidenti-stradali'); ?></option>
-                        <option value="5" <?php selected($illuminazione, '5'); ?>><?php _e('Notte - illuminazione pubblica assente', 'incidenti-stradali'); ?></option>
+                        <option value="1" <?php selected($illuminazione, '1'); ?>><?php _e('Luce diurna', 'incidenti-stradali'); ?></option>
+                        <option value="2" <?php selected($illuminazione, '2'); ?>><?php _e('Crepuscolo alba', 'incidenti-stradali'); ?></option>
+                        <option value="3" <?php selected($illuminazione, '3'); ?>><?php _e('Buio: luci stradali presenti accese', 'incidenti-stradali'); ?></option>
+                        <option value="4" <?php selected($illuminazione, '4'); ?>><?php _e('Buio: luci stradali presenti spente', 'incidenti-stradali'); ?></option>
+                        <option value="5" <?php selected($illuminazione, '5'); ?>><?php _e('Buio: assenza di illuminazione stradale', 'incidenti-stradali'); ?></option>
+                        <option value="6" <?php selected($illuminazione, '6'); ?>><?php _e('Illuminazione stradale non nota', 'incidenti-stradali'); ?></option>
                     </select>
                 </td>
             </tr>

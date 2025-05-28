@@ -836,3 +836,21 @@ msgstr "Required for extraurban roads"
 
 msgid "La progressiva chilometrica è obbligatoria per le strade extraurbane."
 msgstr "The kilometric progressive is mandatory for extraurban roads."
+
+msgid "Luce diurna"
+msgstr "Daylight"
+
+msgid "Crepuscolo alba"
+msgstr "Dawn/Dusk"
+
+msgid "Buio: luci stradali presenti accese"
+msgstr "Dark: street lights present and on"
+
+msgid "Buio: luci stradali presenti spente"
+msgstr "Dark: street lights present but off"
+
+msgid "Buio: assenza di illuminazione stradale"
+msgstr "Dark: no street lighting"
+
+msgid "Illuminazione stradale non nota"
+msgstr "Street lighting unknown"

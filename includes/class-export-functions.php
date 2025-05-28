@@ -1060,11 +1060,12 @@ class IncidentiExportFunctions {
     // Aggiungi funzioni helper per le conversioni
     private function convert_illuminazione_code($code) {
         $codes = array(
-            '1' => 'Giorno',
-            '2' => 'Alba o crepuscolo',
-            '3' => 'Notte - illuminazione presente e funzionante',
-            '4' => 'Notte - illuminazione presente ma spenta',
-            '5' => 'Notte - illuminazione assente'
+            '1' => 'Luce diurna',
+            '2' => 'Crepuscolo alba',
+            '3' => 'Buio: luci stradali presenti accese',
+            '4' => 'Buio: luci stradali presenti spente',
+            '5' => 'Buio: assenza di illuminazione stradale',
+            '6' => 'Illuminazione stradale non nota'
         );
         return isset($codes[$code]) ? $codes[$code] : '';
     }

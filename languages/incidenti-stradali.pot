@@ -1042,3 +1042,10 @@ msgstr "Seleziona l'ente che ha rilevato l'incidente"
 
 msgid "Nome e cognome del rilevatore"
 msgstr "Nome e cognome del rilevatore"
+
+
+msgid "Obbligatorio per strade extraurbane"
+msgstr ""
+
+msgid "La progressiva chilometrica è obbligatoria per le strade extraurbane."
+msgstr ""

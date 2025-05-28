@@ -888,22 +888,6 @@ class IncidentiMetaBoxes {
         ?>
         <table class="form-table">
             <tr>
-                <th><label><?php _e('L\'incidente è avvenuto', 'incidenti-stradali'); ?> *</label></th>
-                <td>
-                    <!-- Campo nascosto per garantire che venga sempre inviato un valore -->
-                    <input type="hidden" name="nell_abitato" value="">
-                    
-                    <label>
-                        <input type="radio" name="nell_abitato" value="1" <?php checked($abitato, '1'); ?> required>
-                        <?php _e('Nell\'abitato', 'incidenti-stradali'); ?>
-                    </label><br>
-                    <label>
-                        <input type="radio" name="nell_abitato" value="0" <?php checked($abitato, '0'); ?> required>
-                        <?php _e('Fuori dall\'abitato', 'incidenti-stradali'); ?>
-                    </label>
-                </td>
-            </tr>
-            <tr>
                 <th><label for="tipo_strada"><?php _e('Tipo di Strada', 'incidenti-stradali'); ?> *</label></th>
                 <td>
                     <select id="tipo_strada" name="tipo_strada" required>
@@ -937,7 +921,7 @@ class IncidentiMetaBoxes {
                     <input type="text" id="numero_strada" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>">
                 </td>
             </tr>
-            <tr>
+            <tr id="progressiva_row" style="display: none;">
                 <th><label><?php _e('Progressiva Chilometrica', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <label for="progressiva_km"><?php _e('Km', 'incidenti-stradali'); ?></label>
@@ -945,9 +929,48 @@ class IncidentiMetaBoxes {
                     
                     <label for="progressiva_m"><?php _e('Mt', 'incidenti-stradali'); ?></label>
                     <input type="number" id="progressiva_m" name="progressiva_m" value="<?php echo esc_attr($progressiva_m); ?>" min="0" max="999" style="width: 80px;">
+                    
+                    <p class="description"><?php _e('Obbligatorio per strade extraurbane', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
         </table>
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                function updateFieldsVisibility() {
+                    var tipoStrada = $('#tipo_strada').val();
+                    var isExtraurbana = false;
+                    
+                    // Determine if extraurbana based on tipo_strada value
+                    if (tipoStrada && ['4', '5', '6', '7', '8', '9'].includes(tipoStrada)) {
+                        isExtraurbana = true;
+                    }
+                    
+                    // Show/hide progressiva chilometrica
+                    if (isExtraurbana) {
+                        $('#progressiva_row').show();
+                        $('#progressiva_km').attr('required', true);
+                    } else {
+                        $('#progressiva_row').hide();
+                        $('#progressiva_km').removeAttr('required');
+                        $('#progressiva_km').val('');
+                        $('#progressiva_m').val('');
+                    }
+                    
+                    // Auto-set nell_abitato based on tipo_strada
+                    var nellAbitato = isExtraurbana ? '0' : '1';
+                    $('input[name="nell_abitato"]').remove();
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'nell_abitato',
+                        value: nellAbitato
+                    }).appendTo('#tipo_strada').parent();
+                }
+                
+                // Trigger on page load and when tipo_strada changes
+                $('#tipo_strada').on('change', updateFieldsVisibility);
+                updateFieldsVisibility();
+            });
+            </script>
         <?php
     }
     

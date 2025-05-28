@@ -57,25 +57,19 @@ class IncidentiValidation {
             'ora_incidente' => __('Ora dell\'incidente', 'incidenti-stradali'),
             'provincia_incidente' => __('Provincia', 'incidenti-stradali'),
             'comune_incidente' => __('Comune', 'incidenti-stradali'),
-            'nell_abitato' => __('Nell\'abitato', 'incidenti-stradali'),
             'tipo_strada' => __('Tipo di strada', 'incidenti-stradali'),
             'natura_incidente' => __('Natura dell\'incidente', 'incidenti-stradali')
         );
         
         foreach ($required_fields as $field => $label) {
-            // Controllo speciale per il campo nell_abitato che può essere 0 o 1
-            if ($field === 'nell_abitato') {
-                if (!isset($_POST[$field]) || $_POST[$field] === '') {
-                    $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
-                }
-            } else {
+
                 // Controllo normale per gli altri campi
                 if (empty($_POST[$field])) {
                     $errors[] = sprintf(__('Il campo "%s" è obbligatorio.', 'incidenti-stradali'), $label);
                 }
-            }
         }
-        
+
+       
         // Validate data incidente format
         if (!empty($_POST['data_incidente'])) {
             if (!$this->validate_date($_POST['data_incidente'])) {
@@ -155,6 +149,16 @@ class IncidentiValidation {
             for ($i = 1; $i <= $num_pedoni; $i++) {
                 $pedestrian_errors = $this->validate_pedestrian_data($i);
                 $errors = array_merge($errors, $pedestrian_errors);
+            }
+        }
+
+        // Validate progressiva chilometrica for extraurbane
+        if (!empty($_POST['tipo_strada'])) {
+            $tipo_strada = $_POST['tipo_strada'];
+            $is_extraurbana = in_array($tipo_strada, ['4', '5', '6', '7', '8', '9']);
+            
+            if ($is_extraurbana && empty($_POST['progressiva_km'])) {
+                $errors[] = __('La progressiva chilometrica è obbligatoria per le strade extraurbane.', 'incidenti-stradali');
             }
         }
         

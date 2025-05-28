@@ -829,3 +829,10 @@ msgstr ""
 #. Author URI of the plugin
 msgid "https://example.com"
 msgstr ""
+
+
+msgid "Obbligatorio per strade extraurbane"
+msgstr "Obbligatorio per strade extraurbane"
+
+msgid "La progressiva chilometrica è obbligatoria per le strade extraurbane."
+msgstr "La progressiva chilometrica è obbligatoria per le strade extraurbane."

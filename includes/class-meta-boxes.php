@@ -128,23 +128,7 @@ class IncidentiMetaBoxes {
 
     public function render_nominativi_meta_box($post) {
         ?>
-        <div class="incidenti-disclaimer-container" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-            <h4 style="color: #856404; margin-top: 0;"><?php _e('SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI', 'incidenti-stradali'); ?></h4>
-            <div style="font-size: 12px; color: #856404; line-height: 1.4;">
-                <p><strong><?php _e('Decreto legislativo 6 settembre 1989, n. 322', 'incidenti-stradali'); ?></strong> - <?php _e('Norme sul Sistema statistico nazionale e sulla riorganizzazione dell\'Istituto nazionale di statistica', 'incidenti-stradali'); ?></p>
-                <p><strong><?php _e('Decreto legislativo 30 giugno 2003, n. 196', 'incidenti-stradali'); ?></strong> - <?php _e('Codice in materia di protezione dei dati personali', 'incidenti-stradali'); ?></p>
-                <p><strong><?php _e('Regolamento UE 2016/679', 'incidenti-stradali'); ?></strong> - <?php _e('Regolamento generale sulla protezione dei dati', 'incidenti-stradali'); ?></p>
-                
-                <p><?php _e('I dati raccolti sono tutelati dal segreto statistico e sottoposti alla normativa in materia di protezione dei dati personali e potranno essere utilizzati, anche per successivi trattamenti, esclusivamente per fini statistici dai soggetti del Sistema statistico nazionale ed essere comunicati per finalità di ricerca scientifica alle condizioni e secondo le modalità previste dall\'art 7 del Codice di deontologia e di buona condotta per i trattamenti di dati personali a scopi statistici.', 'incidenti-stradali'); ?></p>
-                
-                <p><?php _e('Titolare del trattamento dei dati è l\'ISTAT – Istituto nazionale di statistica - Via Cesare Balbo, 16 – 00184 Roma. Responsabili del trattamento dei dati sono, per le fasi di rispettiva competenza, il Direttore centrale per le statistiche e le indagini sulle istituzioni sociali dell\'Istat e il preposto all\'Ufficio di statistica della Regione o Provincia autonoma.', 'incidenti-stradali'); ?></p>
-                
-                <p><?php _e('L\'inserimento dei nominativi è OBBLIGATORIO ai sensi dell\'art. 7 del d.lgs. n. 322/1989 e fatto obbligo alle amministrazioni, enti ed organismi pubblici, di fornire tutti i dati e le notizie richieste nel modello di rilevazione.', 'incidenti-stradali'); ?></p>
-            </div>
-        </div>
-
         <div class="incidenti-nominativi-container">
-            <h4><?php _e('Sezione 8: Nominativo dei morti', 'incidenti-stradali'); ?></h4>
             <p class="description"><?php _e('Nome e Cognome dei morti coinvolti nell\'incidente', 'incidenti-stradali'); ?></p>
             
             <div id="nominativi-morti-container">
@@ -173,7 +157,6 @@ class IncidentiMetaBoxes {
                 <?php endfor; ?>
             </div>
 
-            <h4><?php _e('Sezione 9: Nominativo dei feriti', 'incidenti-stradali'); ?></h4>
             <p class="description"><?php _e('Nome e Cognome dei feriti coinvolti nell\'incidente', 'incidenti-stradali'); ?></p>
             
             <div id="nominativi-feriti-container">
@@ -209,6 +192,20 @@ class IncidentiMetaBoxes {
                         </table>
                     </div>
                 <?php endfor; ?>
+            </div>
+        </div>
+        <div class="incidenti-disclaimer-container" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+            <h4 style="color: #856404; margin-top: 0;"><?php _e('SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI', 'incidenti-stradali'); ?></h4>
+            <div style="font-size: 12px; color: #856404; line-height: 1.4;">
+                <p><strong><?php _e('Decreto legislativo 6 settembre 1989, n. 322', 'incidenti-stradali'); ?></strong> - <?php _e('Norme sul Sistema statistico nazionale e sulla riorganizzazione dell\'Istituto nazionale di statistica', 'incidenti-stradali'); ?></p>
+                <p><strong><?php _e('Decreto legislativo 30 giugno 2003, n. 196', 'incidenti-stradali'); ?></strong> - <?php _e('Codice in materia di protezione dei dati personali', 'incidenti-stradali'); ?></p>
+                <p><strong><?php _e('Regolamento UE 2016/679', 'incidenti-stradali'); ?></strong> - <?php _e('Regolamento generale sulla protezione dei dati', 'incidenti-stradali'); ?></p>
+                
+                <p><?php _e('I dati raccolti sono tutelati dal segreto statistico e sottoposti alla normativa in materia di protezione dei dati personali e potranno essere utilizzati, anche per successivi trattamenti, esclusivamente per fini statistici dai soggetti del Sistema statistico nazionale ed essere comunicati per finalità di ricerca scientifica alle condizioni e secondo le modalità previste dall\'art 7 del Codice di deontologia e di buona condotta per i trattamenti di dati personali a scopi statistici.', 'incidenti-stradali'); ?></p>
+                
+                <p><?php _e('Titolare del trattamento dei dati è l\'ISTAT – Istituto nazionale di statistica - Via Cesare Balbo, 16 – 00184 Roma. Responsabili del trattamento dei dati sono, per le fasi di rispettiva competenza, il Direttore centrale per le statistiche e le indagini sulle istituzioni sociali dell\'Istat e il preposto all\'Ufficio di statistica della Regione o Provincia autonoma.', 'incidenti-stradali'); ?></p>
+                
+                <p><?php _e('L\'inserimento dei nominativi è OBBLIGATORIO ai sensi dell\'art. 7 del d.lgs. n. 322/1989 e fatto obbligo alle amministrazioni, enti ed organismi pubblici, di fornire tutti i dati e le notizie richieste nel modello di rilevazione.', 'incidenti-stradali'); ?></p>
             </div>
         </div>
 

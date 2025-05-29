@@ -122,7 +122,7 @@ class IncidentiMetaBoxes {
             array($this, 'render_nominativi_meta_box'),
             'incidente_stradale',
             'normal',
-            'high'
+            'low'   // <-- PRIORITÀ BASSA per visualizzarlo in fondo
         );
     }
 
@@ -240,6 +240,8 @@ class IncidentiMetaBoxes {
                     }
                 }
                 
+                console.log('Morti trovati:', totalMorti, 'Feriti trovati:', totalFeriti); // Debug
+                
                 // Mostra/nascondi sezioni nominativi morti
                 for (var i = 1; i <= 4; i++) {
                     if (i <= totalMorti) {
@@ -257,14 +259,27 @@ class IncidentiMetaBoxes {
                         $('#ferito-' + i).hide();
                     }
                 }
+                
+                // Mostra almeno un campo se ci sono morti/feriti (per test)
+                if (totalMorti > 0) {
+                    $('#morto-1').show();
+                }
+                if (totalFeriti > 0) {
+                    $('#ferito-1').show();
+                }
             }
             
             // Aggiorna visibilità quando cambiano gli esiti
-            $('select[id*="_esito"]').on('change', updateNominativiVisibility);
-            $('#numero_pedoni_coinvolti').on('change', updateNominativiVisibility);
+            $(document).on('change', 'select[id*="_esito"]', updateNominativiVisibility);
+            $(document).on('change', '#numero_pedoni_coinvolti', updateNominativiVisibility);
             
             // Aggiorna visibilità al caricamento della pagina
-            updateNominativiVisibility();
+            setTimeout(function() {
+                updateNominativiVisibility();
+            }, 1000); // Ritardo per permettere il caricamento completo
+            
+            // Forza la visualizzazione di almeno un campo per test
+            $('#morto-1, #ferito-1').show();
         });
         </script>
         <?php

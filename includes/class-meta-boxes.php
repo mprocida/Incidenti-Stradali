@@ -985,149 +985,238 @@ class IncidentiMetaBoxes {
         $visibilita = get_post_meta($post->ID, 'visibilita', true);
         $traffico = get_post_meta($post->ID, 'traffico', true);
         $segnaletica_semaforica = get_post_meta($post->ID, 'segnaletica_semaforica', true);
+        $orientamento_conducente = get_post_meta($post->ID, 'orientamento_conducente', true);
+        $presenza_banchina = get_post_meta($post->ID, 'presenza_banchina', true);
+        $presenza_barriere = get_post_meta($post->ID, 'presenza_barriere', true);
+        $tappeto_usura_aperto = get_post_meta($post->ID, 'tappeto_usura_aperto', true);
+        $tappeto_usura_chiuso = get_post_meta($post->ID, 'tappeto_usura_chiuso', true);
+        $allagato = get_post_meta($post->ID, 'allagato', true);
+        $semaforizzazioni = get_post_meta($post->ID, 'semaforizzazioni', true);
+        $cartelli_pubblicitari = get_post_meta($post->ID, 'cartelli_pubblicitari', true);
+        $leggibilita_alta = get_post_meta($post->ID, 'leggibilita_alta', true);
+        $leggibilita_bassa = get_post_meta($post->ID, 'leggibilita_bassa', true);
+        $nuvoloso = get_post_meta($post->ID, 'nuvoloso', true);
+        $foschia = get_post_meta($post->ID, 'foschia', true);
         
         ?>
-        <table class="form-table">
-            <tr>
-                <th><label for="geometria_strada"><?php _e('Tipo di Strada', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="geometria_strada" name="geometria_strada">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($geometria_strada, '1'); ?>><?php _e('Una carreggiata senso unico', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($geometria_strada, '2'); ?>><?php _e('Una carreggiata doppio senso', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($geometria_strada, '3'); ?>><?php _e('Due carreggiate', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($geometria_strada, '4'); ?>><?php _e('Più di 2 carreggiate', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="pavimentazione_strada"><?php _e('Pavimentazione', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="pavimentazione_strada" name="pavimentazione_strada">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($pavimentazione, '1'); ?>><?php _e('Strada pavimentata', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($pavimentazione, '2'); ?>><?php _e('Strada pavimentata dissestata', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($pavimentazione, '3'); ?>><?php _e('Strada non pavimentata', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="intersezione_tronco"><?php _e('Intersezione', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="intersezione_tronco" name="intersezione_tronco">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <optgroup label="<?php _e('Intersezione', 'incidenti-stradali'); ?>">
-                            <option value="1" <?php selected($intersezione, '1'); ?>><?php _e('Incrocio', 'incidenti-stradali'); ?></option>
-                            <option value="2" <?php selected($intersezione, '2'); ?>><?php _e('Rotatoria', 'incidenti-stradali'); ?></option>
-                            <option value="3" <?php selected($intersezione, '3'); ?>><?php _e('Intersezione segnalata', 'incidenti-stradali'); ?></option>
-                            <option value="4" <?php selected($intersezione, '4'); ?>><?php _e('Intersezione con semaforo o vigile', 'incidenti-stradali'); ?></option>
-                            <option value="5" <?php selected($intersezione, '5'); ?>><?php _e('Intersezione non segnalata', 'incidenti-stradali'); ?></option>
-                            <option value="6" <?php selected($intersezione, '6'); ?>><?php _e('Passaggio a livello', 'incidenti-stradali'); ?></option>
-                        </optgroup>
-                        <optgroup label="<?php _e('Non Intersezione', 'incidenti-stradali'); ?>">
-                            <option value="7" <?php selected($intersezione, '7'); ?>><?php _e('Rettilineo', 'incidenti-stradali'); ?></option>
-                            <option value="8" <?php selected($intersezione, '8'); ?>><?php _e('Curva', 'incidenti-stradali'); ?></option>
-                            <option value="9" <?php selected($intersezione, '9'); ?>><?php _e('Dosso, strettoia', 'incidenti-stradali'); ?></option>
-                            <option value="10" <?php selected($intersezione, '10'); ?>><?php _e('Pendenza', 'incidenti-stradali'); ?></option>
-                            <option value="11" <?php selected($intersezione, '11'); ?>><?php _e('Galleria illuminata', 'incidenti-stradali'); ?></option>
-                            <option value="12" <?php selected($intersezione, '12'); ?>><?php _e('Galleria non illuminata', 'incidenti-stradali'); ?></option>
-                        </optgroup>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="stato_fondo_strada"><?php _e('Fondo Stradale', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="stato_fondo_strada" name="stato_fondo_strada">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($fondo_strada, '1'); ?>><?php _e('Asciutto', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($fondo_strada, '2'); ?>><?php _e('Bagnato', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($fondo_strada, '3'); ?>><?php _e('Sdrucciolevole', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($fondo_strada, '4'); ?>><?php _e('Ghiacciato', 'incidenti-stradali'); ?></option>
-                        <option value="5" <?php selected($fondo_strada, '5'); ?>><?php _e('Innevato', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="segnaletica_strada"><?php _e('Segnaletica', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="segnaletica_strada" name="segnaletica_strada">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($segnaletica, '1'); ?>><?php _e('Assente', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($segnaletica, '2'); ?>><?php _e('Verticale', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($segnaletica, '3'); ?>><?php _e('Orizzontale', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($segnaletica, '4'); ?>><?php _e('Verticale e orizzontale', 'incidenti-stradali'); ?></option>
-                        <option value="5" <?php selected($segnaletica, '5'); ?>><?php _e('Temporanea di cantiere', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="condizioni_meteo"><?php _e('Condizioni Meteorologiche', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="condizioni_meteo" name="condizioni_meteo">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($condizioni_meteo, '1'); ?>><?php _e('Sereno', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($condizioni_meteo, '2'); ?>><?php _e('Nebbia', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($condizioni_meteo, '3'); ?>><?php _e('Pioggia', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($condizioni_meteo, '4'); ?>><?php _e('Grandine', 'incidenti-stradali'); ?></option>
-                        <option value="5" <?php selected($condizioni_meteo, '5'); ?>><?php _e('Neve', 'incidenti-stradali'); ?></option>
-                        <option value="6" <?php selected($condizioni_meteo, '6'); ?>><?php _e('Vento forte', 'incidenti-stradali'); ?></option>
-                        <option value="7" <?php selected($condizioni_meteo, '7'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="illuminazione"><?php _e('Illuminazione', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="illuminazione" name="illuminazione">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($illuminazione, '1'); ?>><?php _e('Luce diurna', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($illuminazione, '2'); ?>><?php _e('Crepuscolo alba', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($illuminazione, '3'); ?>><?php _e('Buio: luci stradali presenti accese', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($illuminazione, '4'); ?>><?php _e('Buio: luci stradali presenti spente', 'incidenti-stradali'); ?></option>
-                        <option value="5" <?php selected($illuminazione, '5'); ?>><?php _e('Buio: assenza di illuminazione stradale', 'incidenti-stradali'); ?></option>
-                        <option value="6" <?php selected($illuminazione, '6'); ?>><?php _e('Illuminazione stradale non nota', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            
-            <tr>
-                <th><label for="visibilita"><?php _e('Visibilità', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="visibilita" name="visibilita">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($visibilita, '1'); ?>><?php _e('Buona', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($visibilita, '2'); ?>><?php _e('Ridotta per condizioni atmosferiche', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($visibilita, '3'); ?>><?php _e('Ridotta per altre cause', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            
-            <tr>
-                <th><label for="traffico"><?php _e('Traffico', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="traffico" name="traffico">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($traffico, '1'); ?>><?php _e('Scarso', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($traffico, '2'); ?>><?php _e('Normale', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($traffico, '3'); ?>><?php _e('Intenso', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-            
-            <tr>
-                <th><label for="segnaletica_semaforica"><?php _e('Segnaletica semaforica', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <select id="segnaletica_semaforica" name="segnaletica_semaforica">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($segnaletica_semaforica, '1'); ?>><?php _e('Assente', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($segnaletica_semaforica, '2'); ?>><?php _e('In funzione', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($segnaletica_semaforica, '3'); ?>><?php _e('Lampeggiante', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($segnaletica_semaforica, '4'); ?>><?php _e('Spenta', 'incidenti-stradali'); ?></option>
-                    </select>
-                </td>
-            </tr>
-        </table>
+        <div class="luogo-incidente-sections">
+            <!-- Sezione Tipi di Strada -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Tipi di Strada', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><label for="geometria_strada"><?php _e('Configurazione Carreggiate', 'incidenti-stradali'); ?></label></th>
+                        <td>
+                            <label><input type="radio" name="geometria_strada" value="1" <?php checked($geometria_strada, '1'); ?>> <?php _e('Una carreggiata senso unico', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="geometria_strada" value="2" <?php checked($geometria_strada, '2'); ?>> <?php _e('Una carreggiata doppio senso', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="geometria_strada" value="3" <?php checked($geometria_strada, '3'); ?>> <?php _e('Due carreggiate', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="geometria_strada" value="4" <?php checked($geometria_strada, '4'); ?>> <?php _e('Più di 2 carreggiate', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Sezione Pavimentazione -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Pavimentazione', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><?php _e('Tipo Pavimentazione', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="pavimentazione_strada" value="1" <?php checked($pavimentazione, '1'); ?>> <?php _e('Strada pavimentata', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="pavimentazione_strada" value="2" <?php checked($pavimentazione, '2'); ?>> <?php _e('Strada pavimentata dissestata', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="pavimentazione_strada" value="3" <?php checked($pavimentazione, '3'); ?>> <?php _e('Strada non pavimentata', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Condizioni Manto', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="checkbox" name="tappeto_usura_aperto" value="1" <?php checked($tappeto_usura_aperto, '1'); ?>> <?php _e('Tappeto d\'usura aperto', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="checkbox" name="tappeto_usura_chiuso" value="1" <?php checked($tappeto_usura_chiuso, '1'); ?>> <?php _e('Tappeto d\'usura chiuso', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Sezione Intersezione/Non Intersezione -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Intersezione', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><?php _e('Tipo Intersezione', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="intersezione_tronco" value="1" <?php checked($intersezione, '1'); ?>> <?php _e('Incrocio', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="2" <?php checked($intersezione, '2'); ?>> <?php _e('Rotatoria', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="3" <?php checked($intersezione, '3'); ?>> <?php _e('Intersezione segnalata', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="4" <?php checked($intersezione, '4'); ?>> <?php _e('Intersezione con semaforo o vigile', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="5" <?php checked($intersezione, '5'); ?>> <?php _e('Intersezione non segnalata', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="6" <?php checked($intersezione, '6'); ?>> <?php _e('Passaggio a livello', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Non Intersezione', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="intersezione_tronco" value="7" <?php checked($intersezione, '7'); ?>> <?php _e('Rettilineo', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="8" <?php checked($intersezione, '8'); ?>> <?php _e('Curva', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="9" <?php checked($intersezione, '9'); ?>> <?php _e('Dosso, strettoia', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="10" <?php checked($intersezione, '10'); ?>> <?php _e('Pendenza - salita', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="11" <?php checked($intersezione, '11'); ?>> <?php _e('Pendenza - discesa', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="12" <?php checked($intersezione, '12'); ?>> <?php _e('Galleria illuminata', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="13" <?php checked($intersezione, '13'); ?>> <?php _e('Galleria non illuminata', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Caratteristiche Geometriche', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="intersezione_tronco" value="14" <?php checked($intersezione, '14'); ?>> <?php _e('Cunetta', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="15" <?php checked($intersezione, '15'); ?>> <?php _e('Cavalcavia', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="16" <?php checked($intersezione, '16'); ?>> <?php _e('Trincea', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="17" <?php checked($intersezione, '17'); ?>> <?php _e('Rilevato', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="18" <?php checked($intersezione, '18'); ?>> <?php _e('Accessi laterali', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Sezione Fondo Stradale -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Fondo Stradale', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><?php _e('Condizioni Fondo', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="stato_fondo_strada" value="1" <?php checked($fondo_strada, '1'); ?>> <?php _e('Asciutto', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="stato_fondo_strada" value="2" <?php checked($fondo_strada, '2'); ?>> <?php _e('Bagnato', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="stato_fondo_strada" value="3" <?php checked($fondo_strada, '3'); ?>> <?php _e('Sdrucciolevole', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="stato_fondo_strada" value="4" <?php checked($fondo_strada, '4'); ?>> <?php _e('Ghiacciato', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="stato_fondo_strada" value="5" <?php checked($fondo_strada, '5'); ?>> <?php _e('Innevato', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="checkbox" name="allagato" value="1" <?php checked($allagato, '1'); ?>> <?php _e('Allagato', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Sezione Segnaletica -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Segnaletica', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><?php _e('Tipo Segnaletica', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="segnaletica_strada" value="1" <?php checked($segnaletica, '1'); ?>> <?php _e('Assente', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="segnaletica_strada" value="2" <?php checked($segnaletica, '2'); ?>> <?php _e('Verticale', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="segnaletica_strada" value="3" <?php checked($segnaletica, '3'); ?>> <?php _e('Orizzontale', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="segnaletica_strada" value="4" <?php checked($segnaletica, '4'); ?>> <?php _e('Verticale e orizzontale', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="segnaletica_strada" value="5" <?php checked($segnaletica, '5'); ?>> <?php _e('Temporanea di cantiere', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Elementi Aggiuntivi', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="checkbox" name="semaforizzazioni" value="1" <?php checked($semaforizzazioni, '1'); ?>> <?php _e('Semaforizzazioni', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="checkbox" name="cartelli_pubblicitari" value="1" <?php checked($cartelli_pubblicitari, '1'); ?>> <?php _e('Cartelli pubblicitari', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="checkbox" name="leggibilita_alta" value="1" <?php checked($leggibilita_alta, '1'); ?>> <?php _e('Leggibilità alta', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="checkbox" name="leggibilita_bassa" value="1" <?php checked($leggibilita_bassa, '1'); ?>> <?php _e('Leggibilità bassa', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Sezione Condizioni Meteorologiche -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Condizioni Meteorologiche', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><?php _e('Condizioni Meteo', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="condizioni_meteo" value="1" <?php checked($condizioni_meteo, '1'); ?>> <?php _e('Sereno', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="condizioni_meteo" value="2" <?php checked($condizioni_meteo, '2'); ?>> <?php _e('Nebbia', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="condizioni_meteo" value="3" <?php checked($condizioni_meteo, '3'); ?>> <?php _e('Pioggia', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="condizioni_meteo" value="4" <?php checked($condizioni_meteo, '4'); ?>> <?php _e('Grandine', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="condizioni_meteo" value="5" <?php checked($condizioni_meteo, '5'); ?>> <?php _e('Neve', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="condizioni_meteo" value="6" <?php checked($condizioni_meteo, '6'); ?>> <?php _e('Vento forte', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="condizioni_meteo" value="7" <?php checked($condizioni_meteo, '7'); ?>> <?php _e('Altro', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Condizioni Aggiuntive', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="checkbox" name="nuvoloso" value="1" <?php checked($nuvoloso, '1'); ?>> <?php _e('Nuvoloso', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="checkbox" name="foschia" value="1" <?php checked($foschia, '1'); ?>> <?php _e('Foschia', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Sezione Orientamento e Infrastrutture -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Altre Caratteristiche', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><?php _e('Orientamento del conducente', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="orientamento_conducente" value="sole_frontale" <?php checked($orientamento_conducente, 'sole_frontale'); ?>> <?php _e('Sole frontale', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="orientamento_conducente" value="sole_laterale" <?php checked($orientamento_conducente, 'sole_laterale'); ?>> <?php _e('Sole laterale', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="orientamento_conducente" value="sole_dietro" <?php checked($orientamento_conducente, 'sole_dietro'); ?>> <?php _e('Sole da dietro', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="orientamento_conducente" value="non_rilevabile" <?php checked($orientamento_conducente, 'non_rilevabile'); ?>> <?php _e('Non rilevabile', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Presenza banchina', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="checkbox" name="presenza_banchina" value="1" <?php checked($presenza_banchina, '1'); ?>> <?php _e('Presente', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Presenza barriere', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="presenza_barriere" value="si" <?php checked($presenza_barriere, 'si'); ?>> <?php _e('Sì', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="presenza_barriere" value="no" <?php checked($presenza_barriere, 'no'); ?>> <?php _e('No', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="presenza_barriere" value="danneggiate" <?php checked($presenza_barriere, 'danneggiate'); ?>> <?php _e('Danneggiate', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <style>
+        .luogo-incidente-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .sezione-luogo {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+
+        .sezione-luogo h4 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        .sezione-luogo label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .sezione-luogo input[type="radio"],
+        .sezione-luogo input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 782px) {
+            .luogo-incidente-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+        </style>
         <?php
     }
     
@@ -1768,7 +1857,9 @@ class IncidentiMetaBoxes {
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
-            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore'
+            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore',
+            'orientamento_conducente', 'presenza_banchina', 'presenza_barriere', 'tappeto_usura_aperto', 'tappeto_usura_chiuso', 'allagato', 
+            'semaforizzazioni', 'cartelli_pubblicitari', 'leggibilita_alta', 'leggibilita_bassa', 'nuvoloso', 'foschia'
         );
         
         // Save all meta fields
@@ -1779,6 +1870,21 @@ class IncidentiMetaBoxes {
                 if ($field === 'mostra_in_mappa') {
                     delete_post_meta($post_id, $field);
                 }
+            }
+        }
+
+        // Gestione speciale per i campi checkbox
+        $checkbox_fields = array(
+            'presenza_banchina', 'tappeto_usura_aperto', 'tappeto_usura_chiuso', 
+            'allagato', 'semaforizzazioni', 'cartelli_pubblicitari', 
+            'leggibilita_alta', 'leggibilita_bassa', 'nuvoloso', 'foschia'
+        );
+
+        foreach ($checkbox_fields as $field) {
+            if (isset($_POST[$field])) {
+                update_post_meta($post_id, $field, '1');
+            } else {
+                delete_post_meta($post_id, $field);
             }
         }
         

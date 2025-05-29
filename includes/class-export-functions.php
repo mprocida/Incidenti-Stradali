@@ -593,15 +593,22 @@ class IncidentiExportFunctions {
             // Nominativi morti e feriti (32 record di 30 caratteri ciascuno)
             // 4 morti (nome + cognome)
             for ($i = 1; $i <= 4; $i++) {
-                $record .= str_repeat(' ', 30); // nome
-                $record .= str_repeat(' ', 30); // cognome
+                $nome_morto = get_post_meta($post_id, 'morto_' . $i . '_nome', true);
+                $cognome_morto = get_post_meta($post_id, 'morto_' . $i . '_cognome', true);
+                
+                $record .= str_pad(substr($nome_morto, 0, 30), 30, ' ', STR_PAD_RIGHT); // nome
+                $record .= str_pad(substr($cognome_morto, 0, 30), 30, ' ', STR_PAD_RIGHT); // cognome
             }
-            
+
             // 8 feriti (nome + cognome + istituto)
             for ($i = 1; $i <= 8; $i++) {
-                $record .= str_repeat(' ', 30); // nome
-                $record .= str_repeat(' ', 30); // cognome
-                $record .= str_repeat(' ', 30); // istituto
+                $nome_ferito = get_post_meta($post_id, 'ferito_' . $i . '_nome', true);
+                $cognome_ferito = get_post_meta($post_id, 'ferito_' . $i . '_cognome', true);
+                $istituto_ferito = get_post_meta($post_id, 'ferito_' . $i . '_istituto', true);
+                
+                $record .= str_pad(substr($nome_ferito, 0, 30), 30, ' ', STR_PAD_RIGHT); // nome
+                $record .= str_pad(substr($cognome_ferito, 0, 30), 30, ' ', STR_PAD_RIGHT); // cognome
+                $record .= str_pad(substr($istituto_ferito, 0, 30), 30, ' ', STR_PAD_RIGHT); // istituto
             }
             
             // Assicurati che il record sia esattamente di 1024 caratteri
@@ -767,7 +774,21 @@ class IncidentiExportFunctions {
             'Altri Feriti Maschi',
             'Altri Feriti Femmine',
             'Localizzazione Extraurbana',
-            'Chilometrica Strada'
+            'Chilometrica Strada',
+
+            'Nome Morto 1', 'Cognome Morto 1',
+            'Nome Morto 2', 'Cognome Morto 2', 
+            'Nome Morto 3', 'Cognome Morto 3',
+            'Nome Morto 4', 'Cognome Morto 4',
+
+            'Nome Ferito 1', 'Cognome Ferito 1', 'Istituto Ferito 1',
+            'Nome Ferito 2', 'Cognome Ferito 2', 'Istituto Ferito 2',
+            'Nome Ferito 3', 'Cognome Ferito 3', 'Istituto Ferito 3',
+            'Nome Ferito 4', 'Cognome Ferito 4', 'Istituto Ferito 4',
+            'Nome Ferito 5', 'Cognome Ferito 5', 'Istituto Ferito 5',
+            'Nome Ferito 6', 'Cognome Ferito 6', 'Istituto Ferito 6',
+            'Nome Ferito 7', 'Cognome Ferito 7', 'Istituto Ferito 7',
+            'Nome Ferito 8', 'Cognome Ferito 8', 'Istituto Ferito 8'
         );
         
         // Scrivi header con separatore punto e virgola
@@ -933,6 +954,19 @@ class IncidentiExportFunctions {
             $row[] = get_post_meta($post_id, 'altri_feriti_femmine', true) ?: 0;
             $row[] = $this->convert_localizzazione_extra_code(get_post_meta($post_id, 'localizzazione_extra_ab', true));
             $row[] = get_post_meta($post_id, 'chilometrica_strada', true);
+
+            // Nominativi morti (4 morti)
+            for ($i = 1; $i <= 4; $i++) {
+                $row[] = get_post_meta($post_id, 'morto_' . $i . '_nome', true);
+                $row[] = get_post_meta($post_id, 'morto_' . $i . '_cognome', true);
+            }
+
+            // Nominativi feriti (8 feriti)
+            for ($i = 1; $i <= 8; $i++) {
+                $row[] = get_post_meta($post_id, 'ferito_' . $i . '_nome', true);
+                $row[] = get_post_meta($post_id, 'ferito_' . $i . '_cognome', true);
+                $row[] = get_post_meta($post_id, 'ferito_' . $i . '_istituto', true);
+            }
             
             // Pulisci e formatta i valori
             $row = array_map(function($value) {

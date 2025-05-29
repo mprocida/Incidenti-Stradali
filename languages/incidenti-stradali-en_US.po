@@ -854,3 +854,33 @@ msgstr "Dark: no street lighting"
 
 msgid "Illuminazione stradale non nota"
 msgstr "Street lighting unknown"
+
+msgid "Nominativo Morti e Feriti"
+msgstr ""
+
+msgid "SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI"
+msgstr ""
+
+msgid "Sezione 8: Nominativo dei morti"
+msgstr ""
+
+msgid "Nome e Cognome dei morti coinvolti nell'incidente"
+msgstr ""
+
+msgid "Sezione 9: Nominativo dei feriti"
+msgstr ""
+
+msgid "Nome e Cognome dei feriti coinvolti nell'incidente"
+msgstr ""
+
+msgid "Morto %d"
+msgstr ""
+
+msgid "Ferito %d"
+msgstr ""
+
+msgid "Istituto di cura"
+msgstr ""
+
+msgid "Ospedale o struttura sanitaria dove è stato ricoverato"
+msgstr ""

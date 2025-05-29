@@ -115,6 +115,159 @@ class IncidentiMetaBoxes {
             'normal',
             'high'
         );
+
+        add_meta_box(
+            'incidente_nominativi',
+            __('Nominativo Morti e Feriti', 'incidenti-stradali'),
+            array($this, 'render_nominativi_meta_box'),
+            'incidente_stradale',
+            'normal',
+            'high'
+        );
+    }
+
+    public function render_nominativi_meta_box($post) {
+        ?>
+        <div class="incidenti-disclaimer-container" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+            <h4 style="color: #856404; margin-top: 0;"><?php _e('SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI', 'incidenti-stradali'); ?></h4>
+            <div style="font-size: 12px; color: #856404; line-height: 1.4;">
+                <p><strong><?php _e('Decreto legislativo 6 settembre 1989, n. 322', 'incidenti-stradali'); ?></strong> - <?php _e('Norme sul Sistema statistico nazionale e sulla riorganizzazione dell\'Istituto nazionale di statistica', 'incidenti-stradali'); ?></p>
+                <p><strong><?php _e('Decreto legislativo 30 giugno 2003, n. 196', 'incidenti-stradali'); ?></strong> - <?php _e('Codice in materia di protezione dei dati personali', 'incidenti-stradali'); ?></p>
+                <p><strong><?php _e('Regolamento UE 2016/679', 'incidenti-stradali'); ?></strong> - <?php _e('Regolamento generale sulla protezione dei dati', 'incidenti-stradali'); ?></p>
+                
+                <p><?php _e('I dati raccolti sono tutelati dal segreto statistico e sottoposti alla normativa in materia di protezione dei dati personali e potranno essere utilizzati, anche per successivi trattamenti, esclusivamente per fini statistici dai soggetti del Sistema statistico nazionale ed essere comunicati per finalità di ricerca scientifica alle condizioni e secondo le modalità previste dall\'art 7 del Codice di deontologia e di buona condotta per i trattamenti di dati personali a scopi statistici.', 'incidenti-stradali'); ?></p>
+                
+                <p><?php _e('Titolare del trattamento dei dati è l\'ISTAT – Istituto nazionale di statistica - Via Cesare Balbo, 16 – 00184 Roma. Responsabili del trattamento dei dati sono, per le fasi di rispettiva competenza, il Direttore centrale per le statistiche e le indagini sulle istituzioni sociali dell\'Istat e il preposto all\'Ufficio di statistica della Regione o Provincia autonoma.', 'incidenti-stradali'); ?></p>
+                
+                <p><?php _e('L\'inserimento dei nominativi è OBBLIGATORIO ai sensi dell\'art. 7 del d.lgs. n. 322/1989 e fatto obbligo alle amministrazioni, enti ed organismi pubblici, di fornire tutti i dati e le notizie richieste nel modello di rilevazione.', 'incidenti-stradali'); ?></p>
+            </div>
+        </div>
+
+        <div class="incidenti-nominativi-container">
+            <h4><?php _e('Sezione 8: Nominativo dei morti', 'incidenti-stradali'); ?></h4>
+            <p class="description"><?php _e('Nome e Cognome dei morti coinvolti nell\'incidente', 'incidenti-stradali'); ?></p>
+            
+            <div id="nominativi-morti-container">
+                <?php for ($i = 1; $i <= 4; $i++): ?>
+                    <div id="morto-<?php echo $i; ?>" class="nominativo-morto" style="display: none; margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <h5><?php printf(__('Morto %d', 'incidenti-stradali'), $i); ?></h5>
+                        <table class="form-table">
+                            <tr>
+                                <th><label for="morto_<?php echo $i; ?>_nome"><?php _e('Nome', 'incidenti-stradali'); ?></label></th>
+                                <td>
+                                    <input type="text" id="morto_<?php echo $i; ?>_nome" name="morto_<?php echo $i; ?>_nome" 
+                                        value="<?php echo esc_attr(get_post_meta($post->ID, 'morto_' . $i . '_nome', true)); ?>" 
+                                        class="regular-text" maxlength="30">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="morto_<?php echo $i; ?>_cognome"><?php _e('Cognome', 'incidenti-stradali'); ?></label></th>
+                                <td>
+                                    <input type="text" id="morto_<?php echo $i; ?>_cognome" name="morto_<?php echo $i; ?>_cognome" 
+                                        value="<?php echo esc_attr(get_post_meta($post->ID, 'morto_' . $i . '_cognome', true)); ?>" 
+                                        class="regular-text" maxlength="30">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                <?php endfor; ?>
+            </div>
+
+            <h4><?php _e('Sezione 9: Nominativo dei feriti', 'incidenti-stradali'); ?></h4>
+            <p class="description"><?php _e('Nome e Cognome dei feriti coinvolti nell\'incidente', 'incidenti-stradali'); ?></p>
+            
+            <div id="nominativi-feriti-container">
+                <?php for ($i = 1; $i <= 8; $i++): ?>
+                    <div id="ferito-<?php echo $i; ?>" class="nominativo-ferito" style="display: none; margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <h5><?php printf(__('Ferito %d', 'incidenti-stradali'), $i); ?></h5>
+                        <table class="form-table">
+                            <tr>
+                                <th><label for="ferito_<?php echo $i; ?>_nome"><?php _e('Nome', 'incidenti-stradali'); ?></label></th>
+                                <td>
+                                    <input type="text" id="ferito_<?php echo $i; ?>_nome" name="ferito_<?php echo $i; ?>_nome" 
+                                        value="<?php echo esc_attr(get_post_meta($post->ID, 'ferito_' . $i . '_nome', true)); ?>" 
+                                        class="regular-text" maxlength="30">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="ferito_<?php echo $i; ?>_cognome"><?php _e('Cognome', 'incidenti-stradali'); ?></label></th>
+                                <td>
+                                    <input type="text" id="ferito_<?php echo $i; ?>_cognome" name="ferito_<?php echo $i; ?>_cognome" 
+                                        value="<?php echo esc_attr(get_post_meta($post->ID, 'ferito_' . $i . '_cognome', true)); ?>" 
+                                        class="regular-text" maxlength="30">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="ferito_<?php echo $i; ?>_istituto"><?php _e('Istituto di cura', 'incidenti-stradali'); ?></label></th>
+                                <td>
+                                    <input type="text" id="ferito_<?php echo $i; ?>_istituto" name="ferito_<?php echo $i; ?>_istituto" 
+                                        value="<?php echo esc_attr(get_post_meta($post->ID, 'ferito_' . $i . '_istituto', true)); ?>" 
+                                        class="regular-text" maxlength="30">
+                                    <p class="description"><?php _e('Ospedale o struttura sanitaria dove è stato ricoverato', 'incidenti-stradali'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                <?php endfor; ?>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            function updateNominativiVisibility() {
+                // Conta morti dai conducenti e pedoni
+                var totalMorti = 0;
+                var totalFeriti = 0;
+                
+                // Conta morti e feriti da conducenti
+                for (var i = 1; i <= 3; i++) {
+                    var esito = $('#conducente_' + i + '_esito').val();
+                    if (esito == '3' || esito == '4') {
+                        totalMorti++;
+                    } else if (esito == '2') {
+                        totalFeriti++;
+                    }
+                }
+                
+                // Conta morti e feriti da pedoni
+                var numPedoni = parseInt($('#numero_pedoni_coinvolti').val()) || 0;
+                for (var i = 1; i <= numPedoni; i++) {
+                    var esito = $('#pedone_' + i + '_esito').val();
+                    if (esito == '3' || esito == '4') {
+                        totalMorti++;
+                    } else if (esito == '2') {
+                        totalFeriti++;
+                    }
+                }
+                
+                // Mostra/nascondi sezioni nominativi morti
+                for (var i = 1; i <= 4; i++) {
+                    if (i <= totalMorti) {
+                        $('#morto-' + i).show();
+                    } else {
+                        $('#morto-' + i).hide();
+                    }
+                }
+                
+                // Mostra/nascondi sezioni nominativi feriti
+                for (var i = 1; i <= 8; i++) {
+                    if (i <= totalFeriti) {
+                        $('#ferito-' + i).show();
+                    } else {
+                        $('#ferito-' + i).hide();
+                    }
+                }
+            }
+            
+            // Aggiorna visibilità quando cambiano gli esiti
+            $('select[id*="_esito"]').on('change', updateNominativiVisibility);
+            $('#numero_pedoni_coinvolti').on('change', updateNominativiVisibility);
+            
+            // Aggiorna visibilità al caricamento della pagina
+            updateNominativiVisibility();
+        });
+        </script>
+        <?php
     }
 
     public function render_circostanze_meta_box($post) {
@@ -1858,8 +2011,20 @@ class IncidentiMetaBoxes {
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore',
-            'orientamento_conducente', 'presenza_banchina', 'presenza_barriere', 'tappeto_usura_aperto', 'tappeto_usura_chiuso', 'allagato', 
-            'semaforizzazioni', 'cartelli_pubblicitari', 'leggibilita_alta', 'leggibilita_bassa', 'nuvoloso', 'foschia'
+            // Campi nominativi morti
+            'morto_1_nome', 'morto_1_cognome',
+            'morto_2_nome', 'morto_2_cognome',
+            'morto_3_nome', 'morto_3_cognome',
+            'morto_4_nome', 'morto_4_cognome',
+            // Campi nominativi feriti
+            'ferito_1_nome', 'ferito_1_cognome', 'ferito_1_istituto',
+            'ferito_2_nome', 'ferito_2_cognome', 'ferito_2_istituto',
+            'ferito_3_nome', 'ferito_3_cognome', 'ferito_3_istituto',
+            'ferito_4_nome', 'ferito_4_cognome', 'ferito_4_istituto',
+            'ferito_5_nome', 'ferito_5_cognome', 'ferito_5_istituto',
+            'ferito_6_nome', 'ferito_6_cognome', 'ferito_6_istituto',
+            'ferito_7_nome', 'ferito_7_cognome', 'ferito_7_istituto',
+            'ferito_8_nome', 'ferito_8_cognome', 'ferito_8_istituto'
         );
         
         // Save all meta fields

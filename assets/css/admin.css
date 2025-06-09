@@ -498,3 +498,26 @@
 #numero_strada_row.hidden {
     opacity: 0.5;
 }
+
+/* Stili per validazione campi */
+.form-table input.error,
+.form-table select.error {
+    border-color: #d63384 !important;
+    box-shadow: 0 0 0 1px #d63384;
+}
+
+.description.error {
+    color: #d63384;
+    font-weight: bold;
+}
+
+#identificativo_comando_row,
+#numero_strada_row,
+#progressiva_row {
+    transition: all 0.3s ease;
+}
+
+.progressiva-error {
+    color: #d63384 !important;
+    margin-top: 5px;
+}

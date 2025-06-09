@@ -23,6 +23,7 @@ jQuery(document).ready(function($) {
         initializeTooltips();
         initializeTransportatiSections();
         initializeCircostanzeFields();
+        initializeConditionalFields();
     }
     
     /**
@@ -381,6 +382,141 @@ jQuery(document).ready(function($) {
                 }
             }
         });
+    }
+
+    /**
+     * Initialize conditional field logic for ISTAT 2019 compliance
+     */
+    function initializeConditionalFields() {
+        // Mostra/nascondi identificativo comando per Carabinieri
+        $('#organo_rilevazione').on('change', function() {
+            var organoValue = $(this).val();
+            var $identificativoRow = $('#identificativo_comando_row');
+            var $identificativoField = $('#identificativo_comando');
+            
+            if (organoValue === '2') { // Carabiniere
+                $identificativoRow.show();
+                $identificativoField.prop('required', true);
+            } else {
+                $identificativoRow.hide();
+                $identificativoField.prop('required', false).val('');
+            }
+        }).trigger('change'); // Trigger immediato per inizializzazione
+        
+        // Logica per tipo strada e numero strada
+        $('#tipo_strada').on('change', function() {
+            var tipoStrada = $(this).val();
+            var $numeroStradaRow = $('#numero_strada_row');
+            var $numeroStradaField = $('#numero_strada');
+            var $progressivaRow = $('#progressiva_row');
+            
+            // Tipi di strada che richiedono il numero strada
+            var tipiConNumero = ['2', '3', '0', '5', '6', '7', '9'];
+            
+            if (tipiConNumero.includes(tipoStrada)) {
+                $numeroStradaRow.show();
+                $numeroStradaField.prop('required', true);
+            } else {
+                $numeroStradaRow.hide();
+                $numeroStradaField.prop('required', false).val('');
+            }
+            
+            // Mostra progressiva chilometrica per strade extraurbane
+            var tipiExtraurbani = ['5', '6', '7', '9']; // Fuori dall'abitato
+            if (tipiExtraurbani.includes(tipoStrada)) {
+                $progressivaRow.show();
+                $('#progressiva_km, #progressiva_m').prop('required', true);
+            } else {
+                $progressivaRow.hide();
+                $('#progressiva_km, #progressiva_m').prop('required', false).val('');
+            }
+        }).trigger('change');
+        
+        // Validazione progressiva chilometrica
+        $('#progressiva_km, #progressiva_m').on('input', function() {
+            validateProgressiva();
+        });
+        
+        // Logica per circostanze incidente - mostra campi appropriati
+        $('.circostanza-select').on('change', function() {
+            updateCircostanzeLogic();
+        });
+        
+        // Logica per tipo veicolo e campi correlati
+        $('[id^="tipo_veicolo_"]').on('change', function() {
+            var veicoloIndex = $(this).attr('id').split('_').pop();
+            updateVehicleFields(veicoloIndex);
+        });
+    }
+
+    /**
+     * Validate progressiva chilometrica fields
+     */
+    function validateProgressiva() {
+        var $kmField = $('#progressiva_km');
+        var $mField = $('#progressiva_m');
+        var km = parseInt($kmField.val()) || 0;
+        var m = parseInt($mField.val()) || 0;
+        
+        var isValidKm = km >= 0 && km <= 999;
+        var isValidM = m >= 0 && m <= 999;
+        
+        // Visual feedback
+        $kmField.toggleClass('error', !isValidKm);
+        $mField.toggleClass('error', !isValidM);
+        
+        // Show/hide error messages
+        var $errorMsg = $('.progressiva-error');
+        if (!isValidKm || !isValidM) {
+            if ($errorMsg.length === 0) {
+                $('#progressiva_row').append('<p class="description error progressiva-error">Valori non validi: Km e Mt devono essere compresi tra 0 e 999</p>');
+            }
+        } else {
+            $errorMsg.remove();
+        }
+        
+        return isValidKm && isValidM;
+    }
+
+    /**
+     * Update vehicle-specific fields based on vehicle type
+     */
+    function updateVehicleFields(index) {
+        var $tipoVeicolo = $('#tipo_veicolo_' + index);
+        var tipoValue = $tipoVeicolo.val();
+        var $cilindrata = $('#cilindrata_veicolo_' + index);
+        var $peso = $('#peso_pieno_carico_' + index);
+        
+        // Mostra cilindrata per veicoli a motore
+        var veicoliConCilindrata = ['1', '2', '3', '4', '5', '7', '8', '11', '12', '14', '15', '16'];
+        if (veicoliConCilindrata.includes(tipoValue)) {
+            $cilindrata.closest('tr').show();
+            $cilindrata.prop('required', true);
+        } else {
+            $cilindrata.closest('tr').hide();
+            $cilindrata.prop('required', false).val('');
+        }
+        
+        // Mostra peso per veicoli trasporto merci
+        var veicoliTrasportoMerci = ['11', '12', '13', '17', '18', '19'];
+        if (veicoliTrasportoMerci.includes(tipoValue)) {
+            $peso.closest('tr').show();
+            $peso.prop('required', true);
+        } else {
+            $peso.closest('tr').hide();
+            $peso.prop('required', false).val('');
+        }
+    }
+
+    /**
+     * Update circostanze logic based on incident nature
+     */
+    function updateCircostanzeLogic() {
+        var naturaIncidente = $('#natura_incidente').val();
+        
+        // Logica specifica per diversi tipi di natura incidente
+        // Personalizzabile in base alle esigenze specifiche
+        console.log('Natura incidente cambiata:', naturaIncidente);
     }
     
     /**

@@ -282,141 +282,6 @@ class IncidentiMetaBoxes {
         <?php
     }
 
-    public function render_circostanze_meta_box($post) {
-        // Get saved values
-        $circostanza_presunta_1 = get_post_meta($post->ID, 'circostanza_presunta_1', true);
-        $circostanza_presunta_2 = get_post_meta($post->ID, 'circostanza_presunta_2', true);
-        $circostanza_presunta_3 = get_post_meta($post->ID, 'circostanza_presunta_3', true);
-        
-        $circostanza_veicolo_a = get_post_meta($post->ID, 'circostanza_veicolo_a', true);
-        $circostanza_veicolo_b = get_post_meta($post->ID, 'circostanza_veicolo_b', true);
-        $circostanza_veicolo_c = get_post_meta($post->ID, 'circostanza_veicolo_c', true);
-        
-        ?>
-        <div class="incidenti-circostanze-container">
-            <h4><?php _e('Circostanze Presunte Generali', 'incidenti-stradali'); ?></h4>
-            <p class="description"><?php _e('Seleziona fino a 3 circostanze presunte dell\'incidente.', 'incidenti-stradali'); ?></p>
-            
-            <table class="form-table">
-                <tr>
-                    <th><label for="circostanza_presunta_1"><?php _e('Circostanza Presunta 1', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="circostanza_presunta_1" name="circostanza_presunta_1" class="circostanza-select">
-                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                            <?php echo $this->get_circostanze_options($circostanza_presunta_1); ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr id="circostanza_presunta_2_row" style="display: none;">
-                    <th><label for="circostanza_presunta_2"><?php _e('Circostanza Presunta 2', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="circostanza_presunta_2" name="circostanza_presunta_2" class="circostanza-select">
-                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                            <?php echo $this->get_circostanze_options($circostanza_presunta_2); ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr id="circostanza_presunta_3_row" style="display: none;">
-                    <th><label for="circostanza_presunta_3"><?php _e('Circostanza Presunta 3', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="circostanza_presunta_3" name="circostanza_presunta_3" class="circostanza-select">
-                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                            <?php echo $this->get_circostanze_options($circostanza_presunta_3); ?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-            
-            <h4><?php _e('Circostanze per Veicolo', 'incidenti-stradali'); ?></h4>
-            <p class="description"><?php _e('Specifica le circostanze per ogni veicolo coinvolto.', 'incidenti-stradali'); ?></p>
-            
-            <table class="form-table">
-                <tr id="circostanza_veicolo_a_row">
-                    <th><label for="circostanza_veicolo_a"><?php _e('Circostanze Veicolo A', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="circostanza_veicolo_a" name="circostanza_veicolo_a">
-                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                            <?php echo $this->get_circostanze_veicolo_options($circostanza_veicolo_a); ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr id="circostanza_veicolo_b_row" style="display: none;">
-                    <th><label for="circostanza_veicolo_b"><?php _e('Circostanze Veicolo B', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="circostanza_veicolo_b" name="circostanza_veicolo_b">
-                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                            <?php echo $this->get_circostanze_veicolo_options($circostanza_veicolo_b); ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr id="circostanza_veicolo_c_row" style="display: none;">
-                    <th><label for="circostanza_veicolo_c"><?php _e('Circostanze Veicolo C', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="circostanza_veicolo_c" name="circostanza_veicolo_c">
-                            <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                            <?php echo $this->get_circostanze_veicolo_options($circostanza_veicolo_c); ?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-            
-            <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                // Gestisci la visibilità delle circostanze aggiuntive
-                function updateCircostanzeVisibility() {
-                    // Mostra seconda circostanza se la prima è selezionata
-                    if ($('#circostanza_presunta_1').val()) {
-                        $('#circostanza_presunta_2_row').show();
-                    } else {
-                        $('#circostanza_presunta_2_row').hide();
-                        $('#circostanza_presunta_2').val('');
-                    }
-                    
-                    // Mostra terza circostanza se la seconda è selezionata
-                    if ($('#circostanza_presunta_2').val()) {
-                        $('#circostanza_presunta_3_row').show();
-                    } else {
-                        $('#circostanza_presunta_3_row').hide();
-                        $('#circostanza_presunta_3').val('');
-                    }
-                }
-                
-                // Gestisci la visibilità delle circostanze per veicolo
-                function updateVeicoliCircostanzeVisibility() {
-                    var numVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
-                    
-                    // Mostra sempre veicolo A
-                    $('#circostanza_veicolo_a_row').show();
-                    
-                    // Mostra/nascondi veicoli B e C
-                    if (numVeicoli >= 2) {
-                        $('#circostanza_veicolo_b_row').show();
-                    } else {
-                        $('#circostanza_veicolo_b_row').hide();
-                        $('#circostanza_veicolo_b').val('');
-                    }
-                    
-                    if (numVeicoli >= 3) {
-                        $('#circostanza_veicolo_c_row').show();
-                    } else {
-                        $('#circostanza_veicolo_c_row').hide();
-                        $('#circostanza_veicolo_c').val('');
-                    }
-                }
-                
-                // Event handlers
-                $('.circostanza-select').on('change', updateCircostanzeVisibility);
-                $('#numero_veicoli_coinvolti').on('change', updateVeicoliCircostanzeVisibility);
-                
-                // Inizializza visibilità
-                updateCircostanzeVisibility();
-                updateVeicoliCircostanzeVisibility();
-            });
-            </script>
-        </div>
-        <?php
-    }
-
     private function get_circostanze_options($selected = '') {
         $options = array(
             // Inconvenienti di circolazione
@@ -786,6 +651,15 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
+            <tr id="identificativo_comando_row" style="display: none;">
+                <th><label for="identificativo_comando"><?php _e('Identificativo del Comando Staz. dei Carabinieri', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="text" id="identificativo_comando" name="identificativo_comando" 
+                        value="<?php echo esc_attr(get_post_meta($post->ID, 'identificativo_comando', true)); ?>" 
+                        maxlength="20" class="regular-text">
+                    <p class="description"><?php _e('Obbligatorio solo per organo Carabiniere', 'incidenti-stradali'); ?></p>
+                </td>
+            </tr>
             <tr style="display: none;">
                 <th><label for="organo_coordinatore"><?php _e('Organo Coordinatore (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
@@ -1061,15 +935,16 @@ class IncidentiMetaBoxes {
                             <option value="1" <?php selected($tipo_strada, '1'); ?>><?php _e('Strada urbana', 'incidenti-stradali'); ?></option>
                             <option value="2" <?php selected($tipo_strada, '2'); ?>><?php _e('Provinciale entro l\'abitato', 'incidenti-stradali'); ?></option>
                             <option value="3" <?php selected($tipo_strada, '3'); ?>><?php _e('Statale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="4" <?php selected($tipo_strada, '4'); ?>><?php _e('Raccordo entro l\'abitato', 'incidenti-stradali'); ?></option>
                             <option value="0" <?php selected($tipo_strada, '0'); ?>><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
                         </optgroup>
                         <optgroup label="<?php _e('Fuori dall\'abitato', 'incidenti-stradali'); ?>">
-                            <option value="4" <?php selected($tipo_strada, '4'); ?>><?php _e('Comunale extraurbana', 'incidenti-stradali'); ?></option>
-                            <option value="5" <?php selected($tipo_strada, '5'); ?>><?php _e('Provinciale', 'incidenti-stradali'); ?></option>
-                            <option value="6" <?php selected($tipo_strada, '6'); ?>><?php _e('Statale', 'incidenti-stradali'); ?></option>
-                            <option value="7" <?php selected($tipo_strada, '7'); ?>><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
-                            <option value="8" <?php selected($tipo_strada, '8'); ?>><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
-                            <option value="9" <?php selected($tipo_strada, '9'); ?>><?php _e('Regionale', 'incidenti-stradali'); ?></option>
+                            <option value="5" <?php selected($tipo_strada, '5'); ?>><?php _e('Comunale extraurbana', 'incidenti-stradali'); ?></option>
+                            <option value="6" <?php selected($tipo_strada, '6'); ?>><?php _e('Provinciale', 'incidenti-stradali'); ?></option>
+                            <option value="7" <?php selected($tipo_strada, '7'); ?>><?php _e('Statale', 'incidenti-stradali'); ?></option>
+                            <option value="8" <?php selected($tipo_strada, '8'); ?>><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
+                            <option value="9" <?php selected($tipo_strada, '9'); ?>><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
+                            <option value="10" <?php selected($tipo_strada, '10'); ?>><?php _e('Regionale', 'incidenti-stradali'); ?></option>
                         </optgroup>
                     </select>
                 </td>
@@ -1078,6 +953,26 @@ class IncidentiMetaBoxes {
                 <th><label for="denominazione_strada"><?php _e('Denominazione della Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <input type="text" id="denominazione_strada" name="denominazione_strada" value="<?php echo esc_attr($denominazione_strada); ?>" style="width: 100%;">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="tronco_strada"><?php _e('Tronco di strada o autostrada', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <select id="tronco_strada" name="tronco_strada">
+                        <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
+                        <option value="1" <?php selected($tronco_strada, '1'); ?>><?php _e('diramazione; dir. A', 'incidenti-stradali'); ?></option>
+                        <option value="2" <?php selected($tronco_strada, '2'); ?>><?php _e('dir. B; radd.', 'incidenti-stradali'); ?></option>
+                        <option value="3" <?php selected($tronco_strada, '3'); ?>><?php _e('bis; dir. C', 'incidenti-stradali'); ?></option>
+                        <option value="4" <?php selected($tronco_strada, '4'); ?>><?php _e('ter; bis dir.', 'incidenti-stradali'); ?></option>
+                        <option value="5" <?php selected($tronco_strada, '5'); ?>><?php _e('quater; racc.; bis racc.', 'incidenti-stradali'); ?></option>
+                        <option value="6" <?php selected($tronco_strada, '6'); ?>><?php _e('Autostrada carreggiata sinistra', 'incidenti-stradali'); ?></option>
+                        <option value="7" <?php selected($tronco_strada, '7'); ?>><?php _e('Autostrada carreggiata destra', 'incidenti-stradali'); ?></option>
+                        <option value="8" <?php selected($tronco_strada, '8'); ?>><?php _e('Autostrada svincolo entrata', 'incidenti-stradali'); ?></option>
+                        <option value="9" <?php selected($tronco_strada, '9'); ?>><?php _e('Autostrada svincolo uscita', 'incidenti-stradali'); ?></option>
+                        <option value="10" <?php selected($tronco_strada, '10'); ?>><?php _e('Autostrada svincolo tronco d.c.', 'incidenti-stradali'); ?></option>
+                        <option value="11" <?php selected($tronco_strada, '11'); ?>><?php _e('Autostrada stazione', 'incidenti-stradali'); ?></option>
+                        <option value="12" <?php selected($tronco_strada, '12'); ?>><?php _e('Altri casi', 'incidenti-stradali'); ?></option>
+                    </select>
                 </td>
             </tr>
             <tr id="numero_strada_row">
@@ -1222,11 +1117,8 @@ class IncidentiMetaBoxes {
                         <td>
                             <label><input type="radio" name="intersezione_tronco" value="7" <?php checked($intersezione, '7'); ?>> <?php _e('Rettilineo', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="intersezione_tronco" value="8" <?php checked($intersezione, '8'); ?>> <?php _e('Curva', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="9" <?php checked($intersezione, '9'); ?>> <?php _e('Dosso, strettoia', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="10" <?php checked($intersezione, '10'); ?>> <?php _e('Pendenza - salita', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="11" <?php checked($intersezione, '11'); ?>> <?php _e('Pendenza - discesa', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="12" <?php checked($intersezione, '12'); ?>> <?php _e('Galleria illuminata', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="13" <?php checked($intersezione, '13'); ?>> <?php _e('Galleria non illuminata', 'incidenti-stradali'); ?></label>
+                            <label><input type="radio" name="intersezione_tronco" value="9" <?php checked($intersezione, '9'); ?>> <?php _e('Dosso-cunetta', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="10" <?php checked($intersezione, '10'); ?>> <?php _e('Pendenza', 'incidenti-stradali'); ?></label>
                         </td>
                     </tr>
                     <tr>
@@ -1307,6 +1199,24 @@ class IncidentiMetaBoxes {
                         <td>
                             <label><input type="checkbox" name="nuvoloso" value="1" <?php checked($nuvoloso, '1'); ?>> <?php _e('Nuvoloso', 'incidenti-stradali'); ?></label><br>
                             <label><input type="checkbox" name="foschia" value="1" <?php checked($foschia, '1'); ?>> <?php _e('Foschia', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="sezione-luogo">
+                <h4><?php _e('Illuminazione', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th><?php _e('Condizioni di illuminazione', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="illuminazione" value="1" <?php checked($illuminazione, '1'); ?>> <?php _e('Luce diurna', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="2" <?php checked($illuminazione, '2'); ?>> <?php _e('Crepuscolo alba', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="3" <?php checked($illuminazione, '3'); ?>> <?php _e('Buio: luci stradali presenti accese', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="4" <?php checked($illuminazione, '4'); ?>> <?php _e('Buio: luci stradali presenti spente', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="5" <?php checked($illuminazione, '5'); ?>> <?php _e('Buio: assenza', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="11" <?php checked($illuminazione, '11'); ?>> <?php _e('Gall. illuminata', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="12" <?php checked($illuminazione, '12'); ?>> <?php _e('Gall. non illuminata', 'incidenti-stradali'); ?></label>
                         </td>
                     </tr>
                 </table>
@@ -1536,6 +1446,18 @@ class IncidentiMetaBoxes {
                     }
                 }
             });
+            // Gestione visibilità targa rimorchio
+            $('[id$="_tipo_rimorchio"]').change(function() {
+                var veicoloId = $(this).attr('id').replace('_tipo_rimorchio', '');
+                var targaRow = $('#' + veicoloId + '_targa_rimorchio_row');
+
+                if ($(this).val() && $(this).val() !== '') {
+                    targaRow.show();
+                } else {
+                    targaRow.hide();
+                    $('#' + veicoloId + '_targa_rimorchio').val('');
+                }
+            }).trigger('change');
         });
         </script>
         <?php
@@ -1549,6 +1471,8 @@ class IncidentiMetaBoxes {
         $anno_immatricolazione = get_post_meta($post->ID, $prefix . 'anno_immatricolazione', true);
         $cilindrata = get_post_meta($post->ID, $prefix . 'cilindrata', true);
         $peso_totale = get_post_meta($post->ID, $prefix . 'peso_totale', true);
+        $tipo_rimorchio = get_post_meta($post->ID, $prefix . 'tipo_rimorchio', true);
+        $targa_rimorchio = get_post_meta($post->ID, $prefix . 'targa_rimorchio', true);
         
         ?>
         <table class="form-table">
@@ -1594,6 +1518,26 @@ class IncidentiMetaBoxes {
                 <th><label for="<?php echo $prefix; ?>peso_totale"><?php _e('Peso Totale a Pieno Carico (q)', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <input type="number" id="<?php echo $prefix; ?>peso_totale" name="<?php echo $prefix; ?>peso_totale" value="<?php echo esc_attr($peso_totale); ?>" min="0" step="0.1">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="<?php echo $prefix; ?>tipo_rimorchio"><?php _e('Tipo Rimorchio', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <select id="<?php echo $prefix; ?>tipo_rimorchio" name="<?php echo $prefix; ?>tipo_rimorchio">
+                        <option value=""><?php _e('Nessun rimorchio', 'incidenti-stradali'); ?></option>
+                        <option value="1" <?php selected($tipo_rimorchio, '1'); ?>><?php _e('Rimorchio', 'incidenti-stradali'); ?></option>
+                        <option value="2" <?php selected($tipo_rimorchio, '2'); ?>><?php _e('Semirimorchio', 'incidenti-stradali'); ?></option>
+                        <option value="3" <?php selected($tipo_rimorchio, '3'); ?>><?php _e('Carrello appendice', 'incidenti-stradali'); ?></option>
+                    </select>
+                    <p class="description"><?php _e('Solo per veicoli con rimorchio', 'incidenti-stradali'); ?></p>
+                </td>
+            </tr>
+
+            <tr id="<?php echo $prefix; ?>targa_rimorchio_row" style="display: none;">
+                <th><label for="<?php echo $prefix; ?>targa_rimorchio"><?php _e('Targa Rimorchio', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="text" id="<?php echo $prefix; ?>targa_rimorchio" name="<?php echo $prefix; ?>targa_rimorchio" 
+                        value="<?php echo esc_attr($targa_rimorchio); ?>" maxlength="10" class="regular-text">
                 </td>
             </tr>
         </table>
@@ -1979,6 +1923,74 @@ class IncidentiMetaBoxes {
             }
         }
     }
+
+    public function render_circostanze_meta_box($post) {
+        $circostanza_veicolo_a = get_post_meta($post->ID, 'circostanza_veicolo_a', true);
+        $circostanza_veicolo_b = get_post_meta($post->ID, 'circostanza_veicolo_b', true);
+        $circostanza_veicolo_c = get_post_meta($post->ID, 'circostanza_veicolo_c', true);
+        $difetto_veicolo_a = get_post_meta($post->ID, 'difetto_veicolo_a', true);
+        $difetto_veicolo_b = get_post_meta($post->ID, 'difetto_veicolo_b', true);
+        $stato_psicofisico_a = get_post_meta($post->ID, 'stato_psicofisico_a', true);
+        $stato_psicofisico_b = get_post_meta($post->ID, 'stato_psicofisico_b', true);
+        ?>
+        
+        <div class="incidenti-circostanze-container">
+            <h4><?php _e('Per inconvenienti di circolazione', 'incidenti-stradali'); ?></h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="circostanza_veicolo_a"><?php _e('Veicolo A', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_veicolo_a" name="circostanza_veicolo_a">
+                            <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
+                            <!-- Aggiungere qui tutte le opzioni del file circostanze-incidente.json -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="circostanza_veicolo_b"><?php _e('Veicolo B, Pedone od ostacolo', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_veicolo_b" name="circostanza_veicolo_b">
+                            <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
+                            <!-- Opzioni per veicolo B/pedone/ostacolo -->
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+            <h4><?php _e('Per difetti o avarie del veicolo', 'incidenti-stradali'); ?></h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="difetto_veicolo_a"><?php _e('Veicolo A', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="difetto_veicolo_a" name="difetto_veicolo_a">
+                            <option value=""><?php _e('Nessun difetto', 'incidenti-stradali'); ?></option>
+                            <option value="1" <?php selected($difetto_veicolo_a, '1'); ?>><?php _e('Freni', 'incidenti-stradali'); ?></option>
+                            <option value="2" <?php selected($difetto_veicolo_a, '2'); ?>><?php _e('Pneumatici', 'incidenti-stradali'); ?></option>
+                            <option value="3" <?php selected($difetto_veicolo_a, '3'); ?>><?php _e('Sterzo', 'incidenti-stradali'); ?></option>
+                            <option value="4" <?php selected($difetto_veicolo_a, '4'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+            <h4><?php _e('Per stato psico-fisico del conducente', 'incidenti-stradali'); ?></h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="stato_psicofisico_a"><?php _e('Conducente A', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="stato_psicofisico_a" name="stato_psicofisico_a">
+                            <option value=""><?php _e('Normale', 'incidenti-stradali'); ?></option>
+                            <option value="1" <?php selected($stato_psicofisico_a, '1'); ?>><?php _e('Sotto effetto di alcol', 'incidenti-stradali'); ?></option>
+                            <option value="2" <?php selected($stato_psicofisico_a, '2'); ?>><?php _e('Sotto effetto di droghe', 'incidenti-stradali'); ?></option>
+                            <option value="3" <?php selected($stato_psicofisico_a, '3'); ?>><?php _e('Malattia improvvisa', 'incidenti-stradali'); ?></option>
+                            <option value="4" <?php selected($stato_psicofisico_a, '4'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <?php
+    }
     
     /**
      * METODO MODIFICATO: Save meta boxes - NON interferisce con eliminazioni
@@ -2049,7 +2061,10 @@ class IncidentiMetaBoxes {
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
             'natura_incidente', 'dettaglio_natura', 'altro_natura_testo', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
-            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore',
+            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada', 
+            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 'stato_psicofisico_a',
+            'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
+            'cilindrata_veicolo_c', 'peso_pieno_carico_a', 'peso_pieno_carico_b', 'peso_pieno_carico_c',
             // Campi nominativi morti
             'morto_1_nome', 'morto_1_cognome',
             'morto_2_nome', 'morto_2_cognome',
@@ -2063,7 +2078,10 @@ class IncidentiMetaBoxes {
             'ferito_5_nome', 'ferito_5_cognome', 'ferito_5_istituto',
             'ferito_6_nome', 'ferito_6_cognome', 'ferito_6_istituto',
             'ferito_7_nome', 'ferito_7_cognome', 'ferito_7_istituto',
-            'ferito_8_nome', 'ferito_8_cognome', 'ferito_8_istituto'
+            'ferito_8_nome', 'ferito_8_cognome', 'ferito_8_istituto',
+            'veicolo_1_tipo_rimorchio', 'veicolo_1_targa_rimorchio',
+            'veicolo_2_tipo_rimorchio', 'veicolo_2_targa_rimorchio',
+            'veicolo_3_tipo_rimorchio', 'veicolo_3_targa_rimorchio'
         );
         
         // Save all meta fields

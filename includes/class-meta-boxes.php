@@ -1080,10 +1080,11 @@ class IncidentiMetaBoxes {
                     <input type="text" id="denominazione_strada" name="denominazione_strada" value="<?php echo esc_attr($denominazione_strada); ?>" style="width: 100%;">
                 </td>
             </tr>
-            <tr>
+            <tr id="numero_strada_row">
                 <th><label for="numero_strada"><?php _e('Numero Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="text" id="numero_strada" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>">
+                    <input type="text" id="numero_strada" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
+                    <p class="description"><?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
             <tr id="progressiva_row" style="display: none;">
@@ -1103,32 +1104,30 @@ class IncidentiMetaBoxes {
             jQuery(document).ready(function($) {
                 function updateFieldsVisibility() {
                     var tipoStrada = $('#tipo_strada').val();
-                    var isExtraurbana = false;
+                    var numeroStradaRow = $('#numero_strada_row');
                     
-                    // Determine if extraurbana based on tipo_strada value
-                    if (tipoStrada && ['4', '5', '6', '7', '8', '9'].includes(tipoStrada)) {
-                        isExtraurbana = true;
-                    }
+                    // Tipi di strada che richiedono il numero strada:
+                    // Nell'abitato: 2 (Provinciale entro l'abitato), 3 (Statale entro l'abitato), 0 (Regionale entro l'abitato)
+                    // Fuori dall'abitato: 5 (Provinciale), 6 (Statale), 7 (Autostrada), 9 (Regionale)
+                    var tipiConNumero = ['2', '3', '0', '5', '6', '7', '9'];
                     
-                    // Show/hide progressiva chilometrica
-                    if (isExtraurbana) {
-                        $('#progressiva_row').show();
-                        $('#progressiva_km').attr('required', true);
+                    if (tipiConNumero.includes(tipoStrada)) {
+                        numeroStradaRow.show();
                     } else {
-                        $('#progressiva_row').hide();
-                        $('#progressiva_km').removeAttr('required');
-                        $('#progressiva_km').val('');
-                        $('#progressiva_m').val('');
+                        numeroStradaRow.hide();
+                        $('#numero_strada').val(''); // Pulisce il campo quando non visibile
                     }
                     
-                    // Auto-set nell_abitato based on tipo_strada
-                    var nellAbitato = isExtraurbana ? '0' : '1';
-                    $('input[name="nell_abitato"]').remove();
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'nell_abitato',
-                        value: nellAbitato
-                    }).appendTo('#tipo_strada').parent();
+                    // Logica esistente per nell_abitato
+                    if (tipoStrada) {
+                        var nellAbitato = ['1', '2', '3', '0'].includes(tipoStrada) ? '1' : '0';
+                        $('input[name="nell_abitato"]').remove();
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'nell_abitato',
+                            value: nellAbitato
+                        }).appendTo('#tipo_strada').parent();
+                    }
                 }
                 
                 // Trigger on page load and when tipo_strada changes

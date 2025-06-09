@@ -884,3 +884,15 @@ msgstr ""
 
 msgid "Ospedale o struttura sanitaria dove è stato ricoverato"
 msgstr ""
+
+msgid "Altro"
+msgstr "Altro"
+
+msgid "Specifica Altro"
+msgstr "Specifica Altro"
+
+msgid "Descrivi la natura dell'incidente"
+msgstr "Descrivi la natura dell'incidente"
+
+msgid "Descrizione personalizzata della natura dell'incidente (max 100 caratteri)"
+msgstr "Descrizione personalizzata della natura dell'incidente (max 100 caratteri)"

@@ -1400,6 +1400,7 @@ class IncidentiMetaBoxes {
                         <option value="B" <?php selected($natura_incidente, 'B'); ?>><?php _e('Tra veicolo e pedoni', 'incidenti-stradali'); ?></option>
                         <option value="C" <?php selected($natura_incidente, 'C'); ?>><?php _e('Veicolo in marcia che urta veicolo fermo o altro', 'incidenti-stradali'); ?></option>
                         <option value="D" <?php selected($natura_incidente, 'D'); ?>><?php _e('Veicolo in marcia senza urto', 'incidenti-stradali'); ?></option>
+                        <option value="E" <?php selected($natura_incidente, 'E'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
                     </select>
                 </td>
             </tr>
@@ -1409,6 +1410,16 @@ class IncidentiMetaBoxes {
                     <select id="dettaglio_natura" name="dettaglio_natura">
                         <option value=""><?php _e('Seleziona dettaglio', 'incidenti-stradali'); ?></option>
                     </select>
+                </td>
+            </tr>
+            <tr id="altro_natura_row" style="display: none;">
+                <th><label for="altro_natura_testo"><?php _e('Specifica Altro', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="text" id="altro_natura_testo" name="altro_natura_testo" 
+                        value="<?php echo esc_attr(get_post_meta($post->ID, 'altro_natura_testo', true)); ?>" 
+                        class="regular-text" maxlength="100" 
+                        placeholder="<?php _e('Descrivi la natura dell\'incidente', 'incidenti-stradali'); ?>">
+                    <p class="description"><?php _e('Descrizione personalizzata della natura dell\'incidente (max 100 caratteri)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
             <tr id="numero_veicoli_row">
@@ -1452,13 +1463,30 @@ class IncidentiMetaBoxes {
             $('#natura_incidente').change(function() {
                 var natura = $(this).val();
                 var dettaglioSelect = $('#dettaglio_natura');
-                dettaglioSelect.empty().append('<option value="">Seleziona dettaglio</option>');
+                var dettaglioRow = $('#dettaglio_natura_row');
+                var altroRow = $('#altro_natura_row');
+                var altroInput = $('#altro_natura_testo');
                 
-                if (natura && naturaOptions[natura]) {
-                    $.each(naturaOptions[natura], function(value, text) {
-                        dettaglioSelect.append('<option value="' + value + '">' + text + '</option>');
-                    });
-                    dettaglioSelect.val('<?php echo esc_js($dettaglio_natura); ?>');
+                // Reset fields
+                dettaglioSelect.empty().append('<option value="">Seleziona dettaglio</option>');
+                altroInput.val('');
+                
+                if (natura === 'E') {
+                    // Mostra campo "Altro" e nascondi dettaglio
+                    altroRow.show();
+                    dettaglioRow.hide();
+                    dettaglioSelect.val('');
+                } else {
+                    // Nascondi campo "Altro" e mostra dettaglio
+                    altroRow.hide();
+                    dettaglioRow.show();
+                    
+                    if (natura && naturaOptions[natura]) {
+                        $.each(naturaOptions[natura], function(value, text) {
+                            dettaglioSelect.append('<option value="' + value + '">' + text + '</option>');
+                        });
+                        dettaglioSelect.val('<?php echo esc_js($dettaglio_natura); ?>');
+                    }
                 }
                 
                 // Mostra/nascondi campo numero veicoli
@@ -2020,7 +2048,7 @@ class IncidentiMetaBoxes {
             'localita_incidente', 'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
-            'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
+            'natura_incidente', 'dettaglio_natura', 'altro_natura_testo', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore',
             // Campi nominativi morti
             'morto_1_nome', 'morto_1_cognome',

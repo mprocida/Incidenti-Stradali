@@ -627,71 +627,102 @@ class IncidentiExportFunctions {
         // Header CSV per formato Polizia (basato su Form_Inserimento_Incidenti_PLultimaversione)
         // Header CSV secondo form ISTAT ufficiale
         $headers = array(
-            // Sezione 1: Data e Località dell'Incidente
-            'Anno',
-            'Mese',
-            'Giorno',
+            'Incidente ID',
+            'Data',
+            'Ora',
             'Minuti',
+            'Giorni',
+            'KM/Deputazione',
+            'km/Deputazione',
             'Provincia',
             'Comune',
-            'Localita',
-            'Codice ISTAT',
-            
-            // Sezione 1.1: Localizzazione dell'incidente
-            'Nell_Abitato',
-            'Denominazione_Strada',
-            'Numero_Strada',
-            'Progressiva_KM',
-            'Progressiva_MT',
-            'Fuori_Abitato',
-            'Tipo_Fuori_Abitato',
+            'Località',
+            'Denominazione',
+            'Numero',
+            'KM',
+            'MT',
+            'N° N°',
+            'SP N°',
+            'SS N°',
+            'A N°',
+            'Strada',
+            'Ora',
+            'Denominazione strada',
+            'Numero strada indicata',
+            'Km strada',
+            'Mt strada',
+            'N strada',
+            'SP strada',
+            'SS strada',
+            'A strada',
+            'Comune Extra Provincia',
             'Latitudine',
             'Longitudine',
-            
-            // Sezione 2: Luogo dell'incidente
-            'Tipo_Strada',
             'Pavimentazione',
             'Intersezione',
-            'Non_Intersezione',
-            'Fondo_Stradale',
-            'Segnaletica',
-            'Condizioni_Meteorologiche',
+            'Segnaletica orizzontale',
             'Illuminazione',
-            
-            // Sezione 3: Natura dell'incidente
-            'Natura_Incidente_A',
-            'Natura_Incidente_B',
-            'Natura_Incidente_C',
-            'Natura_Incidente_D',
-            'Natura_Incidente_E',
-            'Altro_Natura',
-            
-            // Sezione 4: Tipo di veicoli coinvolti (A, B, C)
-            'Veicolo_A_Tipo',
-            'Veicolo_B_Tipo', 
-            'Veicolo_C_Tipo',
-            
-            // Sezione 5: Circostanze presenti dell'incidente
-            'Inconvenienti_Circolazione',
-            'Difetti_Avarie_Veicolo',
-            'Stato_Psicofisico_Conducente',
-            
-            // Sezione 6: Veicoli coinvolti - Dettagli
-            'Veicolo_A_Targa',
-            'Veicolo_A_Sigla_Estera',
-            'Veicolo_A_Anno_Immatricolazione',
-            'Veicolo_B_Targa',
-            'Veicolo_B_Sigla_Estera', 
-            'Veicolo_B_Anno_Immatricolazione',
-            'Veicolo_C_Targa',
-            'Veicolo_C_Sigla_Estera',
-            'Veicolo_C_Anno_Immatricolazione',
-            
-            // Organi di rilevazione e coordinamento
-            'Organo_Rilevazione',
-            'Organo_Coordinatore',
-            'Numero_Progressivo_Anno',
-            'Tronco_Strada_Autostrada'
+            'Condizioni meteo',
+            'Fondo stradale',
+            'Natura incidente A',
+            'Natura incidente B', 
+            'Natura incidente C',
+            'Natura incidente D',
+            'Natura incidente E',
+            'Altro',
+            'Tipo veicolo A',
+            'Tipo veicolo B',
+            'Tipo veicolo C',
+            'Targa A',
+            'Targa B',
+            'Targa C',
+            'Anno immatricolazione A',
+            'Anno immatricolazione B',
+            'Anno immatricolazione C',
+            'Cilindrata A',
+            'Cilindrata B',
+            'Cilindrata C',
+            'Peso A',
+            'Peso B',
+            'Peso C',
+            'Circostanza A',
+            'Circostanza B',
+            'Circostanza C',
+            'Conducente A età',
+            'Conducente A sesso',
+            'Conducente A nascita',
+            'Conducente A patente',
+            'Conducente A anni patente',
+            'Conducente A nazione',
+            'Conducente A provincia',
+            'Conducente A comune',
+            'Conducente A cittadinanza',
+            'Conducente A professione',
+            'Conducente B età',
+            'Conducente B sesso',
+            'Conducente B nascita',
+            'Conducente B patente',
+            'Conducente B anni patente',
+            'Conducente B nazione',
+            'Conducente B provincia',
+            'Conducente B comune',
+            'Conducente B cittadinanza',
+            'Conducente B professione',
+            'Conducente C età',
+            'Conducente C sesso',
+            'Conducente C nascita',
+            'Conducente C patente',
+            'Conducente C anni patente',
+            'Conducente C nazione',
+            'Conducente C provincia',
+            'Conducente C comune',
+            'Conducente C cittadinanza',
+            'Conducente C professione',
+            'Feriti',
+            'Morti',
+            'Pedoni feriti',
+            'Pedoni morti',
+            'Danneggiamento'
         );
         
         // Scrivi header con separatore punto e virgola
@@ -707,71 +738,109 @@ class IncidentiExportFunctions {
             $ora_incidente = get_post_meta($post_id, 'ora_incidente', true);
             $minuti_incidente = get_post_meta($post_id, 'minuti_incidente', true);
             
-            // Sezione 1: Data e Località
-            $row[] = date('Y', strtotime($data_incidente)); // Anno
-            $row[] = date('m', strtotime($data_incidente)); // Mese
-            $row[] = date('d', strtotime($data_incidente)); // Giorno
-            $row[] = $minuti_incidente ?: '00'; // Minuti
+            // Compilazione array secondo le colonne definite nella screenshot
+            $row[] = $post_id; // Incidente ID
+            $row[] = $data_incidente; // Data
+            $row[] = $ora_incidente ?: ''; // Ora
+            $row[] = $minuti_incidente ?: ''; // Minuti
+            $row[] = date('w', strtotime($data_incidente)); // Giorni (giorno settimana)
+            $row[] = get_post_meta($post_id, 'km_deputazione', true); // KM/Deputazione
+            $row[] = get_post_meta($post_id, 'km_deputazione_value', true); // km/Deputazione
             $row[] = get_post_meta($post_id, 'provincia_incidente', true); // Provincia
             $row[] = get_post_meta($post_id, 'comune_incidente', true); // Comune
             $row[] = get_post_meta($post_id, 'localita_incidente', true); // Località
-            $row[] = get_post_meta($post_id, 'codice_istat', true); // Codice ISTAT
-            
-            // Sezione 1.1: Localizzazione
-            $row[] = get_post_meta($post_id, 'nell_abitato', true); // Nell'abitato
+            $row[] = get_post_meta($post_id, 'denominazione_strada', true); // Denominazione
+            $row[] = get_post_meta($post_id, 'numero_strada', true); // Numero
+            $row[] = get_post_meta($post_id, 'progressiva_km', true); // KM
+            $row[] = get_post_meta($post_id, 'progressiva_mt', true); // MT
+            $row[] = get_post_meta($post_id, 'strada_n', true); // N° N°
+            $row[] = get_post_meta($post_id, 'strada_sp', true); // SP N°
+            $row[] = get_post_meta($post_id, 'strada_ss', true); // SS N°
+            $row[] = get_post_meta($post_id, 'strada_a', true); // A N°
+            $row[] = get_post_meta($post_id, 'tipo_strada_dettaglio', true); // Strada
+            $row[] = $ora_incidente ?: ''; // Ora (ripetuta)
             $row[] = get_post_meta($post_id, 'denominazione_strada', true); // Denominazione strada
-            $row[] = get_post_meta($post_id, 'numero_strada', true); // Numero strada
-            $row[] = get_post_meta($post_id, 'progressiva_km', true); // Progressiva KM
-            $row[] = get_post_meta($post_id, 'progressiva_mt', true); // Progressiva MT
-            $row[] = get_post_meta($post_id, 'fuori_abitato', true); // Fuori abitato
-            $row[] = get_post_meta($post_id, 'tipo_fuori_abitato', true); // Tipo fuori abitato
+            $row[] = get_post_meta($post_id, 'numero_strada', true); // Numero strada indicata
+            $row[] = get_post_meta($post_id, 'km_strada', true); // Km strada
+            $row[] = get_post_meta($post_id, 'mt_strada', true); // Mt strada
+            $row[] = get_post_meta($post_id, 'n_strada', true); // N strada
+            $row[] = get_post_meta($post_id, 'sp_strada', true); // SP strada
+            $row[] = get_post_meta($post_id, 'ss_strada', true); // SS strada
+            $row[] = get_post_meta($post_id, 'a_strada', true); // A strada
+            $row[] = get_post_meta($post_id, 'comune_extra_provincia', true); // Comune Extra Provincia
             $row[] = get_post_meta($post_id, 'latitudine', true); // Latitudine
             $row[] = get_post_meta($post_id, 'longitudine', true); // Longitudine
-            
-            // Sezione 2: Luogo dell'incidente
-            $row[] = get_post_meta($post_id, 'tipo_strada', true); // Tipo strada
             $row[] = get_post_meta($post_id, 'pavimentazione', true); // Pavimentazione
             $row[] = get_post_meta($post_id, 'intersezione', true); // Intersezione
-            $row[] = get_post_meta($post_id, 'non_intersezione', true); // Non intersezione
-            $row[] = get_post_meta($post_id, 'fondo_stradale', true); // Fondo stradale
-            $row[] = get_post_meta($post_id, 'segnaletica', true); // Segnaletica
-            $row[] = get_post_meta($post_id, 'condizioni_meteo', true); // Condizioni meteorologiche
+            $row[] = get_post_meta($post_id, 'segnaletica_orizzontale', true); // Segnaletica orizzontale
             $row[] = get_post_meta($post_id, 'illuminazione', true); // Illuminazione
-            
-            // Sezione 3: Natura dell'incidente
-            $row[] = get_post_meta($post_id, 'natura_incidente_a', true); // Tra veicoli in marcia
-            $row[] = get_post_meta($post_id, 'natura_incidente_b', true); // Tra veicolo e pedoni
-            $row[] = get_post_meta($post_id, 'natura_incidente_c', true); // Veicolo in marcia che urta veicolo fermo
-            $row[] = get_post_meta($post_id, 'natura_incidente_d', true); // Veicolo in marcia senza urto
-            $row[] = get_post_meta($post_id, 'natura_incidente_e', true); // Altro
-            $row[] = get_post_meta($post_id, 'altro_natura_dettagli', true); // Dettagli altro
-            
-            // Sezione 4: Tipo veicoli coinvolti
-            $row[] = get_post_meta($post_id, 'tipo_veicolo_a', true); // Veicolo A
-            $row[] = get_post_meta($post_id, 'tipo_veicolo_b', true); // Veicolo B
-            $row[] = get_post_meta($post_id, 'tipo_veicolo_c', true); // Veicolo C
-            
-            // Sezione 5: Circostanze presenti
-            $row[] = get_post_meta($post_id, 'inconvenienti_circolazione', true);
-            $row[] = get_post_meta($post_id, 'difetti_avarie_veicolo', true);
-            $row[] = get_post_meta($post_id, 'stato_psicofisico_conducente', true);
-            
-            // Sezione 6: Dettagli veicoli
+            $row[] = get_post_meta($post_id, 'condizioni_meteo', true); // Condizioni meteo
+            $row[] = get_post_meta($post_id, 'fondo_stradale', true); // Fondo stradale
+            $row[] = get_post_meta($post_id, 'natura_incidente_a', true); // Natura incidente A
+            $row[] = get_post_meta($post_id, 'natura_incidente_b', true); // Natura incidente B
+            $row[] = get_post_meta($post_id, 'natura_incidente_c', true); // Natura incidente C
+            $row[] = get_post_meta($post_id, 'natura_incidente_d', true); // Natura incidente D
+            $row[] = get_post_meta($post_id, 'natura_incidente_e', true); // Natura incidente E
+            $row[] = get_post_meta($post_id, 'altro_natura', true); // Altro
+            $row[] = get_post_meta($post_id, 'tipo_veicolo_a', true); // Tipo veicolo A
+            $row[] = get_post_meta($post_id, 'tipo_veicolo_b', true); // Tipo veicolo B
+            $row[] = get_post_meta($post_id, 'tipo_veicolo_c', true); // Tipo veicolo C
             $row[] = get_post_meta($post_id, 'targa_veicolo_a', true); // Targa A
-            $row[] = get_post_meta($post_id, 'sigla_estera_a', true); // Sigla estera A
-            $row[] = get_post_meta($post_id, 'anno_immatricolazione_a', true); // Anno A
             $row[] = get_post_meta($post_id, 'targa_veicolo_b', true); // Targa B
-            $row[] = get_post_meta($post_id, 'sigla_estera_b', true); // Sigla estera B
-            $row[] = get_post_meta($post_id, 'anno_immatricolazione_b', true); // Anno B
             $row[] = get_post_meta($post_id, 'targa_veicolo_c', true); // Targa C
-            $row[] = get_post_meta($post_id, 'sigla_estera_c', true); // Sigla estera C
-            $row[] = get_post_meta($post_id, 'anno_immatricolazione_c', true); // Anno C
+            $row[] = get_post_meta($post_id, 'anno_immatricolazione_a', true); // Anno immatricolazione A
+            $row[] = get_post_meta($post_id, 'anno_immatricolazione_b', true); // Anno immatricolazione B
+            $row[] = get_post_meta($post_id, 'anno_immatricolazione_c', true); // Anno immatricolazione C
+            $row[] = get_post_meta($post_id, 'cilindrata_a', true); // Cilindrata A
+            $row[] = get_post_meta($post_id, 'cilindrata_b', true); // Cilindrata B
+            $row[] = get_post_meta($post_id, 'cilindrata_c', true); // Cilindrata C
+            $row[] = get_post_meta($post_id, 'peso_a', true); // Peso A
+            $row[] = get_post_meta($post_id, 'peso_b', true); // Peso B
+            $row[] = get_post_meta($post_id, 'peso_c', true); // Peso C
+            $row[] = get_post_meta($post_id, 'circostanza_a', true); // Circostanza A
+            $row[] = get_post_meta($post_id, 'circostanza_b', true); // Circostanza B
+            $row[] = get_post_meta($post_id, 'circostanza_c', true); // Circostanza C
             
-            // Organi
-            $row[] = get_post_meta($post_id, 'organo_rilevazione', true);
-            $row[] = get_post_meta($post_id, 'organo_coordinatore', true);
-            $row[] = get_post_meta($post_id, 'numero_progressivo_anno', true);
-            $row[] = get_post_meta($post_id, 'tronco_strada_autostrada', true);
+            // Dati conducenti
+            $row[] = get_post_meta($post_id, 'conducente_a_eta', true); // Conducente A età
+            $row[] = get_post_meta($post_id, 'conducente_a_sesso', true); // Conducente A sesso
+            $row[] = get_post_meta($post_id, 'conducente_a_nascita', true); // Conducente A nascita
+            $row[] = get_post_meta($post_id, 'conducente_a_patente', true); // Conducente A patente
+            $row[] = get_post_meta($post_id, 'conducente_a_anni_patente', true); // Conducente A anni patente
+            $row[] = get_post_meta($post_id, 'conducente_a_nazione', true); // Conducente A nazione
+            $row[] = get_post_meta($post_id, 'conducente_a_provincia', true); // Conducente A provincia
+            $row[] = get_post_meta($post_id, 'conducente_a_comune', true); // Conducente A comune
+            $row[] = get_post_meta($post_id, 'conducente_a_cittadinanza', true); // Conducente A cittadinanza
+            $row[] = get_post_meta($post_id, 'conducente_a_professione', true); // Conducente A professione
+            
+            $row[] = get_post_meta($post_id, 'conducente_b_eta', true); // Conducente B età
+            $row[] = get_post_meta($post_id, 'conducente_b_sesso', true); // Conducente B sesso
+            $row[] = get_post_meta($post_id, 'conducente_b_nascita', true); // Conducente B nascita
+            $row[] = get_post_meta($post_id, 'conducente_b_patente', true); // Conducente B patente
+            $row[] = get_post_meta($post_id, 'conducente_b_anni_patente', true); // Conducente B anni patente
+            $row[] = get_post_meta($post_id, 'conducente_b_nazione', true); // Conducente B nazione
+            $row[] = get_post_meta($post_id, 'conducente_b_provincia', true); // Conducente B provincia
+            $row[] = get_post_meta($post_id, 'conducente_b_comune', true); // Conducente B comune
+            $row[] = get_post_meta($post_id, 'conducente_b_cittadinanza', true); // Conducente B cittadinanza
+            $row[] = get_post_meta($post_id, 'conducente_b_professione', true); // Conducente B professione
+            
+            $row[] = get_post_meta($post_id, 'conducente_c_eta', true); // Conducente C età
+            $row[] = get_post_meta($post_id, 'conducente_c_sesso', true); // Conducente C sesso
+            $row[] = get_post_meta($post_id, 'conducente_c_nascita', true); // Conducente C nascita
+            $row[] = get_post_meta($post_id, 'conducente_c_patente', true); // Conducente C patente
+            $row[] = get_post_meta($post_id, 'conducente_c_anni_patente', true); // Conducente C anni patente
+            $row[] = get_post_meta($post_id, 'conducente_c_nazione', true); // Conducente C nazione
+            $row[] = get_post_meta($post_id, 'conducente_c_provincia', true); // Conducente C provincia
+            $row[] = get_post_meta($post_id, 'conducente_c_comune', true); // Conducente C comune
+            $row[] = get_post_meta($post_id, 'conducente_c_cittadinanza', true); // Conducente C cittadinanza
+            $row[] = get_post_meta($post_id, 'conducente_c_professione', true); // Conducente C professione
+            
+            // Statistiche incidente
+            $row[] = get_post_meta($post_id, 'numero_feriti', true); // Feriti
+            $row[] = get_post_meta($post_id, 'numero_morti', true); // Morti
+            $row[] = get_post_meta($post_id, 'pedoni_feriti', true); // Pedoni feriti
+            $row[] = get_post_meta($post_id, 'pedoni_morti', true); // Pedoni morti
+            $row[] = get_post_meta($post_id, 'danneggiamento', true); // Danneggiamento
             
             // Sanitizza i valori per il CSV
             $row = array_map(function($value) {

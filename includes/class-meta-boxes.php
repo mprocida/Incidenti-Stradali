@@ -2014,7 +2014,7 @@ class IncidentiMetaBoxes {
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="mostra_in_mappa"><?php _e('Mostra nella Mappa Pubblica', 'incidenti-stradali'); ?></label></th>
+                <!-- <th><label for="mostra_in_mappa"><?php _e('Mostra nella Mappa Pubblica', 'incidenti-stradali'); ?></label></th> -->
                 <td>
                     <label>
                         <input type="checkbox" id="mostra_in_mappa" name="mostra_in_mappa" value="1" <?php checked($mostra_in_mappa, '1'); ?>>

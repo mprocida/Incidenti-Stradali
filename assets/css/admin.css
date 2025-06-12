@@ -62,10 +62,67 @@
     border-radius: 4px
 }
 
+/* Meta box coordinate geografiche ottimizzato */
+#incidente_coordinate .inside {
+    padding: 12px;
+}
+
+#incidente_coordinate .form-table {
+    margin: 0;
+    width: 100%;
+}
+
+#incidente_coordinate .form-table th {
+    width: 120px;
+    padding: 8px 12px 8px 0;
+    font-weight: 600;
+    color: #23282d;
+    vertical-align: top;
+}
+
+#incidente_coordinate .form-table td {
+    padding: 8px 0;
+}
+
+#incidente_coordinate input[type="text"] {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 6px 8px;
+}
+
 #coordinate-map {
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-top: 10px
+    margin: 12px 0 0 0;
+    height: 180px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #f5f5f5;
+}
+
+/* Stile per il campo readonly tipo coordinata */
+#incidente_coordinate .coordinate-type-display {
+    background: #f9f9f9;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+}
+
+/* Responsive per sidebar */
+@media screen and (max-width: 850px) {
+    #incidente_coordinate input[type="text"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    #coordinate-map {
+        height: 200px;
+    }
 }
 
 .incidenti-validation-error {
@@ -520,4 +577,51 @@
 .progressiva-error {
     color: #d63384 !important;
     margin-top: 5px;
+}
+
+/* Validazione coordinate */
+.incidenti-coordinate-input.error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 1px #dc3545;
+}
+
+.incidenti-coordinate-container .description {
+    font-size: 11px;
+    color: #777;
+    font-style: normal;
+}
+
+.incidenti-coordinate-container .incidenti-map-info {
+    margin: 0 0 8px 0;
+    padding: 0;
+}
+
+.incidenti-coordinate-container .incidenti-map-info .description {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Miglioramenti per i controlli della mappa */
+#coordinate-map .leaflet-control-zoom {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+#coordinate-map .leaflet-control-zoom a {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#coordinate-map .leaflet-control-zoom a:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+}
+
+/* Loading state per la mappa */
+#coordinate-map.loading {
+    background: #f5f5f5 url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="none" stroke="%23ccc" stroke-width="2"/><circle cx="20" cy="20" r="18" fill="none" stroke="%23007cba" stroke-width="2" stroke-dasharray="28" stroke-dashoffset="28"><animate attributeName="stroke-dashoffset" dur="1s" values="28;0" repeatCount="indefinite"/></circle></svg>') center center no-repeat;
 }

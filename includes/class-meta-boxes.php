@@ -639,7 +639,7 @@ class IncidentiMetaBoxes {
             </tr>
             
             <!-- CAMPI ESISTENTI (mantieni solo per compatibilità ISTAT) -->
-            <tr>
+            <tr style="display: none;">
                 <th><label for="organo_rilevazione"><?php _e('Organo di Rilevazione (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="organo_rilevazione" name="organo_rilevazione">
@@ -662,7 +662,7 @@ class IncidentiMetaBoxes {
                     <p class="description"><?php _e('Obbligatorio solo per organo Carabiniere', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
-            <tr style="display: none;">
+            <tr>
                 <th><label for="organo_coordinatore"><?php _e('Organo Coordinatore (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="organo_coordinatore" name="organo_coordinatore">

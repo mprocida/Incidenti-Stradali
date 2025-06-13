@@ -12,7 +12,7 @@ class IncidentiCustomPostType {
         add_filter('wp_insert_post_data', array($this, 'validate_insert_post'), 10, 2);
         add_action('admin_menu', array($this, 'fix_menu_position'), 999);
         add_action('admin_notices', array($this, 'debug_menu_registration'));
-        add_action('admin_notices', array($this, 'show_debug_info'));
+        /* add_action('admin_notices', array($this, 'show_debug_info')); */
         
         // Force registration immediately if we're in admin
         if (is_admin()) {
@@ -288,7 +288,7 @@ class IncidentiCustomPostType {
     /**
      * Show debug info
      */
-    public function show_debug_info() {
+    /* public function show_debug_info() {
         if (!current_user_can('manage_options')) {
             return;
         }
@@ -309,5 +309,5 @@ class IncidentiCustomPostType {
         }
         echo '<p>Menu item found: ' . ($menu_found ? 'YES' : 'NO') . '</p>';
         echo '</div>';
-    }
+    } */
 }

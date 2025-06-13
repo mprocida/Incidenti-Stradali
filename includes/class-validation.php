@@ -58,7 +58,8 @@ class IncidentiValidation {
             'provincia_incidente' => __('Provincia', 'incidenti-stradali'),
             'comune_incidente' => __('Comune', 'incidenti-stradali'),
             'tipo_strada' => __('Tipo di strada', 'incidenti-stradali'),
-            'natura_incidente' => __('Natura dell\'incidente', 'incidenti-stradali')
+            'natura_incidente' => __('Natura dell\'incidente', 'incidenti-stradali'),
+            'circostanza_tipo' => __('Tipo di circostanza', 'incidenti-stradali')
         );
         
         foreach ($required_fields as $field => $label) {
@@ -120,6 +121,34 @@ class IncidentiValidation {
             if (!$this->validate_coordinates($_POST['latitudine'], $_POST['longitudine'])) {
                 $errors[] = __('Le coordinate geografiche non sono valide.', 'incidenti-stradali');
             }
+        }
+
+        // Validazione circostanze
+        if (!empty($_POST['circostanza_tipo'])) {
+            $tipi_validi = array('intersezione', 'non_intersezione', 'investimento', 'urto_fermo', 'senza_urto');
+            if (!in_array($_POST['circostanza_tipo'], $tipi_validi)) {
+                $errors[] = __('Il tipo di circostanza selezionato non è valido.', 'incidenti-stradali');
+            }
+        }
+
+        // Validazione codici circostanze
+        if (!empty($_POST['circostanza_veicolo_a'])) {
+            if (!preg_match('/^[0-9]{2}$/', $_POST['circostanza_veicolo_a'])) {
+                $errors[] = __('Il codice circostanza Veicolo A deve essere di 2 cifre.', 'incidenti-stradali');
+            }
+        }
+
+        if (!empty($_POST['circostanza_veicolo_b'])) {
+            if (!preg_match('/^[0-9]{2}$/', $_POST['circostanza_veicolo_b'])) {
+                $errors[] = __('Il codice circostanza Veicolo B deve essere di 2 cifre.', 'incidenti-stradali');
+            }
+        }
+
+        // Validate circostanze requirement - almeno una deve essere compilata
+        if (empty($_POST['circostanza_veicolo_a']) && empty($_POST['circostanza_veicolo_b']) && 
+            empty($_POST['difetto_veicolo_a']) && empty($_POST['difetto_veicolo_b']) && 
+            empty($_POST['stato_psicofisico_a']) && empty($_POST['stato_psicofisico_b'])) {
+            $errors[] = __('È obbligatorio selezionare almeno una circostanza dell\'incidente.', 'incidenti-stradali');
         }
         
         // Validate natura incidente consistency

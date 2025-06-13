@@ -1412,6 +1412,231 @@ class IncidentiMetaBoxes {
             
             // Trigger change on page load
             $('#natura_incidente').trigger('change');
+
+            // Definizione dei codici circostanze per tipo di incidente
+            var circostanzeData = {
+                'intersezione': {
+                    'veicolo_a': {
+                        '01': 'Procedeva regolarmente senza svoltare',
+                        '02': 'Procedeva con guida distratta e andamento indeciso',
+                        '03': 'Procedeva senza mantenere la distanza di sicurezza',
+                        '04': 'Procedeva senza dare la precedenza al veicolo da destra',
+                        '05': 'Procedeva senza rispettare lo stop',
+                        '06': 'Procedeva senza rispettare il segnale di precedenza',
+                        '07': 'Procedeva contromano',
+                        '08': 'Procedeva senza rispettare semaforo/agente',
+                        '10': 'Procedeva senza rispettare divieti di transito',
+                        '11': 'Procedeva con eccesso di velocità',
+                        '12': 'Procedeva senza rispettare limiti di velocità',
+                        '13': 'Procedeva con luci abbaglianti',
+                        '14': 'Svoltava a destra regolarmente',
+                        '15': 'Svoltava a destra irregolarmente',
+                        '16': 'Svoltava a sinistra regolarmente',
+                        '17': 'Svoltava a sinistra irregolarmente',
+                        '18': 'Sorpassava all\'incrocio'
+                    },
+                    'veicolo_b': {
+                        '01': 'Procedeva regolarmente senza svoltare',
+                        '02': 'Procedeva con guida distratta e andamento indeciso',
+                        '03': 'Procedeva senza mantenere la distanza di sicurezza',
+                        '04': 'Procedeva senza dare la precedenza al veicolo da destra',
+                        '05': 'Procedeva senza rispettare lo stop',
+                        '06': 'Procedeva senza rispettare il segnale di precedenza',
+                        '07': 'Procedeva contromano',
+                        '08': 'Procedeva senza rispettare semaforo/agente',
+                        '10': 'Procedeva senza rispettare divieti di transito',
+                        '11': 'Procedeva con eccesso di velocità',
+                        '12': 'Procedeva senza rispettare limiti di velocità',
+                        '13': 'Procedeva con luci abbaglianti',
+                        '14': 'Svoltava a destra regolarmente',
+                        '15': 'Svoltava a destra irregolarmente',
+                        '16': 'Svoltava a sinistra regolarmente',
+                        '17': 'Svoltava a sinistra irregolarmente',
+                        '18': 'Sorpassava all\'incrocio'
+                    }
+                },
+                'non_intersezione': {
+                    'veicolo_a': {
+                        '20': 'Procedeva regolarmente',
+                        '21': 'Procedeva con guida distratta e andamento indeciso',
+                        '22': 'Procedeva senza mantenere la distanza di sicurezza',
+                        '23': 'Procedeva con eccesso di velocità',
+                        '24': 'Procedeva senza rispettare limiti di velocità',
+                        '25': 'Procedeva non in prossimità del margine destro',
+                        '26': 'Procedeva contromano',
+                        '27': 'Procedeva senza rispettare divieti di transito',
+                        '28': 'Procedeva con luci abbaglianti',
+                        '29': 'Sorpassava regolarmente',
+                        '30': 'Sorpassava irregolarmente a destra',
+                        '31': 'Sorpassava in curva/dosso/scarsa visibilità',
+                        '32': 'Sorpassava veicolo che sorpassava altro',
+                        '33': 'Sorpassava senza osservare divieto',
+                        '34': 'Manovrava in retrocessione/conversione',
+                        '35': 'Manovrava per immettersi nel flusso',
+                        '36': 'Manovrava per svoltare a sinistra',
+                        '37': 'Manovrava regolarmente per fermarsi',
+                        '38': 'Manovrava irregolarmente per fermarsi',
+                        '39': 'Si affiancava irregolarmente a due ruote'
+                    },
+                    'veicolo_b': {
+                        '20': 'Procedeva regolarmente',
+                        '21': 'Procedeva con guida distratta e andamento indeciso',
+                        '22': 'Procedeva senza mantenere la distanza di sicurezza',
+                        '23': 'Procedeva con eccesso di velocità',
+                        '24': 'Procedeva senza rispettare limiti di velocità',
+                        '25': 'Procedeva non in prossimità del margine destro',
+                        '26': 'Procedeva contromano',
+                        '27': 'Procedeva senza rispettare divieti di transito',
+                        '28': 'Procedeva con luci abbaglianti',
+                        '29': 'Sorpassava regolarmente',
+                        '30': 'Sorpassava irregolarmente a destra',
+                        '31': 'Sorpassava in curva/dosso/scarsa visibilità',
+                        '32': 'Sorpassava veicolo che sorpassava altro',
+                        '33': 'Sorpassava senza osservare divieto',
+                        '34': 'Manovrava in retrocessione/conversione',
+                        '35': 'Manovrava per immettersi nel flusso',
+                        '36': 'Manovrava per svoltare a sinistra',
+                        '37': 'Manovrava regolarmente per fermarsi',
+                        '38': 'Manovrava irregolarmente per fermarsi',
+                        '39': 'Si affiancava irregolarmente a due ruote'
+                    }
+                },
+                'investimento': {
+                    'veicolo_a': {
+                        '40': 'Procedeva regolarmente',
+                        '41': 'Procedeva con eccesso di velocità',
+                        '42': 'Procedeva senza rispettare limiti',
+                        '43': 'Procedeva contromano',
+                        '44': 'Sorpassava veicolo in marcia',
+                        '45': 'Manovrava',
+                        '46': 'Non rispettava semaforo/agente',
+                        '47': 'Usciva senza precauzioni da passo carrabile',
+                        '48': 'Fuorusciva dalla carreggiata',
+                        '49': 'Non dava precedenza al pedone',
+                        '50': 'Sorpassava veicolo fermato per pedone',
+                        '51': 'Urtava con il carico il pedone',
+                        '52': 'Superava irregolarmente tram fermo'
+                    },
+                    'pedone': {
+                        '40': 'Camminava su marciapiede/banchina',
+                        '41': 'Camminava regolarmente sul margine',
+                        '42': 'Camminava contromano',
+                        '43': 'Camminava in mezzo carreggiata',
+                        '44': 'Sostava/indugiava/giocava carreggiata',
+                        '45': 'Lavorava protetto da segnale',
+                        '46': 'Lavorava non protetto da segnale',
+                        '47': 'Saliva su veicolo in marcia',
+                        '48': 'Discendeva con prudenza',
+                        '49': 'Discendeva con imprudenza',
+                        '50': 'Veniva fuori da dietro veicolo',
+                        '51': 'Attraversava rispettando segnali',
+                        '52': 'Attraversava non rispettando segnali',
+                        '53': 'Attraversava passaggio non protetto',
+                        '54': 'Attraversava regolarmente non su passaggio',
+                        '55': 'Attraversava irregolarmente'
+                    }
+                },
+                'urto_fermo': {
+                    'veicolo_a': {
+                        '60': 'Procedeva regolarmente',
+                        '61': 'Procedeva con guida distratta',
+                        '62': 'Procedeva senza mantenere distanza sicurezza',
+                        '63': 'Procedeva contromano',
+                        '64': 'Procedeva con eccesso di velocità',
+                        '65': 'Procedeva senza rispettare limiti velocità',
+                        '66': 'Procedeva senza rispettare divieti transito',
+                        '67': 'Sorpassava un altro veicolo',
+                        '68': 'Attraversava imprudentemente passaggio a livello'
+                    },
+                    'ostacolo': {
+                        '60': 'Ostacolo accidentale',
+                        '61': 'Veicolo fermo in posizione regolare',
+                        '62': 'Veicolo fermo in posizione irregolare',
+                        '63': 'Veicolo fermo senza prescritto segnale',
+                        '64': 'Veicolo fermo regolarmente segnalato',
+                        '65': 'Ostacolo fisso nella carreggiata',
+                        '66': 'Treno in passaggio a livello',
+                        '67': 'Animale domestico',
+                        '68': 'Animale selvatico',
+                        '69': 'Buca'
+                    }
+                },
+                'senza_urto': {
+                    'veicolo_a': {
+                        '70': 'Sbandamento per evitare urto',
+                        '71': 'Sbandamento per guida distratta',
+                        '72': 'Sbandamento per eccesso velocità',
+                        '73': 'Frenava improvvisamente',
+                        '74': 'Caduta persona per apertura portiera',
+                        '75': 'Caduta persona per discesa da veicolo in moto',
+                        '76': 'Caduta persona aggrappata inadeguatamente'
+                    },
+                    'ostacolo_evitato': {
+                        '70': 'Ostacolo accidentale',
+                        '71': 'Pedone',
+                        '72': 'Animale evitato',
+                        '73': 'Veicolo',
+                        '74': 'Buca evitata',
+                        '75': 'Senza ostacolo né pedone né altro veicolo',
+                        '76': 'Ostacolo fisso'
+                    }
+                }
+            };
+
+            // Gestione cambio tipo di circostanza
+            $('#circostanza_tipo').change(function() {
+                var tipo = $(this).val();
+                var selectVeicoloA = $('#circostanza_veicolo_a');
+                var selectVeicoloB = $('#circostanza_veicolo_b');
+                
+                // Pulisci le select
+                selectVeicoloA.empty().append('<option value="">Seleziona circostanza</option>');
+                selectVeicoloB.empty().append('<option value="">Seleziona circostanza</option>');
+                
+                if (tipo && circostanzeData[tipo]) {
+                    // Popola Veicolo A
+                    if (circostanzeData[tipo]['veicolo_a']) {
+                        $.each(circostanzeData[tipo]['veicolo_a'], function(codice, descrizione) {
+                            selectVeicoloA.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
+                        });
+                    }
+                    
+                    // Popola Veicolo B/Pedone/Ostacolo
+                    var tipoB = 'veicolo_b';
+                    if (tipo === 'investimento') tipoB = 'pedone';
+                    if (tipo === 'urto_fermo') tipoB = 'ostacolo';
+                    if (tipo === 'senza_urto') tipoB = 'ostacolo_evitato';
+                    
+                    if (circostanzeData[tipo][tipoB]) {
+                        $.each(circostanzeData[tipo][tipoB], function(codice, descrizione) {
+                            selectVeicoloB.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
+                        });
+                    }
+                    
+                    // Aggiorna label del Veicolo B
+                    var labelText = 'Circostanza Veicolo B';
+                    if (tipo === 'investimento') labelText = 'Circostanza Pedone';
+                    if (tipo === 'urto_fermo') labelText = 'Circostanza Ostacolo';
+                    if (tipo === 'senza_urto') labelText = 'Ostacolo Evitato';
+                    
+                    $('label[for="circostanza_veicolo_b"]').text(labelText);
+                }
+            });
+
+            // Trigger al caricamento pagina se c'è già un valore
+            if ($('#circostanza_tipo').val()) {
+                $('#circostanza_tipo').trigger('change');
+                
+                // Ripristina i valori selezionati
+                setTimeout(function() {
+                    if ('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_a", true)); ?>') {
+                        $('#circostanza_veicolo_a').val('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_a", true)); ?>');
+                    }
+                    if ('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_b", true)); ?>') {
+                        $('#circostanza_veicolo_b').val('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_b", true)); ?>');
+                    }
+                }, 100);
+            }
         });
         </script>
         <?php
@@ -2057,86 +2282,36 @@ class IncidentiMetaBoxes {
                 <?php _e('SEZIONE OBBLIGATORIA - Selezionare almeno una circostanza', 'incidenti-stradali'); ?>
             </p>
             
-            <h4><?php _e('Per inconvenienti di circolazione', 'incidenti-stradali'); ?> *</h4>
+            <h4><?php _e('Per inconvenienti di circolazione', 'incidenti-stradali'); ?></h4>
             <table class="form-table">
                 <tr>
-                    <th><label for="circostanza_veicolo_a"><?php _e('Veicolo A', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="circostanza_tipo"><?php _e('Tipo di incidente', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="circostanza_veicolo_a" name="circostanza_veicolo_a">
-                            <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <optgroup label="<?php _e('Intersezione stradale (incrocio)', 'incidenti-stradali'); ?>">
-                                <option value="01" <?php selected($circostanza_veicolo_a, '01'); ?>>01 - Procedeva regolarmente senza svoltare</option>
-                                <option value="02" <?php selected($circostanza_veicolo_a, '02'); ?>>02 - Procedeva con guida distratta e andamento indeciso</option>
-                                <option value="03" <?php selected($circostanza_veicolo_a, '03'); ?>>03 - Procedeva senza mantenere la distanza di sicurezza</option>
-                                <option value="04" <?php selected($circostanza_veicolo_a, '04'); ?>>04 - Procedeva senza dare la precedenza al veicolo proveniente da destra</option>
-                                <option value="05" <?php selected($circostanza_veicolo_a, '05'); ?>>05 - Procedeva senza rispettare lo stop</option>
-                                <option value="06" <?php selected($circostanza_veicolo_a, '06'); ?>>06 - Procedeva senza rispettare il segnale di dare precedenza</option>
-                                <option value="07" <?php selected($circostanza_veicolo_a, '07'); ?>>07 - Procedeva contromano</option>
-                                <option value="08" <?php selected($circostanza_veicolo_a, '08'); ?>>08 - Procedeva senza rispettare le segnalazioni semaforiche o dell'agente</option>
-                                <option value="10" <?php selected($circostanza_veicolo_a, '10'); ?>>10 - Procedeva senza rispettare i segnali di divieto di transito</option>
-                                <option value="11" <?php selected($circostanza_veicolo_a, '11'); ?>>11 - Procedeva con eccesso di velocità</option>
-                                <option value="12" <?php selected($circostanza_veicolo_a, '12'); ?>>12 - Procedeva senza rispettare i limiti di velocità</option>
-                                <option value="13" <?php selected($circostanza_veicolo_a, '13'); ?>>13 - Procedeva con le luci abbaglianti incrociando altri veicoli</option>
-                                <option value="14" <?php selected($circostanza_veicolo_a, '14'); ?>>14 - Svoltava a destra regolarmente</option>
-                                <option value="15" <?php selected($circostanza_veicolo_a, '15'); ?>>15 - Svoltava a destra irregolarmente</option>
-                                <option value="16" <?php selected($circostanza_veicolo_a, '16'); ?>>16 - Svoltava a sinistra regolarmente</option>
-                                <option value="17" <?php selected($circostanza_veicolo_a, '17'); ?>>17 - Svoltava a sinistra irregolarmente</option>
-                                <option value="18" <?php selected($circostanza_veicolo_a, '18'); ?>>18 - Sorpassava (all'incrocio)</option>
-                            </optgroup>
-                            <optgroup label="<?php _e('Non all\'intersezione stradale', 'incidenti-stradali'); ?>">
-                                <option value="20" <?php selected($circostanza_veicolo_a, '20'); ?>>20 - Procedeva regolarmente</option>
-                                <option value="21" <?php selected($circostanza_veicolo_a, '21'); ?>>21 - Procedeva con guida distratta e andamento indeciso</option>
-                                <option value="22" <?php selected($circostanza_veicolo_a, '22'); ?>>22 - Procedeva senza mantenere la distanza di sicurezza</option>
-                                <option value="23" <?php selected($circostanza_veicolo_a, '23'); ?>>23 - Procedeva con eccesso di velocità</option>
-                                <option value="24" <?php selected($circostanza_veicolo_a, '24'); ?>>24 - Procedeva senza rispettare i limiti di velocità</option>
-                                <option value="25" <?php selected($circostanza_veicolo_a, '25'); ?>>25 - Procedeva non in prossimità del margine destro della carreggiata</option>
-                                <option value="26" <?php selected($circostanza_veicolo_a, '26'); ?>>26 - Procedeva contromano</option>
-                                <option value="27" <?php selected($circostanza_veicolo_a, '27'); ?>>27 - Procedeva senza rispettare i segnali di divieto</option>
-                                <option value="28" <?php selected($circostanza_veicolo_a, '28'); ?>>28 - Procedeva con le luci abbaglianti incrociando altri veicoli</option>
-                                <option value="29" <?php selected($circostanza_veicolo_a, '29'); ?>>29 - Sorpassava regolarmente</option>
-                                <option value="30" <?php selected($circostanza_veicolo_a, '30'); ?>>30 - Sorpassava irregolarmente a destra</option>
-                                <option value="31" <?php selected($circostanza_veicolo_a, '31'); ?>>31 - Sorpassava in curva, su dosso o in condizione di insufficiente visibilità</option>
-                                <option value="32" <?php selected($circostanza_veicolo_a, '32'); ?>>32 - Sorpassava un veicolo che ne stava sorpassando un altro</option>
-                                <option value="33" <?php selected($circostanza_veicolo_a, '33'); ?>>33 - Sorpassava senza osservare l'apposito segnale di divieto</option>
-                                <option value="34" <?php selected($circostanza_veicolo_a, '34'); ?>>34 - Manovrava in retrocessione o conversione</option>
-                                <option value="35" <?php selected($circostanza_veicolo_a, '35'); ?>>35 - Manovrava per immettersi nel flusso della circolazione</option>
-                                <option value="36" <?php selected($circostanza_veicolo_a, '36'); ?>>36 - Manovrava per voltare a sinistra</option>
-                                <option value="37" <?php selected($circostanza_veicolo_a, '37'); ?>>37 - Manovrava regolarmente per fermarsi o sostare</option>
-                                <option value="38" <?php selected($circostanza_veicolo_a, '38'); ?>>38 - Manovrava irregolarmente per fermarsi o sostare</option>
-                                <option value="39" <?php selected($circostanza_veicolo_a, '39'); ?>>39 - Si affiancava ad altri veicoli a due ruote irregolarmente</option>
-                            </optgroup>
+                        <select id="circostanza_tipo" name="circostanza_tipo">
+                            <option value=""><?php _e('Seleziona tipo', 'incidenti-stradali'); ?></option>
+                            <option value="intersezione" <?php selected($circostanza_tipo, 'intersezione'); ?>><?php _e('Incidente all\'intersezione stradale', 'incidenti-stradali'); ?></option>
+                            <option value="non_intersezione" <?php selected($circostanza_tipo, 'non_intersezione'); ?>><?php _e('Incidente non all\'intersezione', 'incidenti-stradali'); ?></option>
+                            <option value="investimento" <?php selected($circostanza_tipo, 'investimento'); ?>><?php _e('Investimento di pedone', 'incidenti-stradali'); ?></option>
+                            <option value="urto_fermo" <?php selected($circostanza_tipo, 'urto_fermo'); ?>><?php _e('Urto con veicolo fermo/ostacolo', 'incidenti-stradali'); ?></option>
+                            <option value="senza_urto" <?php selected($circostanza_tipo, 'senza_urto'); ?>><?php _e('Veicolo senza urto', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="circostanza_veicolo_b"><?php _e('Veicolo B, Pedone od ostacolo', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="circostanza_veicolo_a"><?php _e('Circostanza Veicolo A', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <select id="circostanza_veicolo_a" name="circostanza_veicolo_a">
+                            <option value=""><?php _e('Seleziona circostanza', 'incidenti-stradali'); ?></option>
+                            <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="circostanza_veicolo_b"><?php _e('Circostanza Veicolo B/Pedone', 'incidenti-stradali'); ?></label></th>
                     <td>
                         <select id="circostanza_veicolo_b" name="circostanza_veicolo_b">
-                            <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <optgroup label="<?php _e('Incidenti tra veicoli in marcia', 'incidenti-stradali'); ?>">
-                                <option value="40" <?php selected($circostanza_veicolo_b, '40'); ?>>40 - Procedeva regolarmente</option>
-                                <option value="41" <?php selected($circostanza_veicolo_b, '41'); ?>>41 - Procedeva con eccesso di velocità</option>
-                                <option value="42" <?php selected($circostanza_veicolo_b, '42'); ?>>42 - Procedeva senza rispettare i limiti di velocità</option>
-                                <option value="43" <?php selected($circostanza_veicolo_b, '43'); ?>>43 - Procedeva contromano</option>
-                                <option value="44" <?php selected($circostanza_veicolo_b, '44'); ?>>44 - Sorpassava veicolo in marcia</option>
-                                <option value="45" <?php selected($circostanza_veicolo_b, '45'); ?>>45 - Manovrava</option>
-                            </optgroup>
-                            <optgroup label="<?php _e('Incidenti tra veicolo e pedoni', 'incidenti-stradali'); ?>">
-                                <option value="50" <?php selected($circostanza_veicolo_b, '50'); ?>>50 - Attraversava la strada regolarmente</option>
-                                <option value="51" <?php selected($circostanza_veicolo_b, '51'); ?>>51 - Attraversava ad un passaggio pedonale protetto rispettando le segnalazioni</option>
-                                <option value="52" <?php selected($circostanza_veicolo_b, '52'); ?>>52 - Attraversava ad un passaggio pedonale protetto non rispettando le segnalazioni</option>
-                                <option value="53" <?php selected($circostanza_veicolo_b, '53'); ?>>53 - Attraversava ad un passaggio pedonale non protetto</option>
-                                <option value="54" <?php selected($circostanza_veicolo_b, '54'); ?>>54 - Attraversava regolarmente, non ad un passaggio pedonale</option>
-                                <option value="55" <?php selected($circostanza_veicolo_b, '55'); ?>>55 - Attraversava irregolarmente</option>
-                            </optgroup>
-                            <optgroup label="<?php _e('Veicolo fermo o altro ostacolo', 'incidenti-stradali'); ?>">
-                                <option value="60" <?php selected($circostanza_veicolo_b, '60'); ?>>60 - Ostacolo accidentale</option>
-                                <option value="61" <?php selected($circostanza_veicolo_b, '61'); ?>>61 - Veicolo fermo in posizione regolare</option>
-                                <option value="62" <?php selected($circostanza_veicolo_b, '62'); ?>>62 - Veicolo fermo in posizione irregolare</option>
-                                <option value="63" <?php selected($circostanza_veicolo_b, '63'); ?>>63 - Veicolo fermo senza prescritto segnale</option>
-                                <option value="64" <?php selected($circostanza_veicolo_b, '64'); ?>>64 - Veicolo fermo regolarmente segnalato</option>
-                                <option value="65" <?php selected($circostanza_veicolo_b, '65'); ?>>65 - Ostacolo fisso nella carreggiata</option>
-                            </optgroup>
+                            <option value=""><?php _e('Seleziona circostanza', 'incidenti-stradali'); ?></option>
+                            <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
                         </select>
                     </td>
                 </tr>
@@ -2313,9 +2488,9 @@ class IncidentiMetaBoxes {
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
             'natura_incidente', 'dettaglio_natura', 'altro_natura_testo', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
-            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada', 
-            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 'stato_psicofisico_a',
-            'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
+            'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada',
+            'circostanza_tipo', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
+            'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
             'cilindrata_veicolo_c', 'peso_pieno_carico_a', 'peso_pieno_carico_b', 'peso_pieno_carico_c',
             // Campi nominativi morti
             'morto_1_nome', 'morto_1_cognome',

@@ -349,7 +349,30 @@ class IncidentiExportFunctions {
             $natura_incidente = get_post_meta($post_id, 'natura_incidente', true);
             $record .= $natura_incidente ?: '1';
             
-            // Continua con tutti i campi del tracciato...
+             // Posizione 74-75: Circostanza veicolo A - per inconvenienti di circolazione (2 cifre)
+            $circostanza_veicolo_a = get_post_meta($post_id, 'circostanza_veicolo_a', true);
+            $record .= str_pad($circostanza_veicolo_a ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Posizione 76-77: Circostanza veicolo A - per difetti/avarie del veicolo (2 cifre)
+            $difetto_veicolo_a = get_post_meta($post_id, 'difetto_veicolo_a', true);
+            $record .= str_pad($difetto_veicolo_a ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Posizione 78-79: Circostanza conducente veicolo A - stato psico-fisico (2 cifre)
+            $stato_psicofisico_a = get_post_meta($post_id, 'stato_psicofisico_a', true);
+            $record .= str_pad($stato_psicofisico_a ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Posizione 80-81: Circostanza veicolo B/pedone/ostacolo - per inconvenienti (2 cifre)
+            $circostanza_veicolo_b = get_post_meta($post_id, 'circostanza_veicolo_b', true);
+            $record .= str_pad($circostanza_veicolo_b ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Posizione 82-83: Circostanza veicolo B - per difetti/avarie del veicolo (2 cifre)
+            $difetto_veicolo_b = get_post_meta($post_id, 'difetto_veicolo_b', true);
+            $record .= str_pad($difetto_veicolo_b ?: '00', 2, '0', STR_PAD_LEFT);
+            
+            // Posizione 84-85: Circostanza conducente veicolo B - stato psico-fisico (2 cifre)
+            $stato_psicofisico_b = get_post_meta($post_id, 'stato_psicofisico_b', true);
+            $record .= str_pad($stato_psicofisico_b ?: '00', 2, '0', STR_PAD_LEFT);
+            
             // Aggiungi i dati dei veicoli, conducenti, passeggeri secondo il tracciato ISTAT
             $record = $this->complete_istat_record($record, $post_id);
             

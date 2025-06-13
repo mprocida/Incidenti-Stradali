@@ -1354,14 +1354,17 @@ class IncidentiMetaBoxes {
             var naturaOptions = {
                 'A': {
                     '1': 'Scontro frontale',
-                    '2': 'Scontro frontale-laterale', 
+                    '2': 'Scontro frontale-laterale',
                     '3': 'Scontro laterale',
-                    '4': 'Tamponamento'
+                    '4': 'Tamponamento',
+                    '5': 'Salto carreggiata'
                 },
                 'B': {
                     '5': 'Investimento di pedoni'
                 },
                 'C': {
+                    'frontale': 'Urto frontale',
+                    'laterale': 'Urto laterale',
                     '6': 'Urto con veicolo in fermata o in arresto',
                     '7': 'Urto con veicolo in sosta',
                     '8': 'Urto con ostacolo',

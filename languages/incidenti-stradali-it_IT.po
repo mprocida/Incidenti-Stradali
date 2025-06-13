@@ -936,3 +936,12 @@ msgstr "Gall. illuminata"
 
 msgid "Gall. non illuminata"
 msgstr "Gall. non illuminata"
+
+msgid "Salto carreggiata"
+msgstr "Salto carreggiata"
+
+msgid "Urto frontale"
+msgstr "Urto frontale"
+
+msgid "Urto laterale"
+msgstr "Urto laterale"

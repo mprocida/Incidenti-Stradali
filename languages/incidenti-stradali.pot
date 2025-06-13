@@ -1109,3 +1109,12 @@ msgstr ""
 
 msgid "Descrizione personalizzata della natura dell'incidente (max 100 caratteri)"
 msgstr ""
+
+msgid "Salto carreggiata"
+msgstr "Salto carreggiata"
+
+msgid "Urto frontale"
+msgstr "Urto frontale"
+
+msgid "Urto laterale"
+msgstr "Urto laterale"

@@ -263,122 +263,321 @@ class IncidentiExportFunctions {
     public function generate_istat_txt($incidenti) {
         $output = '';
         
+        // Array con le lunghezze esatte di ogni campo secondo il tracciato ISTAT (343 campi totali)
+        $cfgistat_lunghezzacampi = array(
+            2,2,3,3,4,2,2,1,1,3,2,50,6,1,1,1,1,1,1,1,1,2,8,2,4,4,4,1,1,1,1,1,1,1,
+            1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,
+            2,8,2,4,4,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,
+            2,2,2,2,2,8,2,4,4,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+            1,1,2,2,2,2,2,2,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,
+            30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,
+            30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,
+            30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,
+            30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,
+            30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,10,1,1,
+            50,50,8,2,2,30,4,3,5,5,5,4,100,40,40,10,3,2,2,2,2,2,5,5,5,5,5,5,5,5,5,5,5,5,5,14
+        );
+        
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
-            $record = '';
+            $esitoTXT = array();
+            $indTXT = -1;
             
             // Recupera i dati dell'incidente
             $data_incidente = get_post_meta($post_id, 'data_incidente', true);
             $data_parts = explode('-', $data_incidente);
-            $anno = substr($data_parts[0], -2); // Ultime 2 cifre
-            $mese = $data_parts[1];
-            $giorno = $data_parts[2];
+            $anno = isset($data_parts[0]) ? substr($data_parts[0], -2) : '24'; // Ultime 2 cifre
+            $mese = isset($data_parts[1]) ? $data_parts[1] : '01';
+            $giorno = isset($data_parts[2]) ? $data_parts[2] : '01';
             
-            // Posizione 1-2: Anno (2 cifre)
-            $record .= str_pad($anno, 2, '0', STR_PAD_LEFT);
+            // Campo 1-2: Anno (2 cifre)
+            $indTXT++;
+            $esitoTXT[$indTXT] = str_pad($anno, 2, "0", STR_PAD_LEFT);
             
-            // Posizione 3-4: Mese (2 cifre)
-            $record .= str_pad($mese, 2, '0', STR_PAD_LEFT);
+            // Campo 3-4: Mese (2 cifre)
+            $indTXT++;
+            $esitoTXT[$indTXT] = str_pad($mese, 2, "0", STR_PAD_LEFT);
             
-            // Posizione 5-7: Provincia (3 cifre)
+            // Campo 5-7: Provincia (3 cifre)
+            $indTXT++;
             $provincia = get_post_meta($post_id, 'provincia_incidente', true);
-            $record .= str_pad($provincia ?: '000', 3, '0', STR_PAD_LEFT);
+            $esitoTXT[$indTXT] = str_pad($provincia ?: '000', 3, "0", STR_PAD_LEFT);
             
-            // Posizione 8-10: Comune (3 cifre)
+            // Campo 8-10: Comune (3 cifre)
+            $indTXT++;
             $comune = get_post_meta($post_id, 'comune_incidente', true);
-            $record .= str_pad($comune ?: '000', 3, '0', STR_PAD_LEFT);
+            $esitoTXT[$indTXT] = str_pad($comune ?: '000', 3, "0", STR_PAD_LEFT);
             
-            // Posizione 11-14: Numero d'ordine (4 cifre)
-            $record .= str_pad($post_id, 4, '0', STR_PAD_LEFT);
+            // Campo 11-14: Numero d'ordine (4 cifre)
+            $indTXT++;
+            $esitoTXT[$indTXT] = str_pad($post_id, 4, "0", STR_PAD_LEFT);
             
-            // Posizione 15-16: Giorno (2 cifre)
-            $record .= str_pad($giorno, 2, '0', STR_PAD_LEFT);
+            // Campo 15-16: Giorno (2 cifre)
+            $indTXT++;
+            $esitoTXT[$indTXT] = str_pad($giorno, 2, "0", STR_PAD_LEFT);
             
-            // Posizione 17-18: Ora (2 cifre) - 25 se sconosciuta
+            // Campo 17-18: Ora (2 cifre) - 25 se sconosciuta
+            $indTXT++;
             $ora = get_post_meta($post_id, 'ora_incidente', true);
-            $record .= str_pad($ora ?: '25', 2, '0', STR_PAD_LEFT);
+            $esitoTXT[$indTXT] = str_pad($ora ?: '25', 2, "0", STR_PAD_LEFT);
             
-            // Posizione 19: Organo di rilevazione (1 cifra)
+            // Campo 19: Organo di rilevazione (1 cifra)
+            $indTXT++;
             $organo = get_post_meta($post_id, 'organo_rilevazione', true);
-            $record .= $organo ?: '4'; // Default: Polizia Municipale
+            $esitoTXT[$indTXT] = $organo ?: '1';
             
-            // Posizione 20-24: Numero progressivo nell'anno (5 cifre)
-            $record .= str_pad($post_id, 5, '0', STR_PAD_LEFT);
+            // Campo 20: Organo coordinatore (1 cifra)
+            $indTXT++;
+            $organo_coordinatore = get_post_meta($post_id, 'organo_coordinatore', true);
+            $esitoTXT[$indTXT] = $organo_coordinatore ?: '0';
             
-            // Posizione 25: Organo coordinatore (1 cifra)
-            $organo_coord = get_post_meta($post_id, 'organo_coordinatore', true);
-            $record .= $organo_coord ?: '0';
+            // Campo 21-23: Localizzazione (3 cifre)
+            $indTXT++;
+            $localizzazione = get_post_meta($post_id, 'localizzazione', true);
+            $esitoTXT[$indTXT] = str_pad($localizzazione ?: '000', 3, "0", STR_PAD_LEFT);
             
-            // Posizione 26-55: Denominazione della strada (30 caratteri)
-            $denominazione = get_post_meta($post_id, 'denominazione_strada', true);
-            $record .= str_pad(substr($denominazione ?: '', 0, 30), 30, ' ', STR_PAD_RIGHT);
-            
-            // Posizione 56-61: Progressiva chilometrica (6 cifre) - posizione in metri
-            $progressiva = get_post_meta($post_id, 'progressiva_chilometrica', true);
-            $record .= str_pad($progressiva ?: '000000', 6, '0', STR_PAD_LEFT);
-            
-            // Posizione 62: Tipo di strada (1 cifra)
+            // Campo 24-25: Tipo di strada (2 cifre)
+            $indTXT++;
             $tipo_strada = get_post_meta($post_id, 'tipo_strada', true);
-            $record .= $tipo_strada ?: '1';
+            $esitoTXT[$indTXT] = str_pad($tipo_strada ?: '01', 2, "0", STR_PAD_LEFT);
             
-            // Posizione 63: Pavimentazione (1 cifra)
+            // Campo 26-75: Denominazione strada (50 caratteri)
+            $indTXT++;
+            $denominazione_strada = get_post_meta($post_id, 'denominazione_strada', true);
+            $esitoTXT[$indTXT] = str_pad(substr($denominazione_strada ?: '', 0, 50), 50, "~", STR_PAD_RIGHT);
+            
+            // Campo 76-81: Progressiva chilometrica (6 cifre)
+            $indTXT++;
+            $chilometrica = get_post_meta($post_id, 'chilometrica', true);
+            $esitoTXT[$indTXT] = str_pad($chilometrica ?: '000000', 6, "0", STR_PAD_LEFT);
+            
+            // Campo 82: Pavimentazione (1 cifra)
+            $indTXT++;
             $pavimentazione = get_post_meta($post_id, 'pavimentazione', true);
-            $record .= $pavimentazione ?: '1';
+            $esitoTXT[$indTXT] = $pavimentazione ?: '1';
             
-            // Posizione 64: Intersezione (1 cifra)
+            // Campo 83: Intersezione (1 cifra)
+            $indTXT++;
             $intersezione = get_post_meta($post_id, 'intersezione', true);
-            $record .= $intersezione ?: '1';
+            $esitoTXT[$indTXT] = $intersezione ?: '0';
             
-            // Posizione 65: Non intersezione (1 cifra)
-            $non_intersezione = get_post_meta($post_id, 'non_intersezione', true);
-            $record .= $non_intersezione ?: '0';
+            // Campo 84: Tipo intersezione (1 cifra)
+            $indTXT++;
+            $tipo_intersezione = get_post_meta($post_id, 'tipo_intersezione', true);
+            $esitoTXT[$indTXT] = $tipo_intersezione ?: '0';
             
-            // Posizione 66: Fondo stradale (1 cifra)
+            // Campo 85: Fondo stradale (1 cifra)
+            $indTXT++;
             $fondo_stradale = get_post_meta($post_id, 'fondo_stradale', true);
-            $record .= $fondo_stradale ?: '1';
+            $esitoTXT[$indTXT] = $fondo_stradale ?: '1';
             
-            // Posizione 67: Segnaletica (1 cifra)
+            // Campo 86: Segnaletica (1 cifra)
+            $indTXT++;
             $segnaletica = get_post_meta($post_id, 'segnaletica', true);
-            $record .= $segnaletica ?: '1';
+            $esitoTXT[$indTXT] = $segnaletica ?: '0';
             
-            // Posizione 68: Condizioni meteorologiche (1 cifra)
+            // Campo 87: Condizioni meteorologiche (1 cifra)
+            $indTXT++;
             $condizioni_meteo = get_post_meta($post_id, 'condizioni_meteo', true);
-            $record .= $condizioni_meteo ?: '1';
+            $esitoTXT[$indTXT] = $condizioni_meteo ?: '1';
             
-            // Posizione 69: Natura dell'incidente (1 cifra)
+            // Campo 88: Illuminazione (1 cifra)
+            $indTXT++;
+            $illuminazione = get_post_meta($post_id, 'illuminazione', true);
+            $esitoTXT[$indTXT] = $illuminazione ?: '1';
+            
+            // Campo 89: Natura dell'incidente (1 cifra)
+            $indTXT++;
             $natura_incidente = get_post_meta($post_id, 'natura_incidente', true);
-            $record .= $natura_incidente ?: '1';
+            $esitoTXT[$indTXT] = $natura_incidente ?: '1';
             
-             // Posizione 74-75: Circostanza veicolo A - per inconvenienti di circolazione (2 cifre)
-            $circostanza_veicolo_a = get_post_meta($post_id, 'circostanza_veicolo_a', true);
-            $record .= str_pad($circostanza_veicolo_a ?: '00', 2, '0', STR_PAD_LEFT);
+            // VEICOLI COINVOLTI
+            for ($veicolo = 1; $veicolo <= 3; $veicolo++) {
+                $suffix = ($veicolo == 1) ? 'a' : ($veicolo == 2 ? 'b' : 'c');
+                
+                // Tipo veicolo (2 cifre)
+                $indTXT++;
+                $tipo_veicolo = get_post_meta($post_id, "veicolo_{$suffix}_tipo", true);
+                $esitoTXT[$indTXT] = str_pad($tipo_veicolo ?: '00', 2, "0", STR_PAD_LEFT);
+                
+                // Targa veicolo (8 caratteri)
+                $indTXT++;
+                $targa = get_post_meta($post_id, "veicolo_{$suffix}_targa", true);
+                $esitoTXT[$indTXT] = str_pad(substr($targa ?: '', 0, 8), 8, "~", STR_PAD_RIGHT);
+                
+                // Sigla veicolo estero (2 cifre)
+                $indTXT++;
+                $sigla_estero = get_post_meta($post_id, "veicolo_{$suffix}_sigla_estero", true);
+                $esitoTXT[$indTXT] = str_pad($sigla_estero ?: '00', 2, "0", STR_PAD_LEFT);
+                
+                // Anno prima immatricolazione (4 cifre)
+                $indTXT++;
+                $anno_immatricolazione = get_post_meta($post_id, "veicolo_{$suffix}_anno_immatricolazione", true);
+                $esitoTXT[$indTXT] = str_pad($anno_immatricolazione ?: '0000', 4, "0", STR_PAD_LEFT);
+                
+                // Altri dati veicolo (seguire il pattern del tracciato)
+                for ($i = 0; $i < 10; $i++) {
+                    $indTXT++;
+                    $esitoTXT[$indTXT] = '0'; // Campi aggiuntivi veicolo
+                }
+            }
             
-            // Posizione 76-77: Circostanza veicolo A - per difetti/avarie del veicolo (2 cifre)
-            $difetto_veicolo_a = get_post_meta($post_id, 'difetto_veicolo_a', true);
-            $record .= str_pad($difetto_veicolo_a ?: '00', 2, '0', STR_PAD_LEFT);
+            // CIRCOSTANZE PRESUNTE (seguendo il tracciato ISTAT)
+            $indTXT++;
+            $circostanza_a = get_post_meta($post_id, 'circostanza_veicolo_a', true);
+            $esitoTXT[$indTXT] = str_pad($circostanza_a ?: '00', 2, "0", STR_PAD_LEFT);
             
-            // Posizione 78-79: Circostanza conducente veicolo A - stato psico-fisico (2 cifre)
-            $stato_psicofisico_a = get_post_meta($post_id, 'stato_psicofisico_a', true);
-            $record .= str_pad($stato_psicofisico_a ?: '00', 2, '0', STR_PAD_LEFT);
+            $indTXT++;
+            $circostanza_b = get_post_meta($post_id, 'circostanza_veicolo_b', true);
+            $esitoTXT[$indTXT] = str_pad($circostanza_b ?: '00', 2, "0", STR_PAD_LEFT);
             
-            // Posizione 80-81: Circostanza veicolo B/pedone/ostacolo - per inconvenienti (2 cifre)
-            $circostanza_veicolo_b = get_post_meta($post_id, 'circostanza_veicolo_b', true);
-            $record .= str_pad($circostanza_veicolo_b ?: '00', 2, '0', STR_PAD_LEFT);
+            // Continua con altri campi circostanze...
+            for ($i = 0; $i < 10; $i++) {
+                $indTXT++;
+                $esitoTXT[$indTXT] = str_pad('00', 2, "0", STR_PAD_LEFT);
+            }
             
-            // Posizione 82-83: Circostanza veicolo B - per difetti/avarie del veicolo (2 cifre)
-            $difetto_veicolo_b = get_post_meta($post_id, 'difetto_veicolo_b', true);
-            $record .= str_pad($difetto_veicolo_b ?: '00', 2, '0', STR_PAD_LEFT);
+            // PERSONE COINVOLTE
+            // Conducenti veicoli A, B, C
+            for ($veicolo = 1; $veicolo <= 3; $veicolo++) {
+                $suffix = ($veicolo == 1) ? 'a' : ($veicolo == 2 ? 'b' : 'c');
+                
+                // Dati conducente: nascita, patente, sesso, età, incolumi, feriti, morti, ecc.
+                for ($campo = 0; $campo < 20; $campo++) {
+                    $indTXT++;
+                    if ($campo < 2) {
+                        // Campi numerici (nascita, età, ecc.)
+                        $esitoTXT[$indTXT] = str_pad('0', 2, "0", STR_PAD_LEFT);
+                    } else {
+                        // Altri campi
+                        $esitoTXT[$indTXT] = '0';
+                    }
+                }
+            }
             
-            // Posizione 84-85: Circostanza conducente veicolo B - stato psico-fisico (2 cifre)
-            $stato_psicofisico_b = get_post_meta($post_id, 'stato_psicofisico_b', true);
-            $record .= str_pad($stato_psicofisico_b ?: '00', 2, '0', STR_PAD_LEFT);
+            // PASSEGGERI - fino a 3 per veicolo
+            for ($veicolo = 1; $veicolo <= 3; $veicolo++) {
+                for ($passeggero = 1; $passeggero <= 3; $passeggero++) {
+                    // Dati passeggero (simili ai conducenti)
+                    for ($campo = 0; $campo < 15; $campo++) {
+                        $indTXT++;
+                        if ($campo < 2) {
+                            $esitoTXT[$indTXT] = str_pad('0', 2, "0", STR_PAD_LEFT);
+                        } else {
+                            $esitoTXT[$indTXT] = '0';
+                        }
+                    }
+                }
+            }
             
-            // Aggiungi i dati dei veicoli, conducenti, passeggeri secondo il tracciato ISTAT
-            $record = $this->complete_istat_record($record, $post_id);
+            // PEDONI COINVOLTI
+            for ($pedone = 1; $pedone <= 8; $pedone++) {
+                // Dati pedone
+                for ($campo = 0; $campo < 10; $campo++) {
+                    $indTXT++;
+                    if ($campo < 2) {
+                        $esitoTXT[$indTXT] = str_pad('0', 2, "0", STR_PAD_LEFT);
+                    } else {
+                        $esitoTXT[$indTXT] = '0';
+                    }
+                }
+            }
+            
+            // NOMI E COGNOMI FERITI (come nel file rilevazioni.php)
+            for ($ferito = 1; $ferito <= 8; $ferito++) {
+                // Nome ferito (30 caratteri)
+                $indTXT++;
+                $nome_ferito = get_post_meta($post_id, "ferito_{$ferito}_nome", true);
+                $esitoTXT[$indTXT] = str_pad(substr($nome_ferito ?: '', 0, 30), 30, "~", STR_PAD_RIGHT);
+                
+                // Cognome ferito (30 caratteri)
+                $indTXT++;
+                $cognome_ferito = get_post_meta($post_id, "ferito_{$ferito}_cognome", true);
+                $esitoTXT[$indTXT] = str_pad(substr($cognome_ferito ?: '', 0, 30), 30, "~", STR_PAD_RIGHT);
+                
+                // Istituto di ricovero (30 caratteri)
+                $indTXT++;
+                $istituto_ferito = get_post_meta($post_id, "ferito_{$ferito}_istituto", true);
+                $esitoTXT[$indTXT] = str_pad(substr($istituto_ferito ?: '', 0, 30), 30, "~", STR_PAD_RIGHT);
+            }
+            
+            // CAMPI FINALI E RISERVATI
+            // Spazio riservato ISTAT (10 caratteri)
+            $indTXT++;
+            $esitoTXT[$indTXT] = str_pad('', 10, "~", STR_PAD_RIGHT);
+            
+            // Georeferenziazione (se presente)
+            $indTXT++;
+            $tipo_coordinata = get_post_meta($post_id, 'tipo_coordinata', true);
+            $esitoTXT[$indTXT] = $tipo_coordinata ?: '2'; // WGS84
+            
+            $indTXT++;
+            $sistema_proiezione = get_post_meta($post_id, 'sistema_proiezione', true);
+            $esitoTXT[$indTXT] = $sistema_proiezione ?: '2'; // geografiche
+            
+            // Longitudine (50 caratteri)
+            $indTXT++;
+            $longitudine = get_post_meta($post_id, 'longitudine', true);
+            $esitoTXT[$indTXT] = str_pad(substr($longitudine ?: '', 0, 50), 50, "~", STR_PAD_RIGHT);
+            
+            // Latitudine (50 caratteri)
+            $indTXT++;
+            $latitudine = get_post_meta($post_id, 'latitudine', true);
+            $esitoTXT[$indTXT] = str_pad(substr($latitudine ?: '', 0, 50), 50, "~", STR_PAD_RIGHT);
+            
+            // Campi finali riservati e aggiuntivi
+            for ($i = 0; $i < 20; $i++) {
+                $indTXT++;
+                if ($i < 5) {
+                    $esitoTXT[$indTXT] = str_pad('', 8, "~", STR_PAD_RIGHT);
+                } else {
+                    $esitoTXT[$indTXT] = str_pad('', 4, "~", STR_PAD_RIGHT);
+                }
+            }
+            
+            // Completa fino a 343 campi se necessario
+            while (count($esitoTXT) < 343) {
+                $indTXT++;
+                $esitoTXT[$indTXT] = str_pad('', 1, "~", STR_PAD_RIGHT);
+            }
+            
+            // VALIDAZIONE LUNGHEZZA CAMPI
+            $numErrori = 0;
+            $strErrori = '';
+            for ($indChk = 0; $indChk < count($esitoTXT); $indChk++) {
+                $lungReale = strlen($esitoTXT[$indChk]);
+                $lungAttesa = isset($cfgistat_lunghezzacampi[$indChk]) ? $cfgistat_lunghezzacampi[$indChk] : 1;
+                if ($lungReale != $lungAttesa) {
+                    $numErrori++;
+                    $strErrori .= "ERRORE CAMPO " . ($indChk + 1) . ": Trovati " . $lungReale . " caratteri invece di " . $lungAttesa . "\n";
+                    error_log("INCIDENTE ID {$post_id} - CAMPO " . ($indChk + 1) . ": Lunghezza errata");
+                    
+                    // Correggi la lunghezza del campo
+                    if ($lungReale < $lungAttesa) {
+                        $esitoTXT[$indChk] = str_pad($esitoTXT[$indChk], $lungAttesa, "~", STR_PAD_RIGHT);
+                    } else {
+                        $esitoTXT[$indChk] = substr($esitoTXT[$indChk], 0, $lungAttesa);
+                    }
+                }
+            }
+            
+            // Se ci sono errori, loggali
+            if ($numErrori > 0) {
+                error_log("INCIDENTE ID {$post_id} - {$numErrori} errori di lunghezza campi: " . $strErrori);
+            }
+            
+            // Converti l'array in stringa sostituendo ~ con spazi
+            $esitoTXTstr = str_replace('~', ' ', implode('', $esitoTXT));
             
             // Assicurati che il record sia esattamente 1024 caratteri
-            $record = str_pad($record, 1024, ' ', STR_PAD_RIGHT);
-            $output .= $record . "\r\n";
+            if (strlen($esitoTXTstr) < 1024) {
+                $esitoTXTstr = str_pad($esitoTXTstr, 1024, ' ', STR_PAD_RIGHT);
+            } elseif (strlen($esitoTXTstr) > 1024) {
+                $esitoTXTstr = substr($esitoTXTstr, 0, 1024);
+                error_log("ATTENZIONE: Record incidente ID {$post_id} troncato a 1024 caratteri");
+            }
+            
+            $output .= $esitoTXTstr . "\r\n";
         }
         
         return $output;

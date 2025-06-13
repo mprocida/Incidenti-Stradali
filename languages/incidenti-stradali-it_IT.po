@@ -904,9 +904,6 @@ msgstr "Identificativo del Comando Staz. dei Carabinieri"
 msgid "Tronco di strada o autostrada"
 msgstr "Tronco di strada o autostrada"
 
-msgid "Raccordo entro l'abitato"
-msgstr "Raccordo entro l'abitato"
-
 msgid "Altra strada"
 msgstr "Altra strada"
 
@@ -921,3 +918,6 @@ msgstr "Per difetti o avarie del veicolo"
 
 msgid "Per stato psico-fisico del conducente"
 msgstr "Per stato psico-fisico del conducente"
+
+msgid "Illuminazione stradale non nota"
+msgstr "Illuminazione stradale non nota"

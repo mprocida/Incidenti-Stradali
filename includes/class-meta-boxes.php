@@ -938,7 +938,6 @@ class IncidentiMetaBoxes {
                             <option value="1" <?php selected($tipo_strada, '1'); ?>><?php _e('Strada urbana', 'incidenti-stradali'); ?></option>
                             <option value="2" <?php selected($tipo_strada, '2'); ?>><?php _e('Provinciale entro l\'abitato', 'incidenti-stradali'); ?></option>
                             <option value="3" <?php selected($tipo_strada, '3'); ?>><?php _e('Statale entro l\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="4" <?php selected($tipo_strada, '4'); ?>><?php _e('Raccordo entro l\'abitato', 'incidenti-stradali'); ?></option>
                             <option value="0" <?php selected($tipo_strada, '0'); ?>><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
                         </optgroup>
                         <optgroup label="<?php _e('Fuori dall\'abitato', 'incidenti-stradali'); ?>">
@@ -1217,7 +1216,8 @@ class IncidentiMetaBoxes {
                             <label><input type="radio" name="illuminazione" value="2" <?php checked($illuminazione, '2'); ?>> <?php _e('Crepuscolo alba', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="illuminazione" value="3" <?php checked($illuminazione, '3'); ?>> <?php _e('Buio: luci stradali presenti accese', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="illuminazione" value="4" <?php checked($illuminazione, '4'); ?>> <?php _e('Buio: luci stradali presenti spente', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="illuminazione" value="5" <?php checked($illuminazione, '5'); ?>> <?php _e('Buio: assenza', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="5" <?php checked($illuminazione, '5'); ?>> <?php _e('Buio: assenza di illuminazione stradale', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="illuminazione" value="6" <?php checked($illuminazione, '6'); ?>> <?php _e('Illuminazione stradale non nota', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="illuminazione" value="11" <?php checked($illuminazione, '11'); ?>> <?php _e('Gall. illuminata', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="illuminazione" value="12" <?php checked($illuminazione, '12'); ?>> <?php _e('Gall. non illuminata', 'incidenti-stradali'); ?></label>
                         </td>

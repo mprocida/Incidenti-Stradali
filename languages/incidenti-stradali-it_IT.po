@@ -921,3 +921,18 @@ msgstr "Per stato psico-fisico del conducente"
 
 msgid "Illuminazione stradale non nota"
 msgstr "Illuminazione stradale non nota"
+
+msgid "Dosso, strettoia"
+msgstr "Dosso, strettoia"
+
+msgid "Pend. - salita" 
+msgstr "Pend. - salita"
+
+msgid "Pend. - discesa"
+msgstr "Pend. - discesa"
+
+msgid "Gall. illuminata"
+msgstr "Gall. illuminata"
+
+msgid "Gall. non illuminata"
+msgstr "Gall. non illuminata"

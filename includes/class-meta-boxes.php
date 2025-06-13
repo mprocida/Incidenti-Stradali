@@ -1119,8 +1119,11 @@ class IncidentiMetaBoxes {
                         <td>
                             <label><input type="radio" name="intersezione_tronco" value="7" <?php checked($intersezione, '7'); ?>> <?php _e('Rettilineo', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="intersezione_tronco" value="8" <?php checked($intersezione, '8'); ?>> <?php _e('Curva', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="9" <?php checked($intersezione, '9'); ?>> <?php _e('Dosso-cunetta', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="10" <?php checked($intersezione, '10'); ?>> <?php _e('Pendenza', 'incidenti-stradali'); ?></label>
+                            <label><input type="radio" name="intersezione_tronco" value="9" <?php checked($intersezione, '9'); ?>> <?php _e('Dosso, strettoia', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="10" <?php checked($intersezione, '10'); ?>> <?php _e('Pend. - salita', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="10b" <?php checked($intersezione, '10b'); ?>> <?php _e('Pend. - discesa', 'incidenti-stradali'); ?></label>                        
+                            <label><input type="radio" name="intersezione_tronco" value="11" <?php checked($intersezione, '11'); ?>> <?php _e('Gall. illuminata', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="intersezione_tronco" value="12" <?php checked($intersezione, '12'); ?>> <?php _e('Gall. non illuminata', 'incidenti-stradali'); ?></label>
                         </td>
                     </tr>
                     <tr>
@@ -1218,8 +1221,6 @@ class IncidentiMetaBoxes {
                             <label><input type="radio" name="illuminazione" value="4" <?php checked($illuminazione, '4'); ?>> <?php _e('Buio: luci stradali presenti spente', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="illuminazione" value="5" <?php checked($illuminazione, '5'); ?>> <?php _e('Buio: assenza di illuminazione stradale', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="illuminazione" value="6" <?php checked($illuminazione, '6'); ?>> <?php _e('Illuminazione stradale non nota', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="illuminazione" value="11" <?php checked($illuminazione, '11'); ?>> <?php _e('Gall. illuminata', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="illuminazione" value="12" <?php checked($illuminazione, '12'); ?>> <?php _e('Gall. non illuminata', 'incidenti-stradali'); ?></label>
                         </td>
                     </tr>
                 </table>

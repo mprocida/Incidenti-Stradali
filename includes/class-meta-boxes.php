@@ -1121,7 +1121,7 @@ class IncidentiMetaBoxes {
                             <label><input type="radio" name="intersezione_tronco" value="8" <?php checked($intersezione, '8'); ?>> <?php _e('Curva', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="intersezione_tronco" value="9" <?php checked($intersezione, '9'); ?>> <?php _e('Dosso, strettoia', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="intersezione_tronco" value="10" <?php checked($intersezione, '10'); ?>> <?php _e('Pend. - salita', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="10b" <?php checked($intersezione, '10b'); ?>> <?php _e('Pend. - discesa', 'incidenti-stradali'); ?></label>                        
+                            <label><input type="radio" name="intersezione_tronco" value="10b" <?php checked($intersezione, '10b'); ?>> <?php _e('Pend. - discesa', 'incidenti-stradali'); ?></label><br>                       
                             <label><input type="radio" name="intersezione_tronco" value="11" <?php checked($intersezione, '11'); ?>> <?php _e('Gall. illuminata', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="intersezione_tronco" value="12" <?php checked($intersezione, '12'); ?>> <?php _e('Gall. non illuminata', 'incidenti-stradali'); ?></label>
                         </td>

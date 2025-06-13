@@ -169,8 +169,8 @@
       "peso_massimo": 400
     },
     "22": {
-      "codice": "22",
-      "descrizione": "Monopattino elettrico",
+      "codice": "22", 
+      "descrizione": "Monopattino", 
       "categoria": "micromobilita",
       "richiede_patente": false,
       "tipo_patente": [],

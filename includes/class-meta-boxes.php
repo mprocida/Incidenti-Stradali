@@ -1857,32 +1857,8 @@ class IncidentiMetaBoxes {
                             <td>
                                 <select name="<?php echo $prefix; ?>esito">
                                     <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                                    <option value="1" <?php selected(get_post_meta($post->ID, $prefix . 'esito', true), '1'); ?>><?php _e('Incolume', 'incidenti-stradali'); ?></option>
+                                    <option value="1" <?php selected(get_post_meta($post->ID, $prefix . 'esito', true), '1'); ?>><?php _e('Morto', 'incidenti-stradali'); ?></option>
                                     <option value="2" <?php selected(get_post_meta($post->ID, $prefix . 'esito', true), '2'); ?>><?php _e('Ferito', 'incidenti-stradali'); ?></option>
-                                    <option value="3" <?php selected(get_post_meta($post->ID, $prefix . 'esito', true), '3'); ?>><?php _e('Morto entro 24 ore', 'incidenti-stradali'); ?></option>
-                                    <option value="4" <?php selected(get_post_meta($post->ID, $prefix . 'esito', true), '4'); ?>><?php _e('Morto dal 2° al 30° giorno', 'incidenti-stradali'); ?></option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label><?php _e('Posizione', 'incidenti-stradali'); ?></label></th>
-                            <td>
-                                <select name="<?php echo $prefix; ?>posizione">
-                                    <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                                    <option value="1" <?php selected(get_post_meta($post->ID, $prefix . 'posizione', true), '1'); ?>><?php _e('Sedile anteriore', 'incidenti-stradali'); ?></option>
-                                    <option value="2" <?php selected(get_post_meta($post->ID, $prefix . 'posizione', true), '2'); ?>><?php _e('Sedile posteriore', 'incidenti-stradali'); ?></option>
-                                    <option value="3" <?php selected(get_post_meta($post->ID, $prefix . 'posizione', true), '3'); ?>><?php _e('Altra posizione', 'incidenti-stradali'); ?></option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label><?php _e('Uso cinture/casco', 'incidenti-stradali'); ?></label></th>
-                            <td>
-                                <select name="<?php echo $prefix; ?>uso_dispositivi">
-                                    <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                                    <option value="1" <?php selected(get_post_meta($post->ID, $prefix . 'uso_dispositivi', true), '1'); ?>><?php _e('Utilizzati', 'incidenti-stradali'); ?></option>
-                                    <option value="2" <?php selected(get_post_meta($post->ID, $prefix . 'uso_dispositivi', true), '2'); ?>><?php _e('Non utilizzati', 'incidenti-stradali'); ?></option>
-                                    <option value="3" <?php selected(get_post_meta($post->ID, $prefix . 'uso_dispositivi', true), '3'); ?>><?php _e('Non accertato', 'incidenti-stradali'); ?></option>
                                 </select>
                             </td>
                         </tr>
@@ -1948,19 +1924,18 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="<?php echo $prefix; ?>tipo_patente"><?php _e('Tipo Patente', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="<?php echo $prefix; ?>tipo_patente" name="<?php echo $prefix; ?>tipo_patente">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="0" <?php selected($tipo_patente, '0'); ?>><?php _e('Patente ciclomotori', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($tipo_patente, '1'); ?>><?php _e('Patente tipo A', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($tipo_patente, '2'); ?>><?php _e('Patente tipo B', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($tipo_patente, '3'); ?>><?php _e('Patente tipo C', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($tipo_patente, '4'); ?>><?php _e('Patente tipo D', 'incidenti-stradali'); ?></option>
-                        <option value="5" <?php selected($tipo_patente, '5'); ?>><?php _e('Patente tipo E', 'incidenti-stradali'); ?></option>
-                        <option value="6" <?php selected($tipo_patente, '6'); ?>><?php _e('ABC speciale', 'incidenti-stradali'); ?></option>
-                        <option value="7" <?php selected($tipo_patente, '7'); ?>><?php _e('Non richiesta', 'incidenti-stradali'); ?></option>
-                        <option value="8" <?php selected($tipo_patente, '8'); ?>><?php _e('Foglio rosa', 'incidenti-stradali'); ?></option>
-                        <option value="9" <?php selected($tipo_patente, '9'); ?>><?php _e('Sprovvisto', 'incidenti-stradali'); ?></option>
-                    </select>
+                    <div>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="0" <?php checked(in_array('0', (array)$tipo_patente), true); ?>> <?php _e('Patente ciclomotori', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="1" <?php checked(in_array('1', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo A', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="2" <?php checked(in_array('2', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo B', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="3" <?php checked(in_array('3', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo C', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="4" <?php checked(in_array('4', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo D', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="5" <?php checked(in_array('5', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo E', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="6" <?php checked(in_array('6', (array)$tipo_patente), true); ?>> <?php _e('ABC speciale', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="7" <?php checked(in_array('7', (array)$tipo_patente), true); ?>> <?php _e('Non richiesta', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="8" <?php checked(in_array('8', (array)$tipo_patente), true); ?>> <?php _e('Foglio rosa', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="9" <?php checked(in_array('9', (array)$tipo_patente), true); ?>> <?php _e('Sprovvisto', 'incidenti-stradali'); ?></label>
+                </div>
                 </td>
             </tr>
             <tr>

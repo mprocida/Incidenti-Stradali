@@ -1712,20 +1712,31 @@ class IncidentiMetaBoxes {
                 <th><label for="<?php echo $prefix; ?>tipo"><?php _e('Tipo Veicolo', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="<?php echo $prefix; ?>tipo" name="<?php echo $prefix; ?>tipo">
-                        <option value=""><?php _e('Seleziona tipo', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($tipo_veicolo, '1'); ?>><?php _e('Autovettura privata', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($tipo_veicolo, '2'); ?>><?php _e('Autovettura con rimorchio', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($tipo_veicolo, '3'); ?>><?php _e('Autovettura pubblica', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($tipo_veicolo, '4'); ?>><?php _e('Autovettura di soccorso o di polizia', 'incidenti-stradali'); ?></option>
-                        <option value="8" <?php selected($tipo_veicolo, '8'); ?>><?php _e('Autocarro', 'incidenti-stradali'); ?></option>
-                        <option value="14" <?php selected($tipo_veicolo, '14'); ?>><?php _e('Velocipede', 'incidenti-stradali'); ?></option>
-                        <option value="15" <?php selected($tipo_veicolo, '15'); ?>><?php _e('Ciclomotore', 'incidenti-stradali'); ?></option>
-                        <option value="16" <?php selected($tipo_veicolo, '16'); ?>><?php _e('Motociclo a solo', 'incidenti-stradali'); ?></option>
-                        <option value="17" <?php selected($tipo_veicolo, '17'); ?>><?php _e('Motociclo con passeggero', 'incidenti-stradali'); ?></option>
-                        <option value="21" <?php selected($tipo_veicolo, '21'); ?>><?php _e('Quadriciclo', 'incidenti-stradali'); ?></option>
-                        <option value="22" <?php selected($tipo_veicolo, '22'); ?>><?php _e('Monopattino elettrico', 'incidenti-stradali'); ?></option>
-                        <option value="23" <?php selected($tipo_veicolo, '23'); ?>><?php _e('Bicicletta elettrica', 'incidenti-stradali'); ?></option>
-                    </select>
+                    <option value=""><?php _e('Seleziona tipo', 'incidenti-stradali'); ?></option>
+                    <option value="1" <?php selected($tipo_veicolo, '1'); ?>><?php _e('Autovettura privata', 'incidenti-stradali'); ?></option>
+                    <option value="2" <?php selected($tipo_veicolo, '2'); ?>><?php _e('Autovettura con rimorchio', 'incidenti-stradali'); ?></option>
+                    <option value="3" <?php selected($tipo_veicolo, '3'); ?>><?php _e('Autovettura pubblica', 'incidenti-stradali'); ?></option>
+                    <option value="4" <?php selected($tipo_veicolo, '4'); ?>><?php _e('Autovettura di soccorso o di polizia', 'incidenti-stradali'); ?></option>
+                    <option value="5" <?php selected($tipo_veicolo, '5'); ?>><?php _e('Autobus o filobus in servizio urbano', 'incidenti-stradali'); ?></option>
+                    <option value="6" <?php selected($tipo_veicolo, '6'); ?>><?php _e('Autobus di linea o non di linea in extraurbana', 'incidenti-stradali'); ?></option>
+                    <option value="7" <?php selected($tipo_veicolo, '7'); ?>><?php _e('Tram', 'incidenti-stradali'); ?></option>
+                    <option value="8" <?php selected($tipo_veicolo, '8'); ?>><?php _e('Autocarro', 'incidenti-stradali'); ?></option>
+                    <option value="9" <?php selected($tipo_veicolo, '9'); ?>><?php _e('Autotreno con rimorchio', 'incidenti-stradali'); ?></option>
+                    <option value="10" <?php selected($tipo_veicolo, '10'); ?>><?php _e('Autosnodato o autoarticolato', 'incidenti-stradali'); ?></option>
+                    <option value="11" <?php selected($tipo_veicolo, '11'); ?>><?php _e('Veicoli speciali', 'incidenti-stradali'); ?></option>
+                    <option value="12" <?php selected($tipo_veicolo, '12'); ?>><?php _e('Trattore stradale o motrice', 'incidenti-stradali'); ?></option>
+                    <option value="13" <?php selected($tipo_veicolo, '13'); ?>><?php _e('Macchina agricola', 'incidenti-stradali'); ?></option>
+                    <option value="14" <?php selected($tipo_veicolo, '14'); ?>><?php _e('Velocipede', 'incidenti-stradali'); ?></option>
+                    <option value="15" <?php selected($tipo_veicolo, '15'); ?>><?php _e('Ciclomotore', 'incidenti-stradali'); ?></option>
+                    <option value="16" <?php selected($tipo_veicolo, '16'); ?>><?php _e('Motociclo a solo', 'incidenti-stradali'); ?></option>
+                    <option value="17" <?php selected($tipo_veicolo, '17'); ?>><?php _e('Motociclo con passeggero', 'incidenti-stradali'); ?></option>
+                    <option value="18" <?php selected($tipo_veicolo, '18'); ?>><?php _e('Motocarro o motofurgone', 'incidenti-stradali'); ?></option>
+                    <option value="19" <?php selected($tipo_veicolo, '19'); ?>><?php _e('Veicolo a trazione animale o a braccia', 'incidenti-stradali'); ?></option>
+                    <option value="20" <?php selected($tipo_veicolo, '20'); ?>><?php _e('Veicolo ignoto perché datosi alla fuga', 'incidenti-stradali'); ?></option>
+                    <option value="21" <?php selected($tipo_veicolo, '21'); ?>><?php _e('Quadriciclo', 'incidenti-stradali'); ?></option>
+                    <option value="22" <?php selected($tipo_veicolo, '22'); ?>><?php _e('Monopattino', 'incidenti-stradali'); ?></option>
+                    <option value="23" <?php selected($tipo_veicolo, '23'); ?>><?php _e('Bicicletta elettrica', 'incidenti-stradali'); ?></option>
+                </select>
                 </td>
             </tr>
             <tr>

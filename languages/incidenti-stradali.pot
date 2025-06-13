@@ -361,8 +361,8 @@ msgid "Quadriciclo"
 msgstr ""
 
 #: single-incidente_stradale.php:333
-msgid "Monopattino elettrico"
-msgstr ""
+msgid "Monopattino"
+msgstr "Monopattino"
 
 #: single-incidente_stradale.php:334
 msgid "Bicicletta elettrica"
@@ -1118,3 +1118,39 @@ msgstr "Urto frontale"
 
 msgid "Urto laterale"
 msgstr "Urto laterale"
+
+msgid "Autobus o filobus in servizio urbano"
+msgstr "Autobus o filobus in servizio urbano"
+
+msgid "Autobus di linea o non di linea in extraurbana"
+msgstr "Autobus di linea o non di linea in extraurbana"
+
+msgid "Tram"
+msgstr "Tram"
+
+msgid "Autotreno con rimorchio"
+msgstr "Autotreno con rimorchio"
+
+msgid "Autosnodato o autoarticolato"
+msgstr "Autosnodato o autoarticolato"
+
+msgid "Veicoli speciali"
+msgstr "Veicoli speciali"
+
+msgid "Trattore stradale o motrice"
+msgstr "Trattore stradale o motrice"
+
+msgid "Macchina agricola"
+msgstr "Macchina agricola"
+
+msgid "Motocarro o motofurgone"
+msgstr "Motocarro o motofurgone"
+
+msgid "Veicolo a trazione animale o a braccia"
+msgstr "Veicolo a trazione animale o a braccia"
+
+msgid "Veicolo ignoto perché datosi alla fuga"
+msgstr "Veicolo ignoto perché datosi alla fuga"
+
+msgid "Monopattino"
+msgstr "Monopattino"

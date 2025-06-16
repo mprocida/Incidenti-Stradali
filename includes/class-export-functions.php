@@ -1482,6 +1482,3 @@ class IncidentiExportFunctions {
         return $deleted;
     }
 }
-
-// Inizializzazione della classe
-new IncidentiExportFunctions();

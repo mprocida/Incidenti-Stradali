@@ -511,7 +511,8 @@ class IncidentiExportFunctions {
             
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 $cilindrata = get_post_meta($post_id, "veicolo_{$numVeicolo}_cilindrata", true);
-                $cilindrata = round($cilindrata); // Forzatura a intero
+                // Gestione sicura per valori vuoti o non numerici
+                $cilindrata = is_numeric($cilindrata) ? round(floatval($cilindrata)) : 0;
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($cilindrata ?: '0000', 4, '0', STR_PAD_LEFT);
                 if (trim($esitoTXT[$indTXT]) == '0000') $esitoTXT[$indTXT] = '~~~~';
@@ -521,7 +522,8 @@ class IncidentiExportFunctions {
             
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 $peso = get_post_meta($post_id, "veicolo_{$numVeicolo}_peso", true);
-                $peso = round($peso); // Forzatura a intero
+                // Gestione sicura per valori vuoti o non numerici
+                $peso = is_numeric($peso) ? round(floatval($peso)) : 0;
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($peso ?: '0000', 4, '0', STR_PAD_LEFT);
                 if (trim($esitoTXT[$indTXT]) == '0000') $esitoTXT[$indTXT] = '~~~~';
@@ -578,7 +580,8 @@ class IncidentiExportFunctions {
                 
                 // Chilometri (3 cifre)
                 $km = get_post_meta($post_id, "veicolo_{$numVeicolo}_chilometri", true);
-                $km = round($km); // Arrotondamento all'intero
+                // Gestione sicura per valori vuoti o non numerici
+                $km = is_numeric($km) ? round(floatval($km)) : 0;
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($km ?: '000', 3, '0', STR_PAD_LEFT);
                 if (trim($esitoTXT[$indTXT]) == '000') $esitoTXT[$indTXT] = '~~~';

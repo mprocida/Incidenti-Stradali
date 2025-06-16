@@ -320,7 +320,7 @@ class IncidentiShortcodes {
             
             <?php if ($atts['show_charts'] === 'true'): ?>
             <div class="stats-charts" style="margin-top: 30px;">
-                <div class="chart-container" style="position: relative; height: 300px; margin-bottom: 30px;">
+                <div class="chart-container" style="position: relative; height: 350px; margin-bottom: 30px;">
                     <h4><?php _e('Incidenti per Mese', 'incidenti-stradali'); ?></h4>
                     <canvas id="chart-mesi-<?php echo $unique_id; ?>" 
                             data-chart-type="line"
@@ -329,7 +329,7 @@ class IncidentiShortcodes {
                             style="max-height: 250px;"></canvas>
                 </div>
                 
-                <div class="chart-container" style="position: relative; height: 300px;">
+                <div class="chart-container" style="position: relative; height: 350px;">
                     <h4><?php _e('Incidenti per Tipo di Strada', 'incidenti-stradali'); ?></h4>
                     <canvas id="chart-strade-<?php echo $unique_id; ?>" 
                             data-chart-type="doughnut"

@@ -180,9 +180,61 @@ jQuery(document).ready(function($) {
                 $('#veicolo_' + vehicleNum + '_numero_trasportati').trigger('change');
             })(v);
         }
+        // Gestione selezione sedile e controllo esclusività sedile anteriore
+        $('select[name*="_sedile"]').on('change', function() {
+            var $select = $(this);
+            var veicolo = $select.data('veicolo');
+            var trasportato = $select.data('trasportato');
+            var valore = $select.val();
+            var prefix = 'veicolo_' + veicolo + '_trasportato_' + trasportato + '_';
+            
+            // Mostra/nascondi campo dettaglio
+            if (valore === 'anteriore' || valore === 'posteriore') {
+                $('#' + prefix + 'dettaglio_sedile_row').show();
+                
+                // Aggiorna label del dettaglio
+                var labelText = valore === 'anteriore' ? 
+                    'Dettaglio sedile anteriore:' : 
+                    'Dettaglio sedile posteriore:';
+                $('#' + prefix + 'dettaglio_label').text(labelText);
+                
+                // Controllo esclusività sedile anteriore
+                if (valore === 'anteriore') {
+                    controllaEsclusivitaSedileAnteriore(veicolo, trasportato);
+                }
+            } else {
+                $('#' + prefix + 'dettaglio_sedile_row').hide();
+                $('#' + prefix + 'dettaglio_sedile').val('');
+            }
+        });
+
+        // Funzione per controllare l'esclusività del sedile anteriore
+        function controllaEsclusivitaSedileAnteriore(veicolo, trasportatoCorrente) {
+            var selectsAnteriori = $('select[data-veicolo="' + veicolo + '"][name*="_sedile"] option[value="anteriore"]:selected');
+            
+            if (selectsAnteriori.length > 1) {
+                // Se più di un trasportato ha selezionato il sedile anteriore
+                alert('ATTENZIONE: Nel sedile anteriore può esserci solo il passeggero oltre al conducente. ' +
+                    'Gli altri trasportati devono essere nei sedili posteriori.');
+                
+                // Reset delle selezioni precedenti (tranne quella corrente)
+                selectsAnteriori.each(function() {
+                    var $option = $(this);
+                    var $select = $option.parent();
+                    var currentTrasportato = $select.data('trasportato');
+                    
+                    if (currentTrasportato != trasportatoCorrente) {
+                        $select.val('').trigger('change');
+                    }
+                });
+            }
+        }
+
+        // Trigger per inizializzare lo stato dei campi al caricamento
+        $('select[name*="_sedile"]').trigger('change');
     }
 
-    // Aggiungi questa funzione per le circostanze
+    // Funzione per le circostanze
     function initializeCircostanzeFields() {
         // Carica dinamicamente le opzioni delle circostanze basate sulla natura dell'incidente
         $('#natura_incidente').on('change', function() {

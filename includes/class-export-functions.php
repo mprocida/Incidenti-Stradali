@@ -606,44 +606,97 @@ class IncidentiExportFunctions {
                 $indTXT++;
                 $esitoTXT[$indTXT] = $esito ?: '1';
                 
-                // PASSEGGERI - 1 anteriore + 3 posteriori per veicolo
-                $numPassAnt = 1; // Previsto da ISTAT
-                $numPassPost = 3; // Previsto da ISTAT
-                
-                // Passeggero anteriore
-                for ($numPass = 1; $numPass <= $numPassAnt; $numPass++) {
-                    // Età
-                    $eta_pass = get_post_meta($post_id, "veicolo_{$numVeicolo}_passeggero_anteriore_{$numPass}_eta", true);
-                    $indTXT++;
-                    $esitoTXT[$indTXT] = str_pad($eta_pass ?: '00', 2, '0', STR_PAD_LEFT);
+                // PASSEGGERI - Gestione dinamica in base alla selezione del sedile
+                $numPassAnt = 1; // Previsto da ISTAT (max 1 passeggero anteriore)
+                $numPassPost = 3; // Previsto da ISTAT (max 3 passeggeri posteriori)
+
+                // Raccogli tutti i trasportati e ordina per sedile
+                $trasportati_anteriori = array();
+                $trasportati_posteriori = array();
+
+                // Ottieni il numero di trasportati per questo veicolo
+                $num_trasportati = get_post_meta($post_id, "veicolo_{$numVeicolo}_numero_trasportati", true) ?: 0;
+
+                // Analizza ogni trasportato e categorizza per sedile
+                for ($t = 1; $t <= $num_trasportati; $t++) {
+                    $sedile = get_post_meta($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_sedile", true);
+                    $eta = get_post_meta($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_eta", true);
+                    $sesso = get_post_meta($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_sesso", true);
+                    $esito = get_post_meta($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_esito", true);
                     
-                    // Sesso
-                    $sesso_pass = get_post_meta($post_id, "veicolo_{$numVeicolo}_passeggero_anteriore_{$numPass}_sesso", true);
-                    $indTXT++;
-                    $esitoTXT[$indTXT] = $cfgistat['sesso'][$sesso_pass] ?? '0';
+                    // Crea array con i dati del trasportato
+                    $dati_trasportato = array(
+                        'eta' => $eta ?: '00',
+                        'sesso' => $sesso ?: '0',
+                        'esito' => $esito ?: '1'
+                    );
                     
-                    // Esito
-                    $esito_pass = get_post_meta($post_id, "veicolo_{$numVeicolo}_passeggero_anteriore_{$numPass}_esito", true);
-                    $indTXT++;
-                    $esitoTXT[$indTXT] = $esito_pass ?: '1';
+                    // Categorizza in base al sedile selezionato
+                    if ($sedile === 'anteriore' && count($trasportati_anteriori) < $numPassAnt) {
+                        $trasportati_anteriori[] = $dati_trasportato;
+                    } elseif ($sedile === 'posteriore' && count($trasportati_posteriori) < $numPassPost) {
+                        $trasportati_posteriori[] = $dati_trasportato;
+                    }
+                    // Se il sedile non è specificato o è pieno, viene ignorato per l'esportazione ISTAT
                 }
-                
-                // Passeggeri posteriori
+
+                // Esporta passeggeri anteriori (max 1)
+                for ($numPass = 1; $numPass <= $numPassAnt; $numPass++) {
+                    if (isset($trasportati_anteriori[$numPass - 1])) {
+                        $trasportato = $trasportati_anteriori[$numPass - 1];
+                        
+                        // Età
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = str_pad($trasportato['eta'], 2, '0', STR_PAD_LEFT);
+                        
+                        // Sesso
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = $cfgistat['sesso'][$trasportato['sesso']] ?? '3'; // Default maschio per ISTAT
+                        
+                        // Esito
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = $trasportato['esito'];
+                    } else {
+                        // Campi vuoti se non c'è passeggero anteriore
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = '~~'; // Età non specificata
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = '~';  // Sesso non specificato
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = '~';  // Esito non specificato
+                    }
+                }
+
+                // Esporta passeggeri posteriori (max 3)
                 for ($numPass = 1; $numPass <= $numPassPost; $numPass++) {
-                    // Età
-                    $eta_pass = get_post_meta($post_id, "veicolo_{$numVeicolo}_passeggero_posteriore_{$numPass}_eta", true);
-                    $indTXT++;
-                    $esitoTXT[$indTXT] = str_pad($eta_pass ?: '00', 2, '0', STR_PAD_LEFT);
-                    
-                    // Sesso
-                    $sesso_pass = get_post_meta($post_id, "veicolo_{$numVeicolo}_passeggero_posteriore_{$numPass}_sesso", true);
-                    $indTXT++;
-                    $esitoTXT[$indTXT] = $cfgistat['sesso'][$sesso_pass] ?? '0';
-                    
-                    // Esito
-                    $esito_pass = get_post_meta($post_id, "veicolo_{$numVeicolo}_passeggero_posteriore_{$numPass}_esito", true);
-                    $indTXT++;
-                    $esitoTXT[$indTXT] = $esito_pass ?: '1';
+                    if (isset($trasportati_posteriori[$numPass - 1])) {
+                        $trasportato = $trasportati_posteriori[$numPass - 1];
+                        
+                        // Età
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = str_pad($trasportato['eta'], 2, '0', STR_PAD_LEFT);
+                        
+                        // Sesso  
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = $cfgistat['sesso'][$trasportato['sesso']] ?? '3'; // Default maschio per ISTAT
+                        
+                        // Esito
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = $trasportato['esito'];
+                    } else {
+                        // Campi vuoti se non c'è passeggero posteriore
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = '~~'; // Età non specificata
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = '~';  // Sesso non specificato
+                        $indTXT++;
+                        $esitoTXT[$indTXT] = '~';  // Esito non specificato
+                    }
+                }
+
+                // Log per debug (rimuovi in produzione)
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log("Veicolo {$numVeicolo}: Anteriori=" . count($trasportati_anteriori) . ", Posteriori=" . count($trasportati_posteriori));
                 }
                 
                 // DISPOSITIVI DI SICUREZZA
@@ -901,6 +954,59 @@ class IncidentiExportFunctions {
             'Età Conducente C',
             'Sesso Conducente C',
             'Esito Conducente C',
+            
+            // NUOVE COLONNE TRASPORTATI CON SEDILE
+            'Veicolo A - Num Trasportati',
+            'Veicolo A - Trasportato 1 - Sedile',
+            'Veicolo A - Trasportato 1 - Dettaglio Sedile',
+            'Veicolo A - Trasportato 1 - Età',
+            'Veicolo A - Trasportato 1 - Sesso',
+            'Veicolo A - Trasportato 1 - Esito',
+            'Veicolo A - Trasportato 2 - Sedile',
+            'Veicolo A - Trasportato 2 - Dettaglio Sedile',
+            'Veicolo A - Trasportato 2 - Età',
+            'Veicolo A - Trasportato 2 - Sesso',
+            'Veicolo A - Trasportato 2 - Esito',
+            'Veicolo A - Trasportato 3 - Sedile',
+            'Veicolo A - Trasportato 3 - Dettaglio Sedile',
+            'Veicolo A - Trasportato 3 - Età',
+            'Veicolo A - Trasportato 3 - Sesso',
+            'Veicolo A - Trasportato 3 - Esito',
+            
+            'Veicolo B - Num Trasportati',
+            'Veicolo B - Trasportato 1 - Sedile',
+            'Veicolo B - Trasportato 1 - Dettaglio Sedile',
+            'Veicolo B - Trasportato 1 - Età',
+            'Veicolo B - Trasportato 1 - Sesso',
+            'Veicolo B - Trasportato 1 - Esito',
+            'Veicolo B - Trasportato 2 - Sedile',
+            'Veicolo B - Trasportato 2 - Dettaglio Sedile',
+            'Veicolo B - Trasportato 2 - Età',
+            'Veicolo B - Trasportato 2 - Sesso',
+            'Veicolo B - Trasportato 2 - Esito',
+            'Veicolo B - Trasportato 3 - Sedile',
+            'Veicolo B - Trasportato 3 - Dettaglio Sedile',
+            'Veicolo B - Trasportato 3 - Età',
+            'Veicolo B - Trasportato 3 - Sesso',
+            'Veicolo B - Trasportato 3 - Esito',
+            
+            'Veicolo C - Num Trasportati',
+            'Veicolo C - Trasportato 1 - Sedile',
+            'Veicolo C - Trasportato 1 - Dettaglio Sedile',
+            'Veicolo C - Trasportato 1 - Età',
+            'Veicolo C - Trasportato 1 - Sesso',
+            'Veicolo C - Trasportato 1 - Esito',
+            'Veicolo C - Trasportato 2 - Sedile',
+            'Veicolo C - Trasportato 2 - Dettaglio Sedile',
+            'Veicolo C - Trasportato 2 - Età',
+            'Veicolo C - Trasportato 2 - Sesso',
+            'Veicolo C - Trasportato 2 - Esito',
+            'Veicolo C - Trasportato 3 - Sedile',
+            'Veicolo C - Trasportato 3 - Dettaglio Sedile',
+            'Veicolo C - Trasportato 3 - Età',
+            'Veicolo C - Trasportato 3 - Sesso',
+            'Veicolo C - Trasportato 3 - Esito',
+            
             'Feriti Totali',
             'Morti 24h',
             'Morti 30gg',
@@ -953,6 +1059,62 @@ class IncidentiExportFunctions {
                 get_post_meta($post_id, 'conducente_3_eta', true),
                 get_post_meta($post_id, 'conducente_3_sesso', true),
                 get_post_meta($post_id, 'conducente_3_esito', true),
+
+                // NUOVI CAMPI TRASPORTATI CON SEDILE
+                // Veicolo A
+                get_post_meta($post_id, 'veicolo_1_numero_trasportati', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_1_sedile', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_1_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_1_eta', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_1_sesso', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_1_esito', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_2_sedile', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_2_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_2_eta', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_2_sesso', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_2_esito', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_3_sedile', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_3_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_3_eta', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_3_sesso', true),
+                get_post_meta($post_id, 'veicolo_1_trasportato_3_esito', true),
+
+                // Veicolo B
+                get_post_meta($post_id, 'veicolo_2_numero_trasportati', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_1_sedile', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_1_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_1_eta', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_1_sesso', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_1_esito', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_2_sedile', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_2_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_2_eta', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_2_sesso', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_2_esito', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_3_sedile', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_3_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_3_eta', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_3_sesso', true),
+                get_post_meta($post_id, 'veicolo_2_trasportato_3_esito', true),
+
+                // Veicolo C
+                get_post_meta($post_id, 'veicolo_3_numero_trasportati', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_1_sedile', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_1_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_1_eta', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_1_sesso', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_1_esito', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_2_sedile', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_2_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_2_eta', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_2_sesso', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_2_esito', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_3_sedile', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_3_dettaglio_sedile', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_3_eta', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_3_sesso', true),
+                get_post_meta($post_id, 'veicolo_3_trasportato_3_esito', true),
+
                 get_post_meta($post_id, 'feriti_totali', true),
                 get_post_meta($post_id, 'morti_entro_24_ore', true),
                 get_post_meta($post_id, 'morti_dal_2_al_30_giorno', true),

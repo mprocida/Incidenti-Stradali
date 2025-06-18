@@ -1862,6 +1862,24 @@ class IncidentiMetaBoxes {
                             </td>
                         </tr>
                         <tr>
+                            <th><label><?php _e('Posizione Sedile', 'incidenti-stradali'); ?></label></th>
+                            <td>
+                                <select name="<?php echo $prefix; ?>sedile" id="<?php echo $prefix; ?>sedile" data-veicolo="<?php echo $veicolo_num; ?>" data-trasportato="<?php echo $i; ?>">
+                                    <option value=""><?php _e('Seleziona posizione', 'incidenti-stradali'); ?></option>
+                                    <option value="anteriore" <?php selected(get_post_meta($post->ID, $prefix . 'sedile', true), 'anteriore'); ?>><?php _e('Sedile anteriore', 'incidenti-stradali'); ?></option>
+                                    <option value="posteriore" <?php selected(get_post_meta($post->ID, $prefix . 'sedile', true), 'posteriore'); ?>><?php _e('Sedile posteriore', 'incidenti-stradali'); ?></option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="<?php echo $prefix; ?>dettaglio_sedile_row" style="display: none;">
+                            <th><label id="<?php echo $prefix; ?>dettaglio_label"><?php _e('Dettaglio', 'incidenti-stradali'); ?></label></th>
+                            <td>
+                                <input type="text" name="<?php echo $prefix; ?>dettaglio_sedile" id="<?php echo $prefix; ?>dettaglio_sedile" 
+                                    value="<?php echo esc_attr(get_post_meta($post->ID, $prefix . 'dettaglio_sedile', true)); ?>" 
+                                    placeholder="<?php _e('Specifica la posizione...', 'incidenti-stradali'); ?>" class="regular-text">
+                            </td>
+                        </tr>
+                        <tr>
                             <th><label><?php _e('Età', 'incidenti-stradali'); ?></label></th>
                             <td><input type="number" name="<?php echo $prefix; ?>eta" value="<?php echo esc_attr(get_post_meta($post->ID, $prefix . 'eta', true)); ?>" min="0" max="120"></td>
                         </tr>
@@ -2535,7 +2553,34 @@ class IncidentiMetaBoxes {
             'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
             'difetto_veicolo_a', 'difetto_veicolo_b', 
             'stato_psicofisico_a', 'stato_psicofisico_b',
-
+            // Trasportati - sedile e dettaglio
+            'veicolo_1_trasportato_1_sedile', 'veicolo_1_trasportato_1_dettaglio_sedile',
+            'veicolo_1_trasportato_2_sedile', 'veicolo_1_trasportato_2_dettaglio_sedile',
+            'veicolo_1_trasportato_3_sedile', 'veicolo_1_trasportato_3_dettaglio_sedile',
+            'veicolo_1_trasportato_4_sedile', 'veicolo_1_trasportato_4_dettaglio_sedile',
+            'veicolo_1_trasportato_5_sedile', 'veicolo_1_trasportato_5_dettaglio_sedile',
+            'veicolo_1_trasportato_6_sedile', 'veicolo_1_trasportato_6_dettaglio_sedile',
+            'veicolo_1_trasportato_7_sedile', 'veicolo_1_trasportato_7_dettaglio_sedile',
+            'veicolo_1_trasportato_8_sedile', 'veicolo_1_trasportato_8_dettaglio_sedile',
+            'veicolo_1_trasportato_9_sedile', 'veicolo_1_trasportato_9_dettaglio_sedile',
+            'veicolo_2_trasportato_1_sedile', 'veicolo_2_trasportato_1_dettaglio_sedile',
+            'veicolo_2_trasportato_2_sedile', 'veicolo_2_trasportato_2_dettaglio_sedile',
+            'veicolo_2_trasportato_3_sedile', 'veicolo_2_trasportato_3_dettaglio_sedile',
+            'veicolo_2_trasportato_4_sedile', 'veicolo_2_trasportato_4_dettaglio_sedile',
+            'veicolo_2_trasportato_5_sedile', 'veicolo_2_trasportato_5_dettaglio_sedile',
+            'veicolo_2_trasportato_6_sedile', 'veicolo_2_trasportato_6_dettaglio_sedile',
+            'veicolo_2_trasportato_7_sedile', 'veicolo_2_trasportato_7_dettaglio_sedile',
+            'veicolo_2_trasportato_8_sedile', 'veicolo_2_trasportato_8_dettaglio_sedile',
+            'veicolo_2_trasportato_9_sedile', 'veicolo_2_trasportato_9_dettaglio_sedile',
+            'veicolo_3_trasportato_1_sedile', 'veicolo_3_trasportato_1_dettaglio_sedile',
+            'veicolo_3_trasportato_2_sedile', 'veicolo_3_trasportato_2_dettaglio_sedile',
+            'veicolo_3_trasportato_3_sedile', 'veicolo_3_trasportato_3_dettaglio_sedile',
+            'veicolo_3_trasportato_4_sedile', 'veicolo_3_trasportato_4_dettaglio_sedile',
+            'veicolo_3_trasportato_5_sedile', 'veicolo_3_trasportato_5_dettaglio_sedile',
+            'veicolo_3_trasportato_6_sedile', 'veicolo_3_trasportato_6_dettaglio_sedile',
+            'veicolo_3_trasportato_7_sedile', 'veicolo_3_trasportato_7_dettaglio_sedile',
+            'veicolo_3_trasportato_8_sedile', 'veicolo_3_trasportato_8_dettaglio_sedile',
+            'veicolo_3_trasportato_9_sedile', 'veicolo_3_trasportato_9_dettaglio_sedile',
         );
         
         // Save all meta fields

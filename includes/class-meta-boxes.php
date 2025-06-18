@@ -1811,8 +1811,10 @@ class IncidentiMetaBoxes {
         
         // NUOVO: Sezione Trasportati
         echo '<h4>' . __('Trasportati', 'incidenti-stradali') . '</h4>';
+        $numero_veicoli = get_post_meta($post->ID, 'numero_veicoli_coinvolti', true) ?: 1;
         for ($i = 1; $i <= 3; $i++) {
-            echo '<div id="trasportati-veicolo-' . $i . '" class="trasportati-section" style="display: block;">';
+            $display_style = ($i <= $numero_veicoli) ? 'block' : 'none';
+            echo '<div id="trasportati-veicolo-' . $i . '" class="trasportati-section" style="display: ' . $display_style . ';">';
             echo '<h5>' . sprintf(__('Trasportati Veicolo %s', 'incidenti-stradali'), chr(64 + $i)) . '</h5>';
             $this->render_trasportati_fields($post, $i);
             echo '</div>';
@@ -2405,6 +2407,28 @@ class IncidentiMetaBoxes {
                     return false;
                 }
             });
+        });
+        </script>
+        <script>
+        jQuery(document).ready(function($) {
+            // Funzione per mostrare/nascondere sezioni trasportati
+            function updateTrasportatiSections() {
+                var numeroVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+                
+                for (var i = 1; i <= 3; i++) {
+                    if (i <= numeroVeicoli) {
+                        $('#trasportati-veicolo-' + i).show();
+                    } else {
+                        $('#trasportati-veicolo-' + i).hide();
+                    }
+                }
+            }
+            
+            // Esegui al caricamento della pagina
+            updateTrasportatiSections();
+            
+            // Esegui quando cambia il numero di veicoli
+            $('#numero_veicoli_coinvolti').on('change', updateTrasportatiSections);
         });
         </script>
         <?php

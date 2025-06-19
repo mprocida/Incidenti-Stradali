@@ -225,6 +225,19 @@ class IncidentiMetaBoxes {
                         totalFeriti++;
                     }
                 }
+
+                // Conta morti e feriti da TRASPORTATI
+                for (var veicolo = 1; veicolo <= 3; veicolo++) {
+                    var numTrasportati = parseInt($('#veicolo_' + veicolo + '_numero_trasportati').val()) || 0;
+                    for (var t = 1; t <= numTrasportati; t++) {
+                        var esito = $('#trasportato_' + veicolo + '_' + t + '_esito').val();
+                        if (esito == '1') {  // Morto
+                            totalMorti++;
+                        } else if (esito == '2') {  // Ferito
+                            totalFeriti++;
+                        }
+                    }
+                }
                 
                 // Conta morti e feriti da pedoni
                 var numPedoni = parseInt($('#numero_pedoni_coinvolti').val()) || 0;
@@ -269,6 +282,10 @@ class IncidentiMetaBoxes {
             // Aggiorna visibilità quando cambiano gli esiti
             $(document).on('change', 'select[id*="_esito"]', updateNominativiVisibility);
             $(document).on('change', '#numero_pedoni_coinvolti', updateNominativiVisibility);
+
+            // Aggiorna visibilità quando cambiano gli esiti dei trasportati
+            $(document).on('change', 'select[id*="trasportato_"][id*="_esito"]', updateNominativiVisibility);
+            $(document).on('change', 'select[id*="_numero_trasportati"]', updateNominativiVisibility);
             
             // Aggiorna visibilità al caricamento della pagina
             setTimeout(function() {
@@ -1886,7 +1903,8 @@ class IncidentiMetaBoxes {
                         <tr>
                             <th><label><?php _e('Esito', 'incidenti-stradali'); ?></label></th>
                             <td>
-                                <select name="<?php echo $prefix; ?>esito">
+                                <select name="<?php echo $prefix; ?>esito" 
+                                        id="trasportato_<?php echo $veicolo_num; ?>_<?php echo $i; ?>_esito">
                                     <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
                                     <option value="1" <?php selected(get_post_meta($post->ID, $prefix . 'esito', true), '1'); ?>><?php _e('Morto', 'incidenti-stradali'); ?></option>
                                     <option value="2" <?php selected(get_post_meta($post->ID, $prefix . 'esito', true), '2'); ?>><?php _e('Ferito', 'incidenti-stradali'); ?></option>

@@ -781,3 +781,31 @@ input[type="checkbox"]#visualizza_mappa:focus {
 .sedile-selected input[name*="_dettaglio_sedile"] {
     border-left: 3px solid #0073aa;
 }
+
+#riepilogo-infortunati-box {
+    border: 1px solid #ddd;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+#riepilogo-infortunati-box .form-table th {
+    font-weight: 600;
+    width: 60%;
+}
+
+#riepilogo-infortunati-box input[type="number"] {
+    width: 60px;
+    text-align: center;
+}
+
+#riepilogo-validation-message {
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+#riepilogo-validation-message.valid {
+    background: #eeffee !important;
+    border-color: #66cc66 !important;
+    color: #008800 !important;
+}

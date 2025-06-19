@@ -124,6 +124,15 @@ class IncidentiMetaBoxes {
             'normal',
             'low'   // <-- PRIORITÀ BASSA per visualizzarlo in fondo
         );
+
+        add_meta_box(
+            'incidente_riepilogo_infortunati',
+            __('Riepilogo Infortunati', 'incidenti-stradali'),
+            array($this, 'render_riepilogo_infortunati_meta_box'),
+            'incidente_stradale',
+            'side',  // Posiziona nella sidebar
+            'low'
+        );
     }
 
     public function render_nominativi_meta_box($post) {
@@ -294,6 +303,62 @@ class IncidentiMetaBoxes {
             
             // Forza la visualizzazione di almeno un campo per test
             $('#morto-1, #ferito-1').show();
+        });
+        </script>
+        <?php
+    }
+
+    public function render_riepilogo_infortunati_meta_box($post) {
+        $morti_24h = get_post_meta($post->ID, 'riepilogo_morti_24h', true);
+        $morti_2_30gg = get_post_meta($post->ID, 'riepilogo_morti_2_30gg', true);
+        $feriti = get_post_meta($post->ID, 'riepilogo_feriti', true);
+        
+        ?>
+        <div id="riepilogo-infortunati-box">
+            <table class="form-table">
+                <tr>
+                    <th><label for="riepilogo_morti_24h"><?php _e('Morti entro le 24 ore', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <input type="number" id="riepilogo_morti_24h" name="riepilogo_morti_24h" 
+                            value="<?php echo esc_attr($morti_24h); ?>" min="0" max="99">
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="riepilogo_morti_2_30gg"><?php _e('Morti dal 2° al 30° giorno', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <input type="number" id="riepilogo_morti_2_30gg" name="riepilogo_morti_2_30gg" 
+                            value="<?php echo esc_attr($morti_2_30gg); ?>" min="0" max="99">
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="riepilogo_feriti"><?php _e('Feriti', 'incidenti-stradali'); ?></label></th>
+                    <td>
+                        <input type="number" id="riepilogo_feriti" name="riepilogo_feriti" 
+                            value="<?php echo esc_attr($feriti); ?>" min="0" max="99">
+                    </td>
+                </tr>
+            </table>
+            <div id="riepilogo-validation-message" style="margin-top: 10px; padding: 10px; display: none; background: #ffeeee; border: 1px solid #ff6666; color: #cc0000;">
+                <strong><?php _e('Attenzione:', 'incidenti-stradali'); ?></strong> 
+                <span id="validation-text"></span>
+            </div>
+        </div>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            // Validazione in tempo reale
+            $('#riepilogo_morti_24h, #riepilogo_morti_2_30gg, #riepilogo_feriti').on('change', function() {
+                validateRiepilogo();
+            });
+            
+            // Validazione al salvataggio
+            $('#post').on('submit', function(e) {
+                if (!validateRiepilogo()) {
+                    e.preventDefault();
+                    alert('<?php _e('Correggere i dati del riepilogo infortunati prima di salvare', 'incidenti-stradali'); ?>');
+                    return false;
+                }
+            });
         });
         </script>
         <?php
@@ -2599,6 +2664,7 @@ class IncidentiMetaBoxes {
             'veicolo_3_trasportato_7_sedile', 'veicolo_3_trasportato_7_dettaglio_sedile',
             'veicolo_3_trasportato_8_sedile', 'veicolo_3_trasportato_8_dettaglio_sedile',
             'veicolo_3_trasportato_9_sedile', 'veicolo_3_trasportato_9_dettaglio_sedile',
+            'riepilogo_morti_24h', 'riepilogo_morti_2_30gg', 'riepilogo_feriti',
         );
         
         // Save all meta fields

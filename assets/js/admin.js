@@ -676,6 +676,72 @@ jQuery(document).ready(function($) {
         updateFieldValidation($field, isValid, 'Longitudine deve essere tra -180 e 180');
         return isValid;
     }
+
+    function validateRiepilogo() {
+        // Conta i reali morti e feriti dai campi esistenti
+        var realMorti24h = 0;
+        var realMorti2_30gg = 0; 
+        var realFeriti = 0;
+        
+        // Conta conducenti
+        for (var i = 1; i <= 3; i++) {
+            var esito = $('select[name="conducente_' + i + '_esito"]').val();
+            if (esito == '3') realMorti24h++;
+            if (esito == '4') realMorti2_30gg++;
+            if (esito == '2') realFeriti++;
+        }
+        
+        // Conta pedoni
+        var numPedoni = parseInt($('input[name="numero_pedoni_coinvolti"]').val()) || 0;
+        for (var i = 1; i <= numPedoni; i++) {
+            var esito = $('select[name="pedone_' + i + '_esito"]').val();
+            if (esito == '3') realMorti24h++;
+            if (esito == '4') realMorti2_30gg++;
+            if (esito == '2') realFeriti++;
+        }
+        
+        // Conta passeggeri (se implementato)
+        $('.passeggero-esito').each(function() {
+            var esito = $(this).val();
+            if (esito == '3') realMorti24h++;
+            if (esito == '4') realMorti2_30gg++;
+            if (esito == '2') realFeriti++;
+        });
+        
+        // Leggi valori riepilogo
+        var riepilogoMorti24h = parseInt($('#riepilogo_morti_24h').val()) || 0;
+        var riepilogoMorti2_30gg = parseInt($('#riepilogo_morti_2_30gg').val()) || 0;
+        var riepilogoFeriti = parseInt($('#riepilogo_feriti').val()) || 0;
+        
+        // Validazione
+        var isValid = true;
+        var message = '';
+        
+        if (realMorti24h !== riepilogoMorti24h) {
+            isValid = false;
+            message += 'Morti 24h: rilevati ' + realMorti24h + ', inseriti ' + riepilogoMorti24h + '. ';
+        }
+        
+        if (realMorti2_30gg !== riepilogoMorti2_30gg) {
+            isValid = false;
+            message += 'Morti 2°-30° gg: rilevati ' + realMorti2_30gg + ', inseriti ' + riepilogoMorti2_30gg + '. ';
+        }
+        
+        if (realFeriti !== riepilogoFeriti) {
+            isValid = false;
+            message += 'Feriti: rilevati ' + realFeriti + ', inseriti ' + riepilogoFeriti + '. ';
+        }
+        
+        // Mostra/nascondi messaggio
+        if (isValid) {
+            $('#riepilogo-validation-message').hide();
+        } else {
+            $('#validation-text').text(message);
+            $('#riepilogo-validation-message').show();
+        }
+        
+        return isValid;
+    }
     
     function updateFieldValidation($field, isValid, message) {
         $field.removeClass('incidenti-validation-error');

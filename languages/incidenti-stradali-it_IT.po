@@ -981,3 +981,18 @@ msgstr "Veicolo ignoto perché datosi alla fuga"
 
 msgid "Monopattino"
 msgstr "Monopattino"
+
+msgid "Riepilogo Infortunati"
+msgstr "Riepilogo Infortunati"
+
+msgid "Morti entro le 24 ore"
+msgstr "Morti entro le 24 ore"
+
+msgid "Morti dal 2° al 30° giorno"  
+msgstr "Morti dal 2° al 30° giorno"
+
+msgid "Feriti"
+msgstr "Feriti"
+
+msgid "Correggere i dati del riepilogo infortunati prima di salvare"
+msgstr "Correggere i dati del riepilogo infortunati prima di salvare"

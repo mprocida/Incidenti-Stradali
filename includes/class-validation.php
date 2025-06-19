@@ -213,6 +213,12 @@ class IncidentiValidation {
                 $errors[] = __('Non hai i permessi per inserire incidenti in questo comune.', 'incidenti-stradali');
             }
         }
+
+        // Validazione Riepilogo Infortunati
+        $riepilogo_errors = $this->validate_riepilogo_infortunati($postarr['ID'] ?? 0);
+        if (!empty($riepilogo_errors)) {
+            $errors = array_merge($errors, $riepilogo_errors);
+        }
         
         // Store errors in transient to display later
         if (!empty($errors)) {
@@ -478,5 +484,103 @@ class IncidentiValidation {
                 'message' => __('La longitudine deve essere compresa tra -180 e 180 gradi.', 'incidenti-stradali')
             )
         );
+    }
+
+    /**
+     * Validazione del riepilogo infortunati
+     */
+    public function validate_riepilogo_infortunati($post_id) {
+        $errors = array();
+        
+        // Verifica se i campi riepilogo sono stati compilati
+        if (empty($_POST['riepilogo_morti_24h']) && empty($_POST['riepilogo_morti_2_30gg']) && empty($_POST['riepilogo_feriti'])) {
+            // Se non sono compilati, non fare validazione (campo opzionale)
+            return $errors;
+        }
+        
+        // Conta reali infortunati dai campi del modulo
+        $real_morti_24h = $this->count_esito_by_type('3');
+        $real_morti_2_30gg = $this->count_esito_by_type('4');
+        $real_feriti = $this->count_esito_by_type('2');
+        
+        // Leggi valori inseriti nel riepilogo
+        $riepilogo_morti_24h = isset($_POST['riepilogo_morti_24h']) ? (int) $_POST['riepilogo_morti_24h'] : 0;
+        $riepilogo_morti_2_30gg = isset($_POST['riepilogo_morti_2_30gg']) ? (int) $_POST['riepilogo_morti_2_30gg'] : 0;
+        $riepilogo_feriti = isset($_POST['riepilogo_feriti']) ? (int) $_POST['riepilogo_feriti'] : 0;
+        
+        // Confronta i valori
+        if ($real_morti_24h !== $riepilogo_morti_24h) {
+            $errors[] = sprintf(
+                __('Morti entro 24h non corrispondono: rilevati %d dal modulo, inseriti %d nel riepilogo', 'incidenti-stradali'), 
+                $real_morti_24h, 
+                $riepilogo_morti_24h
+            );
+        }
+        
+        if ($real_morti_2_30gg !== $riepilogo_morti_2_30gg) {
+            $errors[] = sprintf(
+                __('Morti dal 2° al 30° giorno non corrispondono: rilevati %d dal modulo, inseriti %d nel riepilogo', 'incidenti-stradali'), 
+                $real_morti_2_30gg, 
+                $riepilogo_morti_2_30gg
+            );
+        }
+        
+        if ($real_feriti !== $riepilogo_feriti) {
+            $errors[] = sprintf(
+                __('Feriti non corrispondono: rilevati %d dal modulo, inseriti %d nel riepilogo', 'incidenti-stradali'), 
+                $real_feriti, 
+                $riepilogo_feriti
+            );
+        }
+        
+        return $errors;
+    }
+    
+    /**
+     * Conta le persone per esito specifico dai campi del modulo
+     */
+    private function count_esito_by_type($esito_type) {
+        $count = 0;
+        
+        // Conta conducenti
+        for ($i = 1; $i <= 3; $i++) {
+            $esito = isset($_POST["conducente_{$i}_esito"]) ? $_POST["conducente_{$i}_esito"] : '';
+            if ($esito == $esito_type) {
+                $count++;
+            }
+        }
+        
+        // Conta pedoni
+        $num_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? (int) $_POST['numero_pedoni_coinvolti'] : 0;
+        for ($i = 1; $i <= $num_pedoni; $i++) {
+            $esito = isset($_POST["pedone_{$i}_esito"]) ? $_POST["pedone_{$i}_esito"] : '';
+            if ($esito == $esito_type) {
+                $count++;
+            }
+        }
+        
+        // Conta passeggeri dei veicoli (se implementato nel tuo plugin)
+        $num_veicoli = isset($_POST['numero_veicoli_coinvolti']) ? (int) $_POST['numero_veicoli_coinvolti'] : 0;
+        for ($v = 1; $v <= $num_veicoli; $v++) {
+            // Conta passeggeri maschi
+            $num_passeggeri_m = isset($_POST["veicolo_{$v}_passeggeri_m"]) ? (int) $_POST["veicolo_{$v}_passeggeri_m"] : 0;
+            for ($p = 1; $p <= $num_passeggeri_m; $p++) {
+                $esito = isset($_POST["veicolo_{$v}_passeggero_m_{$p}_esito"]) ? $_POST["veicolo_{$v}_passeggero_m_{$p}_esito"] : '';
+                if ($esito == $esito_type) {
+                    $count++;
+                }
+            }
+            
+            // Conta passeggeri femmine
+            $num_passeggeri_f = isset($_POST["veicolo_{$v}_passeggeri_f"]) ? (int) $_POST["veicolo_{$v}_passeggeri_f"] : 0;
+            for ($p = 1; $p <= $num_passeggeri_f; $p++) {
+                $esito = isset($_POST["veicolo_{$v}_passeggero_f_{$p}_esito"]) ? $_POST["veicolo_{$v}_passeggero_f_{$p}_esito"] : '';
+                if ($esito == $esito_type) {
+                    $count++;
+                }
+            }
+        }
+        
+        return $count;
     }
 }

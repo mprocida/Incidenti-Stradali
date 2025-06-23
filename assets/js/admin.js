@@ -923,9 +923,16 @@ jQuery(document).ready(function($) {
                 return;
             }
             
+            // Validazione tipo file
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                alert('Seleziona un file CSV valido.');
+                return;
+            }
+            
+            // Preview dei dati (opzionale)
             var formData = new FormData();
-            formData.append('file', file);
-            formData.append('action', 'import_incidenti_data');
+            formData.append('action', 'preview_csv_import');
+            formData.append('csv_file', file);
             formData.append('nonce', $(this).data('nonce'));
             
             $.ajax({
@@ -936,14 +943,13 @@ jQuery(document).ready(function($) {
                 contentType: false,
                 success: function(response) {
                     if (response.success) {
-                        alert('Importazione completata: ' + response.data.imported + ' record importati.');
-                        location.reload();
+                        // Mostra preview e chiedi conferma
+                        if (confirm('Trovate ' + response.data.rows + ' righe. Procedere con l\'importazione?')) {
+                            $('#import-form').submit();
+                        }
                     } else {
-                        alert('Errore durante l\'importazione: ' + response.data);
+                        alert('Errore: ' + response.data);
                     }
-                },
-                error: function() {
-                    alert('Errore di comunicazione durante l\'importazione.');
                 }
             });
         });

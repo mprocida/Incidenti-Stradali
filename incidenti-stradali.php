@@ -60,6 +60,7 @@ class IncidentiStradaliPlugin {
             'includes/class-meta-boxes.php', 
             'includes/class-user-roles.php',
             'includes/class-export-functions.php',
+            'includes/class-import-functions.php',
             'includes/class-validation.php',
             'includes/class-shortcodes.php',
             'includes/class-admin-settings.php',
@@ -96,6 +97,10 @@ class IncidentiStradaliPlugin {
         
         if (class_exists('IncidentiExportFunctions')) {
             new IncidentiExportFunctions();
+        }
+
+        if (class_exists('IncidentiImportFunctions')) {
+            new IncidentiImportFunctions();
         }
         
         if (class_exists('IncidentiValidation')) {

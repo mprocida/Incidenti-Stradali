@@ -10,7 +10,8 @@ class IncidentiShortcodes {
         add_shortcode('incidenti_mappa', array($this, 'render_mappa_shortcode'));
         add_shortcode('incidenti_statistiche', array($this, 'render_statistiche_shortcode'));
         add_shortcode('incidenti_lista', array($this, 'render_lista_shortcode'));
-        
+        add_shortcode('incidenti_form', array($this, 'render_form_shortcode'));
+
         // AJAX handlers
         add_action('wp_ajax_get_incidenti_markers', array($this, 'ajax_get_markers'));
         add_action('wp_ajax_nopriv_get_incidenti_markers', array($this, 'ajax_get_markers'));
@@ -18,6 +19,8 @@ class IncidentiShortcodes {
         add_action('wp_ajax_nopriv_get_incidente_details', array($this, 'ajax_get_incidente_details'));
         add_action('wp_ajax_get_statistiche_data', array($this, 'ajax_get_statistiche_data'));
         add_action('wp_ajax_nopriv_get_statistiche_data', array($this, 'ajax_get_statistiche_data'));
+        add_action('wp_ajax_submit_incidente_frontend', array($this, 'ajax_submit_incidente'));
+        add_action('wp_ajax_nopriv_submit_incidente_frontend', array($this, 'ajax_submit_incidente'));
         
         // Enqueue scripts for shortcodes
         add_action('wp_enqueue_scripts', array($this, 'enqueue_shortcode_scripts'));
@@ -41,6 +44,16 @@ class IncidentiShortcodes {
                 wp_enqueue_script('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', array('leaflet'), '1.4.1', true);
                 wp_enqueue_style('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', array('leaflet'), '1.4.1');
                 wp_enqueue_style('leaflet-markercluster-default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', array('leaflet-markercluster'), '1.4.1');
+            }
+
+            // NUOVO: Enqueue script specifico per il form
+            if (has_shortcode($post->post_content, 'incidenti_form')) {
+                wp_enqueue_script('incidenti-frontend-form', 
+                    INCIDENTI_PLUGIN_URL . 'assets/js/frontend-form.js', 
+                    array('jquery', 'leaflet'), 
+                    INCIDENTI_VERSION, 
+                    true
+                );
             }
             
             // Enqueue Chart.js per le statistiche
@@ -801,6 +814,129 @@ class IncidentiShortcodes {
     }
 
     /**
+     * Shortcode per form di inserimento incidenti dal frontend
+     */
+    public function render_form_shortcode($atts) {
+        $atts = shortcode_atts(array(
+            'show_title' => 'true',
+            'redirect_url' => '',
+            'success_message' => 'Incidente inserito con successo',
+            'require_login' => 'false'
+        ), $atts, 'incidenti_form');
+        
+        // Controllo login se richiesto
+        if ($atts['require_login'] === 'true' && !is_user_logged_in()) {
+            return '<p>Devi essere loggato per inserire un incidente.</p>';
+        }
+        
+        ob_start();
+        ?>
+        <div id="incidenti-frontend-form">
+            <?php if ($atts['show_title'] === 'true'): ?>
+                <h3>Segnala Incidente Stradale</h3>
+            <?php endif; ?>
+            
+            <form id="incidente-form" method="post">
+                <?php wp_nonce_field('submit_incidente_frontend', 'incidente_nonce'); ?>
+                
+                <!-- Dati essenziali incidente -->
+                <div class="form-section">
+                    <h4>Dati Incidente</h4>
+                    
+                    <div class="form-row">
+                        <label for="data_incidente">Data Incidente *</label>
+                        <input type="date" name="data_incidente" id="data_incidente" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label for="ora_incidente">Ora Incidente *</label>
+                        <input type="time" name="ora_incidente" id="ora_incidente" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label for="provincia_incidente">Provincia *</label>
+                        <input type="text" name="provincia_incidente" id="provincia_incidente" required maxlength="3">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label for="comune_incidente">Comune *</label>
+                        <input type="text" name="comune_incidente" id="comune_incidente" required>
+                    </div>
+                </div>
+                
+                <!-- Localizzazione -->
+                <div class="form-section">
+                    <h4>Localizzazione</h4>
+                    
+                    <div class="form-row">
+                        <label for="indirizzo">Indirizzo/Via</label>
+                        <input type="text" name="indirizzo" id="indirizzo">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Clicca sulla mappa per indicare il punto esatto:</label>
+                        <div id="frontend-map" style="height: 300px; margin: 10px 0;"></div>
+                        <input type="hidden" name="latitudine" id="latitudine">
+                        <input type="hidden" name="longitudine" id="longitudine">
+                    </div>
+                </div>
+                
+                <!-- Natura incidente -->
+                <div class="form-section">
+                    <h4>Tipo di Incidente</h4>
+                    
+                    <div class="form-row">
+                        <label for="natura_incidente">Natura Incidente *</label>
+                        <select name="natura_incidente" id="natura_incidente" required>
+                            <option value="">Seleziona...</option>
+                            <option value="A">Scontro frontale</option>
+                            <option value="B">Scontro frontale-laterale</option>
+                            <option value="C">Scontro laterale</option>
+                            <option value="D">Tamponamento</option>
+                            <option value="E">Investimento pedone</option>
+                            <option value="F">Urto con ostacolo</option>
+                            <option value="G">Fuoriuscita</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Persone coinvolte -->
+                <div class="form-section">
+                    <h4>Persone Coinvolte</h4>
+                    
+                    <div class="form-row">
+                        <label for="morti_immediati">Morti immediati</label>
+                        <input type="number" name="morti_immediati" id="morti_immediati" min="0" max="99" value="0">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label for="feriti">Feriti</label>
+                        <input type="number" name="feriti" id="feriti" min="0" max="99" value="0">
+                    </div>
+                </div>
+                
+                <!-- Note aggiuntive -->
+                <div class="form-section">
+                    <h4>Descrizione</h4>
+                    <div class="form-row">
+                        <label for="descrizione">Descrizione dell'incidente</label>
+                        <textarea name="descrizione" id="descrizione" rows="4" placeholder="Descrivi brevemente la dinamica dell'incidente..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" id="submit-incidente">Invia Segnalazione</button>
+                    <span id="form-loading" style="display: none;">Invio in corso...</span>
+                </div>
+            </form>
+            
+            <div id="form-messages"></div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
      * Metodi helper per le etichette
      */
     private function get_natura_label($natura) {
@@ -1044,6 +1180,56 @@ class IncidentiShortcodes {
         );
         
         wp_send_json_success($details);
+    }
+
+    /**
+     * Gestisce la submission del form frontend
+     */
+    public function ajax_submit_incidente() {
+        // Verifica nonce
+        if (!wp_verify_nonce($_POST['incidente_nonce'], 'submit_incidente_frontend')) {
+            wp_die(json_encode(array('success' => false, 'message' => 'Errore di sicurezza')));
+        }
+        
+        // Sanitize input
+        $data = array(
+            'post_title' => 'Incidente del ' . sanitize_text_field($_POST['data_incidente']),
+            'post_type' => 'incidente_stradale',
+            'post_status' => 'draft', // Salva come bozza per revisione
+            'meta_input' => array(
+                'data_incidente' => sanitize_text_field($_POST['data_incidente']),
+                'ora_incidente' => sanitize_text_field($_POST['ora_incidente']),
+                'provincia_incidente' => sanitize_text_field($_POST['provincia_incidente']),
+                'comune_incidente' => sanitize_text_field($_POST['comune_incidente']),
+                'indirizzo' => sanitize_text_field($_POST['indirizzo']),
+                'latitudine' => floatval($_POST['latitudine']),
+                'longitudine' => floatval($_POST['longitudine']),
+                'natura_incidente' => sanitize_text_field($_POST['natura_incidente']),
+                'morti_immediati' => intval($_POST['morti_immediati']),
+                'feriti' => intval($_POST['feriti']),
+                'inserito_da_frontend' => true,
+                'inserito_da_utente' => get_current_user_id()
+            )
+        );
+        
+        if (!empty($_POST['descrizione'])) {
+            $data['post_content'] = sanitize_textarea_field($_POST['descrizione']);
+        }
+        
+        $post_id = wp_insert_post($data);
+        
+        if (is_wp_error($post_id)) {
+            wp_die(json_encode(array('success' => false, 'message' => 'Errore nel salvataggio')));
+        }
+        
+        // Invia notifica agli amministratori
+        $this->send_notification_new_incidente($post_id);
+        
+        wp_die(json_encode(array(
+            'success' => true, 
+            'message' => 'Segnalazione ricevuta con successo. Verrà esaminata dal nostro staff.',
+            'post_id' => $post_id
+        )));
     }
     
     private function get_date_query_for_period($periodo) {

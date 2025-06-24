@@ -34,7 +34,8 @@ class IncidentiShortcodes {
         if (is_a($post, 'WP_Post') && 
             (has_shortcode($post->post_content, 'incidenti_mappa') || 
             has_shortcode($post->post_content, 'incidenti_statistiche') || 
-            has_shortcode($post->post_content, 'incidenti_lista'))) {
+            has_shortcode($post->post_content, 'incidenti_lista') ||
+            has_shortcode($post->post_content, 'incidenti_form'))) {
             
             // Enqueue Leaflet per le mappe
             if (has_shortcode($post->post_content, 'incidenti_mappa')) {
@@ -66,6 +67,14 @@ class IncidentiShortcodes {
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('incidenti_nonce')
             ));
+
+            // Localizzazione anche per lo script del form se caricato
+            if (has_shortcode($post->post_content, 'incidenti_form')) {
+                wp_localize_script('incidenti-frontend-form', 'incidenti_ajax', array(
+                    'ajax_url' => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce('incidenti_nonce')
+                ));
+            }
         }
     }
     
@@ -1186,50 +1195,85 @@ class IncidentiShortcodes {
      * Gestisce la submission del form frontend
      */
     public function ajax_submit_incidente() {
+        // Debug iniziale
+        error_log('ajax_submit_incidente chiamato');
+        error_log('POST data: ' . print_r($_POST, true));
+        
         // Verifica nonce
-        if (!wp_verify_nonce($_POST['incidente_nonce'], 'submit_incidente_frontend')) {
-            wp_die(json_encode(array('success' => false, 'message' => 'Errore di sicurezza')));
+        if (!isset($_POST['incidente_nonce']) || !wp_verify_nonce($_POST['incidente_nonce'], 'submit_incidente_frontend')) {
+            error_log('Nonce verification failed');
+            wp_send_json_error('Errore di sicurezza: nonce non valido');
+            return;
+        }
+        
+        // Verifica campi obbligatori
+        $required_fields = ['data_incidente', 'ora_incidente', 'provincia_incidente', 'comune_incidente', 'natura_incidente'];
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                wp_send_json_error("Campo obbligatorio mancante: $field");
+                return;
+            }
         }
         
         // Sanitize input
         $data = array(
-            'post_title' => 'Incidente del ' . sanitize_text_field($_POST['data_incidente']),
+            'post_title' => 'Incidente del ' . sanitize_text_field($_POST['data_incidente']) . ' - ' . sanitize_text_field($_POST['ora_incidente']),
             'post_type' => 'incidente_stradale',
             'post_status' => 'draft', // Salva come bozza per revisione
+            'post_author' => get_current_user_id() > 0 ? get_current_user_id() : 1, // Admin se anonimo
             'meta_input' => array(
                 'data_incidente' => sanitize_text_field($_POST['data_incidente']),
                 'ora_incidente' => sanitize_text_field($_POST['ora_incidente']),
                 'provincia_incidente' => sanitize_text_field($_POST['provincia_incidente']),
                 'comune_incidente' => sanitize_text_field($_POST['comune_incidente']),
-                'indirizzo' => sanitize_text_field($_POST['indirizzo']),
-                'latitudine' => floatval($_POST['latitudine']),
-                'longitudine' => floatval($_POST['longitudine']),
                 'natura_incidente' => sanitize_text_field($_POST['natura_incidente']),
-                'morti_immediati' => intval($_POST['morti_immediati']),
-                'feriti' => intval($_POST['feriti']),
                 'inserito_da_frontend' => true,
-                'inserito_da_utente' => get_current_user_id()
+                'inserito_da_utente' => get_current_user_id(),
+                'ip_inserimento' => $_SERVER['REMOTE_ADDR'],
+                'data_inserimento' => current_time('mysql')
             )
         );
+        
+        // Campi opzionali
+        if (!empty($_POST['indirizzo'])) {
+            $data['meta_input']['indirizzo'] = sanitize_text_field($_POST['indirizzo']);
+        }
+        
+        if (!empty($_POST['latitudine']) && !empty($_POST['longitudine'])) {
+            $data['meta_input']['latitudine'] = floatval($_POST['latitudine']);
+            $data['meta_input']['longitudine'] = floatval($_POST['longitudine']);
+        }
+        
+        if (!empty($_POST['morti_immediati'])) {
+            $data['meta_input']['morti_immediati'] = intval($_POST['morti_immediati']);
+        }
+        
+        if (!empty($_POST['feriti'])) {
+            $data['meta_input']['feriti'] = intval($_POST['feriti']);
+        }
         
         if (!empty($_POST['descrizione'])) {
             $data['post_content'] = sanitize_textarea_field($_POST['descrizione']);
         }
         
+        // Inserisci il post
         $post_id = wp_insert_post($data);
         
         if (is_wp_error($post_id)) {
-            wp_die(json_encode(array('success' => false, 'message' => 'Errore nel salvataggio')));
+            error_log('Errore wp_insert_post: ' . $post_id->get_error_message());
+            wp_send_json_error('Errore nel salvataggio: ' . $post_id->get_error_message());
+            return;
         }
+        
+        error_log('Post creato con ID: ' . $post_id);
         
         // Invia notifica agli amministratori
         $this->send_notification_new_incidente($post_id);
         
-        wp_die(json_encode(array(
-            'success' => true, 
+        wp_send_json_success(array(
             'message' => 'Segnalazione ricevuta con successo. Verrà esaminata dal nostro staff.',
             'post_id' => $post_id
-        )));
+        ));
     }
     
     private function get_date_query_for_period($periodo) {
@@ -1470,5 +1514,45 @@ class IncidentiShortcodes {
         );
         
         return isset($organi[$codice_organo]) ? $organi[$codice_organo] : __('Non specificato', 'incidenti-stradali');
+    }
+
+    /**
+     * Invia notifica email per nuovo incidente da frontend
+     */
+    private function send_notification_new_incidente($post_id) {
+        $post = get_post($post_id);
+        if (!$post) return;
+        
+        // Ottieni email amministratori
+        $admin_email = get_option('admin_email');
+        $notification_emails = get_option('incidenti_notification_emails', array($admin_email));
+        
+        if (empty($notification_emails)) {
+            $notification_emails = array($admin_email);
+        }
+        
+        // Prepara i dati
+        $data_incidente = get_post_meta($post_id, 'data_incidente', true);
+        $ora_incidente = get_post_meta($post_id, 'ora_incidente', true);
+        $comune = get_post_meta($post_id, 'comune_incidente', true);
+        $natura = get_post_meta($post_id, 'natura_incidente', true);
+        
+        $subject = '[Incidenti Stradali] Nuova segnalazione dal frontend';
+        
+        $message = "È stata ricevuta una nuova segnalazione di incidente stradale dal frontend.\n\n";
+        $message .= "Dettagli:\n";
+        $message .= "- Data: " . $data_incidente . "\n";
+        $message .= "- Ora: " . $ora_incidente . "\n";
+        $message .= "- Comune: " . $comune . "\n";
+        $message .= "- Natura: " . $natura . "\n";
+        $message .= "- Stato: Bozza (richiede revisione)\n\n";
+        $message .= "Link per modificare: " . admin_url('post.php?post=' . $post_id . '&action=edit') . "\n\n";
+        $message .= "IP mittente: " . $_SERVER['REMOTE_ADDR'] . "\n";
+        $message .= "User Agent: " . $_SERVER['HTTP_USER_AGENT'] . "\n";
+        
+        // Invia email
+        foreach ($notification_emails as $email) {
+            wp_mail(trim($email), $subject, $message);
+        }
     }
 }

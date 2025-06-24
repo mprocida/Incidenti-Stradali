@@ -26,7 +26,6 @@ class IncidentiShortcodes {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_shortcode_scripts'));
     }
 
-    // Aggiungi questo nuovo metodo
     public function enqueue_shortcode_scripts() {
         global $post;
         
@@ -37,17 +36,22 @@ class IncidentiShortcodes {
             has_shortcode($post->post_content, 'incidenti_lista') ||
             has_shortcode($post->post_content, 'incidenti_form'))) {
             
-            // Enqueue Leaflet per le mappe
-            if (has_shortcode($post->post_content, 'incidenti_mappa')) {
+            // Enqueue Leaflet per tutte le mappe
+            if (has_shortcode($post->post_content, 'incidenti_mappa') || 
+                has_shortcode($post->post_content, 'incidenti_form')) {
+                
                 wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
                 wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
                 
-                wp_enqueue_script('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', array('leaflet'), '1.4.1', true);
-                wp_enqueue_style('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', array('leaflet'), '1.4.1');
-                wp_enqueue_style('leaflet-markercluster-default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', array('leaflet-markercluster'), '1.4.1');
+                // Marker cluster solo per la mappa principale
+                if (has_shortcode($post->post_content, 'incidenti_mappa')) {
+                    wp_enqueue_script('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js', array('leaflet'), '1.4.1', true);
+                    wp_enqueue_style('leaflet-markercluster', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css', array('leaflet'), '1.4.1');
+                    wp_enqueue_style('leaflet-markercluster-default', 'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css', array('leaflet-markercluster'), '1.4.1');
+                }
             }
 
-            // NUOVO: Enqueue script specifico per il form
+            // Script specifico per il form
             if (has_shortcode($post->post_content, 'incidenti_form')) {
                 wp_enqueue_script('incidenti-frontend-form', 
                     INCIDENTI_PLUGIN_URL . 'assets/js/frontend-form.js', 
@@ -55,26 +59,23 @@ class IncidentiShortcodes {
                     INCIDENTI_VERSION, 
                     true
                 );
+                wp_enqueue_style('incidenti-frontend', 
+                    INCIDENTI_PLUGIN_URL . 'assets/css/frontend.css', 
+                    array('leaflet'), 
+                    INCIDENTI_VERSION
+                );
             }
             
-            // Enqueue Chart.js per le statistiche
+            // Chart.js per le statistiche
             if (has_shortcode($post->post_content, 'incidenti_statistiche')) {
                 wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js', array(), '3.9.1', true);
             }
             
-            // Localizzazione AJAX
+            // Localizzazione AJAX - UNA SOLA VOLTA
             wp_localize_script('jquery', 'incidenti_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('incidenti_nonce')
             ));
-
-            // Localizzazione anche per lo script del form se caricato
-            if (has_shortcode($post->post_content, 'incidenti_form')) {
-                wp_localize_script('incidenti-frontend-form', 'incidenti_ajax', array(
-                    'ajax_url' => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('incidenti_nonce')
-                ));
-            }
         }
     }
     
@@ -837,14 +838,6 @@ class IncidentiShortcodes {
         if ($atts['require_login'] === 'true' && !is_user_logged_in()) {
             return '<p>Devi essere loggato per inserire un incidente.</p>';
         }
-        
-        // Enqueue scripts necessari
-        wp_enqueue_script('incidenti-frontend-form', INCIDENTI_PLUGIN_URL . 'assets/js/frontend-form.js', array('jquery'), INCIDENTI_VERSION, true);
-        wp_enqueue_style('incidenti-frontend', INCIDENTI_PLUGIN_URL . 'assets/css/frontend.css', array(), INCIDENTI_VERSION);
-        
-        // Leaflet per la mappa
-        wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
-        wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
         
         ob_start();
         ?>

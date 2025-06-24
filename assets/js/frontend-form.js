@@ -7,14 +7,28 @@
     });
     
     function initFrontendForm() {
+        // Debug
+        console.log('Inizializzazione frontend form...');
+        
+        // Controlla se Leaflet è caricato
+        if (typeof L === 'undefined') {
+            console.error('Leaflet non è caricato!');
+            showFormMessage('Errore: libreria mappa non caricata. Ricarica la pagina.', 'error');
+            return;
+        }
+        
         // Inizializza mappa se presente
         if ($('#frontend-map').length) {
+            console.log('Inizializzazione mappa...');
             initFrontendMap();
+        } else {
+            console.log('Elemento mappa non trovato');
         }
         
         // Gestione submit form
         $('#incidente-form').on('submit', function(e) {
             e.preventDefault();
+            console.log('Form submit...');
             
             if (!validateFrontendForm()) {
                 return false;
@@ -28,38 +42,71 @@
     }
     
     function initFrontendMap() {
-        var map = L.map('frontend-map').setView([41.9028, 12.4964], 10);
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-        
-        var marker = null;
-        
-        map.on('click', function(e) {
-            if (marker) {
-                map.removeLayer(marker);
+        try {
+            var $mapElement = $('#frontend-map');
+            
+            // Controlla se l'elemento esiste e ha dimensioni
+            if ($mapElement.length === 0) {
+                console.error('Elemento #frontend-map non trovato');
+                return;
             }
             
-            marker = L.marker(e.latlng).addTo(map);
-            $('#latitudine').val(e.latlng.lat);
-            $('#longitudine').val(e.latlng.lng);
+            // Forza dimensioni se non impostate
+            if ($mapElement.height() === 0) {
+                $mapElement.height(300);
+            }
             
-            // Feedback visivo
-            showFormMessage('Posizione selezionata: ' + e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6), 'info');
-        });
-        
-        // Salva riferimento globale per reset
-        window.frontendMap = map;
-        window.frontendMapMarker = null;
-        
-        // Try to get user location
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-                map.setView([lat, lng], 13);
+            console.log('Creazione mappa Leaflet...');
+            var map = L.map('frontend-map').setView([41.9028, 12.4964], 10);
+            
+            console.log('Aggiunta tile layer...');
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            var marker = null;
+            
+            map.on('click', function(e) {
+                console.log('Click su mappa:', e.latlng);
+                
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                
+                marker = L.marker(e.latlng).addTo(map);
+                $('#latitudine').val(e.latlng.lat);
+                $('#longitudine').val(e.latlng.lng);
+                
+                // Rimuovi errore di validazione
+                $('#frontend-map').css('border-color', '#00a32a');
+                
+                // Feedback visivo
+                showFormMessage('Posizione selezionata: ' + 
+                    e.latlng.lat.toFixed(6) + ', ' + 
+                    e.latlng.lng.toFixed(6), 'info');
             });
+            
+            // Salva riferimento globale per reset
+            window.frontendMap = map;
+            window.frontendMapMarker = marker;
+            
+            // Try to get user location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    map.setView([lat, lng], 13);
+                    console.log('Posizione utente rilevata:', lat, lng);
+                }, function(error) {
+                    console.log('Errore geolocalizzazione:', error.message);
+                });
+            }
+            
+            console.log('Mappa inizializzata con successo');
+            
+        } catch (error) {
+            console.error('Errore inizializzazione mappa:', error);
+            showFormMessage('Errore nel caricamento della mappa: ' + error.message, 'error');
         }
     }
     
@@ -90,6 +137,16 @@
                 $(this).val(0);
             }
         });
+        
+        // Controllo codici ISTAT
+        $('#provincia_incidente, #comune_incidente').on('input', function() {
+            var value = $(this).val();
+            if (value && (value.length !== 3 || !/^\d{3}$/.test(value))) {
+                $(this).addClass('error');
+            } else {
+                $(this).removeClass('error');
+            }
+        });
     }
     
     function validateSingleField($field) {
@@ -109,6 +166,8 @@
     function validateFrontendForm() {
         var isValid = true;
         var errorMessages = [];
+        
+        console.log('Validazione form...');
         
         // Reset errori precedenti
         $('.form-row input, .form-row select').removeClass('error');
@@ -132,12 +191,16 @@
         });
         
         // Verifica coordinate
-        if (!$('#latitudine').val() || !$('#longitudine').val()) {
+        var lat = $('#latitudine').val();
+        var lng = $('#longitudine').val();
+        console.log('Coordinate:', lat, lng);
+        
+        if (!lat || !lng) {
             isValid = false;
             $('#frontend-map').css('border-color', '#dc3232');
             errorMessages.push('Seleziona un punto sulla mappa cliccando su di essa');
         } else {
-            $('#frontend-map').css('border-color', '#ddd');
+            $('#frontend-map').css('border-color', '#00a32a');
         }
         
         // Verifica data non futura
@@ -157,6 +220,14 @@
             errorMessages.push('La provincia deve essere un codice ISTAT di 3 cifre (es. 058 per Roma)');
         }
         
+        // Verifica comune (formato ISTAT)
+        var comune = $('#comune_incidente').val().trim();
+        if (comune && (comune.length !== 3 || !/^\d{3}$/.test(comune))) {
+            isValid = false;
+            $('#comune_incidente').addClass('error');
+            errorMessages.push('Il comune deve essere un codice ISTAT di 3 cifre');
+        }
+        
         if (!isValid) {
             showFormMessage(errorMessages.join('<br>'), 'error');
             // Scroll al primo errore
@@ -168,6 +239,7 @@
             }
         }
         
+        console.log('Validazione completata:', isValid);
         return isValid;
     }
     
@@ -175,6 +247,8 @@
         var $form = $('#incidente-form');
         var $submitBtn = $('#submit-incidente');
         var $loading = $('#form-loading');
+        
+        console.log('Invio form...');
         
         // Disabilita form durante invio
         $submitBtn.prop('disabled', true);
@@ -184,12 +258,16 @@
         // Prepara dati
         var formData = $form.serialize() + '&action=submit_incidente_frontend';
         
+        // Debug: mostra dati che vengono inviati
+        console.log('Dati form:', formData);
+        
         $.ajax({
             url: incidenti_ajax.ajax_url,
             type: 'POST',
             data: formData,
             timeout: 30000, // 30 secondi timeout
             success: function(response) {
+                console.log('Risposta server:', response);
                 try {
                     var data = JSON.parse(response);
                     
@@ -207,11 +285,13 @@
                     }
                 } catch (e) {
                     console.error('Errore parsing JSON:', e);
+                    console.log('Risposta raw:', response);
                     showFormMessage('Errore nella risposta del server', 'error');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Errore AJAX:', status, error);
+                console.log('XHR:', xhr);
                 
                 if (status === 'timeout') {
                     showFormMessage('Timeout: il server sta impiegando troppo tempo a rispondere. Riprova più tardi.', 'error');
@@ -228,6 +308,8 @@
     
     function resetForm() {
         var $form = $('#incidente-form');
+        
+        console.log('Reset form...');
         
         // Reset form fields
         $form[0].reset();

@@ -56,7 +56,16 @@ class IncidentiImportFunctions {
             $message_type = 'error';
         }
         
-        include INCIDENTI_PLUGIN_PATH . 'templates/admin-import-page.php';
+        // Controlla se il template esiste
+        $template_path = INCIDENTI_PLUGIN_PATH . 'templates/admin-import-page.php';
+        if (file_exists($template_path)) {
+            include $template_path;
+        } else {
+            echo '<div class="notice notice-error"><p>Template non trovato: ' . $template_path . '</p></div>';
+            // Debugging - mostra il percorso
+            echo '<p>INCIDENTI_PLUGIN_PATH: ' . INCIDENTI_PLUGIN_PATH . '</p>';
+            echo '<p>Template cercato: ' . $template_path . '</p>';
+        }
     }
     
     /**

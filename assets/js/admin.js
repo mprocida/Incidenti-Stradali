@@ -434,10 +434,201 @@ jQuery(document).ready(function($) {
                 // Show confirmation dialog
                 if (!confirm('Sei sicuro di voler esportare gli elementi selezionati?')) {
                     $(this).val('-1');
+                    return false;
                 }
             }
         });
     }
+
+    /**
+     * Initialize import functionality
+     */
+    function initializeImportFunctionality() {
+        // Controlla se siamo nella pagina di import
+        if ($('.incidenti-import-page').length) {
+            console.log('Pagina import caricata'); // Debug
+            
+            // Gestione cambio file
+            $('#csv_file').on('change', function() {
+                console.log('File cambiato'); // Debug
+                
+                var file = this.files[0];
+                $('#csv-preview-section').hide();
+                
+                if (file) {
+                    console.log('File selezionato:', file.name); // Debug
+                    
+                    // Abilita il bottone anteprima
+                    $('#import-preview-btn').prop('disabled', false);
+                    
+                    // Disabilita il bottone importa fino alla preview
+                    $('#import-submit-btn').prop('disabled', true);
+                } else {
+                    console.log('Nessun file selezionato'); // Debug
+                    
+                    // Disabilita entrambi i bottoni
+                    $('#import-preview-btn').prop('disabled', true);
+                    $('#import-submit-btn').prop('disabled', true);
+                }
+            });
+            
+            // Preview CSV
+            $('#import-preview-btn').on('click', function() {
+                console.log('Bottone preview cliccato'); // Debug
+                
+                var fileInput = $('#csv_file')[0];
+                var file = fileInput.files[0];
+                var separator = $('#separator').val();
+                
+                if (!file) {
+                    alert('Seleziona un file CSV prima di visualizzare l\'anteprima.');
+                    return;
+                }
+                
+                // Validazione tipo file
+                if (!file.name.toLowerCase().endsWith('.csv')) {
+                    alert('Seleziona un file CSV valido.');
+                    return;
+                }
+                
+                var formData = new FormData();
+                formData.append('action', 'preview_csv_import');
+                formData.append('csv_file', file);
+                formData.append('separator', separator);
+                formData.append('nonce', $(this).data('nonce'));
+                
+                // Mostra loading
+                var $btn = $(this);
+                var originalText = $btn.text();
+                $btn.prop('disabled', true).text('Caricamento...');
+                
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log('Risposta AJAX:', response); // Debug
+                        
+                        $btn.prop('disabled', false).text(originalText);
+                        
+                        if (response.success) {
+                            displayCSVPreview(response.data);
+                            $('#import-submit-btn').prop('disabled', false);
+                        } else {
+                            alert('Errore durante l\'anteprima: ' + response.data);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Errore AJAX:', error); // Debug
+                        $btn.prop('disabled', false).text(originalText);
+                        alert('Errore di connessione durante l\'anteprima.');
+                    }
+                });
+            });
+            
+            // Submit importazione
+            $('#import-submit-btn').on('click', function() {
+                if (!confirm('Sei sicuro di voler importare questi dati? L\'operazione non può essere annullata.')) {
+                    return;
+                }
+                
+                $(this).prop('disabled', true).text('Importazione in corso...');
+                $('#import-form').submit();
+            });
+            
+            // Reset form
+            $('#import-reset-btn').on('click', function() {
+                console.log('Reset cliccato'); // Debug
+                
+                $('#import-form')[0].reset();
+                $('#csv-preview-section').hide();
+                $('#import-submit-btn').prop('disabled', true);
+                $('#import-preview-btn').prop('disabled', true);
+            });
+        }
+    }
+    
+    /**
+     * Mostra preview del CSV
+     */
+    function displayCSVPreview(data) {
+        console.log('Visualizzando preview:', data); // Debug
+        
+        var $previewSection = $('#csv-preview-section');
+        var $previewTable = $('#csv-preview-table tbody');
+        
+        // Clear previous preview
+        $previewTable.empty();
+        
+        // Show summary
+        $('#csv-total-rows').text(data.total_rows || 0);
+        $('#csv-valid-rows').text(data.valid_rows || 0);
+        $('#csv-error-rows').text(data.error_rows || 0);
+        
+        // Show first rows
+        if (data.preview && data.preview.length > 0) {
+            data.preview.forEach(function(row, index) {
+                var $row = $('<tr>');
+                
+                // Add row number
+                $row.append('<td>' + (index + 1) + '</td>');
+                
+                // Add row data
+                $row.append('<td>' + (row.data.data_incidente || '') + '</td>');
+                $row.append('<td>' + (row.data.ora_incidente || '') + '</td>');
+                $row.append('<td>' + (row.data.comune_incidente || '') + '</td>');
+                $row.append('<td>' + (row.data.denominazione_strada || '') + '</td>');
+                $row.append('<td>' + (row.data.numero_veicoli_coinvolti || '') + '</td>');
+                
+                // Add status
+                var statusClass = row.valid ? 'success' : 'error';
+                var statusText = row.valid ? 'Valido' : 'Errore';
+                $row.append('<td class="status-' + statusClass + '">' + statusText + '</td>');
+                
+                // Add errors
+                if (row.errors && row.errors.length > 0) {
+                    $row.append('<td>' + row.errors.join(', ') + '</td>');
+                } else {
+                    $row.append('<td>-</td>');
+                }
+                
+                $previewTable.append($row);
+            });
+        }
+        
+        // Show errors summary
+        if (data.errors && data.errors.length > 0) {
+            var $errorsList = $('#csv-errors-list');
+            $errorsList.empty();
+            
+            data.errors.forEach(function(error) {
+                $errorsList.append('<li>' + error + '</li>');
+            });
+            
+            $('#csv-errors-section').show();
+        } else {
+            $('#csv-errors-section').hide();
+        }
+        
+        $previewSection.show();
+    }
+    
+    // Initialize everything
+    initializeAdmin();
+    initializeAutoSave();
+    handlePageLeave();
+    initializeDashboardWidget();
+    initializeImportFunctionality(); // <- AGGIUNGI QUESTA CHIAMATA
+    
+    // Expose public functions
+    window.IncidentiAdmin = {
+        validateForm: validateForm,
+        updateVeicoliSections: updateVeicoliSections,
+        updatePedoniSections: updatePedoniSections,
+        displayCSVPreview: displayCSVPreview // <- AGGIUNGI QUESTA FUNZIONE
+    };
 
     /**
      * Initialize conditional field logic for ISTAT 2019 compliance

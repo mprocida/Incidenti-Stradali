@@ -146,9 +146,20 @@ class IncidentiStradaliPlugin {
     public function admin_enqueue_scripts($hook) {
         global $post_type;
         
-        if ('incidente_stradale' === $post_type || 'incidenti-settings' === $hook) {
+        // Carica script solo nelle pagine del plugin
+        if ($post_type === 'incidente_stradale' || 
+            strpos($hook, 'incidenti') !== false || 
+            $hook === 'post.php' || 
+            $hook === 'post-new.php') {
+            
             wp_enqueue_script('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), INCIDENTI_VERSION, true);
             wp_enqueue_style('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/css/admin.css', array(), INCIDENTI_VERSION);
+            
+            // Localizza script per AJAX
+            wp_localize_script('incidenti-admin', 'incidenti_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('incidenti_ajax_nonce')
+            ));
             
             // Date picker
             wp_enqueue_script('jquery-ui-datepicker');

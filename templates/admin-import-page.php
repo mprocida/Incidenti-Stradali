@@ -192,4 +192,36 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+/* Debug styles */
+.button:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    background-color: #ccc !important;
+}
+
+.button:not(:disabled) {
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+
+#import-preview-btn:not(:disabled) {
+    background-color: #0073aa !important;
+    color: white !important;
+}
+
+#import-submit-btn:not(:disabled) {
+    background-color: #007cba !important;
+    color: white !important;
+}
 </style>
+
+<script>
+// Debug script per verificare che tutto sia caricato
+jQuery(document).ready(function($) {
+    console.log('Template import caricato');
+    console.log('Bottone file:', $('#csv_file').length);
+    console.log('Bottone preview:', $('#import-preview-btn').length);
+    console.log('Bottone submit:', $('#import-submit-btn').length);
+    console.log('ajaxurl disponibile:', typeof ajaxurl !== 'undefined');
+});
+</script>

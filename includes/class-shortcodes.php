@@ -838,12 +838,22 @@ class IncidentiShortcodes {
             return '<p>Devi essere loggato per inserire un incidente.</p>';
         }
         
+        // Enqueue scripts necessari
+        wp_enqueue_script('incidenti-frontend-form', INCIDENTI_PLUGIN_URL . 'assets/js/frontend-form.js', array('jquery'), INCIDENTI_VERSION, true);
+        wp_enqueue_style('incidenti-frontend', INCIDENTI_PLUGIN_URL . 'assets/css/frontend.css', array(), INCIDENTI_VERSION);
+        
+        // Leaflet per la mappa
+        wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
+        wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
+        
         ob_start();
         ?>
         <div id="incidenti-frontend-form">
             <?php if ($atts['show_title'] === 'true'): ?>
                 <h3>Segnala Incidente Stradale</h3>
             <?php endif; ?>
+            
+            <div id="form-messages"></div>
             
             <form id="incidente-form" method="post">
                 <?php wp_nonce_field('submit_incidente_frontend', 'incidente_nonce'); ?>
@@ -852,94 +862,102 @@ class IncidentiShortcodes {
                 <div class="form-section">
                     <h4>Dati Incidente</h4>
                     
-                    <div class="form-row">
-                        <label for="data_incidente">Data Incidente *</label>
-                        <input type="date" name="data_incidente" id="data_incidente" required>
+                    <div class="form-row-group">
+                        <div class="form-row">
+                            <label for="data_incidente">Data Incidente *</label>
+                            <input type="date" name="data_incidente" id="data_incidente" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="ora_incidente">Ora Incidente *</label>
+                            <input type="time" name="ora_incidente" id="ora_incidente" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row-group">
+                        <div class="form-row">
+                            <label for="provincia_incidente">Provincia (Codice ISTAT) *</label>
+                            <input type="text" name="provincia_incidente" id="provincia_incidente" maxlength="3" pattern="[0-9]{3}" required placeholder="es. 058">
+                        </div>
+                        <div class="form-row">
+                            <label for="comune_incidente">Comune (Codice ISTAT) *</label>
+                            <input type="text" name="comune_incidente" id="comune_incidente" maxlength="3" pattern="[0-9]{3}" required placeholder="es. 001">
+                        </div>
                     </div>
                     
                     <div class="form-row">
-                        <label for="ora_incidente">Ora Incidente *</label>
-                        <input type="time" name="ora_incidente" id="ora_incidente" required>
+                        <label for="denominazione_strada">Via/Strada</label>
+                        <input type="text" name="denominazione_strada" id="denominazione_strada" placeholder="es. Via Roma">
                     </div>
-                    
-                    <div class="form-row">
-                        <label for="provincia_incidente">Provincia *</label>
-                        <input type="text" name="provincia_incidente" id="provincia_incidente" required maxlength="3">
-                    </div>
-                    
-                    <div class="form-row">
-                        <label for="comune_incidente">Comune *</label>
-                        <input type="text" name="comune_incidente" id="comune_incidente" required>
-                    </div>
-                </div>
-                
-                <!-- Localizzazione -->
-                <div class="form-section">
-                    <h4>Localizzazione</h4>
-                    
-                    <div class="form-row">
-                        <label for="indirizzo">Indirizzo/Via</label>
-                        <input type="text" name="indirizzo" id="indirizzo">
-                    </div>
-                    
-                    <div class="form-row">
-                        <label>Clicca sulla mappa per indicare il punto esatto:</label>
-                        <div id="frontend-map" style="height: 300px; margin: 10px 0;"></div>
-                        <input type="hidden" name="latitudine" id="latitudine">
-                        <input type="hidden" name="longitudine" id="longitudine">
-                    </div>
-                </div>
-                
-                <!-- Natura incidente -->
-                <div class="form-section">
-                    <h4>Tipo di Incidente</h4>
                     
                     <div class="form-row">
                         <label for="natura_incidente">Natura Incidente *</label>
                         <select name="natura_incidente" id="natura_incidente" required>
                             <option value="">Seleziona...</option>
-                            <option value="A">Scontro frontale</option>
-                            <option value="B">Scontro frontale-laterale</option>
-                            <option value="C">Scontro laterale</option>
-                            <option value="D">Tamponamento</option>
-                            <option value="E">Investimento pedone</option>
-                            <option value="F">Urto con ostacolo</option>
-                            <option value="G">Fuoriuscita</option>
+                            <option value="A">A - Scontro frontale</option>
+                            <option value="B">B - Scontro laterale</option>
+                            <option value="C">C - Tamponamento</option>
+                            <option value="D">D - Investimento</option>
+                            <option value="E">E - Urto ostacolo fisso</option>
+                            <option value="F">F - Fuoriuscita</option>
                         </select>
                     </div>
                 </div>
                 
-                <!-- Persone coinvolte -->
+                <!-- Posizione geografica -->
                 <div class="form-section">
-                    <h4>Persone Coinvolte</h4>
+                    <h4>Posizione</h4>
+                    <div id="frontend-map"></div>
+                    <p class="map-help">Clicca sulla mappa per selezionare la posizione dell'incidente</p>
+                    <input type="hidden" name="latitudine" id="latitudine">
+                    <input type="hidden" name="longitudine" id="longitudine">
+                </div>
+                
+                <!-- Dati opzionali -->
+                <div class="form-section">
+                    <h4>Dettagli (Opzionali)</h4>
                     
-                    <div class="form-row">
-                        <label for="morti_immediati">Morti immediati</label>
-                        <input type="number" name="morti_immediati" id="morti_immediati" min="0" max="99" value="0">
+                    <div class="form-row-group">
+                        <div class="form-row">
+                            <label for="numero_veicoli_coinvolti">N. Veicoli</label>
+                            <input type="number" name="numero_veicoli_coinvolti" id="numero_veicoli_coinvolti" min="1" max="3" value="1">
+                        </div>
+                        <div class="form-row">
+                            <label for="condizioni_meteo">Condizioni Meteo</label>
+                            <select name="condizioni_meteo" id="condizioni_meteo">
+                                <option value="">Non specificato</option>
+                                <option value="1">Sereno</option>
+                                <option value="2">Nuvoloso</option>
+                                <option value="3">Pioggia</option>
+                                <option value="4">Nebbia</option>
+                                <option value="5">Grandine/Neve</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <div class="form-row">
-                        <label for="feriti">Feriti</label>
-                        <input type="number" name="feriti" id="feriti" min="0" max="99" value="0">
+                    <div class="form-row-group">
+                        <div class="form-row">
+                            <label for="morti_sul_colpo">Morti sul colpo</label>
+                            <input type="number" name="morti_sul_colpo" id="morti_sul_colpo" min="0" value="0">
+                        </div>
+                        <div class="form-row">
+                            <label for="morti_2_30gg">Morti 2°-30° giorno</label>
+                            <input type="number" name="morti_2_30gg" id="morti_2_30gg" min="0" value="0">
+                        </div>
+                        <div class="form-row">
+                            <label for="feriti">Feriti</label>
+                            <input type="number" name="feriti" id="feriti" min="0" value="0">
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Note aggiuntive -->
-                <div class="form-section">
-                    <h4>Descrizione</h4>
-                    <div class="form-row">
-                        <label for="descrizione">Descrizione dell'incidente</label>
-                        <textarea name="descrizione" id="descrizione" rows="4" placeholder="Descrivi brevemente la dinamica dell'incidente..."></textarea>
-                    </div>
-                </div>
-                
-                <div class="form-actions">
+                <div class="form-submit">
                     <button type="submit" id="submit-incidente">Invia Segnalazione</button>
-                    <span id="form-loading" style="display: none;">Invio in corso...</span>
+                    <div id="form-loading">
+                        <div class="loading-spinner"></div>
+                        Invio in corso...
+                    </div>
                 </div>
             </form>
-            
-            <div id="form-messages"></div>
         </div>
         <?php
         return ob_get_clean();
@@ -1195,85 +1213,74 @@ class IncidentiShortcodes {
      * Gestisce la submission del form frontend
      */
     public function ajax_submit_incidente() {
-        // Debug iniziale
-        error_log('ajax_submit_incidente chiamato');
-        error_log('POST data: ' . print_r($_POST, true));
-        
         // Verifica nonce
-        if (!isset($_POST['incidente_nonce']) || !wp_verify_nonce($_POST['incidente_nonce'], 'submit_incidente_frontend')) {
-            error_log('Nonce verification failed');
-            wp_send_json_error('Errore di sicurezza: nonce non valido');
-            return;
-        }
-        
-        // Verifica campi obbligatori
-        $required_fields = ['data_incidente', 'ora_incidente', 'provincia_incidente', 'comune_incidente', 'natura_incidente'];
-        foreach ($required_fields as $field) {
-            if (empty($_POST[$field])) {
-                wp_send_json_error("Campo obbligatorio mancante: $field");
-                return;
-            }
+        if (!wp_verify_nonce($_POST['incidente_nonce'], 'submit_incidente_frontend')) {
+            wp_die(json_encode(array('success' => false, 'message' => 'Errore di sicurezza')));
         }
         
         // Sanitize input
+        $data_incidente = sanitize_text_field($_POST['data_incidente']);
+        $ora_incidente = sanitize_text_field($_POST['ora_incidente']);
+        
         $data = array(
-            'post_title' => 'Incidente del ' . sanitize_text_field($_POST['data_incidente']) . ' - ' . sanitize_text_field($_POST['ora_incidente']),
+            'post_title' => 'Incidente del ' . $data_incidente . ' ore ' . $ora_incidente,
+            'post_content' => 'Incidente inserito da frontend',
+            'post_status' => 'pending', // Pending review per sicurezza
             'post_type' => 'incidente_stradale',
-            'post_status' => 'draft', // Salva come bozza per revisione
-            'post_author' => get_current_user_id() > 0 ? get_current_user_id() : 1, // Admin se anonimo
-            'meta_input' => array(
-                'data_incidente' => sanitize_text_field($_POST['data_incidente']),
-                'ora_incidente' => sanitize_text_field($_POST['ora_incidente']),
-                'provincia_incidente' => sanitize_text_field($_POST['provincia_incidente']),
-                'comune_incidente' => sanitize_text_field($_POST['comune_incidente']),
-                'natura_incidente' => sanitize_text_field($_POST['natura_incidente']),
-                'inserito_da_frontend' => true,
-                'inserito_da_utente' => get_current_user_id(),
-                'ip_inserimento' => $_SERVER['REMOTE_ADDR'],
-                'data_inserimento' => current_time('mysql')
-            )
+            'post_author' => get_current_user_id() ?: 1
         );
         
-        // Campi opzionali
-        if (!empty($_POST['indirizzo'])) {
-            $data['meta_input']['indirizzo'] = sanitize_text_field($_POST['indirizzo']);
-        }
-        
-        if (!empty($_POST['latitudine']) && !empty($_POST['longitudine'])) {
-            $data['meta_input']['latitudine'] = floatval($_POST['latitudine']);
-            $data['meta_input']['longitudine'] = floatval($_POST['longitudine']);
-        }
-        
-        if (!empty($_POST['morti_immediati'])) {
-            $data['meta_input']['morti_immediati'] = intval($_POST['morti_immediati']);
-        }
-        
-        if (!empty($_POST['feriti'])) {
-            $data['meta_input']['feriti'] = intval($_POST['feriti']);
-        }
-        
-        if (!empty($_POST['descrizione'])) {
-            $data['post_content'] = sanitize_textarea_field($_POST['descrizione']);
-        }
-        
-        // Inserisci il post
+        // Crea il post
         $post_id = wp_insert_post($data);
         
         if (is_wp_error($post_id)) {
-            error_log('Errore wp_insert_post: ' . $post_id->get_error_message());
-            wp_send_json_error('Errore nel salvataggio: ' . $post_id->get_error_message());
-            return;
+            wp_die(json_encode(array('success' => false, 'message' => 'Errore durante la creazione dell\'incidente')));
         }
         
-        error_log('Post creato con ID: ' . $post_id);
+        // Salva i meta fields riutilizzando la logica backend
+        $meta_fields = array(
+            'data_incidente' => sanitize_text_field($_POST['data_incidente']),
+            'ora_incidente' => sanitize_text_field($_POST['ora_incidente']),
+            'provincia_incidente' => sanitize_text_field($_POST['provincia_incidente']),
+            'comune_incidente' => sanitize_text_field($_POST['comune_incidente']),
+            'denominazione_strada' => sanitize_text_field($_POST['denominazione_strada']),
+            'natura_incidente' => sanitize_text_field($_POST['natura_incidente']),
+            'latitudine' => floatval($_POST['latitudine']),
+            'longitudine' => floatval($_POST['longitudine']),
+            'numero_veicoli_coinvolti' => intval($_POST['numero_veicoli_coinvolti'] ?: 1),
+            'morti_sul_colpo' => intval($_POST['morti_sul_colpo'] ?: 0),
+            'morti_2_30gg' => intval($_POST['morti_2_30gg'] ?: 0),
+            'feriti' => intval($_POST['feriti'] ?: 0)
+        );
         
-        // Invia notifica agli amministratori
-        $this->send_notification_new_incidente($post_id);
+        // Campi opzionali
+        $optional_fields = array(
+            'condizioni_meteo', 'condizioni_strada', 'illuminazione',
+            'tipo_strada', 'localizzazione_incidente', 'segnaletica'
+        );
         
-        wp_send_json_success(array(
-            'message' => 'Segnalazione ricevuta con successo. Verrà esaminata dal nostro staff.',
+        foreach ($optional_fields as $field) {
+            if (!empty($_POST[$field])) {
+                $meta_fields[$field] = sanitize_text_field($_POST[$field]);
+            }
+        }
+        
+        // Salva tutti i meta fields
+        foreach ($meta_fields as $key => $value) {
+            update_post_meta($post_id, $key, $value);
+        }
+        
+        // Validazione usando la classe esistente
+        if (class_exists('IncidentiValidation')) {
+            $validator = new IncidentiValidation();
+            // Nota: la validazione nel backend avviene tramite hook save_post
+        }
+        
+        wp_die(json_encode(array(
+            'success' => true, 
+            'message' => 'Incidente inserito con successo! Sarà revisionato prima della pubblicazione.',
             'post_id' => $post_id
-        ));
+        )));
     }
     
     private function get_date_query_for_period($periodo) {

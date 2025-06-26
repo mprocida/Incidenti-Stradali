@@ -141,7 +141,10 @@ jQuery(document).ready(function($) {
             comune: $container.find('[id$="-comune-filter"]').val() || '',
             periodo: $container.find('[id$="-periodo-filter"]').val() || '',
             data_inizio: $container.find('[id$="-data-inizio"]').val() || '',
-            data_fine: $container.find('[id$="-data-fine"]').val() || ''
+            data_fine: $container.find('[id$="-data-fine"]').val() || '',
+            tipologia_strada: $container.find('[id$="-tipologia-strada-filter"]').val() || '',
+            indirizzo: $container.find('[id$="-indirizzo-filter"]').val() || '',
+            tipologia_infortunati: $container.find('[id$="-tipologia-infortunati-filter"]').val() || ''
         };
     }
     

@@ -147,6 +147,45 @@ class IncidentiShortcodes {
                             <option value="last_year" <?php selected($atts['periodo'], 'last_year'); ?>><?php _e('Ultimo anno', 'incidenti-stradali'); ?></option>
                             <option value="custom"><?php _e('Personalizzato', 'incidenti-stradali'); ?></option>
                         </select>
+
+                        <label for="<?php echo $map_id; ?>-tipologia-strada-filter">
+                            <?php _e('Tipologia Strada:', 'incidenti-stradali'); ?>
+                        </label>
+                        <select id="<?php echo $map_id; ?>-tipologia-strada-filter">
+                            <option value=""><?php _e('Tutte le tipologie', 'incidenti-stradali'); ?></option>
+                            <option value="1"><?php _e('Strada urbana', 'incidenti-stradali'); ?></option>
+                            <option value="2"><?php _e('Provinciale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="3"><?php _e('Statale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="4"><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="5"><?php _e('Comunale extraurbana', 'incidenti-stradali'); ?></option>
+                            <option value="6"><?php _e('Provinciale', 'incidenti-stradali'); ?></option>
+                            <option value="7"><?php _e('Statale', 'incidenti-stradali'); ?></option>
+                            <option value="8"><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
+                            <option value="9"><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
+                            <option value="10"><?php _e('Regionale', 'incidenti-stradali'); ?></option>
+                        </select>
+
+                        <label for="<?php echo $map_id; ?>-indirizzo-filter">
+                            <?php _e('Indirizzo/Via:', 'incidenti-stradali'); ?>
+                        </label>
+                        <input type="text" 
+                            id="<?php echo $map_id; ?>-indirizzo-filter" 
+                            placeholder="<?php _e('Inserisci nome strada...', 'incidenti-stradali'); ?>"
+                            class="regular-text">
+
+                        <label for="<?php echo $map_id; ?>-tipologia-infortunati-filter">
+                            <?php _e('Tipologia Infortunati:', 'incidenti-stradali'); ?>
+                        </label>
+                        <select id="<?php echo $map_id; ?>-tipologia-infortunati-filter">
+                            <option value=""><?php _e('Tutti i tipi', 'incidenti-stradali'); ?></option>
+                            <option value="con_morti"><?php _e('Incidente con morti', 'incidenti-stradali'); ?></option>
+                            <option value="solo_morti"><?php _e('Incidente con solo morti', 'incidenti-stradali'); ?></option>
+                            <option value="con_feriti"><?php _e('Incidente con feriti', 'incidenti-stradali'); ?></option>
+                            <option value="solo_feriti"><?php _e('Incidente con solo feriti', 'incidenti-stradali'); ?></option>
+                            <option value="morti_e_feriti"><?php _e('Incidente con morti e feriti', 'incidenti-stradali'); ?></option>
+                            <option value="morti_o_feriti"><?php _e('Incidente con morti o feriti', 'incidenti-stradali'); ?></option>
+                            <option value="senza_infortunati"><?php _e('Incidente senza infortunati', 'incidenti-stradali'); ?></option>
+                        </select>
                         
                         <button type="button" id="<?php echo $map_id; ?>-filter-btn" class="button">
                             <?php _e('Filtra', 'incidenti-stradali'); ?>
@@ -155,14 +194,14 @@ class IncidentiShortcodes {
                     
                     <div class="filter-row custom-dates" id="<?php echo $map_id; ?>-custom-dates" style="display: none; margin-top: 10px;">
                         <label for="<?php echo $map_id; ?>-data-inizio">
-                            <?php _e('Da:', 'incidenti-stradali'); ?>
+                            <?php _e('Dal:', 'incidenti-stradali'); ?>
                         </label>
                         <input type="date" 
                             id="<?php echo $map_id; ?>-data-inizio" 
                             value="<?php echo esc_attr($atts['data_inizio']); ?>">
                         
                         <label for="<?php echo $map_id; ?>-data-fine">
-                            <?php _e('A:', 'incidenti-stradali'); ?>
+                            <?php _e('Al:', 'incidenti-stradali'); ?>
                         </label>
                         <input type="date" 
                             id="<?php echo $map_id; ?>-data-fine" 
@@ -1056,6 +1095,141 @@ class IncidentiShortcodes {
                 'compare' => 'BETWEEN',
                 'type' => 'DATE'
             );
+        }
+
+        // Filtro tipologia strada
+        if (!empty($filters['tipologia_strada'])) {
+            $args['meta_query'][] = array(
+                'key' => 'tipo_strada',
+                'value' => sanitize_text_field($filters['tipologia_strada']),
+                'compare' => '='
+            );
+        }
+
+        // Filtro indirizzo/denominazione strada
+        if (!empty($filters['indirizzo'])) {
+            $args['meta_query'][] = array(
+                'key' => 'denominazione_strada',
+                'value' => sanitize_text_field($filters['indirizzo']),
+                'compare' => 'LIKE'
+            );
+        }
+
+        // Filtro tipologia infortunati
+        if (!empty($filters['tipologia_infortunati'])) {
+            $tipologia = $filters['tipologia_infortunati'];
+            
+            // Conta morti e feriti per ogni incidente
+            $meta_query_infortunati = array('relation' => 'OR');
+            
+            switch ($tipologia) {
+                case 'con_morti':
+                    // Incidenti che hanno almeno 1 morto
+                    $meta_query_infortunati[] = array(
+                        'key' => 'numero_morti',
+                        'value' => 0,
+                        'compare' => '>'
+                    );
+                    break;
+                    
+                case 'solo_morti':
+                    // Incidenti che hanno solo morti (morti > 0 E feriti = 0)
+                    $meta_query_infortunati = array(
+                        'relation' => 'AND',
+                        array(
+                            'key' => 'numero_morti',
+                            'value' => 0,
+                            'compare' => '>'
+                        ),
+                        array(
+                            'key' => 'numero_feriti',
+                            'value' => 0,
+                            'compare' => '='
+                        )
+                    );
+                    break;
+                    
+                case 'con_feriti':
+                    // Incidenti che hanno almeno 1 ferito
+                    $meta_query_infortunati[] = array(
+                        'key' => 'numero_feriti',
+                        'value' => 0,
+                        'compare' => '>'
+                    );
+                    break;
+                    
+                case 'solo_feriti':
+                    // Incidenti che hanno solo feriti (feriti > 0 E morti = 0)
+                    $meta_query_infortunati = array(
+                        'relation' => 'AND',
+                        array(
+                            'key' => 'numero_feriti',
+                            'value' => 0,
+                            'compare' => '>'
+                        ),
+                        array(
+                            'key' => 'numero_morti',
+                            'value' => 0,
+                            'compare' => '='
+                        )
+                    );
+                    break;
+                    
+                case 'morti_e_feriti':
+                    // Incidenti che hanno sia morti che feriti
+                    $meta_query_infortunati = array(
+                        'relation' => 'AND',
+                        array(
+                            'key' => 'numero_morti',
+                            'value' => 0,
+                            'compare' => '>'
+                        ),
+                        array(
+                            'key' => 'numero_feriti',
+                            'value' => 0,
+                            'compare' => '>'
+                        )
+                    );
+                    break;
+                    
+                case 'morti_o_feriti':
+                    // Incidenti che hanno morti OR feriti
+                    $meta_query_infortunati = array(
+                        'relation' => 'OR',
+                        array(
+                            'key' => 'numero_morti',
+                            'value' => 0,
+                            'compare' => '>'
+                        ),
+                        array(
+                            'key' => 'numero_feriti',
+                            'value' => 0,
+                            'compare' => '>'
+                        )
+                    );
+                    break;
+                    
+                case 'senza_infortunati':
+                    // Incidenti senza morti né feriti
+                    $meta_query_infortunati = array(
+                        'relation' => 'AND',
+                        array(
+                            'key' => 'numero_morti',
+                            'value' => 0,
+                            'compare' => '='
+                        ),
+                        array(
+                            'key' => 'numero_feriti',
+                            'value' => 0,
+                            'compare' => '='
+                        )
+                    );
+                    break;
+            }
+            
+            if (!empty($meta_query_infortunati)) {
+                $args['meta_query'][] = $meta_query_infortunati;
+            }
         }
         
         $incidenti = get_posts($args);

@@ -146,53 +146,24 @@ class IncidentiStradaliPlugin {
     public function admin_enqueue_scripts($hook) {
         global $post_type;
         
-        // Debug: vedi quale hook viene chiamato
-        error_log('Hook chiamato: ' . $hook);
-        
-        // Carica script nelle pagine del plugin
-        $should_load = false;
-        
-        // Pagine post type incidente_stradale
-        if ($post_type === 'incidente_stradale') {
-            $should_load = true;
-        }
-        
-        // Pagine admin del plugin (export, import, settings)
-        if (strpos($hook, 'incidenti') !== false) {
-            $should_load = true;
-        }
-        
-        // Pagine edit post
-        if ($hook === 'post.php' || $hook === 'post-new.php') {
-            if (isset($_GET['post_type']) && $_GET['post_type'] === 'incidente_stradale') {
-                $should_load = true;
-            }
-            if (isset($_GET['post']) && get_post_type($_GET['post']) === 'incidente_stradale') {
-                $should_load = true;
-            }
-        }
-        
-        // Forza caricamento su tutte le pagine admin per debug (rimuovi dopo test)
-        if (is_admin()) {
-            $should_load = true;
-        }
-        
-        if ($should_load) {
+        // Carica script solo nelle pagine del plugin
+        if ($post_type === 'incidente_stradale' || 
+            strpos($hook, 'incidenti') !== false || 
+            $hook === 'post.php' || 
+            $hook === 'post-new.php') {
+            
             wp_enqueue_script('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), INCIDENTI_VERSION, true);
             wp_enqueue_style('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/css/admin.css', array(), INCIDENTI_VERSION);
             
-            // Localizza script per AJAX - CORREGGI IL NONCE
+            // Localizza script per AJAX
             wp_localize_script('incidenti-admin', 'incidenti_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('import_incidenti_nonce') // <- CORRETTO
+                'nonce' => wp_create_nonce('incidenti_ajax_nonce')
             ));
             
             // Date picker
             wp_enqueue_script('jquery-ui-datepicker');
             wp_enqueue_style('jquery-ui-datepicker', '//code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css');
-            
-            // Debug
-            error_log('Script incidenti-admin caricato per hook: ' . $hook);
         }
     }
     

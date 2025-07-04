@@ -151,6 +151,11 @@ class IncidentiStradaliPlugin {
             strpos($hook, 'incidenti') !== false || 
             $hook === 'post.php' || 
             $hook === 'post-new.php') {
+
+            // AGGIUNGI LEAFLET PER L'ADMIN
+            wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
+            wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
+        
             
             wp_enqueue_script('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), INCIDENTI_VERSION, true);
             wp_enqueue_style('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/css/admin.css', array(), INCIDENTI_VERSION);

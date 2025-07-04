@@ -2731,11 +2731,42 @@ class IncidentiMetaBoxes {
         // Save all meta fields
         foreach ($meta_fields as $field) {
             if (isset($_POST[$field])) {
-                update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
-            } else {
-                if ($field === 'mostra_in_mappa') {
-                    delete_post_meta($post_id, $field);
+                // Gestione speciale per campi array (tipo_patente, circostanze)
+                if (is_array($_POST[$field])) {
+                    update_post_meta($post_id, $field, array_map('sanitize_text_field', $_POST[$field]));
+                } else {
+                    update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
                 }
+            } else {
+                // Non eliminare i campi delle circostanze se non sono impostati
+                if (!in_array($field, ['circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c'])) {
+                    if ($field === 'mostra_in_mappa') {
+                        delete_post_meta($post_id, $field);
+                    }
+                }
+            }
+        }
+
+        // === GESTIONE SPECIFICA CIRCOSTANZE PRESUNTE ===
+        $circostanze_fields = array(
+            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
+            'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 
+            'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c'
+        );
+
+        foreach ($circostanze_fields as $field) {
+            if (isset($_POST[$field]) && !empty($_POST[$field])) {
+                // Se è un array (checkbox multipli)
+                if (is_array($_POST[$field])) {
+                    $values = array_map('sanitize_text_field', $_POST[$field]);
+                    update_post_meta($post_id, $field, $values);
+                } else {
+                    // Se è un singolo valore
+                    update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
+                }
+            } else {
+                // Se non è selezionato, salva un array vuoto invece di eliminare
+                update_post_meta($post_id, $field, array());
             }
         }
 
@@ -2759,8 +2790,9 @@ class IncidentiMetaBoxes {
         for ($i = 1; $i <= 3; $i++) {
             if ($i <= $numero_veicoli) {
                 $vehicle_fields = array('tipo', 'targa', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
-                $driver_fields = array('eta', 'sesso', 'esito', 'tipo_patente', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro');
-                
+                $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro');
+                // Escluso tipo_patente perché è un array di checkbox
+
                 foreach ($vehicle_fields as $field) {
                     $key = 'veicolo_' . $i . '_' . $field;
                     if (isset($_POST[$key])) {
@@ -2773,6 +2805,17 @@ class IncidentiMetaBoxes {
                     if (isset($_POST[$key])) {
                         update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
                     }
+                }
+
+                // === GESTIONE SPECIFICA TIPO_PATENTE (ARRAY) ===
+                $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
+                if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
+                    $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
+                    $values = array_filter($values); // Rimuove valori vuoti
+                    update_post_meta($post_id, $tipo_patente_key, $values);
+                } else {
+                    // Se nessun tipo patente selezionato, salva array vuoto
+                    update_post_meta($post_id, $tipo_patente_key, array());
                 }
                 
                 // NUOVO: Salva i trasportati per ogni veicolo (fino a 9 trasportati)
@@ -2845,6 +2888,42 @@ class IncidentiMetaBoxes {
             }
         }
         
+        // === GESTIONE PEDONI ===
+        $numero_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? intval($_POST['numero_pedoni_coinvolti']) : 0;
+        for ($p = 1; $p <= 10; $p++) {
+            if ($p <= $numero_pedoni) {
+                $pedone_fields = array('eta', 'sesso', 'esito');
+                foreach ($pedone_fields as $field) {
+                    $key = 'pedone_' . $p . '_' . $field;
+                    if (isset($_POST[$key])) {
+                        update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
+                    }
+                }
+            } else {
+                // Elimina i campi dei pedoni non utilizzati
+                delete_post_meta($post_id, 'pedone_' . $p . '_eta');
+                delete_post_meta($post_id, 'pedone_' . $p . '_sesso');
+                delete_post_meta($post_id, 'pedone_' . $p . '_esito');
+            }
+        }
+
+        // === DEBUG PER VERIFICARE IL SALVATAGGIO ===
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            // Debug tipo_patente
+            for ($i = 1; $i <= 3; $i++) {
+                $tipo_patente = get_post_meta($post_id, 'conducente_' . $i . '_tipo_patente', true);
+                error_log("DEBUG - Post $post_id, Conducente $i, tipo_patente: " . print_r($tipo_patente, true));
+            }
+            
+            // Debug circostanze
+            $circ_a = get_post_meta($post_id, 'circostanza_veicolo_a', true);
+            $circ_b = get_post_meta($post_id, 'circostanza_veicolo_b', true);
+            $difetto_a = get_post_meta($post_id, 'difetto_veicolo_a', true);
+            $stato_a = get_post_meta($post_id, 'stato_psicofisico_a', true);
+            
+            error_log("DEBUG - Post $post_id, Circostanze: A=$circ_a, B=$circ_b, DifettoA=$difetto_a, StatoA=$stato_a");
+        }
+
         // Update post title only if needed
         if (isset($_POST['data_incidente'])) {
             $current_title = get_the_title($post_id);

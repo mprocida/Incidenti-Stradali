@@ -2665,6 +2665,67 @@ class IncidentiMetaBoxes {
             'veicolo_3_trasportato_8_sedile', 'veicolo_3_trasportato_8_dettaglio_sedile',
             'veicolo_3_trasportato_9_sedile', 'veicolo_3_trasportato_9_dettaglio_sedile',
             'riepilogo_morti_24h', 'riepilogo_morti_2_30gg', 'riepilogo_feriti',
+            // Campi localizzazione aggiuntivi
+            'abitato', 'illuminazione', 'pavimentazione', 'intersezione',
+
+            // Campi veicoli (pattern ripetuto per veicolo_1, veicolo_2, veicolo_3)
+            'veicolo_1_tipo', 'veicolo_1_targa', 'veicolo_1_anno_immatricolazione', 'veicolo_1_cilindrata',
+            'veicolo_2_tipo', 'veicolo_2_targa', 'veicolo_2_anno_immatricolazione', 'veicolo_2_cilindrata',
+            'veicolo_3_tipo', 'veicolo_3_targa', 'veicolo_3_anno_immatricolazione', 'veicolo_3_cilindrata',
+
+            // Campi conducenti (pattern ripetuto per conducente_1, conducente_2, conducente_3)  
+            'conducente_1_eta', 'conducente_1_sesso', 'conducente_1_esito', 'conducente_1_tipo_patente', 'conducente_1_rilascio_patente',
+            'conducente_2_eta', 'conducente_2_sesso', 'conducente_2_esito', 'conducente_2_tipo_patente', 'conducente_2_rilascio_patente',
+            'conducente_3_eta', 'conducente_3_sesso', 'conducente_3_esito', 'conducente_3_tipo_patente', 'conducente_3_rilascio_patente',
+
+            // Campi trasportati - età, sesso, esito (pattern per veicolo_1_trasportato_1 fino a veicolo_3_trasportato_9)
+            'veicolo_1_trasportato_1_eta', 'veicolo_1_trasportato_1_sesso', 'veicolo_1_trasportato_1_esito',
+            'veicolo_1_trasportato_2_eta', 'veicolo_1_trasportato_2_sesso', 'veicolo_1_trasportato_2_esito',
+            'veicolo_1_trasportato_3_eta', 'veicolo_1_trasportato_3_sesso', 'veicolo_1_trasportato_3_esito',
+            'veicolo_1_trasportato_4_eta', 'veicolo_1_trasportato_4_sesso', 'veicolo_1_trasportato_4_esito',
+            'veicolo_1_trasportato_5_eta', 'veicolo_1_trasportato_5_sesso', 'veicolo_1_trasportato_5_esito',
+            'veicolo_1_trasportato_6_eta', 'veicolo_1_trasportato_6_sesso', 'veicolo_1_trasportato_6_esito',
+            'veicolo_1_trasportato_7_eta', 'veicolo_1_trasportato_7_sesso', 'veicolo_1_trasportato_7_esito',
+            'veicolo_1_trasportato_8_eta', 'veicolo_1_trasportato_8_sesso', 'veicolo_1_trasportato_8_esito',
+            'veicolo_1_trasportato_9_eta', 'veicolo_1_trasportato_9_sesso', 'veicolo_1_trasportato_9_esito',
+
+            'veicolo_2_trasportato_1_eta', 'veicolo_2_trasportato_1_sesso', 'veicolo_2_trasportato_1_esito',
+            'veicolo_2_trasportato_2_eta', 'veicolo_2_trasportato_2_sesso', 'veicolo_2_trasportato_2_esito',
+            'veicolo_2_trasportato_3_eta', 'veicolo_2_trasportato_3_sesso', 'veicolo_2_trasportato_3_esito',
+            'veicolo_2_trasportato_4_eta', 'veicolo_2_trasportato_4_sesso', 'veicolo_2_trasportato_4_esito',
+            'veicolo_2_trasportato_5_eta', 'veicolo_2_trasportato_5_sesso', 'veicolo_2_trasportato_5_esito',
+            'veicolo_2_trasportato_6_eta', 'veicolo_2_trasportato_6_sesso', 'veicolo_2_trasportato_6_esito',
+            'veicolo_2_trasportato_7_eta', 'veicolo_2_trasportato_7_sesso', 'veicolo_2_trasportato_7_esito',
+            'veicolo_2_trasportato_8_eta', 'veicolo_2_trasportato_8_sesso', 'veicolo_2_trasportato_8_esito',
+            'veicolo_2_trasportato_9_eta', 'veicolo_2_trasportato_9_sesso', 'veicolo_2_trasportato_9_esito',
+
+            'veicolo_3_trasportato_1_eta', 'veicolo_3_trasportato_1_sesso', 'veicolo_3_trasportato_1_esito',
+            'veicolo_3_trasportato_2_eta', 'veicolo_3_trasportato_2_sesso', 'veicolo_3_trasportato_2_esito',
+            'veicolo_3_trasportato_3_eta', 'veicolo_3_trasportato_3_sesso', 'veicolo_3_trasportato_3_esito',
+            'veicolo_3_trasportato_4_eta', 'veicolo_3_trasportato_4_sesso', 'veicolo_3_trasportato_4_esito',
+            'veicolo_3_trasportato_5_eta', 'veicolo_3_trasportato_5_sesso', 'veicolo_3_trasportato_5_esito',
+            'veicolo_3_trasportato_6_eta', 'veicolo_3_trasportato_6_sesso', 'veicolo_3_trasportato_6_esito',
+            'veicolo_3_trasportato_7_eta', 'veicolo_3_trasportato_7_sesso', 'veicolo_3_trasportato_7_esito',
+            'veicolo_3_trasportato_8_eta', 'veicolo_3_trasportato_8_sesso', 'veicolo_3_trasportato_8_esito',
+            'veicolo_3_trasportato_9_eta', 'veicolo_3_trasportato_9_sesso', 'veicolo_3_trasportato_9_esito',
+
+            // Campi pedoni (pattern per pedone_1 fino a pedone_10)
+            'pedone_1_eta', 'pedone_1_sesso', 'pedone_1_esito',
+            'pedone_2_eta', 'pedone_2_sesso', 'pedone_2_esito',
+            'pedone_3_eta', 'pedone_3_sesso', 'pedone_3_esito',
+            'pedone_4_eta', 'pedone_4_sesso', 'pedone_4_esito',
+            'pedone_5_eta', 'pedone_5_sesso', 'pedone_5_esito',
+            'pedone_6_eta', 'pedone_6_sesso', 'pedone_6_esito',
+            'pedone_7_eta', 'pedone_7_sesso', 'pedone_7_esito',
+            'pedone_8_eta', 'pedone_8_sesso', 'pedone_8_esito',
+            'pedone_9_eta', 'pedone_9_sesso', 'pedone_9_esito',
+            'pedone_10_eta', 'pedone_10_sesso', 'pedone_10_esito',
+
+            // Campi coordinate e identificativi aggiuntivi
+            'sistema_di_proiezione', 'codice_carabinieri', 'altra_strada', 'codice__ente', 'codice_strada_aci',
+
+            // Campi cittadinanza conducenti
+            'conducente_1_tipo_cittadinanza', 'conducente_2_tipo_cittadinanza', 'conducente_3_tipo_cittadinanza'
         );
         
         // Save all meta fields
@@ -2698,7 +2759,7 @@ class IncidentiMetaBoxes {
         for ($i = 1; $i <= 3; $i++) {
             if ($i <= $numero_veicoli) {
                 $vehicle_fields = array('tipo', 'targa', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
-                $driver_fields = array('eta', 'sesso', 'esito', 'tipo_patente', 'anno_patente');
+                $driver_fields = array('eta', 'sesso', 'esito', 'tipo_patente', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro');
                 
                 foreach ($vehicle_fields as $field) {
                     $key = 'veicolo_' . $i . '_' . $field;
@@ -2713,38 +2774,74 @@ class IncidentiMetaBoxes {
                         update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
                     }
                 }
+                
+                // NUOVO: Salva i trasportati per ogni veicolo (fino a 9 trasportati)
+                for ($t = 1; $t <= 9; $t++) {
+                    $trasportato_fields = array('eta', 'sesso', 'esito', 'sedile', 'dettaglio_sedile');
+                    foreach ($trasportato_fields as $field) {
+                        $key = 'veicolo_' . $i . '_trasportato_' . $t . '_' . $field;
+                        if (isset($_POST[$key])) {
+                            update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
+                        }
+                    }
+                }
             } else {
-                $all_fields = array(
+                // Elimina i campi dei veicoli non utilizzati
+                $all_vehicle_fields = array(
                     'veicolo_' . $i . '_tipo', 'veicolo_' . $i . '_targa', 
                     'veicolo_' . $i . '_anno_immatricolazione', 'veicolo_' . $i . '_cilindrata', 
                     'veicolo_' . $i . '_peso_totale',
-                    'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 
-                    'conducente_' . $i . '_esito', 'conducente_' . $i . '_tipo_patente', 
-                    'conducente_' . $i . '_anno_patente'
+                    'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 'conducente_' . $i . '_esito',
+                    'conducente_' . $i . '_tipo_patente', 'conducente_' . $i . '_rilascio_patente',
+                    'conducente_' . $i . '_tipo_cittadinanza', 'conducente_' . $i . '_nazionalita', 'conducente_' . $i . '_nazionalita_altro'
                 );
                 
-                foreach ($all_fields as $field) {
+                // Aggiungi campi trasportati da eliminare
+                for ($t = 1; $t <= 9; $t++) {
+                    $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_eta';
+                    $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_sesso';
+                    $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_esito';
+                    $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_sedile';
+                    $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_dettaglio_sedile';
+                }
+                
+                foreach ($all_vehicle_fields as $field) {
                     delete_post_meta($post_id, $field);
                 }
             }
         }
         
         // Save pedestrian fields
+        // === GESTIONE PEDONI (fino a 10) ===
         $numero_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? intval($_POST['numero_pedoni_coinvolti']) : 0;
-        for ($i = 1; $i <= 4; $i++) {
-            if ($i <= $numero_pedoni) {
-                $pedestrian_fields = array('eta', 'sesso', 'esito');
-                foreach ($pedestrian_fields as $field) {
-                    $key = 'pedone_' . $i . '_' . $field;
+        for ($p = 1; $p <= 10; $p++) {
+            if ($p <= $numero_pedoni) {
+                $pedone_fields = array('eta', 'sesso', 'esito');
+                foreach ($pedone_fields as $field) {
+                    $key = 'pedone_' . $p . '_' . $field;
                     if (isset($_POST[$key])) {
                         update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
                     }
                 }
             } else {
-                $fields_to_remove = array('pedone_' . $i . '_eta', 'pedone_' . $i . '_sesso', 'pedone_' . $i . '_esito');
+                // Elimina i campi dei pedoni non utilizzati
+                $fields_to_remove = array('pedone_' . $p . '_eta', 'pedone_' . $p . '_sesso', 'pedone_' . $p . '_esito');
                 foreach ($fields_to_remove as $field) {
                     delete_post_meta($post_id, $field);
                 }
+            }
+        }
+
+        // === GESTIONE CAMPI AGGIUNTIVI PER EXPORT ISTAT ===
+        $additional_simple_fields = array(
+            'abitato', 'illuminazione', 'pavimentazione', 'intersezione', 
+            'sistema_di_proiezione', 'codice_carabinieri', 'altra_strada', 
+            'codice__ente', 'codice_strada_aci'
+        );
+
+        foreach ($additional_simple_fields as $field) {
+            if (isset($_POST[$field])) {
+                update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
             }
         }
         

@@ -71,14 +71,15 @@ class IncidentiMetaBoxes {
             'high'
         );
         
-        add_meta_box(
-            'incidente_coordinate',
-            __('Coordinate Geografiche', 'incidenti-stradali'),
-            array($this, 'render_coordinate_meta_box'),
-            'incidente_stradale',
-            'side',
-            'default'
-        );
+        // Nascondi la meta box delle coordinate dato che ora è integrata in localizzazione
+        // add_meta_box(
+        //     'incidente_coordinate',
+        //     __('Coordinate Geografiche', 'incidenti-stradali'),
+        //     array($this, 'render_coordinate_meta_box'),
+        //     'incidente_stradale',
+        //     'side',
+        //     'default'
+        // );
         
         add_meta_box(
             'incidente_mappa',
@@ -1079,6 +1080,29 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
         </table>
+
+        <!-- NUOVA SEZIONE MAPPA INTEGRATA -->
+        <div class="incidenti-mappa-localizzazione">
+            <h4><?php _e('Seleziona Posizione sulla Mappa', 'incidenti-stradali'); ?></h4>
+            <div class="incidenti-map-info-inline">
+                <p class="description">
+                    <strong><?php _e('Sistema:', 'incidenti-stradali'); ?></strong> WGS84 (GPS) • 
+                    <strong><?php _e('Clic sulla mappa', 'incidenti-stradali'); ?></strong> per impostare le coordinate
+                </p>
+                <div class="coordinate-inputs-inline">
+                    <label for="latitudine_inline"><?php _e('Latitudine:', 'incidenti-stradali'); ?></label>
+                    <input type="text" id="latitudine_inline" name="latitudine" 
+                        value="<?php echo esc_attr(get_post_meta($post->ID, 'latitudine', true)); ?>" 
+                        placeholder="es. 41.902783" class="incidenti-coordinate-input-inline">
+                    
+                    <label for="longitudine_inline"><?php _e('Longitudine:', 'incidenti-stradali'); ?></label>
+                    <input type="text" id="longitudine_inline" name="longitudine" 
+                        value="<?php echo esc_attr(get_post_meta($post->ID, 'longitudine', true)); ?>" 
+                        placeholder="es. 12.496366" class="incidenti-coordinate-input-inline">
+                </div>
+            </div>
+            <div id="localizzazione-map"></div>
+        </div>
         <script type="text/javascript">
             jQuery(document).ready(function($) {
                 function updateFieldsVisibility() {
@@ -1112,6 +1136,109 @@ class IncidentiMetaBoxes {
                 // Trigger on page load and when tipo_strada changes
                 $('#tipo_strada').on('change', updateFieldsVisibility);
                 updateFieldsVisibility();
+                // === NUOVA SEZIONE MAPPA ===
+                // Inizializza mappa solo se il contenitore esiste
+                if ($('#localizzazione-map').length === 0) return;
+                
+                var map = L.map('localizzazione-map', {
+                    zoomControl: true,
+                    scrollWheelZoom: true,
+                    doubleClickZoom: true,
+                    boxZoom: false
+                }).setView([40.351, 18.175], 10); // Centrato su Lecce
+                
+                // Tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap',
+                    maxZoom: 19
+                }).addTo(map);
+                
+                var marker = null;
+                var lat = parseFloat($('#latitudine_inline').val());
+                var lng = parseFloat($('#longitudine_inline').val());
+                
+                // Marker esistente
+                if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                    marker = L.marker([lat, lng], {
+                        draggable: true,
+                        title: 'Posizione incidente (trascinabile)'
+                    }).addTo(map);
+                    map.setView([lat, lng], 15);
+                    
+                    marker.on('dragend', function(e) {
+                        var position = e.target.getLatLng();
+                        $('#latitudine_inline').val(position.lat.toFixed(6));
+                        $('#longitudine_inline').val(position.lng.toFixed(6));
+                        // Sincronizza con i campi nella sidebar se esistono
+                        $('#latitudine').val(position.lat.toFixed(6));
+                        $('#longitudine').val(position.lng.toFixed(6));
+                    });
+                }
+                
+                // Click sulla mappa
+                map.on('click', function(e) {
+                    var lat = e.latlng.lat;
+                    var lng = e.latlng.lng;
+                    
+                    $('#latitudine_inline').val(lat.toFixed(6));
+                    $('#longitudine_inline').val(lng.toFixed(6));
+                    // Sincronizza con i campi nella sidebar se esistono
+                    $('#latitudine').val(lat.toFixed(6));
+                    $('#longitudine').val(lng.toFixed(6));
+                    
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+                    
+                    marker = L.marker([lat, lng], {
+                        draggable: true,
+                        title: 'Posizione incidente (trascinabile)'
+                    }).addTo(map);
+                    
+                    marker.on('dragend', function(e) {
+                        var position = e.target.getLatLng();
+                        $('#latitudine_inline').val(position.lat.toFixed(6));
+                        $('#longitudine_inline').val(position.lng.toFixed(6));
+                        $('#latitudine').val(position.lat.toFixed(6));
+                        $('#longitudine').val(position.lng.toFixed(6));
+                    });
+                });
+                
+                // Aggiorna mappa quando coordinate cambiano
+                $('#latitudine_inline, #longitudine_inline').on('input change', function() {
+                    var lat = parseFloat($('#latitudine_inline').val());
+                    var lng = parseFloat($('#longitudine_inline').val());
+                    
+                    if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                        if (marker) {
+                            map.removeLayer(marker);
+                        }
+                        
+                        marker = L.marker([lat, lng], {
+                            draggable: true,
+                            title: 'Posizione incidente (trascinabile)'
+                        }).addTo(map);
+                        
+                        marker.on('dragend', function(e) {
+                            var position = e.target.getLatLng();
+                            $('#latitudine_inline').val(position.lat.toFixed(6));
+                            $('#longitudine_inline').val(position.lng.toFixed(6));
+                            $('#latitudine').val(position.lat.toFixed(6));
+                            $('#longitudine').val(position.lng.toFixed(6));
+                        });
+                        
+                        map.setView([lat, lng], 15);
+                        
+                        // Sincronizza con sidebar
+                        $('#latitudine').val(lat.toFixed(6));
+                        $('#longitudine').val(lng.toFixed(6));
+                    }
+                });
+                
+                // Forza ridimensionamento
+                setTimeout(function() {
+                    map.invalidateSize();
+                }, 250);
             });
             </script>
         <?php

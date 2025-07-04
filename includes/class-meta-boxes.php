@@ -2003,6 +2003,11 @@ class IncidentiMetaBoxes {
         $sesso = get_post_meta($post->ID, $prefix . 'sesso', true);
         $esito = get_post_meta($post->ID, $prefix . 'esito', true);
         $tipo_patente = get_post_meta($post->ID, $prefix . 'tipo_patente', true);
+        // Assicurati che sia un array
+        if (!is_array($tipo_patente)) {
+            $tipo_patente = !empty($tipo_patente) ? (array)$tipo_patente : array();
+        }
+        $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true);
         $anno_patente = get_post_meta($post->ID, $prefix . 'anno_patente', true);
         
         ?>
@@ -2364,6 +2369,7 @@ class IncidentiMetaBoxes {
     public function render_circostanze_meta_box($post) {
         $circostanza_veicolo_a = get_post_meta($post->ID, 'circostanza_veicolo_a', true);
         $circostanza_veicolo_b = get_post_meta($post->ID, 'circostanza_veicolo_b', true);
+        $circostanza_tipo = get_post_meta($post->ID, 'circostanza_tipo', true);
         $circostanza_veicolo_c = get_post_meta($post->ID, 'circostanza_veicolo_c', true);
         $difetto_veicolo_a = get_post_meta($post->ID, 'difetto_veicolo_a', true);
         $difetto_veicolo_b = get_post_meta($post->ID, 'difetto_veicolo_b', true);
@@ -2728,21 +2734,23 @@ class IncidentiMetaBoxes {
             'conducente_1_tipo_cittadinanza', 'conducente_2_tipo_cittadinanza', 'conducente_3_tipo_cittadinanza'
         );
         
-        // Save all meta fields
+        // Save all meta fields ESCLUDENDO i campi speciali
+        $special_fields = ['circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 
+                          'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 
+                          'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c',
+                          'conducente_1_tipo_patente', 'conducente_2_tipo_patente', 'conducente_3_tipo_patente'];
+        
         foreach ($meta_fields as $field) {
+            // Salta i campi speciali che vengono gestiti separatamente
+            if (in_array($field, $special_fields)) {
+                continue;
+            }
+            
             if (isset($_POST[$field])) {
-                // Gestione speciale per campi array (tipo_patente, circostanze)
-                if (is_array($_POST[$field])) {
-                    update_post_meta($post_id, $field, array_map('sanitize_text_field', $_POST[$field]));
-                } else {
-                    update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
-                }
+                update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
             } else {
-                // Non eliminare i campi delle circostanze se non sono impostati
-                if (!in_array($field, ['circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c'])) {
-                    if ($field === 'mostra_in_mappa') {
-                        delete_post_meta($post_id, $field);
-                    }
+                if ($field === 'mostra_in_mappa') {
+                    delete_post_meta($post_id, $field);
                 }
             }
         }
@@ -2791,7 +2799,7 @@ class IncidentiMetaBoxes {
             if ($i <= $numero_veicoli) {
                 $vehicle_fields = array('tipo', 'targa', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
                 $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro');
-                // Escluso tipo_patente perché è un array di checkbox
+                // Escluso tipo_patente perché è un array di checkbox gestito separatamente
 
                 foreach ($vehicle_fields as $field) {
                     $key = 'veicolo_' . $i . '_' . $field;
@@ -2854,27 +2862,6 @@ class IncidentiMetaBoxes {
             }
         }
         
-        // Save pedestrian fields
-        // === GESTIONE PEDONI (fino a 10) ===
-        $numero_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? intval($_POST['numero_pedoni_coinvolti']) : 0;
-        for ($p = 1; $p <= 10; $p++) {
-            if ($p <= $numero_pedoni) {
-                $pedone_fields = array('eta', 'sesso', 'esito');
-                foreach ($pedone_fields as $field) {
-                    $key = 'pedone_' . $p . '_' . $field;
-                    if (isset($_POST[$key])) {
-                        update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
-                    }
-                }
-            } else {
-                // Elimina i campi dei pedoni non utilizzati
-                $fields_to_remove = array('pedone_' . $p . '_eta', 'pedone_' . $p . '_sesso', 'pedone_' . $p . '_esito');
-                foreach ($fields_to_remove as $field) {
-                    delete_post_meta($post_id, $field);
-                }
-            }
-        }
-
         // === GESTIONE CAMPI AGGIUNTIVI PER EXPORT ISTAT ===
         $additional_simple_fields = array(
             'abitato', 'illuminazione', 'pavimentazione', 'intersezione', 
@@ -2888,25 +2875,6 @@ class IncidentiMetaBoxes {
             }
         }
         
-        // === GESTIONE PEDONI ===
-        $numero_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? intval($_POST['numero_pedoni_coinvolti']) : 0;
-        for ($p = 1; $p <= 10; $p++) {
-            if ($p <= $numero_pedoni) {
-                $pedone_fields = array('eta', 'sesso', 'esito');
-                foreach ($pedone_fields as $field) {
-                    $key = 'pedone_' . $p . '_' . $field;
-                    if (isset($_POST[$key])) {
-                        update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
-                    }
-                }
-            } else {
-                // Elimina i campi dei pedoni non utilizzati
-                delete_post_meta($post_id, 'pedone_' . $p . '_eta');
-                delete_post_meta($post_id, 'pedone_' . $p . '_sesso');
-                delete_post_meta($post_id, 'pedone_' . $p . '_esito');
-            }
-        }
-
         // === DEBUG PER VERIFICARE IL SALVATAGGIO ===
         if (defined('WP_DEBUG') && WP_DEBUG) {
             // Debug tipo_patente

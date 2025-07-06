@@ -47,6 +47,9 @@ class IncidentiStradaliPlugin {
         add_action('init', array($this, 'init'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
+
+        add_filter('single_template', array($this, 'load_single_template'));
+
         
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
@@ -213,6 +216,23 @@ class IncidentiStradaliPlugin {
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
+    }
+
+    /**
+     * Carica template personalizzato per incidenti
+     */
+    public function load_single_template($template) {
+        global $post;
+        
+        if ($post && $post->post_type == 'incidente_stradale') {
+            $plugin_template = INCIDENTI_PLUGIN_PATH . 'templates/single-incidente_stradale.php';
+            
+            if (file_exists($plugin_template)) {
+                return $plugin_template;
+            }
+        }
+        
+        return $template;
     }
 }
 

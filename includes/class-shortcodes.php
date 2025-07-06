@@ -1287,9 +1287,9 @@ class IncidentiShortcodes {
             // Generate popup content with new format
             $popup_content = '<div class="incidente-popup">';
             
-            // Codice (titolo con link)
-            $edit_link = get_edit_post_link($post_id);
-            $popup_content .= '<h4><a href="' . esc_url($edit_link) . '" target="_blank" style="color: #0073aa; text-decoration: none;">';
+            // Codice (titolo con link frontend)
+            $frontend_link = get_permalink($post_id);
+            $popup_content .= '<h4><a href="' . esc_url($frontend_link) . '" target="_blank" style="color: #0073aa; text-decoration: none;">';
             $popup_content .= '#' . str_pad($post_id, 4, '0', STR_PAD_LEFT) . ': ' . esc_html($incidente->post_title);
             $popup_content .= '</a></h4>';
             

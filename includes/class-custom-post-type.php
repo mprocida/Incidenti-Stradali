@@ -167,8 +167,8 @@ class IncidentiCustomPostType {
         
         $args = array(
             'labels'             => $labels,
-            'public'             => false,
-            'publicly_queryable' => false,
+            'public'             => true,
+            'publicly_queryable' => true,
             'show_ui'            => true,
             'show_in_menu'       => true,
             'menu_icon'          => 'dashicons-warning',

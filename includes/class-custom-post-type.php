@@ -15,10 +15,32 @@ class IncidentiCustomPostType {
         /* add_action('admin_notices', array($this, 'show_debug_info')); */
 
         add_filter('query_vars', array($this, 'add_query_vars'));
+        add_action('parse_request', array($this, 'parse_incidente_request'));
         
         // Force registration immediately if we're in admin
         if (is_admin()) {
             $this->register_post_type();
+        }
+    }
+
+    /**
+     * Aggiungi query vars personalizzate
+     */
+    public function add_query_vars($vars) {
+        $vars[] = 'incidente_stradale';
+        return $vars;
+    }
+
+    /**
+     * Gestisce il parsing delle richieste per incidenti
+     */
+    public function parse_incidente_request($wp) {
+        // Se la richiesta è per un incidente
+        if (isset($wp->query_vars['post_type']) && $wp->query_vars['post_type'] === 'incidente_stradale') {
+            // Assicurati che la query sia corretta
+            if (isset($wp->query_vars['name']) && !isset($wp->query_vars['pagename'])) {
+                $wp->query_vars['incidente_stradale'] = $wp->query_vars['name'];
+            }
         }
     }
     
@@ -172,27 +194,39 @@ class IncidentiCustomPostType {
             'show_in_menu'       => true,
             'menu_icon'          => 'dashicons-warning',
             'menu_position'      => 25,
-            'query_var'          => 'incidente_stradale',
+            'query_var'          => true,
             'rewrite'            => array(
                 'slug' => 'incidente-stradale',
-                'with_front' => false
+                'with_front' => false,
+                'feeds' => false,
+                'pages' => true
             ),
             'capability_type'    => 'post',
-            'has_archive'        => false,
+            'has_archive'        => true,
             'hierarchical'       => false,
-            'supports'           => array('title', 'author'),
+            'supports'           => array('title', 'author', 'custom-fields'),
             'show_in_rest'       => false,
             'show_in_nav_menus'  => false,
-            'show_in_admin_bar'  => false,
+            'show_in_admin_bar'  => true,
+            'exclude_from_search' => false,
+            'can_export'         => true,
+            'delete_with_user'   => false
         );
         
         // Register the post type
         register_post_type('incidente_stradale', $args);
         
         // Force flush rewrite rules on first registration
-        if (get_option('incidenti_rewrite_flushed') !== 'yes') {
+        $rewrite_version = get_option('incidenti_rewrite_version', '0');
+        if ($rewrite_version !== INCIDENTI_VERSION) {
             flush_rewrite_rules(false);
-            update_option('incidenti_rewrite_flushed', 'yes');
+            update_option('incidenti_rewrite_version', INCIDENTI_VERSION);
+            error_log('Incidenti Plugin: Rewrite rules flushed for version ' . INCIDENTI_VERSION);
+        }
+
+        // Assicurati che le regole siano sempre aggiornate durante lo sviluppo
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            add_option('incidenti_flush_rewrite_rules', true);
         }
     }
     

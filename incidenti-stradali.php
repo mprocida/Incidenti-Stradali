@@ -50,10 +50,49 @@ class IncidentiStradaliPlugin {
 
         add_filter('single_template', array($this, 'load_single_template'));
 
+        add_filter('query_vars', array($this, 'add_query_vars'));
+        add_action('template_redirect', array($this, 'handle_incidente_redirect'));
+
         
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+    }
+
+    /**
+     * Gestisce i redirect per incidenti
+     */
+    public function handle_incidente_redirect() {
+        global $wp_query;
+        
+        // Debug: controlla se siamo su una pagina di incidente
+        if (is_singular('incidente_stradale')) {
+            // Se il post non è trovato ma siamo su una URL di incidente
+            if (!$wp_query->post && get_query_var('name')) {
+                $post_name = get_query_var('name');
+                
+                // Cerca il post per slug
+                $post = get_page_by_path($post_name, OBJECT, 'incidente_stradale');
+                
+                if (!$post) {
+                    // Se non trova il post, prova a cercare per ID se l'URL contiene numeri
+                    if (is_numeric($post_name)) {
+                        $post = get_post($post_name);
+                        if ($post && $post->post_type !== 'incidente_stradale') {
+                            $post = null;
+                        }
+                    }
+                }
+                
+                if (!$post) {
+                    // Se ancora non trova il post, reindirizza a 404
+                    global $wp_query;
+                    $wp_query->set_404();
+                    status_header(404);
+                    return;
+                }
+            }
+        }
     }
     
     public function include_files() {
@@ -230,9 +269,23 @@ class IncidentiStradaliPlugin {
             if (file_exists($plugin_template)) {
                 return $plugin_template;
             }
+            
+            // Fallback: usa il template del tema se esiste
+            $theme_template = locate_template(array('single-incidente_stradale.php'));
+            if ($theme_template) {
+                return $theme_template;
+            }
         }
         
         return $template;
+    }
+
+    /**
+     * Aggiungi variabili query personalizzate
+     */
+    public function add_query_vars($vars) {
+        $vars[] = 'incidente_stradale';
+        return $vars;
     }
 }
 

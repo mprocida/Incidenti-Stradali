@@ -59,8 +59,8 @@ get_header();
                 <?php
                 // Check if we should show the map
                 $mostra_in_mappa = get_post_meta(get_the_ID(), 'mostra_in_mappa', true);
-                $latitudine = get_post_meta(get_the_ID(), 'latitudine_incidente', true);
-                $longitudine = get_post_meta(get_the_ID(), 'longitudine_incidente', true);
+                $latitudine = get_post_meta(get_the_ID(), 'latitudine', true);
+                $longitudine = get_post_meta(get_the_ID(), 'longitudine', true);
                 
                 if ($mostra_in_mappa && $latitudine && $longitudine) {
                     ?>

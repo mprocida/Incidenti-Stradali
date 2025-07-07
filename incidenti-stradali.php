@@ -50,6 +50,9 @@ class IncidentiStradaliPlugin {
 
         add_filter('single_template', array($this, 'load_single_template'));
 
+        // AGGIUNGI QUESTA RIGA TEMPORANEAMENTE:
+        add_action('init', function() { flush_rewrite_rules(); }, 999);
+
         
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));

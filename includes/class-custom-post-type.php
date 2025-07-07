@@ -13,6 +13,8 @@ class IncidentiCustomPostType {
         add_action('admin_menu', array($this, 'fix_menu_position'), 999);
         add_action('admin_notices', array($this, 'debug_menu_registration'));
         /* add_action('admin_notices', array($this, 'show_debug_info')); */
+
+        add_filter('query_vars', array($this, 'add_query_vars'));
         
         // Force registration immediately if we're in admin
         if (is_admin()) {
@@ -162,9 +164,6 @@ class IncidentiCustomPostType {
             'set_featured_image'    => _x('Imposta immagine incidente', 'Overrides the "Set featured image" phrase', 'incidenti-stradali'),
         );
         
-        // Determine menu position based on user capabilities
-        $menu_position = 25; // After Comments (25)
-        
         $args = array(
             'labels'             => $labels,
             'public'             => true,
@@ -172,34 +171,29 @@ class IncidentiCustomPostType {
             'show_ui'            => true,
             'show_in_menu'       => true,
             'menu_icon'          => 'dashicons-warning',
-            'menu_position'      => $menu_position,
-            'query_var'          => true,
+            'menu_position'      => 25,
+            'query_var'          => 'incidente_stradale',
             'rewrite'            => array(
                 'slug' => 'incidente-stradale',
-                'with_front' => false,
-                'pages' => true,
-                'feeds' => false,
+                'with_front' => false
             ),
             'capability_type'    => 'post',
-            'map_meta_cap'       => true,
             'has_archive'        => false,
             'hierarchical'       => false,
-            'supports'           => array('title', 'author', 'custom-fields'),
+            'supports'           => array('title', 'author'),
             'show_in_rest'       => false,
             'show_in_nav_menus'  => false,
             'show_in_admin_bar'  => false,
         );
         
         // Register the post type
-        $post_type_registered = register_post_type('incidente_stradale', $args);
+        register_post_type('incidente_stradale', $args);
         
-        // Check if registration was successful and log any errors
-        if (is_wp_error($post_type_registered)) {
-            error_log('Incidenti Plugin: Error registering post type - ' . $post_type_registered->get_error_message());
+        // Force flush rewrite rules on first registration
+        if (get_option('incidenti_rewrite_flushed') !== 'yes') {
+            flush_rewrite_rules(false);
+            update_option('incidenti_rewrite_flushed', 'yes');
         }
-        
-        // Ensure capabilities are properly set for the post type
-        add_action('admin_init', array($this, 'ensure_post_type_capabilities'));
     }
     
     /**

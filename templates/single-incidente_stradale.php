@@ -83,19 +83,10 @@ get_header();
                         $feriti = 0;
                         
                         // Count drivers
-                        $numero_veicoli_calc = (int) get_post_meta(get_the_ID(), 'numero_veicoli_coinvolti', true) ?: 0;
-                        for ($i = 1; $i <= $numero_veicoli_calc; $i++) {
+                        for ($i = 1; $i <= 3; $i++) {
                             $esito = get_post_meta(get_the_ID(), 'conducente_' . $i . '_esito', true);
                             if ($esito == '3' || $esito == '4') $morti++;
                             if ($esito == '2') $feriti++;
-                            
-                            // Count passengers
-                            $num_passeggeri = get_post_meta(get_the_ID(), 'veicolo_' . $i . '_numero_passeggeri', true) ?: 0;
-                            for ($j = 1; $j <= $num_passeggeri; $j++) {
-                                $esito_pass = get_post_meta(get_the_ID(), 'passeggero_' . $i . '_' . $j . '_esito', true);
-                                if ($esito_pass == '3' || $esito_pass == '4') $morti++;
-                                if ($esito_pass == '2') $feriti++;
-                            }
                         }
                         
                         // Count pedestrians
@@ -134,114 +125,70 @@ get_header();
                 
                 <div class="incidente-details">
                     <div class="incidente-section">
-                    <h3><?php _e('Informazioni Generali', 'incidenti-stradali'); ?></h3>
-                    <table class="incidente-table">
-                        <tr>
-                            <th><?php _e('Data Incidente', 'incidenti-stradali'); ?></th>
-                            <td><?php echo date_i18n(get_option('date_format'), strtotime($data_incidente)); ?></td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Ora', 'incidenti-stradali'); ?></th>
-                            <td><?php echo esc_html($ora_incidente . ':' . $minuti_incidente); ?></td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Provincia (Codice ISTAT)', 'incidenti-stradali'); ?></th>
-                            <td><?php echo esc_html(get_post_meta(get_the_ID(), 'provincia_incidente', true)); ?></td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Comune (Codice ISTAT)', 'incidenti-stradali'); ?></th>
-                            <td><?php echo esc_html(get_post_meta(get_the_ID(), 'comune_incidente', true)); ?></td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Organo di Rilevazione', 'incidenti-stradali'); ?></th>
-                            <td>
-                                <?php 
-                                $organo = get_post_meta(get_the_ID(), 'organo_rilevazione', true);
-                                $organi = array(
-                                    '1' => __('Polizia Municipale', 'incidenti-stradali'),
-                                    '2' => __('Carabinieri', 'incidenti-stradali'),
-                                    '3' => __('Polizia di Stato', 'incidenti-stradali'),
-                                    '4' => __('Guardia di Finanza', 'incidenti-stradali'),
-                                    '5' => __('Vigili del Fuoco', 'incidenti-stradali'),
-                                    '6' => __('Altro', 'incidenti-stradali')
-                                );
-                                echo isset($organi[$organo]) ? esc_html($organi[$organo]) : '';
-                                ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Localizzazione', 'incidenti-stradali'); ?></th>
-                            <td>
-                                <?php 
-                                $nell_abitato = get_post_meta(get_the_ID(), 'nell_abitato', true);
-                                echo $nell_abitato == '1' ? __('Nell\'abitato', 'incidenti-stradali') : __('Fuori dall\'abitato', 'incidenti-stradali');
-                                ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Tipo Strada', 'incidenti-stradali'); ?></th>
-                            <td>
-                                <?php 
-                                $tipo_strada = get_post_meta(get_the_ID(), 'tipo_strada', true);
-                                $tipi_strada = array(
-                                    '1' => __('Strada urbana', 'incidenti-stradali'),
-                                    '2' => __('Provinciale entro l\'abitato', 'incidenti-stradali'),
-                                    '3' => __('Statale entro l\'abitato', 'incidenti-stradali'),
-                                    '0' => __('Regionale entro l\'abitato', 'incidenti-stradali'),
-                                    '4' => __('Comunale extraurbana', 'incidenti-stradali'),
-                                    '5' => __('Provinciale', 'incidenti-stradali'),
-                                    '6' => __('Statale', 'incidenti-stradali'),
-                                    '7' => __('Autostrada', 'incidenti-stradali'),
-                                    '8' => __('Altra strada', 'incidenti-stradali'),
-                                    '9' => __('Regionale', 'incidenti-stradali')
-                                );
-                                echo isset($tipi_strada[$tipo_strada]) ? esc_html($tipi_strada[$tipo_strada]) : '';
-                                ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Denominazione Strada', 'incidenti-stradali'); ?></th>
-                            <td><?php echo esc_html(get_post_meta(get_the_ID(), 'denominazione_strada', true)); ?></td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Numero Civico', 'incidenti-stradali'); ?></th>
-                            <td><?php echo esc_html(get_post_meta(get_the_ID(), 'numero_civico_incidente', true)); ?></td>
-                        </tr>
-                        <?php 
-                        $progressiva_km = get_post_meta(get_the_ID(), 'progressiva_km', true);
-                        $progressiva_m = get_post_meta(get_the_ID(), 'progressiva_m', true);
-                        if ($progressiva_km || $progressiva_m) {
-                            ?>
+                        <h3><?php _e('Informazioni Generali', 'incidenti-stradali'); ?></h3>
+                        <table class="incidente-table">
                             <tr>
-                                <th><?php _e('Progressiva Chilometrica', 'incidenti-stradali'); ?></th>
+                                <th><?php _e('Provincia', 'incidenti-stradali'); ?></th>
+                                <td><?php echo esc_html(get_post_meta(get_the_ID(), 'provincia_incidente', true)); ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php _e('Comune', 'incidenti-stradali'); ?></th>
+                                <td><?php echo esc_html(get_post_meta(get_the_ID(), 'comune_incidente', true)); ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php _e('Localizzazione', 'incidenti-stradali'); ?></th>
                                 <td>
                                     <?php 
-                                    if ($progressiva_km) echo __('Km', 'incidenti-stradali') . ' ' . esc_html($progressiva_km);
-                                    if ($progressiva_km && $progressiva_m) echo ' + ';
-                                    if ($progressiva_m) echo esc_html($progressiva_m) . ' ' . __('m', 'incidenti-stradali');
+                                    $nell_abitato = get_post_meta(get_the_ID(), 'nell_abitato', true);
+                                    echo $nell_abitato == '1' ? __('Nell\'abitato', 'incidenti-stradali') : __('Fuori dall\'abitato', 'incidenti-stradali');
                                     ?>
                                 </td>
                             </tr>
-                            <?php
-                        }
-                        ?>
-                        <tr>
-                            <th><?php _e('Coordinate', 'incidenti-stradali'); ?></th>
-                            <td>
-                                <?php 
-                                if ($latitudine && $longitudine) {
-                                    echo sprintf(__('Lat: %s, Lng: %s', 'incidenti-stradali'), 
-                                        number_format((float)$latitudine, 6), 
-                                        number_format((float)$longitudine, 6)
+                            <tr>
+                                <th><?php _e('Tipo Strada', 'incidenti-stradali'); ?></th>
+                                <td>
+                                    <?php 
+                                    $tipo_strada = get_post_meta(get_the_ID(), 'tipo_strada', true);
+                                    $tipi_strada = array(
+                                        '1' => __('Strada urbana', 'incidenti-stradali'),
+                                        '2' => __('Provinciale entro l\'abitato', 'incidenti-stradali'),
+                                        '3' => __('Statale entro l\'abitato', 'incidenti-stradali'),
+                                        '0' => __('Regionale entro l\'abitato', 'incidenti-stradali'),
+                                        '4' => __('Comunale extraurbana', 'incidenti-stradali'),
+                                        '5' => __('Provinciale', 'incidenti-stradali'),
+                                        '6' => __('Statale', 'incidenti-stradali'),
+                                        '7' => __('Autostrada', 'incidenti-stradali'),
+                                        '8' => __('Altra strada', 'incidenti-stradali'),
+                                        '9' => __('Regionale', 'incidenti-stradali')
                                     );
-                                } else {
-                                    echo __('Non disponibili', 'incidenti-stradali');
-                                }
+                                    echo isset($tipi_strada[$tipo_strada]) ? esc_html($tipi_strada[$tipo_strada]) : '';
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><?php _e('Denominazione Strada', 'incidenti-stradali'); ?></th>
+                                <td><?php echo esc_html(get_post_meta(get_the_ID(), 'denominazione_strada', true)); ?></td>
+                            </tr>
+                            <?php 
+                            $progressiva_km = get_post_meta(get_the_ID(), 'progressiva_km', true);
+                            $progressiva_m = get_post_meta(get_the_ID(), 'progressiva_m', true);
+                            if ($progressiva_km || $progressiva_m) {
                                 ?>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                                <tr>
+                                    <th><?php _e('Progressiva Chilometrica', 'incidenti-stradali'); ?></th>
+                                    <td>
+                                        <?php 
+                                        if ($progressiva_km) echo __('Km', 'incidenti-stradali') . ' ' . esc_html($progressiva_km);
+                                        if ($progressiva_km && $progressiva_m) echo ' + ';
+                                        if ($progressiva_m) echo esc_html($progressiva_m) . ' ' . __('m', 'incidenti-stradali');
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                        </table>
+                    </div>
                     
                     <div class="incidente-section">
                         <h3><?php _e('Caratteristiche dell\'Incidente', 'incidenti-stradali'); ?></h3>
@@ -420,46 +367,6 @@ get_header();
                                                 </td>
                                             </tr>
                                         <?php endif; ?>
-                                        <?php 
-                                        // Passeggeri del veicolo
-                                        $num_passeggeri = get_post_meta(get_the_ID(), $prefix . 'numero_passeggeri', true) ?: 0;
-                                        if ($num_passeggeri > 0): 
-                                        ?>
-                                            <tr>
-                                                <th><?php _e('Passeggeri', 'incidenti-stradali'); ?></th>
-                                                <td>
-                                                    <?php 
-                                                    echo sprintf(__('Numero passeggeri: %d', 'incidenti-stradali'), $num_passeggeri);
-                                                    
-                                                    // Mostra info sui passeggeri
-                                                    for ($j = 1; $j <= $num_passeggeri; $j++) {
-                                                        $pass_prefix = 'passeggero_' . $i . '_' . $j . '_';
-                                                        $pass_eta = get_post_meta(get_the_ID(), $pass_prefix . 'eta', true);
-                                                        $pass_sesso = get_post_meta(get_the_ID(), $pass_prefix . 'sesso', true);
-                                                        $pass_esito = get_post_meta(get_the_ID(), $pass_prefix . 'esito', true);
-                                                        
-                                                        if ($pass_eta || $pass_sesso || $pass_esito) {
-                                                            echo '<br><strong>' . sprintf(__('Passeggero %d:', 'incidenti-stradali'), $j) . '</strong> ';
-                                                            
-                                                            $pass_info = array();
-                                                            if ($pass_eta) $pass_info[] = sprintf(__('Età: %s', 'incidenti-stradali'), $pass_eta);
-                                                            if ($pass_sesso && isset($sessi[$pass_sesso])) $pass_info[] = $sessi[$pass_sesso];
-                                                            if ($pass_esito && isset($esiti[$pass_esito])) {
-                                                                $esito_class = '';
-                                                                if ($pass_esito == '3' || $pass_esito == '4') {
-                                                                    $esito_class = 'esito-morto';
-                                                                } elseif ($pass_esito == '2') {
-                                                                    $esito_class = 'esito-ferito';
-                                                                }
-                                                                $pass_info[] = '<span class="' . $esito_class . '">' . $esiti[$pass_esito] . '</span>';
-                                                            }
-                                                            echo implode(' - ', $pass_info);
-                                                        }
-                                                    }
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                        <?php endif; ?>
                                     </table>
                                 </div>
                             <?php endfor; ?>
@@ -527,41 +434,7 @@ get_header();
                         <?php
                     }
                     ?>
-                    <div class="incidente-section">
-                        <h3><?php _e('Dati Tecnici ISTAT', 'incidenti-stradali'); ?></h3>
-                        <table class="incidente-table">
-                            <tr>
-                                <th><?php _e('Codice Incidente', 'incidenti-stradali'); ?></th>
-                                <td><?php echo esc_html(get_post_meta(get_the_ID(), 'codice_incidente', true)); ?></td>
-                            </tr>
-                            <tr>
-                                <th><?php _e('Protocollo', 'incidenti-stradali'); ?></th>
-                                <td><?php echo esc_html(get_post_meta(get_the_ID(), 'protocollo_incidente', true)); ?></td>
-                            </tr>
-                            <tr>
-                                <th><?php _e('Anno di Riferimento', 'incidenti-stradali'); ?></th>
-                                <td><?php echo esc_html(get_post_meta(get_the_ID(), 'anno_riferimento', true)); ?></td>
-                            </tr>
-                            <tr>
-                                <th><?php _e('Mostra in Mappa', 'incidenti-stradali'); ?></th>
-                                <td>
-                                    <?php 
-                                    $mostra_mappa = get_post_meta(get_the_ID(), 'mostra_in_mappa', true);
-                                    echo $mostra_mappa ? __('Sì', 'incidenti-stradali') : __('No', 'incidenti-stradali');
-                                    ?>
-                                </td>
-                            </tr>
-                            <?php 
-                            $note = get_post_meta(get_the_ID(), 'note_incidente', true);
-                            if ($note): 
-                            ?>
-                            <tr>
-                                <th><?php _e('Note', 'incidenti-stradali'); ?></th>
-                                <td><?php echo wp_kses_post(wpautop($note)); ?></td>
-                            </tr>
-                            <?php endif; ?>
-                        </table>
-                    </div>
+                    
                     <div class="incidente-section incidente-summary">
                         <h3><?php _e('Riepilogo Vittime', 'incidenti-stradali'); ?></h3>
                         <div class="vittime-summary">

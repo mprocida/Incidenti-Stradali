@@ -47,12 +47,6 @@ class IncidentiStradaliPlugin {
         add_action('init', array($this, 'init'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
-
-        add_filter('single_template', array($this, 'load_single_template'));
-
-        add_filter('query_vars', array($this, 'add_query_vars'));
-        add_action('template_redirect', array($this, 'handle_incidente_redirect'));
-
         
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
@@ -269,23 +263,9 @@ class IncidentiStradaliPlugin {
             if (file_exists($plugin_template)) {
                 return $plugin_template;
             }
-            
-            // Fallback: usa il template del tema se esiste
-            $theme_template = locate_template(array('single-incidente_stradale.php'));
-            if ($theme_template) {
-                return $theme_template;
-            }
         }
         
         return $template;
-    }
-
-    /**
-     * Aggiungi variabili query personalizzate
-     */
-    public function add_query_vars($vars) {
-        $vars[] = 'incidente_stradale';
-        return $vars;
     }
 }
 

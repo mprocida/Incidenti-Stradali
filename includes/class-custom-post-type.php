@@ -174,13 +174,20 @@ class IncidentiCustomPostType {
             'menu_icon'          => 'dashicons-warning',
             'menu_position'      => $menu_position,
             'query_var'          => true,
-            'rewrite'            => array('slug' => 'incidente-stradale'),
+            'rewrite'            => array(
+                'slug' => 'incidente-stradale',
+                'with_front' => false,
+                'pages' => true,
+                'feeds' => false,
+            ),
             'capability_type'    => 'post',
             'map_meta_cap'       => true,
             'has_archive'        => false,
             'hierarchical'       => false,
-            'supports'           => array('title', 'author'),
+            'supports'           => array('title', 'author', 'custom-fields'),
             'show_in_rest'       => false,
+            'show_in_nav_menus'  => false,
+            'show_in_admin_bar'  => false,
         );
         
         // Register the post type

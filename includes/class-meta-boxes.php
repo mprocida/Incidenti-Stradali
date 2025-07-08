@@ -655,8 +655,29 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
             <tr>
-                <th><label for="comune_incidente"><?php _e('Comune', 'incidenti-stradali'); ?> *</label></th>
-                <td>
+            <th><label for="comune_incidente"><?php _e('Comune', 'incidenti-stradali'); ?> *</label></th>
+            <td>
+                <?php
+                // Controllo restrizioni utente
+                $user_ente = get_user_meta(get_current_user_id(), 'ente_gestione', true);
+                $comuni_consentiti = $this->get_comuni_per_ente($user_ente);
+                
+                // Se l'utente ha un ente specifico con un solo comune, preseleziona
+                if (!empty($comuni_consentiti) && count($comuni_consentiti) == 1 && empty($comune)) {
+                    $comune = key($comuni_consentiti);
+                }
+
+                if (!empty($comuni_consentiti)): ?>
+                    <select id="comune_incidente" name="comune_incidente" required class="regular-text">
+                        <option value=""><?php _e('Seleziona comune', 'incidenti-stradali'); ?></option>
+                        <?php foreach ($comuni_consentiti as $codice => $nome): ?>
+                            <option value="<?php echo esc_attr($codice); ?>" <?php selected($comune, $codice); ?>>
+                                <?php echo esc_html($nome . ' (' . $codice . ')'); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p class="description"><?php _e('Comuni disponibili per il tuo ente di appartenenza', 'incidenti-stradali'); ?></p>
+                <?php else: ?>
                     <select id="comune_incidente" name="comune_incidente" required class="regular-text">
                         <option value=""><?php _e('Seleziona comune', 'incidenti-stradali'); ?></option>
                         <?php foreach($comuni_lecce as $codice => $nome): ?>
@@ -666,8 +687,9 @@ class IncidentiMetaBoxes {
                         <?php endforeach; ?>
                     </select>
                     <p class="description"><?php _e('Seleziona il comune dove è avvenuto l\'incidente', 'incidenti-stradali'); ?></p>
-                </td>
-            </tr>
+                <?php endif; ?>
+            </td>
+        </tr>
             <tr>
                 <th><label for="localita_incidente"><?php _e('Località', 'incidenti-stradali'); ?></label></th>
                 <td>
@@ -721,6 +743,12 @@ class IncidentiMetaBoxes {
             <tr style="display: none;">
                 <th><label for="organo_rilevazione"><?php _e('Organo di Rilevazione (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
+                    <?php
+                    // Auto-selezione basata sull'ente se non già selezionato
+                    if (empty($organo_rilevazione) && !empty($user_ente)) {
+                        $organo_rilevazione = $this->map_ente_to_organo($user_ente);
+                    }
+                    ?>
                     <select id="organo_rilevazione" name="organo_rilevazione">
                         <option value=""><?php _e('Seleziona organo', 'incidenti-stradali'); ?></option>
                         <option value="1" <?php selected($organo_rilevazione, '1'); ?>><?php _e('Agente di Polizia Stradale', 'incidenti-stradali'); ?></option>
@@ -3125,6 +3153,138 @@ class IncidentiMetaBoxes {
     public function on_post_untrashed($post_id) {
         if (get_post_type($post_id) === 'incidente_stradale') {
             error_log("Incidente {$post_id} ripristinato dal cestino da utente " . get_current_user_id());
+        }
+    }
+
+    /**
+     * Restituisce i comuni consentiti per un determinato ente
+     */
+    private function get_comuni_per_ente($ente_codice) {
+        if (empty($ente_codice) || in_array($ente_codice, ['agente_polizia_stradale', 'carabiniere', 'polizia_provinciale'])) {
+            return array(); // Nessuna restrizione per enti sovracomunali
+        }
+        
+        $mappatura_enti_comuni = array(
+            'pm_acquarica_capo' => array('001' => 'Acquarica Del Capo'),
+            'pm_alessano' => array('002' => 'Alessano'),
+            'pm_alezio' => array('003' => 'Alezio'),
+            'pm_alliste' => array('004' => 'Alliste'),
+            'pm_andrano' => array('005' => 'Andrano'),
+            'pm_aradeo' => array('006' => 'Aradeo'),
+            'pm_arnesano' => array('007' => 'Arnesano'),
+            'pm_bagnolo_salento' => array('008' => 'Bagnolo Del Salento'),
+            'pm_botrugno' => array('009' => 'Botrugno'),
+            'pm_calimera' => array('010' => 'Calimera Di Lecce'),
+            'pm_campi_salentina' => array('011' => 'Campi Salentina'),
+            'pm_cannole' => array('012' => 'Cannole'),
+            'pm_caprarica_lecce' => array('014' => 'Caprarica Di Lecce'),
+            'pm_carmiano' => array('015' => 'Carmiano'),
+            'pm_carpignano_salentino' => array('016' => 'Carpignano Salentino'),
+            'pm_casarano' => array('017' => 'Casarano'),
+            'pm_castrignano_greci' => array('020' => 'Castrignano De` Greci'),
+            'pm_castrignano_capo' => array('019' => 'Castrignano Del Capo'),
+            'pm_castri' => array('018' => 'Castri Di Lecce'),
+            'pm_castro' => array('021' => 'Castro'),
+            'pm_cavallino' => array('022' => 'Cavallino'),
+            'pm_collepasso' => array('023' => 'Collepasso'),
+            'pm_copertino' => array('024' => 'Copertino'),
+            'pm_corigliano_otranto' => array('025' => 'Corigliano D`Otranto'),
+            'pm_corsano' => array('026' => 'Corsano'),
+            'pm_cursi' => array('027' => 'Cursi'),
+            'pm_cutrofiano' => array('028' => 'Cutrofiano'),
+            'pm_diso' => array('029' => 'Diso'),
+            'pm_gagliano_capo' => array('030' => 'Gagliano Del Capo'),
+            'pm_galatina' => array('031' => 'Galatina'),
+            'pm_galatone' => array('032' => 'Galatone'),
+            'pm_gallipoli' => array('033' => 'Gallipoli'),
+            'pm_giuggianello' => array('034' => 'Giuggianello'),
+            'pm_giurdignano' => array('035' => 'Giurdignano'),
+            'pm_guagnano' => array('036' => 'Guagnano'),
+            'pm_lecce' => array('037' => 'Lecce'),
+            'pm_lequile' => array('038' => 'Lequile'),
+            'pm_leverano' => array('039' => 'Leverano'),
+            'pm_lizzanello' => array('040' => 'Lizzanello'),
+            'pm_maglie' => array('041' => 'Maglie'),
+            'pm_martano' => array('042' => 'Martano'),
+            'pm_martignano' => array('043' => 'Martignano'),
+            'pm_matino' => array('044' => 'Matino'),
+            'pm_melendugno' => array('045' => 'Melendugno'),
+            'pm_melissano' => array('046' => 'Melissano'),
+            'pm_melpignano' => array('047' => 'Melpignano'),
+            'pm_miggiano' => array('048' => 'Miggiano'),
+            'pm_minervino_lecce' => array('049' => 'Minervino Di Lecce'),
+            'pm_monteroni_lecce' => array('050' => 'Monteroni Di Lecce'),
+            'pm_montesano_salentino' => array('051' => 'Montesano Salentino'),
+            'pm_morciano_leuca' => array('052' => 'Morciano Di Leuca'),
+            'pm_muro' => array('053' => 'Muro Leccese'),
+            'pm_nardo' => array('054' => 'Nardo`'),
+            'pm_neviano' => array('055' => 'Neviano'),
+            'pm_nociglia' => array('056' => 'Nociglia'),
+            'pm_novoli' => array('057' => 'Novoli'),
+            'pm_ortelle' => array('058' => 'Ortelle'),
+            'pm_otranto' => array('059' => 'Otranto'),
+            'pm_palmariggi' => array('060' => 'Palmariggi'),
+            'pm_parabita' => array('061' => 'Parabita'),
+            'pm_patu' => array('062' => 'Patu`'),
+            'pm_poggiardo' => array('063' => 'Poggiardo'),
+            'pm_porto_cesareo' => array('064' => 'Porto Cesareo'),
+            'pm_presicce' => array('065' => 'Presicce'),
+            'pm_presicce_acquarica' => array('066' => 'Presicce-Acquarica'),
+            'pm_racale' => array('067' => 'Racale'),
+            'pm_ruffano' => array('068' => 'Ruffano'),
+            'pm_salice_salentino' => array('069' => 'Salice Salentino'),
+            'pm_salve' => array('070' => 'Salve'),
+            'pm_san_cassiano' => array('071' => 'San Cassiano Di Lecce'),
+            'pm_san_cesario_lecce' => array('072' => 'San Cesario Di Lecce'),
+            'pm_san_donato_lecce' => array('073' => 'San Donato Di Lecce'),
+            'pm_san_pietro_lama' => array('074' => 'San Pietro In Lama'),
+            'pm_sanarica' => array('075' => 'Sanarica'),
+            'pm_sannicola' => array('076' => 'Sannicola'),
+            'pm_santa_cesarea_terme' => array('077' => 'Santa Cesarea Terme'),
+            'pm_scorrano' => array('078' => 'Scorrano'),
+            'pm_secli' => array('079' => 'Secli`'),
+            'pm_sogliano_cavour' => array('080' => 'Sogliano Cavour'),
+            'pm_soleto' => array('081' => 'Soleto'),
+            'pm_specchia' => array('082' => 'Specchia'),
+            'pm_spongano' => array('083' => 'Spongano'),
+            'pm_squinzano' => array('084' => 'Squinzano'),
+            'pm_sternatia' => array('085' => 'Sternatia'),
+            'pm_supersano' => array('086' => 'Supersano'),
+            'pm_surano' => array('087' => 'Surano'),
+            'pm_surbo' => array('088' => 'Surbo'),
+            'pm_taurisano' => array('089' => 'Taurisano'),
+            'pm_taviano' => array('090' => 'Taviano'),
+            'pm_tiggiano' => array('091' => 'Tiggiano'),
+            'pm_trepuzzi' => array('092' => 'Trepuzzi'),
+            'pm_tricase' => array('093' => 'Tricase'),
+            'pm_tuglie' => array('094' => 'Tuglie'),
+            'pm_ugento' => array('095' => 'Ugento'),
+            'pm_uggiano_chiesa' => array('096' => 'Uggiano La Chiesa'),
+            'pm_veglie' => array('097' => 'Veglie'),
+            'pm_vernole' => array('098' => 'Vernole'),
+            'pm_zollino' => array('099' => 'Zollino')
+        );
+        
+        return isset($mappatura_enti_comuni[$ente_codice]) ? $mappatura_enti_comuni[$ente_codice] : array();
+    }
+
+    /**
+     * Mappa l'ente di gestione all'organo di rilevazione
+     */
+    private function map_ente_to_organo($ente_codice) {
+        if (strpos($ente_codice, 'pm_') === 0) {
+            return '4'; // Polizia Municipale/Locale
+        }
+        
+        switch ($ente_codice) {
+            case 'agente_polizia_stradale':
+                return '1'; // Agente di Polizia Stradale
+            case 'carabiniere':
+                return '2'; // Carabiniere
+            case 'polizia_provinciale':
+                return '6'; // Agente di Polizia Provinciale
+            default:
+                return '';
         }
     }
 }

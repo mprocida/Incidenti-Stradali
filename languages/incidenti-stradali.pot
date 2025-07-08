@@ -1005,6 +1005,17 @@ msgstr ""
 #. Author of the plugin
 msgid "Your Name"
 msgstr ""
+msgid "Tipologia Incidente Lavorativo"
+msgstr ""
+
+msgid "Conducente coinvolto in incidente su strada durante lo svolgimento della propria attività lavorativa"
+msgstr ""
+
+msgid "Conducente coinvolto in incidente su strada durante il tragitto casa-lavoro o lavoro-casa"
+msgstr ""
+
+msgid "Non indicare le due modalità sopra riportate nel caso si tratti di altro tipo di tragitto e/o di incidente avvenuto al di fuori dell'attività lavorativa."
+msgstr ""
 
 #. Author URI of the plugin
 msgid "https://example.com"
@@ -1154,3 +1165,4 @@ msgstr "Veicolo ignoto perché datosi alla fuga"
 
 msgid "Monopattino"
 msgstr "Monopattino"
+

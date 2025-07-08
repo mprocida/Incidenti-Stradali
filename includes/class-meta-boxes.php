@@ -2135,6 +2135,7 @@ class IncidentiMetaBoxes {
         }
         $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true);
         $anno_patente = get_post_meta($post->ID, $prefix . 'anno_patente', true);
+        $tipologia_incidente = get_post_meta($post->ID, $prefix . 'tipologia_incidente', true);
         
         ?>
         <table class="form-table">
@@ -2202,6 +2203,20 @@ class IncidentiMetaBoxes {
                         value="<?php echo esc_attr(get_post_meta($post->ID, $prefix . 'nazionalita_altro', true)); ?>" 
                         placeholder="<?php _e('Specifica stato estero', 'incidenti-stradali'); ?>" 
                         style="display: <?php echo ($nazionalita == 'other') ? 'inline-block' : 'none'; ?>; margin-left: 10px;">
+                </td>
+            </tr>
+            <tr>
+                <th><?php _e('Tipologia Incidente Lavorativo', 'incidenti-stradali'); ?></th>
+                <td>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipologia_incidente" value="attivita_lavorativa" 
+                        <?php checked(get_post_meta($post->ID, $prefix . 'tipologia_incidente', true), 'attivita_lavorativa'); ?>> 
+                        <?php _e('Conducente coinvolto in incidente su strada durante lo svolgimento della propria attività lavorativa', 'incidenti-stradali'); ?>
+                    </label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipologia_incidente" value="tragitto_casa_lavoro" 
+                        <?php checked(get_post_meta($post->ID, $prefix . 'tipologia_incidente', true), 'tragitto_casa_lavoro'); ?>> 
+                        <?php _e('Conducente coinvolto in incidente su strada durante il tragitto casa-lavoro o lavoro-casa', 'incidenti-stradali'); ?>
+                    </label><br><br>
+                    <p style="font-weight: bold;"><?php _e('Non indicare le due modalità sopra riportate nel caso si tratti di altro tipo di tragitto e/o di incidente avvenuto al di fuori dell\'attività lavorativa.', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
         </table>
@@ -2924,7 +2939,7 @@ class IncidentiMetaBoxes {
         for ($i = 1; $i <= 3; $i++) {
             if ($i <= $numero_veicoli) {
                 $vehicle_fields = array('tipo', 'targa', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
-                $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro');
+                $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro', 'tipologia_incidente');
                 // Escluso tipo_patente perché è un array di checkbox gestito separatamente
 
                 foreach ($vehicle_fields as $field) {

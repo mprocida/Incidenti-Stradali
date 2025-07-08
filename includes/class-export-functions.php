@@ -476,7 +476,6 @@ class IncidentiExportFunctions {
             $indTXT++;
             $esitoTXT[$indTXT] = str_pad(substr($tipologia_strada ?: ' ', 0, 3), 3, ' ', STR_PAD_LEFT);
             
-            // manca campo su db
             // Campo 30: Illuminazione
             $illuminazione = $this->safe_meta_string($post_id, 'illuminazione');
             $indTXT++;
@@ -747,7 +746,7 @@ class IncidentiExportFunctions {
                 //Numero dei morti di sesso maschile (2 cifre)
                 $morti_m = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_altri_morti_maschi");
                 $indTXT++;
-                $esitoTXT[$indTXT] = str_pad($morti_m ?: '  ', 2, '0', STR_PAD_LEFT);
+                $esitoTXT[$indTXT] = str_pad($morti_m ?: '  ', 1, ' ', STR_PAD_LEFT);
                 //Numero dei morti di sesso femminile (2 cifre)
                 $morti_f = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_altri_morti_femmine");
                 $indTXT++;
@@ -756,7 +755,7 @@ class IncidentiExportFunctions {
                 $feriti_m = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_altri_feriti_maschi");
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($feriti_m ?: '  ', 2, '0', STR_PAD_LEFT);
-                //Numero dei feriti di sesso maschile (2 cifre)
+                //Numero dei feriti di sesso femminile (2 cifre)
                 $feriti_f = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_altri_feriti_femmine");
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($feriti_f ?: '  ', 2, '0', STR_PAD_LEFT);

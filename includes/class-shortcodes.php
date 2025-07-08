@@ -1216,117 +1216,11 @@ class IncidentiShortcodes {
         if (!empty($filters['tipologia_infortunati'])) {
             $tipologia = $filters['tipologia_infortunati'];
             
-            // Conta morti e feriti per ogni incidente
-            $meta_query_infortunati = array('relation' => 'OR');
-            
-            switch ($tipologia) {
-                case 'con_morti':
-                    // Incidenti che hanno almeno 1 morto
-                    $meta_query_infortunati[] = array(
-                        'key' => 'numero_morti',
-                        'value' => 0,
-                        'compare' => '>'
-                    );
-                    break;
-                    
-                case 'solo_morti':
-                    // Incidenti che hanno solo morti (morti > 0 E feriti = 0)
-                    $meta_query_infortunati = array(
-                        'relation' => 'AND',
-                        array(
-                            'key' => 'numero_morti',
-                            'value' => 0,
-                            'compare' => '>'
-                        ),
-                        array(
-                            'key' => 'numero_feriti',
-                            'value' => 0,
-                            'compare' => '='
-                        )
-                    );
-                    break;
-                    
-                case 'con_feriti':
-                    // Incidenti che hanno almeno 1 ferito
-                    $meta_query_infortunati[] = array(
-                        'key' => 'numero_feriti',
-                        'value' => 0,
-                        'compare' => '>'
-                    );
-                    break;
-                    
-                case 'solo_feriti':
-                    // Incidenti che hanno solo feriti (feriti > 0 E morti = 0)
-                    $meta_query_infortunati = array(
-                        'relation' => 'AND',
-                        array(
-                            'key' => 'numero_feriti',
-                            'value' => 0,
-                            'compare' => '>'
-                        ),
-                        array(
-                            'key' => 'numero_morti',
-                            'value' => 0,
-                            'compare' => '='
-                        )
-                    );
-                    break;
-                    
-                case 'morti_e_feriti':
-                    // Incidenti che hanno sia morti che feriti
-                    $meta_query_infortunati = array(
-                        'relation' => 'AND',
-                        array(
-                            'key' => 'numero_morti',
-                            'value' => 0,
-                            'compare' => '>'
-                        ),
-                        array(
-                            'key' => 'numero_feriti',
-                            'value' => 0,
-                            'compare' => '>'
-                        )
-                    );
-                    break;
-                    
-                case 'morti_o_feriti':
-                    // Incidenti che hanno morti OR feriti
-                    $meta_query_infortunati = array(
-                        'relation' => 'OR',
-                        array(
-                            'key' => 'numero_morti',
-                            'value' => 0,
-                            'compare' => '>'
-                        ),
-                        array(
-                            'key' => 'numero_feriti',
-                            'value' => 0,
-                            'compare' => '>'
-                        )
-                    );
-                    break;
-                    
-                case 'senza_infortunati':
-                    // Incidenti senza morti né feriti
-                    $meta_query_infortunati = array(
-                        'relation' => 'AND',
-                        array(
-                            'key' => 'numero_morti',
-                            'value' => 0,
-                            'compare' => '='
-                        ),
-                        array(
-                            'key' => 'numero_feriti',
-                            'value' => 0,
-                            'compare' => '='
-                        )
-                    );
-                    break;
-            }
-            
-            if (!empty($meta_query_infortunati)) {
-                $args['meta_query'][] = $meta_query_infortunati;
-            }
+            // Nota: non possiamo filtrare a livello di query perché i dati sono calcolati dinamicamente
+            // Il filtro verrà applicato nel loop successivo
+            $filtro_infortunati_attivo = $tipologia;
+        } else {
+            $filtro_infortunati_attivo = false;
         }
         
         $incidenti = get_posts($args);
@@ -1367,6 +1261,49 @@ class IncidentiShortcodes {
                     $esito = get_post_meta($post_id, 'passeggero_' . $i . '_' . $j . '_esito', true);
                     if ($esito == '3' || $esito == '4') $morti++;
                     if ($esito == '2') $feriti++;
+                }
+            }
+
+            // Applica filtro tipologia infortunati se attivo
+            if ($filtro_infortunati_attivo) {
+                $include_incident = false;
+                
+                switch ($filtro_infortunati_attivo) {
+                    case 'con_morti':
+                        $include_incident = ($morti > 0);
+                        break;
+                        
+                    case 'solo_morti':
+                        $include_incident = ($morti > 0 && $feriti == 0);
+                        break;
+                        
+                    case 'con_feriti':
+                        $include_incident = ($feriti > 0);
+                        break;
+                        
+                    case 'solo_feriti':
+                        $include_incident = ($feriti > 0 && $morti == 0);
+                        break;
+                        
+                    case 'morti_e_feriti':
+                        $include_incident = ($morti > 0 && $feriti > 0);
+                        break;
+                        
+                    case 'morti_o_feriti':
+                        $include_incident = ($morti > 0 || $feriti > 0);
+                        break;
+                        
+                    case 'senza_infortunati':
+                        $include_incident = ($morti == 0 && $feriti == 0);
+                        break;
+                        
+                    default:
+                        $include_incident = true;
+                }
+                
+                // Se l'incidente non passa il filtro, salta al prossimo
+                if (!$include_incident) {
+                    continue;
                 }
             }
             
@@ -1702,7 +1639,8 @@ class IncidentiShortcodes {
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
             $comune_codice = get_post_meta($incidente->ID, 'comune_incidente', true);
-            $nome_comune = isset($comuni_lecce[$comune_codice]) ? $comuni_lecce[$comune_codice] : $comune_codice;
+            //$nome_comune = isset($comuni_lecce[$comune_codice]) ? $comuni_lecce[$comune_codice] : $comune_codice;
+            $nome_comune = $this->get_nome_comune_from_codice($comune_codice);
             
             // Conta vittime
             $morti = 0;
@@ -1721,6 +1659,16 @@ class IncidentiShortcodes {
                 $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
                 if ($esito == '3' || $esito == '4') $morti++;
                 if ($esito == '2') $feriti++;
+            }
+
+            // Conta passeggeri
+            for ($i = 1; $i <= 3; $i++) {
+                $num_passeggeri = get_post_meta($post_id, 'veicolo_' . $i . '_numero_passeggeri', true) ?: 0;
+                for ($j = 1; $j <= intval($num_passeggeri); $j++) {
+                    $esito = get_post_meta($post_id, 'passeggero_' . $i . '_' . $j . '_esito', true);
+                    if ($esito == '3' || $esito == '4') $morti++;
+                    if ($esito == '2') $feriti++;
+                }
             }
             
             $result[] = array(

@@ -196,16 +196,20 @@ class IncidentiShortcodes {
                         </label>
                         <select id="<?php echo $map_id; ?>-tipologia-strada-filter">
                             <option value=""><?php _e('Tutte le tipologie', 'incidenti-stradali'); ?></option>
-                            <option value="1"><?php _e('Strada urbana', 'incidenti-stradali'); ?></option>
-                            <option value="2"><?php _e('Provinciale entro l\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="3"><?php _e('Statale entro l\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="4"><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="5"><?php _e('Comunale extraurbana', 'incidenti-stradali'); ?></option>
-                            <option value="6"><?php _e('Provinciale', 'incidenti-stradali'); ?></option>
-                            <option value="7"><?php _e('Statale', 'incidenti-stradali'); ?></option>
-                            <option value="8"><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
-                            <option value="9"><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
-                            <option value="10"><?php _e('Regionale', 'incidenti-stradali'); ?></option>
+                            <optgroup label="<?php _e('Nell\'abitato', 'incidenti-stradali'); ?>">
+                                <option value="1"><?php _e('Strada urbana', 'incidenti-stradali'); ?></option>
+                                <option value="2"><?php _e('Provinciale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                                <option value="3"><?php _e('Statale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                                <option value="0"><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            </optgroup>
+                            <optgroup label="<?php _e('Fuori dall\'abitato', 'incidenti-stradali'); ?>">
+                                <option value="5"><?php _e('Comunale extraurbana', 'incidenti-stradali'); ?></option>
+                                <option value="6"><?php _e('Provinciale', 'incidenti-stradali'); ?></option>
+                                <option value="7"><?php _e('Statale', 'incidenti-stradali'); ?></option>
+                                <option value="8"><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
+                                <option value="9"><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
+                                <option value="4"><?php _e('Regionale', 'incidenti-stradali'); ?></option>
+                            </optgroup>
                         </select>
 
                         <label for="<?php echo $map_id; ?>-indirizzo-filter">
@@ -1092,6 +1096,9 @@ class IncidentiShortcodes {
         check_ajax_referer('incidenti_nonce', 'nonce');
         
         $filters = $_POST['filters'];
+
+        // Debug: logga i filtri ricevuti
+        error_log('FILTRI RICEVUTI: ' . print_r($filters, true));
         
         // Build query
         $args = array(
@@ -1151,10 +1158,19 @@ class IncidentiShortcodes {
 
         // Filtro indirizzo/denominazione strada
         if (!empty($filters['indirizzo'])) {
+            $search_term = sanitize_text_field($filters['indirizzo']);
             $args['meta_query'][] = array(
-                'key' => 'denominazione_strada',
-                'value' => sanitize_text_field($filters['indirizzo']),
-                'compare' => 'LIKE'
+                'relation' => 'OR',
+                array(
+                    'key' => 'denominazione_strada',
+                    'value' => $search_term,
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => 'numero_strada',
+                    'value' => $search_term,
+                    'compare' => 'LIKE'
+                )
             );
         }
 

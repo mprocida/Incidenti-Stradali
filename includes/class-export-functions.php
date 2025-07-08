@@ -685,7 +685,7 @@ class IncidentiExportFunctions {
                     $eta = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_eta");
                     $sesso = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_sesso");
                     $esito = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_esito");
-                    if($esito == '3') || ($esito == '4'){
+                    if(($esito == '3') || ($esito == '4')){
                        if ($sesso == 'M') {
                             $maschi_morti_veicolo++;
                         } elseif ($sesso == 'F') {

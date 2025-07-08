@@ -249,16 +249,11 @@ class IncidentiMetaBoxes {
                     }
                 }
                 
-                // Conta morti e feriti da pedoni
-                var numPedoni = parseInt($('#numero_pedoni_coinvolti').val()) || 0;
-                for (var i = 1; i <= numPedoni; i++) {
-                    var esito = $('#pedone_' + i + '_esito').val();
-                    if (esito == '3' || esito == '4') {
-                        totalMorti++;
-                    } else if (esito == '2') {
-                        totalFeriti++;
-                    }
-                }
+                // Conta pedoni morti e feriti dalle nuove sezioni
+                var numPedoniMorti = parseInt($('#numero_pedoni_morti').val()) || 0;
+                var numPedoniFeriti = parseInt($('#numero_pedoni_feriti').val()) || 0;
+                totalMorti += numPedoniMorti;
+                totalFeriti += numPedoniFeriti;
                 
                 console.log('Morti trovati:', totalMorti, 'Feriti trovati:', totalFeriti); // Debug
                 
@@ -291,7 +286,8 @@ class IncidentiMetaBoxes {
             
             // Aggiorna visibilità quando cambiano gli esiti
             $(document).on('change', 'select[id*="_esito"]', updateNominativiVisibility);
-            $(document).on('change', '#numero_pedoni_coinvolti', updateNominativiVisibility);
+            //$(document).on('change', '#numero_pedoni_coinvolti', updateNominativiVisibility);
+            $(document).on('change', '#numero_pedoni_feriti, #numero_pedoni_morti', updateNominativiVisibility);
 
             // Aggiorna visibilità quando cambiano gli esiti dei trasportati
             $(document).on('change', 'select[id*="trasportato_"][id*="_esito"]', updateNominativiVisibility);
@@ -2224,34 +2220,44 @@ class IncidentiMetaBoxes {
     }
     
     private function render_pedoni_fields($post) {
-        $numero_pedoni = get_post_meta($post->ID, 'numero_pedoni_coinvolti', true) ?: 0;
+        $numero_pedoni_feriti = get_post_meta($post->ID, 'numero_pedoni_feriti', true) ?: 0;
+        $numero_pedoni_morti = get_post_meta($post->ID, 'numero_pedoni_morti', true) ?: 0;
         
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="numero_pedoni_coinvolti"><?php _e('Numero Pedoni Coinvolti', 'incidenti-stradali'); ?></label></th>
+                <th><label for="numero_pedoni_feriti"><?php _e('Numero Pedoni Feriti', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="numero_pedoni_coinvolti" name="numero_pedoni_coinvolti">
-                        <option value="0" <?php selected($numero_pedoni, '0'); ?>>0</option>
-                        <option value="1" <?php selected($numero_pedoni, '1'); ?>>1</option>
-                        <option value="2" <?php selected($numero_pedoni, '2'); ?>>2</option>
-                        <option value="3" <?php selected($numero_pedoni, '3'); ?>>3</option>
-                        <option value="4" <?php selected($numero_pedoni, '4'); ?>>4</option>
+                    <select id="numero_pedoni_feriti" name="numero_pedoni_feriti">
+                        <?php for ($i = 0; $i <= 4; $i++): ?>
+                            <option value="<?php echo $i; ?>" <?php selected($numero_pedoni_feriti, $i); ?>><?php echo $i; ?></option>
+                        <?php endfor; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="numero_pedoni_morti"><?php _e('Numero Pedoni Morti', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <select id="numero_pedoni_morti" name="numero_pedoni_morti">
+                        <?php for ($i = 0; $i <= 4; $i++): ?>
+                            <option value="<?php echo $i; ?>" <?php selected($numero_pedoni_morti, $i); ?>><?php echo $i; ?></option>
+                        <?php endfor; ?>
                     </select>
                 </td>
             </tr>
         </table>
         
-        <div id="pedoni-container">
+        <!-- SEZIONE PEDONI FERITI -->
+        <div id="pedoni-feriti-container">
+            <h5><?php _e('Pedoni Feriti', 'incidenti-stradali'); ?></h5>
             <?php for ($i = 1; $i <= 4; $i++): 
-                $display = $i <= $numero_pedoni ? 'block' : 'none';
-                $prefix = 'pedone_' . $i . '_';
+                $display = $i <= $numero_pedoni_feriti ? 'block' : 'none';
+                $prefix = 'pedone_ferito_' . $i . '_';
                 $eta = get_post_meta($post->ID, $prefix . 'eta', true);
                 $sesso = get_post_meta($post->ID, $prefix . 'sesso', true);
-                $esito = get_post_meta($post->ID, $prefix . 'esito', true);
             ?>
-                <div id="pedone-<?php echo $i; ?>" class="pedone-section" style="display: <?php echo $display; ?>;">
-                    <h5><?php printf(__('Pedone %d', 'incidenti-stradali'), $i); ?></h5>
+                <div id="pedone-ferito-<?php echo $i; ?>" class="pedone-section" style="display: <?php echo $display; ?>;">
+                    <h6><?php printf(__('Pedone Ferito %d', 'incidenti-stradali'), $i); ?></h6>
                     <table class="form-table">
                         <tr>
                             <th><label for="<?php echo $prefix; ?>eta"><?php _e('Età', 'incidenti-stradali'); ?></label></th>
@@ -2267,14 +2273,34 @@ class IncidentiMetaBoxes {
                                 </select>
                             </td>
                         </tr>
+                    </table>
+                </div>
+            <?php endfor; ?>
+        </div>
+        
+        <!-- SEZIONE PEDONI MORTI -->
+        <div id="pedoni-morti-container">
+            <h5><?php _e('Pedoni Morti', 'incidenti-stradali'); ?></h5>
+            <?php for ($i = 1; $i <= 4; $i++): 
+                $display = $i <= $numero_pedoni_morti ? 'block' : 'none';
+                $prefix = 'pedone_morto_' . $i . '_';
+                $eta = get_post_meta($post->ID, $prefix . 'eta', true);
+                $sesso = get_post_meta($post->ID, $prefix . 'sesso', true);
+            ?>
+                <div id="pedone-morto-<?php echo $i; ?>" class="pedone-section" style="display: <?php echo $display; ?>;">
+                    <h6><?php printf(__('Pedone Morto %d', 'incidenti-stradali'), $i); ?></h6>
+                    <table class="form-table">
                         <tr>
-                            <th><label for="<?php echo $prefix; ?>esito"><?php _e('Esito', 'incidenti-stradali'); ?></label></th>
+                            <th><label for="<?php echo $prefix; ?>eta"><?php _e('Età', 'incidenti-stradali'); ?></label></th>
+                            <td><input type="number" id="<?php echo $prefix; ?>eta" name="<?php echo $prefix; ?>eta" value="<?php echo esc_attr($eta); ?>" min="0" max="120"></td>
+                        </tr>
+                        <tr>
+                            <th><label for="<?php echo $prefix; ?>sesso"><?php _e('Sesso', 'incidenti-stradali'); ?></label></th>
                             <td>
-                                <select id="<?php echo $prefix; ?>esito" name="<?php echo $prefix; ?>esito">
+                                <select id="<?php echo $prefix; ?>sesso" name="<?php echo $prefix; ?>sesso">
                                     <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                                    <option value="2" <?php selected($esito, '2'); ?>><?php _e('Ferito', 'incidenti-stradali'); ?></option>
-                                    <option value="3" <?php selected($esito, '3'); ?>><?php _e('Morto entro 24 ore', 'incidenti-stradali'); ?></option>
-                                    <option value="4" <?php selected($esito, '4'); ?>><?php _e('Morto dal 2° al 30° giorno', 'incidenti-stradali'); ?></option>
+                                    <option value="1" <?php selected($sesso, '1'); ?>><?php _e('Maschio', 'incidenti-stradali'); ?></option>
+                                    <option value="2" <?php selected($sesso, '2'); ?>><?php _e('Femmina', 'incidenti-stradali'); ?></option>
                                 </select>
                             </td>
                         </tr>
@@ -2285,14 +2311,24 @@ class IncidentiMetaBoxes {
         
         <script type="text/javascript">
         jQuery(document).ready(function($) {
-            $('#numero_pedoni_coinvolti').change(function() {
+            $('#numero_pedoni_feriti').change(function() {
                 var numPedoni = parseInt($(this).val()) || 0;
-                
                 for (var i = 1; i <= 4; i++) {
                     if (i <= numPedoni) {
-                        $('#pedone-' + i).show();
+                        $('#pedone-ferito-' + i).show();
                     } else {
-                        $('#pedone-' + i).hide();
+                        $('#pedone-ferito-' + i).hide();
+                    }
+                }
+            });
+            
+            $('#numero_pedoni_morti').change(function() {
+                var numPedoni = parseInt($(this).val()) || 0;
+                for (var i = 1; i <= 4; i++) {
+                    if (i <= numPedoni) {
+                        $('#pedone-morto-' + i).show();
+                    } else {
+                        $('#pedone-morto-' + i).hide();
                     }
                 }
             });
@@ -2750,7 +2786,7 @@ class IncidentiMetaBoxes {
             'localita_incidente', 'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
-            'natura_incidente', 'dettaglio_natura', 'altro_natura_testo', 'numero_veicoli_coinvolti', 'numero_pedoni_coinvolti',
+            'natura_incidente', 'dettaglio_natura', 'altro_natura_testo', 'numero_veicoli_coinvolti', 'numero_pedoni_feriti', 'numero_pedoni_morti',
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada',
             'circostanza_tipo', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
             'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
@@ -2856,17 +2892,17 @@ class IncidentiMetaBoxes {
             'veicolo_3_trasportato_8_eta', 'veicolo_3_trasportato_8_sesso', 'veicolo_3_trasportato_8_esito',
             'veicolo_3_trasportato_9_eta', 'veicolo_3_trasportato_9_sesso', 'veicolo_3_trasportato_9_esito',
 
-            // Campi pedoni (pattern per pedone_1 fino a pedone_10)
-            'pedone_1_eta', 'pedone_1_sesso', 'pedone_1_esito',
-            'pedone_2_eta', 'pedone_2_sesso', 'pedone_2_esito',
-            'pedone_3_eta', 'pedone_3_sesso', 'pedone_3_esito',
-            'pedone_4_eta', 'pedone_4_sesso', 'pedone_4_esito',
-            'pedone_5_eta', 'pedone_5_sesso', 'pedone_5_esito',
-            'pedone_6_eta', 'pedone_6_sesso', 'pedone_6_esito',
-            'pedone_7_eta', 'pedone_7_sesso', 'pedone_7_esito',
-            'pedone_8_eta', 'pedone_8_sesso', 'pedone_8_esito',
-            'pedone_9_eta', 'pedone_9_sesso', 'pedone_9_esito',
-            'pedone_10_eta', 'pedone_10_sesso', 'pedone_10_esito',
+            // Pedoni feriti
+            'pedone_ferito_1_eta', 'pedone_ferito_1_sesso',
+            'pedone_ferito_2_eta', 'pedone_ferito_2_sesso',
+            'pedone_ferito_3_eta', 'pedone_ferito_3_sesso',
+            'pedone_ferito_4_eta', 'pedone_ferito_4_sesso',
+
+            // Pedoni morti
+            'pedone_morto_1_eta', 'pedone_morto_1_sesso',
+            'pedone_morto_2_eta', 'pedone_morto_2_sesso',
+            'pedone_morto_3_eta', 'pedone_morto_3_sesso',
+            'pedone_morto_4_eta', 'pedone_morto_4_sesso',
 
             // Campi coordinate e identificativi aggiuntivi
             'sistema_di_proiezione', 'codice_carabinieri', 'altra_strada', 'codice__ente', 'codice_strada_aci',

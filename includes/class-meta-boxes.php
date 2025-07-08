@@ -616,9 +616,9 @@ class IncidentiMetaBoxes {
         // Recupera l'ente dell'utente corrente per le auto-selezioni
         $user_ente = get_user_meta(get_current_user_id(), 'ente_gestione', true);
 
-        // Auto-selezione dell'organo di rilevazione se non già impostato
-        if (empty($organo_rilevazione) && !empty($user_ente)) {
-            $organo_rilevazione = $this->map_ente_to_organo($user_ente);
+        // Auto-selezione dell'ente rilevatore se non già impostato
+        if (empty($ente_rilevatore) && !empty($user_ente)) {
+            $ente_rilevatore = $this->map_ente_to_nome_completo($user_ente);
         }
 
         // Carica i comuni di Lecce
@@ -3291,6 +3291,129 @@ class IncidentiMetaBoxes {
                 return '2'; // Carabiniere
             case 'polizia_provinciale':
                 return '6'; // Agente di Polizia Provinciale
+            default:
+                return '';
+        }
+    }
+
+    /**
+     * Mappa il codice ente del profilo utente al nome completo dell'ente
+     */
+    private function map_ente_to_nome_completo($ente_codice) {
+        // Se è una polizia municipale, mappa al nome completo
+        if (strpos($ente_codice, 'pm_') === 0) {
+            $mappatura_pm = array(
+                'pm_lecce' => 'POLIZIA MUNICIPALE DI LECCE',
+                'pm_gallipoli' => 'POLIZIA MUNICIPALE DI GALLIPOLI',
+                'pm_galatina' => 'POLIZIA MUNICIPALE DI GALATINA',
+                'pm_nardo' => 'POLIZIA MUNICIPALE DI NARDO\'',
+                'pm_casarano' => 'POLIZIA MUNICIPALE DI CASARANO',
+                'pm_maglie' => 'POLIZIA MUNICIPALE DI MAGLIE',
+                'pm_copertino' => 'POLIZIA MUNICIPALE DI COPERTINO',
+                'pm_leverano' => 'POLIZIA MUNICIPALE DI LEVERANO',
+                'pm_campi_salentina' => 'POLIZIA MUNICIPALE DI CAMPI SALENTINA',
+                'pm_surbo' => 'POLIZIA MUNICIPALE DI SURBO',
+                'pm_trepuzzi' => 'POLIZIA MUNICIPALE DI TREPUZZI',
+                'pm_squinzano' => 'POLIZIA MUNICIPALE DI SQUINZANO',
+                'pm_veglie' => 'POLIZIA MUNICIPALE DI VEGLIE',
+                'pm_novoli' => 'POLIZIA MUNICIPALE DI NOVOLI',
+                'pm_carmiano' => 'POLIZIA MUNICIPALE DI CARMIANO',
+                'pm_arnesano' => 'POLIZIA MUNICIPALE DI ARNESANO',
+                'pm_monteroni_lecce' => 'POLIZIA MUNICIPALE DI MONTERONI DI LECCE',
+                'pm_san_cesario_lecce' => 'POLIZIA MUNICIPALE DI SAN CESARIO DI LECCE',
+                'pm_san_pietro_lama' => 'POLIZIA MUNICIPALE DI SAN PIETRO IN LAMA',
+                'pm_lequile' => 'POLIZIA MUNICIPALE DI LEQUILE',
+                'pm_san_donato_lecce' => 'POLIZIA MUNICIPALE DI SAN DONATO DI LECCE',
+                'pm_caprarica_lecce' => 'POLIZIA MUNICIPALE DI CAPRARICA DI LECCE',
+                'pm_cavallino' => 'POLIZIA MUNICIPALE DI CAVALLINO',
+                'pm_lizzanello' => 'POLIZIA MUNICIPALE DI LIZZANELLO',
+                'pm_castri' => 'POLIZIA MUNICIPALE DI CASTRI',
+                'pm_vernole' => 'POLIZIA MUNICIPALE DI VERNOLE',
+                'pm_melendugno' => 'POLIZIA MUNICIPALE DI MELENDUGNO',
+                'pm_calimera' => 'POLIZIA MUNICIPALE DI CALIMERA',
+                'pm_martano' => 'POLIZIA MUNICIPALE DI MARTANO',
+                'pm_carpignano_salentino' => 'POLIZIA MUNICIPALE DI CARPIGNANO SALENTINO',
+                'pm_martignano' => 'POLIZIA MUNICIPALE DI MARTIGNANO',
+                'pm_corigliano_otranto' => 'POLIZIA MUNICIPALE DI CORIGLIANO D\'OTRANTO',
+                'pm_melpignano' => 'POLIZIA MUNICIPALE DI MELPIGNANO',
+                'pm_cursi' => 'POLIZIA MUNICIPALE DI CURSI',
+                'pm_scorrano' => 'POLIZIA MUNICIPALE DI SCORRANO',
+                'pm_otranto' => 'POLIZIA MUNICIPALE DI OTRANTO',
+                'pm_uggiano_chiesa' => 'POLIZIA MUNICIPALE DI UGGIANO LA CHIESA',
+                'pm_giurdignano' => 'POLIZIA MUNICIPALE DI GIURDIGNANO',
+                'pm_minervino_lecce' => 'POLIZIA MUNICIPALE DI MINERVINO DI LECCE',
+                'pm_santa_cesarea_terme' => 'POLIZIA MUNICIPALE DI SANTA CESAREA TERME',
+                'pm_poggiardo' => 'POLIZIA MUNICIPALE DI POGGIARDO',
+                'pm_sanarica' => 'POLIZIA MUNICIPALE DI SANARICA',
+                'pm_nociglia' => 'POLIZIA MUNICIPALE DI NOCIGLIA',
+                'pm_spongano' => 'POLIZIA MUNICIPALE DI SPONGANO',
+                'pm_ortelle' => 'POLIZIA MUNICIPALE DI ORTELLE',
+                'pm_castro' => 'POLIZIA MUNICIPALE DI CASTRO',
+                'pm_diso' => 'POLIZIA MUNICIPALE DI DISO',
+                'pm_andrano' => 'POLIZIA MUNICIPALE DI ANDRANO',
+                'pm_tricase' => 'POLIZIA MUNICIPALE DI TRICASE',
+                'pm_tiggiano' => 'POLIZIA MUNICIPALE DI TIGGIANO',
+                'pm_corsano' => 'POLIZIA MUNICIPALE DI CORSANO',
+                'pm_specchia' => 'POLIZIA MUNICIPALE DI SPECCHIA',
+                'pm_castrignano_capo' => 'POLIZIA MUNICIPALE DI CASTRIGNANO DEL CAPO',
+                'pm_gagliano_capo' => 'POLIZIA MUNICIPALE DI GAGLIANO DEL CAPO',
+                'pm_morciano_leuca' => 'POLIZIA MUNICIPALE DI MORCIANO DI LEUCA',
+                'pm_salve' => 'POLIZIA MUNICIPALE DI SALVE',
+                'pm_patu' => 'POLIZIA MUNICIPALE DI PATU\'',
+                'pm_alessano' => 'POLIZIA MUNICIPALE DI ALESSANO',
+                'pm_montesano_salentino' => 'POLIZIA MUNICIPALE DI MONTESANO SALENTINO',
+                'pm_miggiano' => 'POLIZIA MUNICIPALE DI MIGGIANO',
+                'pm_surano' => 'POLIZIA MUNICIPALE DI SURANO',
+                'pm_botrugno' => 'POLIZIA MUNICIPALE DI BOTRUGNO',
+                'pm_soleto' => 'POLIZIA MUNICIPALE DI SOLETO',
+                'pm_sternatia' => 'POLIZIA MUNICIPALE DI STERNATIA',
+                'pm_zollino' => 'POLIZIA MUNICIPALE DI ZOLLINO',
+                'pm_castrignano_greci' => 'POLIZIA MUNICIPALE DI CASTRIGNANO DEI GRECI',
+                'pm_giuggianello' => 'POLIZIA MUNICIPALE DI GIUGGIANELLO',
+                'pm_palmariggi' => 'POLIZIA MUNICIPALE DI PALMARIGGI',
+                'pm_supersano' => 'POLIZIA MUNICIPALE DI SUPERSANO',
+                'pm_ruffano' => 'POLIZIA MUNICIPALE DI RUFFANO',
+                'pm_ugento' => 'POLIZIA MUNICIPALE DI UGENTO',
+                'pm_taurisano' => 'POLIZIA MUNICIPALE DI TAURISANO',
+                'pm_presicce' => 'POLIZIA MUNICIPALE DI PRESICCE',
+                'pm_acquarica_capo' => 'POLIZIA MUNICIPALE DI ACQUARICA DEL CAPO',
+                'pm_presicce_acquarica' => 'POLIZIA MUNICIPALE DI PRESICCE-ACQUARICA',
+                'pm_racale' => 'POLIZIA MUNICIPALE DI RACALE',
+                'pm_taviano' => 'POLIZIA MUNICIPALE DI TAVIANO',
+                'pm_alliste' => 'POLIZIA MUNICIPALE DI ALLISTE',
+                'pm_melissano' => 'POLIZIA MUNICIPALE DI MELISSANO',
+                'pm_tuglie' => 'POLIZIA MUNICIPALE DI TUGLIE',
+                'pm_sannicola' => 'POLIZIA MUNICIPALE DI SANNICOLA',
+                'pm_alezio' => 'POLIZIA MUNICIPALE DI ALEZIO',
+                'pm_parabita' => 'POLIZIA MUNICIPALE DI PARABITA',
+                'pm_matino' => 'POLIZIA MUNICIPALE DI MATINO',
+                'pm_collepasso' => 'POLIZIA MUNICIPALE DI COLLEPASSO',
+                'pm_galatone' => 'POLIZIA MUNICIPALE DI GALATONE',
+                'pm_secli' => 'POLIZIA MUNICIPALE DI SECLI\'',
+                'pm_neviano' => 'POLIZIA MUNICIPALE DI NEVIANO',
+                'pm_sogliano_cavour' => 'POLIZIA MUNICIPALE DI SOGLIANO CAVOUR',
+                'pm_aradeo' => 'POLIZIA MUNICIPALE DI ARADEO',
+                'pm_cutrofiano' => 'POLIZIA MUNICIPALE DI CUTROFIANO',
+                'pm_porto_cesareo' => 'POLIZIA MUNICIPALE DI PORTO CESAREO',
+                'pm_salice_salentino' => 'POLIZIA MUNICIPALE DI SALICE SALENTINO',
+                'pm_guagnano' => 'POLIZIA MUNICIPALE DI GUAGNANO',
+                'pm_cannole' => 'POLIZIA MUNICIPALE DI CANNOLE',
+                'pm_bagnolo_salento' => 'POLIZIA MUNICIPALE DI BAGNOLO DEL SALENTO',
+                'pm_san_cassiano' => 'POLIZIA MUNICIPALE DI SAN CASSIANO',
+                'pm_muro' => 'POLIZIA MUNICIPALE DI MURO'
+            );
+            
+            return isset($mappatura_pm[$ente_codice]) ? $mappatura_pm[$ente_codice] : '';
+        }
+        
+        // Per altri enti
+        switch ($ente_codice) {
+            case 'agente_polizia_stradale':
+                return 'Agente di Polizia Stradale';
+            case 'carabiniere':
+                return 'Carabiniere';
+            case 'polizia_provinciale':
+                return 'Polizia Provinciale';
             default:
                 return '';
         }

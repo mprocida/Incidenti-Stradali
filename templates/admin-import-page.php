@@ -214,14 +214,3 @@
     color: white !important;
 }
 </style>
-
-<script>
-// Debug script per verificare che tutto sia caricato
-jQuery(document).ready(function($) {
-    console.log('Template import caricato');
-    console.log('Bottone file:', $('#csv_file').length);
-    console.log('Bottone preview:', $('#import-preview-btn').length);
-    console.log('Bottone submit:', $('#import-submit-btn').length);
-    console.log('ajaxurl disponibile:', typeof ajaxurl !== 'undefined');
-});
-</script>

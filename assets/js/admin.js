@@ -851,7 +851,7 @@ jQuery(document).ready(function($) {
             var $widget = $(this).closest('.incidenti-dashboard-widget');
             
             $.ajax({
-                url: ajaxurl,
+                url: incidenti_ajax.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'refresh_incidenti_dashboard',
@@ -896,7 +896,7 @@ jQuery(document).ready(function($) {
             var path = $('input[name="incidenti_export_path"]').val();
             
             $.ajax({
-                url: ajaxurl,
+                url: incidenti_ajax.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'test_export_path',
@@ -977,7 +977,7 @@ jQuery(document).ready(function($) {
                     $btn.prop('disabled', true).text('Caricamento...');
                     
                     $.ajax({
-                        url: ajaxurl,
+                        url: incidenti_ajax.ajax_url,
                         type: 'POST',
                         data: formData,
                         processData: false,

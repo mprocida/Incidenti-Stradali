@@ -78,6 +78,49 @@ class IncidentiShortcodes {
             ));
         }
     }
+
+
+    /**
+     * Crea query per filtro periodo
+     */
+    private function get_date_query_for_period($periodo) {
+        switch ($periodo) {
+            case 'last_month':
+                return array(
+                    'key' => 'data_incidente',
+                    'value' => date('Y-m-d', strtotime('-1 month')),
+                    'compare' => '>=',
+                    'type' => 'DATE'
+                );
+                
+            case 'last_3_months':
+                return array(
+                    'key' => 'data_incidente',
+                    'value' => date('Y-m-d', strtotime('-3 months')),
+                    'compare' => '>=',
+                    'type' => 'DATE'
+                );
+                
+            case 'last_year':
+                return array(
+                    'key' => 'data_incidente',
+                    'value' => date('Y-m-d', strtotime('-1 year')),
+                    'compare' => '>=',
+                    'type' => 'DATE'
+                );
+                
+            case 'year_current':
+                return array(
+                    'key' => 'data_incidente',
+                    'value' => array(date('Y-01-01'), date('Y-12-31')),
+                    'compare' => 'BETWEEN',
+                    'type' => 'DATE'
+                );
+                
+            default:
+                return null;
+        }
+    }
     
     /**
      * Shortcode per visualizzare la mappa degli incidenti
@@ -1247,20 +1290,30 @@ class IncidentiShortcodes {
             // Count casualties
             $morti = 0;
             $feriti = 0;
-            
-            // Count drivers
+
+            // Count drivers casualties
             for ($i = 1; $i <= 3; $i++) {
                 $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
                 if ($esito == '3' || $esito == '4') $morti++;
                 if ($esito == '2') $feriti++;
             }
-            
-            // Count pedestrians
-            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true);
-            for ($i = 1; $i <= $num_pedoni; $i++) {
+
+            // Count pedestrians casualties
+            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
+            for ($i = 1; $i <= intval($num_pedoni); $i++) {
                 $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
                 if ($esito == '3' || $esito == '4') $morti++;
                 if ($esito == '2') $feriti++;
+            }
+
+            // Count passengers casualties if applicable
+            for ($i = 1; $i <= 3; $i++) {
+                $num_passeggeri = get_post_meta($post_id, 'veicolo_' . $i . '_numero_passeggeri', true) ?: 0;
+                for ($j = 1; $j <= intval($num_passeggeri); $j++) {
+                    $esito = get_post_meta($post_id, 'passeggero_' . $i . '_' . $j . '_esito', true);
+                    if ($esito == '3' || $esito == '4') $morti++;
+                    if ($esito == '2') $feriti++;
+                }
             }
             
             $data = get_post_meta($post_id, 'data_incidente', true);
@@ -1347,6 +1400,31 @@ class IncidentiShortcodes {
             'stats' => $stats,
             'stats_html' => $stats_html
         ));
+    }
+
+    /**
+     * Debug function - verifica i campi meta degli incidenti
+     */
+    public function debug_meta_fields() {
+        $args = array(
+            'post_type' => 'incidente_stradale',
+            'post_status' => 'publish',
+            'posts_per_page' => 1
+        );
+        
+        $incidenti = get_posts($args);
+        
+        if (!empty($incidenti)) {
+            $post_id = $incidenti[0]->ID;
+            $all_meta = get_post_meta($post_id);
+            
+            error_log('DEBUG - Meta fields per incidente #' . $post_id . ':');
+            foreach ($all_meta as $key => $value) {
+                if (strpos($key, '_') !== 0) { // Skip private meta fields
+                    error_log($key . ' => ' . print_r($value, true));
+                }
+            }
+        }
     }
     
     public function ajax_get_incidente_details() {
@@ -1448,37 +1526,6 @@ class IncidentiShortcodes {
             'message' => 'Incidente inserito con successo! Sarà revisionato prima della pubblicazione.',
             'post_id' => $post_id
         )));
-    }
-    
-    private function get_date_query_for_period($periodo) {
-        switch ($periodo) {
-            case 'last_month':
-                return array(
-                    'key' => 'data_incidente',
-                    'value' => date('Y-m-d', strtotime('-1 month')),
-                    'compare' => '>=',
-                    'type' => 'DATE'
-                );
-                
-            case 'last_3_months':
-                return array(
-                    'key' => 'data_incidente',
-                    'value' => date('Y-m-d', strtotime('-3 months')),
-                    'compare' => '>=',
-                    'type' => 'DATE'
-                );
-                
-            case 'last_year':
-                return array(
-                    'key' => 'data_incidente',
-                    'value' => date('Y-m-d', strtotime('-1 year')),
-                    'compare' => '>=',
-                    'type' => 'DATE'
-                );
-                
-            default:
-                return null;
-        }
     }
     
     /**

@@ -137,7 +137,7 @@ jQuery(document).ready(function($) {
     function getMapFilters(mapId) {
         var $container = $('#' + mapId).closest('.incidenti-map-container');
         
-        return {
+        var filters = {
             comune: $container.find('[id$="-comune-filter"]').val() || '',
             periodo: $container.find('[id$="-periodo-filter"]').val() || '',
             data_inizio: $container.find('[id$="-data-inizio"]').val() || '',
@@ -146,6 +146,11 @@ jQuery(document).ready(function($) {
             indirizzo: $container.find('[id$="-indirizzo-filter"]').val() || '',
             tipologia_infortunati: $container.find('[id$="-tipologia-infortunati-filter"]').val() || ''
         };
+        
+        // Debug console log
+        console.log('Filtri mappa:', filters);
+        
+        return filters;
     }
     
     /**

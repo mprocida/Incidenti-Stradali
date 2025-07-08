@@ -717,27 +717,38 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="ente_rilevatore"><?php _e('Ente', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="ente_rilevatore" name="ente_rilevatore" class="regular-text">
-                        <option value=""><?php _e('Seleziona ente', 'incidenti-stradali'); ?></option>
-                        
-                        <optgroup label="<?php _e('Polizia Municipale', 'incidenti-stradali'); ?>">
-                            <?php 
-                            $polizie_municipali = $this->get_polizie_municipali();
-                            foreach($polizie_municipali as $polizia): ?>
-                                <option value="<?php echo esc_attr($polizia); ?>" <?php selected($ente_rilevatore, $polizia); ?>>
-                                    <?php echo esc_html($polizia); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </optgroup>
-                        
-                        <optgroup label="<?php _e('Altri Enti', 'incidenti-stradali'); ?>">
-                            <option value="Carabiniere" <?php selected($ente_rilevatore, 'Carabiniere'); ?>><?php _e('Carabiniere', 'incidenti-stradali'); ?></option>
-                            <option value="Agente di Polizia Stradale" <?php selected($ente_rilevatore, 'Agente di Polizia Stradale'); ?>><?php _e('Agente di Polizia Stradale', 'incidenti-stradali'); ?></option>
-                            <option value="Polizia Provinciale" <?php selected($ente_rilevatore, 'Polizia Provinciale'); ?>><?php _e('Polizia Provinciale', 'incidenti-stradali'); ?></option>
-                        </optgroup>
-                    </select>
-                    <p class="description"><?php _e('Seleziona l\'ente che ha rilevato l\'incidente', 'incidenti-stradali'); ?></p>
-                </td>
+                    <?php
+                    // Controllo restrizioni utente - mostra solo l'ente dell'utente
+                    $user_ente = get_user_meta(get_current_user_id(), 'ente_gestione', true);
+                    
+                    if (!empty($user_ente) && !current_user_can('manage_all_incidenti')): ?>
+                        <!-- Campo readonly per utenti con ente specifico -->
+                        <input type="text" value="<?php echo esc_attr($ente_rilevatore); ?>" disabled class="regular-text">
+                        <input type="hidden" id="ente_rilevatore" name="ente_rilevatore" value="<?php echo esc_attr($ente_rilevatore); ?>">
+                        <p class="description"><?php _e('Ente assegnato al tuo profilo utente', 'incidenti-stradali'); ?></p>
+                    <?php else: ?>
+                        <!-- Select completo per amministratori e utenti senza restrizioni -->
+                        <select id="ente_rilevatore" name="ente_rilevatore" class="regular-text">
+                            <option value=""><?php _e('Seleziona ente', 'incidenti-stradali'); ?></option>
+                            
+                            <optgroup label="<?php _e('Polizia Municipale', 'incidenti-stradali'); ?>">
+                                <?php 
+                                $polizie_municipali = $this->get_polizie_municipali();
+                                foreach($polizie_municipali as $polizia): ?>
+                                    <option value="<?php echo esc_attr($polizia); ?>" <?php selected($ente_rilevatore, $polizia); ?>>
+                                        <?php echo esc_html($polizia); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </optgroup>
+                            
+                            <optgroup label="<?php _e('Altri Enti', 'incidenti-stradali'); ?>">
+                                <option value="Carabiniere" <?php selected($ente_rilevatore, 'Carabiniere'); ?>><?php _e('Carabiniere', 'incidenti-stradali'); ?></option>
+                                <option value="Agente di Polizia Stradale" <?php selected($ente_rilevatore, 'Agente di Polizia Stradale'); ?>><?php _e('Agente di Polizia Stradale', 'incidenti-stradali'); ?></option>
+                                <option value="Polizia Provinciale" <?php selected($ente_rilevatore, 'Polizia Provinciale'); ?>><?php _e('Polizia Provinciale', 'incidenti-stradali'); ?></option>
+                            </optgroup>
+                        </select>
+                        <p class="description"><?php _e('Seleziona l\'ente che ha rilevato l\'incidente', 'incidenti-stradali'); ?></p>
+                    <?php endif; ?>
             </tr>
             <tr>
                 <th><label for="nome_rilevatore"><?php _e('Rilevatore', 'incidenti-stradali'); ?></label></th>
@@ -815,8 +826,14 @@ class IncidentiMetaBoxes {
                 
                 // Imposta il valore iniziale se già selezionato
                 $('#ente_rilevatore').trigger('change');
+                
+                // Per utenti con ente fisso, forza la sincronizzazione ISTAT
+                <?php if (!empty($user_ente) && !current_user_can('manage_all_incidenti')): ?>
+                    // Trigger automatico per utenti con ente fisso
+                    $('#ente_rilevatore').trigger('change');
+                <?php endif; ?>
             });
-            </script>
+        </script>
         <?php
     }
 

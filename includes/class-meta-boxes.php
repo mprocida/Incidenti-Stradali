@@ -750,11 +750,10 @@ class IncidentiMetaBoxes {
                 <td>
                     <select id="organo_coordinatore" name="organo_coordinatore">
                         <option value=""><?php _e('Seleziona organo coordinatore', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected($organo_coordinatore, '1'); ?>><?php _e('Sezione Polizia Stradale', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected($organo_coordinatore, '2'); ?>><?php _e('Gruppo Carabiniere', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected($organo_coordinatore, '3'); ?>><?php _e('Uff. Comunale di Statistica dei Capoluoghi di Provincia', 'incidenti-stradali'); ?></option>
-                        <option value="4" <?php selected($organo_coordinatore, '4'); ?>><?php _e('Comune con oltre 250.000 abitanti', 'incidenti-stradali'); ?></option>
-                        <option value="5" <?php selected($organo_coordinatore, '5'); ?>><?php _e('Altro capoluogo di Provincia', 'incidenti-stradali'); ?></option>
+                        <option value="1" <?php selected($organo_coordinatore, '1'); ?>><?php _e('Sezione di Polizia Stradale', 'incidenti-stradali'); ?></option>
+                        <option value="2" <?php selected($organo_coordinatore, '2'); ?>><?php _e('Gruppo Carabinieri', 'incidenti-stradali'); ?></option>
+                        <option value="3" <?php selected($organo_coordinatore, '3'); ?>><?php _e('Ufficio comunale di statistica: Comune con oltre 250.000 abitanti', 'incidenti-stradali'); ?></option>
+                        <option value="4" <?php selected($organo_coordinatore, '4'); ?>><?php _e('Altro capoluogo di provincia', 'incidenti-stradali'); ?></option>
                     </select>
                 </td>
             </tr>

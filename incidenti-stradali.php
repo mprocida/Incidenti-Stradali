@@ -181,26 +181,20 @@ class IncidentiStradaliPlugin {
     
     public function admin_enqueue_scripts($hook) {
         global $post_type;
-        
+    
         // Carica script solo nelle pagine del plugin
         if ($post_type === 'incidente_stradale' || 
             strpos($hook, 'incidenti') !== false || 
             $hook === 'post.php' || 
             $hook === 'post-new.php') {
             
-            wp_enqueue_script('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), INCIDENTI_VERSION, true);
-            wp_enqueue_style('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/css/admin.css', array(), INCIDENTI_VERSION);
+            // AGGIUNGI LEAFLET PER L'ADMIN
+            wp_enqueue_script('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true);
+            wp_enqueue_style('leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1');
             
-            // Localizza script per AJAX
-            wp_localize_script('incidenti-admin', 'incidenti_ajax', array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('incidenti_ajax_nonce')
-            ));
-            
-            // Date picker
-            wp_enqueue_script('jquery-ui-datepicker');
-            wp_enqueue_style('jquery-ui-datepicker', '//code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css');
-        }
+            wp_enqueue_script('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'leaflet'), INCIDENTI_VERSION, true);
+            wp_enqueue_style('incidenti-admin', INCIDENTI_PLUGIN_URL . 'assets/css/admin.css', array('leaflet'), INCIDENTI_VERSION);
+            }
     }
     
     public function activate() {

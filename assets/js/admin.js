@@ -916,21 +916,22 @@ jQuery(document).ready(function($) {
         /**
          * Import functionality
          */
-        $(document).ready(function($) {
+        jQuery(document).ready(function($) {
+            'use strict';
             
             // Controlla se siamo nella pagina di import
             if ($('.incidenti-import-page').length) {
-                console.log('Pagina import caricata'); // Debug
+                console.log('Pagina import caricata');
                 
                 // Gestione cambio file
                 $('#csv_file').on('change', function() {
-                    console.log('File cambiato'); // Debug
+                    console.log('File cambiato');
                     
                     var file = this.files[0];
                     $('#csv-preview-section').hide();
                     
                     if (file) {
-                        console.log('File selezionato:', file.name); // Debug
+                        console.log('File selezionato:', file.name);
                         
                         // Abilita il bottone anteprima
                         $('#import-preview-btn').prop('disabled', false);
@@ -938,7 +939,7 @@ jQuery(document).ready(function($) {
                         // Disabilita il bottone importa fino alla preview
                         $('#import-submit-btn').prop('disabled', true);
                     } else {
-                        console.log('Nessun file selezionato'); // Debug
+                        console.log('Nessun file selezionato');
                         
                         // Disabilita entrambi i bottoni
                         $('#import-preview-btn').prop('disabled', true);
@@ -948,7 +949,7 @@ jQuery(document).ready(function($) {
                 
                 // Preview CSV
                 $('#import-preview-btn').on('click', function() {
-                    console.log('Bottone preview cliccato'); // Debug
+                    console.log('Bottone preview cliccato');
                     
                     var fileInput = $('#csv_file')[0];
                     var file = fileInput.files[0];
@@ -983,7 +984,7 @@ jQuery(document).ready(function($) {
                         processData: false,
                         contentType: false,
                         success: function(response) {
-                            console.log('Risposta AJAX:', response); // Debug
+                            console.log('Risposta AJAX:', response);
                             
                             $btn.prop('disabled', false).text(originalText);
                             
@@ -995,7 +996,7 @@ jQuery(document).ready(function($) {
                             }
                         },
                         error: function(xhr, status, error) {
-                            console.log('Errore AJAX:', error); // Debug
+                            console.log('Errore AJAX:', error);
                             $btn.prop('disabled', false).text(originalText);
                             alert('Errore di connessione durante l\'anteprima.');
                         }
@@ -1014,7 +1015,7 @@ jQuery(document).ready(function($) {
                 
                 // Reset form
                 $('#import-reset-btn').on('click', function() {
-                    console.log('Reset cliccato'); // Debug
+                    console.log('Reset cliccato');
                     
                     $('#import-form')[0].reset();
                     $('#csv-preview-section').hide();
@@ -1027,7 +1028,7 @@ jQuery(document).ready(function($) {
              * Mostra preview del CSV
              */
             function displayCSVPreview(data) {
-                console.log('Visualizzando preview:', data); // Debug
+                console.log('Visualizzando preview:', data);
                 
                 var $previewSection = $('#csv-preview-section');
                 var $previewTable = $('#csv-preview-table tbody');

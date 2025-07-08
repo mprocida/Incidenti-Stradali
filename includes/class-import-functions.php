@@ -16,6 +16,7 @@ class IncidentiImportFunctions {
         add_action('admin_menu', array($this, 'add_import_menu'), 21);
         add_action('admin_post_import_incidenti_csv', array($this, 'handle_csv_import'));
         add_action('wp_ajax_preview_csv_import', array($this, 'preview_csv_import'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
     }
     
     /**
@@ -432,5 +433,29 @@ class IncidentiImportFunctions {
         $redirect_url = admin_url('edit.php?post_type=incidente_stradale&page=incidenti-import&error=' . urlencode($message));
         wp_redirect($redirect_url);
         exit;
+    }
+
+    /**
+     * Enqueue admin scripts
+     */
+    public function enqueue_admin_scripts($hook) {
+        // Carica solo nella pagina di import
+        if ($hook !== 'incidente_stradale_page_incidenti-import') {
+            return;
+        }
+        
+        wp_enqueue_script(
+            'incidenti-admin-js',
+            INCIDENTI_PLUGIN_URL . 'assets/js/admin.js',
+            array('jquery'),
+            '1.0.0',
+            true
+        );
+        
+        // Passa variabili JavaScript
+        wp_localize_script('incidenti-admin-js', 'incidenti_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('import_incidenti_nonce')
+        ));
     }
 }

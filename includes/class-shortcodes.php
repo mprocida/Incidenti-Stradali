@@ -317,12 +317,18 @@ class IncidentiShortcodes {
             });
             
             function loadMarkers() {
-                var filters = {
-                    comune: $('#' + mapId + '-comune-filter').val(),
-                    periodo: $('#' + mapId + '-periodo-filter').val(),
-                    data_inizio: $('#' + mapId + '-data-inizio').val(),
-                    data_fine: $('#' + mapId + '-data-fine').val()
-                };
+            var filters = {
+                comune: $('#' + mapId + '-comune-filter').val(),
+                periodo: $('#' + mapId + '-periodo-filter').val(),
+                data_inizio: $('#' + mapId + '-data-inizio').val(),
+                data_fine: $('#' + mapId + '-data-fine').val(),
+                tipologia_strada: $('#' + mapId + '-tipologia-strada-filter').val(),
+                indirizzo: $('#' + mapId + '-indirizzo-filter').val(),
+                tipologia_infortunati: $('#' + mapId + '-tipologia-infortunati-filter').val()
+            };
+    
+            // Debug per verificare i filtri
+            console.log('Filtri inviati:', filters);
                 
                 $.ajax({
                     url: incidenti_ajax.ajax_url,
@@ -369,12 +375,44 @@ class IncidentiShortcodes {
             
             // Event handlers
             $('#' + mapId + '-filter-btn').on('click', loadMarkers);
-            
+
+            // Event handler per il cambio periodo
             $('#' + mapId + '-periodo-filter').on('change', function() {
                 if ($(this).val() === 'custom') {
                     $('#' + mapId + '-custom-dates').show();
                 } else {
                     $('#' + mapId + '-custom-dates').hide();
+                    // Auto-ricarica quando cambia periodo (eccetto custom)
+                    loadMarkers();
+                }
+            });
+
+            // Event handlers per gli altri filtri - ricarica automatica
+            $('#' + mapId + '-comune-filter').on('change', loadMarkers);
+            $('#' + mapId + '-tipologia-strada-filter').on('change', loadMarkers);
+            $('#' + mapId + '-tipologia-infortunati-filter').on('change', loadMarkers);
+
+            // Event handler per il campo indirizzo - con delay per evitare troppi request
+            var indirizzoTimeout;
+            $('#' + mapId + '-indirizzo-filter').on('input', function() {
+                clearTimeout(indirizzoTimeout);
+                indirizzoTimeout = setTimeout(function() {
+                    loadMarkers();
+                }, 500); // Aspetta 500ms dopo che l'utente smette di digitare
+            });
+
+            // Event handler per date custom
+            $('#' + mapId + '-data-inizio, #' + mapId + '-data-fine').on('change', function() {
+                var periodo = $('#' + mapId + '-periodo-filter').val();
+                if (periodo === 'custom') {
+                    loadMarkers();
+                }
+            });
+
+            // Event handler per Enter sui campi input
+            $('#' + mapId + '-indirizzo-filter').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    loadMarkers();
                 }
             });
             

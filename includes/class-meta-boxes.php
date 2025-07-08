@@ -613,6 +613,14 @@ class IncidentiMetaBoxes {
         $ente_rilevatore = get_post_meta($post->ID, 'ente_rilevatore', true);
         $nome_rilevatore = get_post_meta($post->ID, 'nome_rilevatore', true);
 
+        // Recupera l'ente dell'utente corrente per le auto-selezioni
+        $user_ente = get_user_meta(get_current_user_id(), 'ente_gestione', true);
+
+        // Auto-selezione dell'organo di rilevazione se non già impostato
+        if (empty($organo_rilevazione) && !empty($user_ente)) {
+            $organo_rilevazione = $this->map_ente_to_organo($user_ente);
+        }
+
         // Carica i comuni di Lecce
         $comuni_lecce = $this->get_comuni_lecce();
         

@@ -2786,7 +2786,14 @@ class IncidentiMetaBoxes {
             'localita_incidente', 'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
-            'natura_incidente', 'dettaglio_natura', 'altro_natura_testo', 'numero_veicoli_coinvolti', 'numero_pedoni_feriti', 'numero_pedoni_morti',
+            
+            // Dati Aggiuntivi ISTAT
+            'altri_morti_maschi', 'altri_morti_femmine', 'altri_feriti_maschi', 'altri_feriti_femmine',
+            'numero_altri_veicoli', 'localizzazione_extra_ab', 'chilometrica_strada',
+            // Numero trasportati per veicolo
+            'veicolo_1_numero_trasportati', 'veicolo_2_numero_trasportati', 'veicolo_3_numero_trasportati',
+            /*--------------------------------*/
+            
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada',
             'circostanza_tipo', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
             'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
@@ -2815,6 +2822,7 @@ class IncidentiMetaBoxes {
             'conducente_1_nazionalita', 'conducente_1_nazionalita_altro',
             'conducente_2_nazionalita', 'conducente_2_nazionalita_altro', 
             'conducente_3_nazionalita', 'conducente_3_nazionalita_altro',
+            'conducente_1_anno_patente', 'conducente_2_anno_patente', 'conducente_3_anno_patente',
             // Circostanze presunte
             'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
             'difetto_veicolo_a', 'difetto_veicolo_b', 
@@ -2908,7 +2916,7 @@ class IncidentiMetaBoxes {
             'sistema_di_proiezione', 'codice_carabinieri', 'altra_strada', 'codice__ente', 'codice_strada_aci',
 
             // Campi cittadinanza conducenti
-            'conducente_1_tipo_cittadinanza', 'conducente_2_tipo_cittadinanza', 'conducente_3_tipo_cittadinanza'
+            'conducente_1_tipo_cittadinanza', 'conducente_2_tipo_cittadinanza', 'conducente_3_tipo_cittadinanza',
         );
         
         // Save all meta fields ESCLUDENDO i campi speciali

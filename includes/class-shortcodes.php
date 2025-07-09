@@ -203,12 +203,12 @@ class IncidentiShortcodes {
                                 <option value="0"><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
                             </optgroup>
                             <optgroup label="<?php _e('Fuori dall\'abitato', 'incidenti-stradali'); ?>">
-                                <option value="5"><?php _e('Comunale extraurbana', 'incidenti-stradali'); ?></option>
-                                <option value="6"><?php _e('Provinciale', 'incidenti-stradali'); ?></option>
-                                <option value="7"><?php _e('Statale', 'incidenti-stradali'); ?></option>
-                                <option value="8"><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
-                                <option value="9"><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
-                                <option value="4"><?php _e('Regionale', 'incidenti-stradali'); ?></option>
+                                <option value="4"><?php _e('Strada comunale extraurbana', 'incidenti-stradali'); ?></option>
+                                <option value="5"><?php _e('Strada provinciale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
+                                <option value="6"><?php _e('Strada statale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
+                                <option value="7"><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
+                                <option value="8"><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
+                                <option value="9"><?php _e('Strada regionale fuori l\'abitato', 'incidenti-stradali'); ?></option>
                             </optgroup>
                         </select>
 

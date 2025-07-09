@@ -1005,3 +1005,15 @@ msgstr "Es: D, F, CH..."
 
 msgid "Inserire la sigla automobilistica internazionale (solo per veicoli con targa estera)"
 msgstr "Inserire la sigla automobilistica internazionale (solo per veicoli con targa estera)"
+
+msgid "Strada comunale extraurbana"
+msgstr "Strada comunale extraurbana"
+
+msgid "Strada provinciale fuori dell'abitato"
+msgstr "Strada provinciale fuori dell'abitato"
+
+msgid "Strada statale fuori dell'abitato"
+msgstr "Strada statale fuori dell'abitato"
+
+msgid "Strada regionale fuori l'abitato"  
+msgstr "Strada regionale fuori l'abitato"

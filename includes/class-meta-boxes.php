@@ -1062,12 +1062,12 @@ class IncidentiMetaBoxes {
                             <option value="0" <?php selected($tipo_strada, '0'); ?>><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
                         </optgroup>
                         <optgroup label="<?php _e('Fuori dall\'abitato', 'incidenti-stradali'); ?>">
-                            <option value="5" <?php selected($tipo_strada, '5'); ?>><?php _e('Comunale extraurbana', 'incidenti-stradali'); ?></option>
-                            <option value="6" <?php selected($tipo_strada, '6'); ?>><?php _e('Provinciale', 'incidenti-stradali'); ?></option>
-                            <option value="7" <?php selected($tipo_strada, '7'); ?>><?php _e('Statale', 'incidenti-stradali'); ?></option>
-                            <option value="8" <?php selected($tipo_strada, '8'); ?>><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
-                            <option value="9" <?php selected($tipo_strada, '9'); ?>><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
-                            <option value="10" <?php selected($tipo_strada, '10'); ?>><?php _e('Regionale', 'incidenti-stradali'); ?></option>
+                            <option value="4" <?php selected($tipo_strada, '4'); ?>><?php _e('Strada comunale extraurbana', 'incidenti-stradali'); ?></option>
+                            <option value="5" <?php selected($tipo_strada, '5'); ?>><?php _e('Strada provinciale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="6" <?php selected($tipo_strada, '6'); ?>><?php _e('Strada statale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="7" <?php selected($tipo_strada, '7'); ?>><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
+                            <option value="8" <?php selected($tipo_strada, '8'); ?>><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
+                            <option value="9" <?php selected($tipo_strada, '9'); ?>><?php _e('Strada regionale fuori l\'abitato', 'incidenti-stradali'); ?></option>
                         </optgroup>
                     </select>
                 </td>
@@ -1296,8 +1296,7 @@ class IncidentiMetaBoxes {
         $orientamento_conducente = get_post_meta($post->ID, 'orientamento_conducente', true);
         $presenza_banchina = get_post_meta($post->ID, 'presenza_banchina', true);
         $presenza_barriere = get_post_meta($post->ID, 'presenza_barriere', true);
-        $tappeto_usura_aperto = get_post_meta($post->ID, 'tappeto_usura_aperto', true);
-        $tappeto_usura_chiuso = get_post_meta($post->ID, 'tappeto_usura_chiuso', true);
+        $condizioni_manto = get_post_meta($post->ID, 'condizioni_manto', true);
         $allagato = get_post_meta($post->ID, 'allagato', true);
         $semaforizzazioni = get_post_meta($post->ID, 'semaforizzazioni', true);
         $cartelli_pubblicitari = get_post_meta($post->ID, 'cartelli_pubblicitari', true);
@@ -1339,8 +1338,8 @@ class IncidentiMetaBoxes {
                     <tr>
                         <th><?php _e('Condizioni Manto', 'incidenti-stradali'); ?></th>
                         <td>
-                            <label><input type="checkbox" name="tappeto_usura_aperto" value="1" <?php checked($tappeto_usura_aperto, '1'); ?>> <?php _e('Tappeto d\'usura aperto', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="checkbox" name="tappeto_usura_chiuso" value="1" <?php checked($tappeto_usura_chiuso, '1'); ?>> <?php _e('Tappeto d\'usura chiuso', 'incidenti-stradali'); ?></label>
+                            <label><input type="radio" name="condizioni_manto" value="aperto" <?php checked($condizioni_manto, 'aperto'); ?>> <?php _e('Tappeto d\'usura aperto', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="condizioni_manto" value="chiuso" <?php checked($condizioni_manto, 'chiuso'); ?>> <?php _e('Tappeto d\'usura chiuso', 'incidenti-stradali'); ?></label>
                         </td>
                     </tr>
                 </table>

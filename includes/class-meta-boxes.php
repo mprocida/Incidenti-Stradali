@@ -584,12 +584,19 @@ class IncidentiMetaBoxes {
             </tr>
             
             <tr>
-                <th><label for="chilometrica_strada"><?php _e('Chilometrica della strada', 'incidenti-stradali'); ?></label></th>
+                <th><label><?php _e('Chilometrica della strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="text" id="chilometrica_strada" name="chilometrica_strada" 
-                           value="<?php echo esc_attr(get_post_meta($post->ID, 'chilometrica_strada', true)); ?>" 
-                           class="regular-text">
-                    <p class="description"><?php _e('Specificare km e ettometro (esempio: 125+3)', 'incidenti-stradali'); ?></p>
+                    <label for="progressiva_km"><?php _e('Km', 'incidenti-stradali'); ?></label>
+                    <input type="number" id="progressiva_km" name="progressiva_km" 
+                        value="<?php echo esc_attr(get_post_meta($post->ID, 'progressiva_km', true)); ?>" 
+                        min="0" max="999" style="width: 80px;">
+                    
+                    <label for="progressiva_m" style="margin-left: 15px;"><?php _e('Mt', 'incidenti-stradali'); ?></label>
+                    <input type="number" id="progressiva_m" name="progressiva_m" 
+                        value="<?php echo esc_attr(get_post_meta($post->ID, 'progressiva_m', true)); ?>" 
+                        min="0" max="999" style="width: 80px;">
+                    
+                    <p class="description"><?php _e('Specificare km e metri separatamente', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
         </table>
@@ -2897,7 +2904,7 @@ class IncidentiMetaBoxes {
             
             // Dati Aggiuntivi ISTAT
             'altri_morti_maschi', 'altri_morti_femmine', 'altri_feriti_maschi', 'altri_feriti_femmine',
-            'numero_altri_veicoli', 'localizzazione_extra_ab', 'chilometrica_strada',
+            'numero_altri_veicoli', 'localizzazione_extra_ab', 'progressiva_km', 'progressiva_m',
             // Numero trasportati per veicolo
             'veicolo_1_numero_trasportati', 'veicolo_2_numero_trasportati', 'veicolo_3_numero_trasportati',
             /*--------------------------------*/

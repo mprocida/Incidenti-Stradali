@@ -2174,8 +2174,8 @@ class IncidentiMetaBoxes {
                             <td>
                                 <select name="<?php echo $prefix; ?>sesso">
                                     <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                                    <option value="1" <?php selected(get_post_meta($post->ID, $prefix . 'sesso', true), '1'); ?>><?php _e('Maschio', 'incidenti-stradali'); ?></option>
-                                    <option value="2" <?php selected(get_post_meta($post->ID, $prefix . 'sesso', true), '2'); ?>><?php _e('Femmina', 'incidenti-stradali'); ?></option>
+                                    <option value="3" <?php selected(get_post_meta($post->ID, $prefix . 'sesso', true), '3'); ?>><?php _e('Maschio', 'incidenti-stradali'); ?></option>
+                                    <option value="4" <?php selected(get_post_meta($post->ID, $prefix . 'sesso', true), '4'); ?>><?php _e('Femmina', 'incidenti-stradali'); ?></option>
                                 </select>
                             </td>
                         </tr>
@@ -2382,8 +2382,8 @@ class IncidentiMetaBoxes {
                             <td>
                                 <select id="<?php echo $prefix; ?>sesso" name="<?php echo $prefix; ?>sesso">
                                     <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                                    <option value="1" <?php selected($sesso, '1'); ?>><?php _e('Maschio', 'incidenti-stradali'); ?></option>
-                                    <option value="2" <?php selected($sesso, '2'); ?>><?php _e('Femmina', 'incidenti-stradali'); ?></option>
+                                    <option value="3" <?php selected($sesso, '3'); ?>><?php _e('Maschio', 'incidenti-stradali'); ?></option>
+                                    <option value="4" <?php selected($sesso, '4'); ?>><?php _e('Femmina', 'incidenti-stradali'); ?></option>
                                 </select>
                             </td>
                         </tr>

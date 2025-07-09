@@ -1906,18 +1906,30 @@ class IncidentiMetaBoxes {
         
         ?>
         <script type="text/javascript">
-        jQuery(document).ready(function($) {
-            $('#numero_veicoli_coinvolti').change(function() {
-                var numVeicoli = parseInt($(this).val()) || 1;
-                
-                for (var i = 1; i <= 3; i++) {
-                    if (i <= numVeicoli) {
-                        $('#veicolo-' + i).show();
-                    } else {
-                        $('#veicolo-' + i).hide();
+            jQuery(document).ready(function($) {
+                function updateVeicoliSections() {
+                    var numVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+                    
+                    for (var i = 1; i <= 3; i++) {
+                        if (i <= numVeicoli) {
+                            $('#veicolo-' + i).show();
+                        } else {
+                            $('#veicolo-' + i).hide();
+                        }
                     }
                 }
-            });
+                
+                $('#numero_veicoli_coinvolti').change(function() {
+                    updateVeicoliSections();
+                    
+                    // Triggera l'aggiornamento anche per i conducenti (se il metodo esiste)
+                    if (typeof updateConducentiVisibility === 'function') {
+                        updateConducentiVisibility();
+                    }
+                });
+                
+                // Aggiorna al caricamento della pagina
+                updateVeicoliSections();
             // Gestione visibilità targa rimorchio
             $('[id$="_tipo_rimorchio"]').change(function() {
                 var veicoloId = $(this).attr('id').replace('_tipo_rimorchio', '');
@@ -2035,12 +2047,14 @@ class IncidentiMetaBoxes {
     }
     
     public function render_persone_meta_box($post) {
+        $numero_veicoli = (int) get_post_meta($post->ID, 'numero_veicoli_coinvolti', true) ?: 1;
+        
         echo '<div id="persone-container">';
         echo '<h4>' . __('Conducenti', 'incidenti-stradali') . '</h4>';
         
         // Render conducenti per ogni veicolo
         for ($i = 1; $i <= 3; $i++) {
-            $display = 'block'; // Mostreremo/nasconderemo via JS
+            $display = ($i <= $numero_veicoli) ? 'block' : 'none';
             echo '<div id="conducente-' . $i . '" class="conducente-section" style="display: ' . $display . ';">';
             echo '<h4>' . sprintf(__('Conducente Veicolo %s', 'incidenti-stradali'), chr(64 + $i)) . '</h4>';
             
@@ -2064,6 +2078,54 @@ class IncidentiMetaBoxes {
         $this->render_pedoni_fields($post);
         
         echo '</div>';
+
+        // NUOVO: Script per gestire la visibilità dinamica dei conducenti
+        ?>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            // Funzione per aggiornare la visibilità dei conducenti
+            function updateConducentiVisibility() {
+                var numVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+                
+                console.log('Aggiornamento conducenti - Numero veicoli:', numVeicoli); // Debug
+                
+                for (var i = 1; i <= 3; i++) {
+                    if (i <= numVeicoli) {
+                        $('#conducente-' + i).show();
+                    } else {
+                        $('#conducente-' + i).hide();
+                        // Pulisci i campi dei conducenti nascosti
+                        $('#conducente-' + i + ' input, #conducente-' + i + ' select').val('');
+                        $('#conducente-' + i + ' input[type="checkbox"]').prop('checked', false);
+                    }
+                }
+            }
+            
+            // Gestione visibilità trasportati esistente
+            function updateTrasportatiSections() {
+                var numeroVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+                
+                for (var i = 1; i <= 3; i++) {
+                    if (i <= numeroVeicoli) {
+                        $('#trasportati-veicolo-' + i).show();
+                    } else {
+                        $('#trasportati-veicolo-' + i).hide();
+                    }
+                }
+            }
+            
+            // Ascolta i cambiamenti sul numero di veicoli
+            $(document).on('change', '#numero_veicoli_coinvolti', function() {
+                updateConducentiVisibility();
+                updateTrasportatiSections();
+            });
+            
+            // Aggiorna al caricamento della pagina
+            updateConducentiVisibility();
+            updateTrasportatiSections();
+        });
+        </script>
+        <?php
     }
 
     private function render_trasportati_fields($post, $veicolo_num) {
@@ -3068,6 +3130,7 @@ class IncidentiMetaBoxes {
                     'conducente_' . $i . '_tipo_cittadinanza', 'conducente_' . $i . '_nazionalita', 'conducente_' . $i . '_nazionalita_altro'
                 );
                 
+                
                 // Aggiungi campi trasportati da eliminare
                 for ($t = 1; $t <= 9; $t++) {
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_eta';
@@ -3078,6 +3141,18 @@ class IncidentiMetaBoxes {
                 }
                 
                 foreach ($all_vehicle_fields as $field) {
+                    delete_post_meta($post_id, $field);
+                }
+
+                // NUOVO: Elimina anche i campi dei conducenti non utilizzati
+                $conducente_fields_to_delete = array(
+                    'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 'conducente_' . $i . '_esito',
+                    'conducente_' . $i . '_tipo_patente', 'conducente_' . $i . '_anno_patente',
+                    'conducente_' . $i . '_nazionalita', 'conducente_' . $i . '_nazionalita_altro',
+                    'conducente_' . $i . '_tipologia_incidente'
+                );
+                
+                foreach ($conducente_fields_to_delete as $field) {
                     delete_post_meta($post_id, $field);
                 }
             }

@@ -996,3 +996,12 @@ msgstr "Feriti"
 
 msgid "Correggere i dati del riepilogo infortunati prima di salvare"
 msgstr "Correggere i dati del riepilogo infortunati prima di salvare"
+
+msgid "Sigla se veicolo estero"
+msgstr "Sigla se veicolo estero"
+
+msgid "Es: D, F, CH..."
+msgstr "Es: D, F, CH..."
+
+msgid "Inserire la sigla automobilistica internazionale (solo per veicoli con targa estera)"
+msgstr "Inserire la sigla automobilistica internazionale (solo per veicoli con targa estera)"

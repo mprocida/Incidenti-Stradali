@@ -1166,3 +1166,11 @@ msgstr "Veicolo ignoto perché datosi alla fuga"
 msgid "Monopattino"
 msgstr "Monopattino"
 
+msgid "Sigla se veicolo estero"
+msgstr ""
+
+msgid "Es: D, F, CH..."
+msgstr ""
+
+msgid "Inserire la sigla automobilistica internazionale (solo per veicoli con targa estera)"
+msgstr ""

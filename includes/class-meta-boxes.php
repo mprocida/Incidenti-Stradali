@@ -1952,6 +1952,7 @@ class IncidentiMetaBoxes {
         
         $tipo_veicolo = get_post_meta($post->ID, $prefix . 'tipo', true);
         $targa = get_post_meta($post->ID, $prefix . 'targa', true);
+        $sigla_estero = get_post_meta($post->ID, $prefix . 'sigla_estero', true);
         $anno_immatricolazione = get_post_meta($post->ID, $prefix . 'anno_immatricolazione', true);
         $cilindrata = get_post_meta($post->ID, $prefix . 'cilindrata', true);
         $peso_totale = get_post_meta($post->ID, $prefix . 'peso_totale', true);
@@ -1995,6 +1996,15 @@ class IncidentiMetaBoxes {
                 <th><label for="<?php echo $prefix; ?>targa"><?php _e('Targa', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <input type="text" id="<?php echo $prefix; ?>targa" name="<?php echo $prefix; ?>targa" value="<?php echo esc_attr($targa); ?>">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="<?php echo $prefix; ?>sigla_estero"><?php _e('Sigla se veicolo estero', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="text" id="<?php echo $prefix; ?>sigla_estero" name="<?php echo $prefix; ?>sigla_estero" 
+                        value="<?php echo esc_attr($sigla_estero); ?>" maxlength="5" class="regular-text"
+                        placeholder="<?php _e('Es: D, F, CH...', 'incidenti-stradali'); ?>">
+                    <p class="description"><?php _e('Inserire la sigla automobilistica internazionale (solo per veicoli con targa estera)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
             <tr>
@@ -3065,7 +3075,7 @@ class IncidentiMetaBoxes {
         $numero_veicoli = isset($_POST['numero_veicoli_coinvolti']) ? intval($_POST['numero_veicoli_coinvolti']) : 1;
         for ($i = 1; $i <= 3; $i++) {
             if ($i <= $numero_veicoli) {
-                $vehicle_fields = array('tipo', 'targa', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
+                $vehicle_fields = array('tipo', 'targa', 'sigla_estero', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
                 $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro', 'tipologia_incidente');
                 // Escluso tipo_patente perché è un array di checkbox gestito separatamente
 
@@ -3107,7 +3117,7 @@ class IncidentiMetaBoxes {
             } else {
                 // Elimina i campi dei veicoli non utilizzati
                 $all_vehicle_fields = array(
-                    'veicolo_' . $i . '_tipo', 'veicolo_' . $i . '_targa', 
+                    'veicolo_' . $i . '_tipo', 'veicolo_' . $i . '_targa', 'veicolo_' . $i . '_sigla_estero',
                     'veicolo_' . $i . '_anno_immatricolazione', 'veicolo_' . $i . '_cilindrata', 
                     'veicolo_' . $i . '_peso_totale',
                     'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 'conducente_' . $i . '_esito',

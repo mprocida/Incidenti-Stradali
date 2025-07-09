@@ -1669,8 +1669,6 @@ class IncidentiMetaBoxes {
                 } else {
                     $('#numero_veicoli_row').hide();
                     $('#numero_veicoli_coinvolti').val('1');
-                    // Trigger l'evento per aggiornare le altre sezioni
-                    $(document).trigger('numero_veicoli_changed', [1]);
                 }
             });
             
@@ -1926,9 +1924,8 @@ class IncidentiMetaBoxes {
         ?>
         <script type="text/javascript">
         jQuery(document).ready(function($) {
-            // Funzione per aggiornare visibilità veicoli
-            function updateVeicoliVisibility() {
-                var numVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+            $('#numero_veicoli_coinvolti').change(function() {
+                var numVeicoli = parseInt($(this).val()) || 1;
                 
                 for (var i = 1; i <= 3; i++) {
                     if (i <= numVeicoli) {
@@ -1937,15 +1934,19 @@ class IncidentiMetaBoxes {
                         $('#veicolo-' + i).hide();
                     }
                 }
-                
-                // Trigger evento personalizzato per sincronizzare altre sezioni
-                $(document).trigger('numero_veicoli_changed', [numVeicoli]);
-            }
-            
-            $('#numero_veicoli_coinvolti').change(updateVeicoliVisibility);
-            
-            // Esegui al caricamento
-            updateVeicoliVisibility();
+            });
+            // Gestione visibilità targa rimorchio
+            $('[id$="_tipo_rimorchio"]').change(function() {
+                var veicoloId = $(this).attr('id').replace('_tipo_rimorchio', '');
+                var targaRow = $('#' + veicoloId + '_targa_rimorchio_row');
+
+                if ($(this).val() && $(this).val() !== '') {
+                    targaRow.show();
+                } else {
+                    targaRow.hide();
+                    $('#' + veicoloId + '_targa_rimorchio').val('');
+                }
+            }).trigger('change');
         });
         </script>
         <?php
@@ -2051,15 +2052,13 @@ class IncidentiMetaBoxes {
     }
     
     public function render_persone_meta_box($post) {
-        $numero_veicoli = get_post_meta($post->ID, 'numero_veicoli_coinvolti', true) ?: 1;
-        
         echo '<div id="persone-container">';
         echo '<h4>' . __('Conducenti', 'incidenti-stradali') . '</h4>';
         
-        // Render conducenti per ogni veicolo (dinamico)
+        // Render conducenti per ogni veicolo
         for ($i = 1; $i <= 3; $i++) {
-            $display_style = ($i <= $numero_veicoli) ? 'block' : 'none';
-            echo '<div id="conducente-' . $i . '" class="conducente-section" style="display: ' . $display_style . ';">';
+            $display = 'block'; // Mostreremo/nasconderemo via JS
+            echo '<div id="conducente-' . $i . '" class="conducente-section" style="display: ' . $display . ';">';
             echo '<h4>' . sprintf(__('Conducente Veicolo %s', 'incidenti-stradali'), chr(64 + $i)) . '</h4>';
             
             $this->render_single_conducente_fields($post, $i);
@@ -2082,62 +2081,6 @@ class IncidentiMetaBoxes {
         $this->render_pedoni_fields($post);
         
         echo '</div>';
-
-        // NUOVO: Sezione Trasportati
-        echo '<h4>' . __('Trasportati', 'incidenti-stradali') . '</h4>';
-        for ($i = 1; $i <= 3; $i++) {
-            $display_style = ($i <= $numero_veicoli) ? 'block' : 'none';
-            echo '<div id="trasportati-veicolo-' . $i . '" class="trasportati-section" style="display: ' . $display_style . ';">';
-            echo '<h5>' . sprintf(__('Trasportati Veicolo %s', 'incidenti-stradali'), chr(64 + $i)) . '</h5>';
-            $this->render_trasportati_fields($post, $i);
-            echo '</div>';
-        }
-        
-        echo '<h4>' . __('Pedoni Coinvolti', 'incidenti-stradali') . '</h4>';
-        $this->render_pedoni_fields($post);
-        
-        echo '</div>';
-        
-        // JavaScript per gestire la visibilità dinamica dei conducenti
-        ?>
-        <script type="text/javascript">
-        jQuery(document).ready(function($) {
-            // Funzione per aggiornare la visibilità dei conducenti
-            function updateConducentiVisibility() {
-                var numeroVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
-                
-                // Mostra/nascondi sezioni conducenti
-                for (var i = 1; i <= 3; i++) {
-                    if (i <= numeroVeicoli) {
-                        $('#conducente-' + i).show();
-                    } else {
-                        $('#conducente-' + i).hide();
-                    }
-                }
-                
-                // Mostra/nascondi sezioni trasportati
-                for (var i = 1; i <= 3; i++) {
-                    if (i <= numeroVeicoli) {
-                        $('#trasportati-veicolo-' + i).show();
-                    } else {
-                        $('#trasportati-veicolo-' + i).hide();
-                    }
-                }
-            }
-            
-            // Trigger quando cambia il numero di veicoli nella sezione Natura
-            $(document).on('change', '#numero_veicoli_coinvolti', updateConducentiVisibility);
-            
-            // Trigger quando cambia la natura dell'incidente (per gestire la visibilità del campo numero veicoli)
-            $(document).on('change', '#natura_incidente', function() {
-                setTimeout(updateConducentiVisibility, 100); // Piccolo delay per permettere l'aggiornamento del campo numero_veicoli
-            });
-            
-            // Esegui al caricamento della pagina
-            updateConducentiVisibility();
-        });
-        </script>
-        <?php
     }
 
     private function render_trasportati_fields($post, $veicolo_num) {

@@ -2137,7 +2137,7 @@ class IncidentiMetaBoxes {
                 <th><label for="veicolo_<?php echo $veicolo_num; ?>_numero_trasportati"><?php _e('Numero Trasportati', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="veicolo_<?php echo $veicolo_num; ?>_numero_trasportati" name="veicolo_<?php echo $veicolo_num; ?>_numero_trasportati">
-                        <?php for ($j = 0; $j <= 9; $j++): ?>
+                        <?php for ($j = 0; $j <= 4; $j++): ?>
                             <option value="<?php echo $j; ?>" <?php selected($num_trasportati, $j); ?>><?php echo $j; ?></option>
                         <?php endfor; ?>
                     </select>
@@ -2146,7 +2146,7 @@ class IncidentiMetaBoxes {
         </table>
         
         <div id="trasportati-<?php echo $veicolo_num; ?>-container">
-            <?php for ($i = 1; $i <= 9; $i++): 
+            <?php for ($i = 1; $i <= 4; $i++): 
                 $display = $i <= $num_trasportati ? 'block' : 'none';
                 $prefix = 'veicolo_' . $veicolo_num . '_trasportato_' . $i . '_';
             ?>
@@ -2972,31 +2972,16 @@ class IncidentiMetaBoxes {
             'veicolo_1_trasportato_2_eta', 'veicolo_1_trasportato_2_sesso', 'veicolo_1_trasportato_2_esito',
             'veicolo_1_trasportato_3_eta', 'veicolo_1_trasportato_3_sesso', 'veicolo_1_trasportato_3_esito',
             'veicolo_1_trasportato_4_eta', 'veicolo_1_trasportato_4_sesso', 'veicolo_1_trasportato_4_esito',
-            'veicolo_1_trasportato_5_eta', 'veicolo_1_trasportato_5_sesso', 'veicolo_1_trasportato_5_esito',
-            'veicolo_1_trasportato_6_eta', 'veicolo_1_trasportato_6_sesso', 'veicolo_1_trasportato_6_esito',
-            'veicolo_1_trasportato_7_eta', 'veicolo_1_trasportato_7_sesso', 'veicolo_1_trasportato_7_esito',
-            'veicolo_1_trasportato_8_eta', 'veicolo_1_trasportato_8_sesso', 'veicolo_1_trasportato_8_esito',
-            'veicolo_1_trasportato_9_eta', 'veicolo_1_trasportato_9_sesso', 'veicolo_1_trasportato_9_esito',
 
             'veicolo_2_trasportato_1_eta', 'veicolo_2_trasportato_1_sesso', 'veicolo_2_trasportato_1_esito',
             'veicolo_2_trasportato_2_eta', 'veicolo_2_trasportato_2_sesso', 'veicolo_2_trasportato_2_esito',
             'veicolo_2_trasportato_3_eta', 'veicolo_2_trasportato_3_sesso', 'veicolo_2_trasportato_3_esito',
             'veicolo_2_trasportato_4_eta', 'veicolo_2_trasportato_4_sesso', 'veicolo_2_trasportato_4_esito',
-            'veicolo_2_trasportato_5_eta', 'veicolo_2_trasportato_5_sesso', 'veicolo_2_trasportato_5_esito',
-            'veicolo_2_trasportato_6_eta', 'veicolo_2_trasportato_6_sesso', 'veicolo_2_trasportato_6_esito',
-            'veicolo_2_trasportato_7_eta', 'veicolo_2_trasportato_7_sesso', 'veicolo_2_trasportato_7_esito',
-            'veicolo_2_trasportato_8_eta', 'veicolo_2_trasportato_8_sesso', 'veicolo_2_trasportato_8_esito',
-            'veicolo_2_trasportato_9_eta', 'veicolo_2_trasportato_9_sesso', 'veicolo_2_trasportato_9_esito',
 
             'veicolo_3_trasportato_1_eta', 'veicolo_3_trasportato_1_sesso', 'veicolo_3_trasportato_1_esito',
             'veicolo_3_trasportato_2_eta', 'veicolo_3_trasportato_2_sesso', 'veicolo_3_trasportato_2_esito',
             'veicolo_3_trasportato_3_eta', 'veicolo_3_trasportato_3_sesso', 'veicolo_3_trasportato_3_esito',
             'veicolo_3_trasportato_4_eta', 'veicolo_3_trasportato_4_sesso', 'veicolo_3_trasportato_4_esito',
-            'veicolo_3_trasportato_5_eta', 'veicolo_3_trasportato_5_sesso', 'veicolo_3_trasportato_5_esito',
-            'veicolo_3_trasportato_6_eta', 'veicolo_3_trasportato_6_sesso', 'veicolo_3_trasportato_6_esito',
-            'veicolo_3_trasportato_7_eta', 'veicolo_3_trasportato_7_sesso', 'veicolo_3_trasportato_7_esito',
-            'veicolo_3_trasportato_8_eta', 'veicolo_3_trasportato_8_sesso', 'veicolo_3_trasportato_8_esito',
-            'veicolo_3_trasportato_9_eta', 'veicolo_3_trasportato_9_sesso', 'veicolo_3_trasportato_9_esito',
 
             // Pedoni feriti
             'pedone_ferito_1_eta', 'pedone_ferito_1_sesso',
@@ -3109,8 +3094,8 @@ class IncidentiMetaBoxes {
                     update_post_meta($post_id, $tipo_patente_key, array());
                 }
                 
-                // NUOVO: Salva i trasportati per ogni veicolo (fino a 9 trasportati)
-                for ($t = 1; $t <= 9; $t++) {
+                // NUOVO: Salva i trasportati per ogni veicolo (fino a 4 trasportati)
+                for ($t = 1; $t <= 4; $t++) {
                     $trasportato_fields = array('eta', 'sesso', 'esito', 'sedile', 'dettaglio_sedile');
                     foreach ($trasportato_fields as $field) {
                         $key = 'veicolo_' . $i . '_trasportato_' . $t . '_' . $field;
@@ -3132,7 +3117,7 @@ class IncidentiMetaBoxes {
                 
                 
                 // Aggiungi campi trasportati da eliminare
-                for ($t = 1; $t <= 9; $t++) {
+                for ($t = 1; $t <= 4; $t++) {
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_eta';
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_sesso';
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_esito';

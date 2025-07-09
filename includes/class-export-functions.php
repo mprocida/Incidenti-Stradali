@@ -678,6 +678,8 @@ class IncidentiExportFunctions {
                 $femmine_ferite_veicolo = 0;
                 // Ottieni il numero di trasportati per questo veicolo
                 $num_trasportati = get_post_meta($post_id, "veicolo_{$numVeicolo}_numero_trasportati", true) ?: 0;
+                // Limita a massimo 4 trasportati
+                $num_trasportati = min($num_trasportati, 4);
 
                 // Analizza ogni trasportato e categorizza per sedile
                 for ($t = 1; $t <= $num_trasportati; $t++) {

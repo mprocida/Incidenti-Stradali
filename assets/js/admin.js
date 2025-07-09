@@ -165,7 +165,7 @@ jQuery(document).ready(function($) {
                 $('#veicolo_' + vehicleNum + '_numero_trasportati').on('change', function() {
                     var numTrasportati = parseInt($(this).val()) || 0;
                     
-                    for (var t = 1; t <= 9; t++) {
+                    for (var t = 1; t <= 4; t++) {
                         if (t <= numTrasportati) {
                             $('#trasportato-' + vehicleNum + '-' + t).show();
                         } else {

@@ -517,7 +517,7 @@ jQuery(document).ready(function($) {
         var km = parseInt($kmField.val()) || 0;
         var m = parseInt($mField.val()) || 0;
         
-        var isValidKm = km >= 0 && km <= 999;
+        var isValidKm = km >= 0 && km <= 9999;
         var isValidM = m >= 0 && m <= 999;
         
         // Visual feedback
@@ -528,7 +528,7 @@ jQuery(document).ready(function($) {
         var $errorMsg = $('.progressiva-error');
         if (!isValidKm || !isValidM) {
             if ($errorMsg.length === 0) {
-                $('#progressiva_row').append('<p class="description error progressiva-error">Valori non validi: Km e Mt devono essere compresi tra 0 e 999</p>');
+                $('#progressiva_row').append('<p class="description error progressiva-error">Valori non validi: Km deve essere compreso tra 0 e 9999, Mt tra 0 e 999</p>');
             }
         } else {
             $errorMsg.remove();

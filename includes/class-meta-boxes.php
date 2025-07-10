@@ -3665,7 +3665,7 @@ class IncidentiMetaBoxes {
             'data_incidente', 'ora_incidente', 'minuti_incidente', 'provincia_incidente', 'comune_incidente',
             'localita_incidente', 'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
-            'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
+            'condizioni_manto', 'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
 
             // CAMPI NATURA INCIDENTE:
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'altro_natura_testo',

@@ -582,23 +582,6 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
-            
-            <tr>
-                <th><label><?php _e('Chilometrica della strada', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <label for="progressiva_km"><?php _e('Km', 'incidenti-stradali'); ?></label>
-                    <input type="number" id="progressiva_km" name="progressiva_km" 
-                        value="<?php echo esc_attr(get_post_meta($post->ID, 'progressiva_km', true)); ?>" 
-                        min="0" max="999" style="width: 80px;">
-                    
-                    <label for="progressiva_m" style="margin-left: 15px;"><?php _e('Mt', 'incidenti-stradali'); ?></label>
-                    <input type="number" id="progressiva_m" name="progressiva_m" 
-                        value="<?php echo esc_attr(get_post_meta($post->ID, 'progressiva_m', true)); ?>" 
-                        min="0" max="999" style="width: 80px;">
-                    
-                    <p class="description"><?php _e('Specificare km e metri separatamente', 'incidenti-stradali'); ?></p>
-                </td>
-            </tr>
         </table>
         <?php
     }
@@ -1102,7 +1085,7 @@ class IncidentiMetaBoxes {
                     <p class="description"><?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
-            <tr id="progressiva_row" style="display: none;">
+            <tr id="progressiva_row">
                 <th><label><?php _e('Progressiva Chilometrica', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <label for="progressiva_km"><?php _e('Km', 'incidenti-stradali'); ?></label>
@@ -1111,7 +1094,7 @@ class IncidentiMetaBoxes {
                     <label for="progressiva_m"><?php _e('Mt', 'incidenti-stradali'); ?></label>
                     <input type="number" id="progressiva_m" name="progressiva_m" value="<?php echo esc_attr($progressiva_m); ?>" min="0" max="999" style="width: 80px;">
                     
-                    <p class="description"><?php _e('Obbligatorio per strade extraurbane', 'incidenti-stradali'); ?></p>
+                    <p class="description"><?php _e('Specificare km e metri separatamente', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
         </table>
@@ -1155,6 +1138,9 @@ class IncidentiMetaBoxes {
                         numeroStradaRow.hide();
                         $('#numero_strada').val(''); // Pulisce il campo quando non visibile
                     }
+                    
+                    // RIMOSSO: La progressiva chilometrica ora è sempre visibile
+                    // $('#progressiva_row').show(); // Se vuoi essere esplicito, ma non è necessario
                     
                     // Logica esistente per nell_abitato
                     if (tipoStrada) {
@@ -3688,7 +3674,7 @@ class IncidentiMetaBoxes {
             
             // Dati Aggiuntivi ISTAT
             'altri_morti_maschi', 'altri_morti_femmine', 'altri_feriti_maschi', 'altri_feriti_femmine',
-            'numero_altri_veicoli', 'localizzazione_extra_ab', 'progressiva_km', 'progressiva_m',
+            'numero_altri_veicoli', 'localizzazione_extra_ab',
             // Numero trasportati per veicolo
             'veicolo_1_numero_trasportati', 'veicolo_2_numero_trasportati', 'veicolo_3_numero_trasportati',
             /*--------------------------------*/

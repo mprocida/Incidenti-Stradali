@@ -1645,7 +1645,11 @@ class IncidentiMetaBoxes {
                         $.each(naturaOptions[natura], function(value, text) {
                             dettaglioSelect.append('<option value="' + value + '">' + text + '</option>');
                         });
-                        dettaglioSelect.val('<?php echo esc_js($dettaglio_natura); ?>');
+                        // Ripristina il valore salvato
+                        var savedDettaglio = '<?php echo esc_js($dettaglio_natura); ?>';
+                        if (savedDettaglio) {
+                            dettaglioSelect.val(savedDettaglio);
+                        }
                     }
                 }
                 
@@ -1660,6 +1664,14 @@ class IncidentiMetaBoxes {
             
             // Trigger change on page load
             $('#natura_incidente').trigger('change');
+
+            // Ripristina il valore del dettaglio dopo il caricamento delle opzioni
+            setTimeout(function() {
+                var savedDettaglio = '<?php echo esc_js($dettaglio_natura); ?>';
+                if (savedDettaglio) {
+                    $('#dettaglio_natura').val(savedDettaglio);
+                }
+            }, 100);
 
             // Definizione dei codici circostanze per tipo di incidente
             var circostanzeData = {
@@ -3670,6 +3682,9 @@ class IncidentiMetaBoxes {
 
             // CAMPI NATURA INCIDENTE:
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'altro_natura_testo',
+            
+            // CAMPI PEDONI:
+            'numero_pedoni_feriti', 'numero_pedoni_morti',
             
             // Dati Aggiuntivi ISTAT
             'altri_morti_maschi', 'altri_morti_femmine', 'altri_feriti_maschi', 'altri_feriti_femmine',

@@ -2085,6 +2085,17 @@ class IncidentiMetaBoxes {
             $this->render_trasportati_fields($post, $i);
             echo '</div>';
         }
+
+        // NUOVO: Sezione Altri passeggeri infortunati
+        echo '<h4>' . __('Altri Passeggeri Infortunati', 'incidenti-stradali') . '</h4>';
+        $numero_veicoli = get_post_meta($post->ID, 'numero_veicoli_coinvolti', true) ?: 1;
+        for ($i = 1; $i <= 3; $i++) {
+            $display_style = ($i <= $numero_veicoli) ? 'block' : 'none';
+            echo '<div id="altri-passeggeri-veicolo-' . $i . '" class="altri-passeggeri-section" style="display: ' . $display_style . ';">';
+            echo '<h5>' . sprintf(__('Altri Passeggeri Veicolo %s', 'incidenti-stradali'), chr(64 + $i)) . '</h5>';
+            $this->render_altri_passeggeri_fields($post, $i);
+            echo '</div>';
+        }
         
         echo '<h4>' . __('Pedoni Coinvolti', 'incidenti-stradali') . '</h4>';
         $this->render_pedoni_fields($post);
@@ -2125,16 +2136,31 @@ class IncidentiMetaBoxes {
                     }
                 }
             }
+
+            // Gestione visibilità altri passeggeri
+            function updateAltriPasseggeriSections() {
+                var numeroVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+                
+                for (var i = 1; i <= 3; i++) {
+                    if (i <= numeroVeicoli) {
+                        $('#altri-passeggeri-veicolo-' + i).show();
+                    } else {
+                        $('#altri-passeggeri-veicolo-' + i).hide();
+                    }
+                }
+            }
             
             // Ascolta i cambiamenti sul numero di veicoli
             $(document).on('change', '#numero_veicoli_coinvolti', function() {
                 updateConducentiVisibility();
                 updateTrasportatiSections();
+                updateAltriPasseggeriSections();
             });
             
             // Aggiorna al caricamento della pagina
             updateConducentiVisibility();
             updateTrasportatiSections();
+            updateAltriPasseggeriSections();
         });
         </script>
         <?php
@@ -2225,6 +2251,76 @@ class IncidentiMetaBoxes {
             }
         });
         </script>
+        <?php
+    }
+
+    private function render_altri_passeggeri_fields($post, $veicolo_num) {
+        ?>
+        <div style="margin: 15px 0;">
+            <h6><?php printf(__('Altri Passeggeri Infortunati nel Veicolo %s', 'incidenti-stradali'), chr(64 + $veicolo_num)); ?></h6>
+            
+            <table style="border-collapse: collapse; margin-top: 10px; background: #f9f9f9; border: 1px solid #ddd;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 8px; background: #e9e9e9; text-align: center; width: 100px;"></th>
+                        <th style="border: 1px solid #ddd; padding: 8px; background: #e9e9e9; text-align: center; width: 80px;"><?php _e('Maschi', 'incidenti-stradali'); ?></th>
+                        <th style="border: 1px solid #ddd; padding: 8px; background: #e9e9e9; text-align: center; width: 80px;"><?php _e('Femmine', 'incidenti-stradali'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold; text-align: right; background: #f5f5f5;">
+                            <?php _e('Morti', 'incidenti-stradali'); ?>
+                        </td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+                            <input type="text" 
+                                id="veicolo_<?php echo $veicolo_num; ?>_altri_morti_maschi" 
+                                name="veicolo_<?php echo $veicolo_num; ?>_altri_morti_maschi" 
+                                value="<?php echo esc_attr(get_post_meta($post->ID, 'veicolo_' . $veicolo_num . '_altri_morti_maschi', true) ?: ''); ?>"
+                                pattern="[0-9]{1,2}" 
+                                maxlength="2"
+                                style="width: 50px; text-align: center; border: 1px solid #ccc;"
+                                placeholder="0">
+                        </td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+                            <input type="text" 
+                                id="veicolo_<?php echo $veicolo_num; ?>_altri_morti_femmine" 
+                                name="veicolo_<?php echo $veicolo_num; ?>_altri_morti_femmine" 
+                                value="<?php echo esc_attr(get_post_meta($post->ID, 'veicolo_' . $veicolo_num . '_altri_morti_femmine', true) ?: ''); ?>"
+                                pattern="[0-9]{1,2}" 
+                                maxlength="2"
+                                style="width: 50px; text-align: center; border: 1px solid #ccc;"
+                                placeholder="0">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold; text-align: right; background: #f5f5f5;">
+                            <?php _e('Feriti', 'incidenti-stradali'); ?>
+                        </td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+                            <input type="text" 
+                                id="veicolo_<?php echo $veicolo_num; ?>_altri_feriti_maschi" 
+                                name="veicolo_<?php echo $veicolo_num; ?>_altri_feriti_maschi" 
+                                value="<?php echo esc_attr(get_post_meta($post->ID, 'veicolo_' . $veicolo_num . '_altri_feriti_maschi', true) ?: ''); ?>"
+                                pattern="[0-9]{1,2}" 
+                                maxlength="2"
+                                style="width: 50px; text-align: center; border: 1px solid #ccc;"
+                                placeholder="0">
+                        </td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+                            <input type="text" 
+                                id="veicolo_<?php echo $veicolo_num; ?>_altri_feriti_femmine" 
+                                name="veicolo_<?php echo $veicolo_num; ?>_altri_feriti_femmine" 
+                                value="<?php echo esc_attr(get_post_meta($post->ID, 'veicolo_' . $veicolo_num . '_altri_feriti_femmine', true) ?: ''); ?>"
+                                pattern="[0-9]{1,2}" 
+                                maxlength="2"
+                                style="width: 50px; text-align: center; border: 1px solid #ccc;"
+                                placeholder="0">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <?php
     }
     
@@ -3667,6 +3763,14 @@ class IncidentiMetaBoxes {
             'veicolo_3_trasportato_2_eta', 'veicolo_3_trasportato_2_sesso', 'veicolo_3_trasportato_2_esito',
             'veicolo_3_trasportato_3_eta', 'veicolo_3_trasportato_3_sesso', 'veicolo_3_trasportato_3_esito',
             'veicolo_3_trasportato_4_eta', 'veicolo_3_trasportato_4_sesso', 'veicolo_3_trasportato_4_esito',
+
+            // Altri passeggeri infortunati per veicolo
+            'veicolo_1_altri_morti_maschi', 'veicolo_1_altri_morti_femmine',
+            'veicolo_1_altri_feriti_maschi', 'veicolo_1_altri_feriti_femmine',
+            'veicolo_2_altri_morti_maschi', 'veicolo_2_altri_morti_femmine',
+            'veicolo_2_altri_feriti_maschi', 'veicolo_2_altri_feriti_femmine',
+            'veicolo_3_altri_morti_maschi', 'veicolo_3_altri_morti_femmine',
+            'veicolo_3_altri_feriti_maschi', 'veicolo_3_altri_feriti_femmine',
 
             // Pedoni feriti
             'pedone_ferito_1_eta', 'pedone_ferito_1_sesso',

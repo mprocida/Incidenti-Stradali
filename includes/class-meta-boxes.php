@@ -2018,7 +2018,8 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="<?php echo $prefix; ?>cilindrata"><?php _e('Cilindrata (cc)', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="number" id="<?php echo $prefix; ?>cilindrata" name="<?php echo $prefix; ?>cilindrata" value="<?php echo esc_attr($cilindrata); ?>" min="0">
+                    <input type="text" id="<?php echo $prefix; ?>cilindrata" name="<?php echo $prefix; ?>cilindrata" value="<?php echo esc_attr($cilindrata); ?>" maxlength="5" pattern="[0-9]{1,5}" inputmode="numeric" placeholder="es. 1600">
+                    <p class="description"><?php _e('Inserire fino a 5 cifre (solo numeri)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
             <tr>

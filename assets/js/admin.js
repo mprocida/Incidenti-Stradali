@@ -563,6 +563,18 @@ jQuery(document).ready(function($) {
         }
     }
 
+    // Validazione cilindrata: solo numeri, massimo 5 cifre per tutti i veicoli
+    $('[id^="cilindrata_veicolo_"]').on('input', function() {
+        var value = $(this).val();
+        // Rimuovi caratteri non numerici
+        value = value.replace(/[^0-9]/g, '');
+        // Limita a 5 cifre
+        if (value.length > 5) {
+            value = value.substring(0, 5);
+        }
+        $(this).val(value);
+    });
+
     /**
      * Update circostanze logic based on incident nature
      */

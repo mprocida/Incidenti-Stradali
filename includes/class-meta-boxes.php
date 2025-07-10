@@ -1043,6 +1043,7 @@ class IncidentiMetaBoxes {
         $numero_strada = get_post_meta($post->ID, 'numero_strada', true);
         $progressiva_km = get_post_meta($post->ID, 'progressiva_km', true);
         $progressiva_m = get_post_meta($post->ID, 'progressiva_m', true);
+        $tronco_strada = get_post_meta($post->ID, 'tronco_strada', true);
         
         ?>
         <table class="form-table">

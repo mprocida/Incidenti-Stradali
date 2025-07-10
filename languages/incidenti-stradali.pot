@@ -1014,6 +1014,9 @@ msgstr ""
 msgid "Conducente coinvolto in incidente su strada durante il tragitto casa-lavoro o lavoro-casa"
 msgstr ""
 
+msgid "Nessuno dei due"
+msgstr ""
+
 msgid "Non indicare le due modalità sopra riportate nel caso si tratti di altro tipo di tragitto e/o di incidente avvenuto al di fuori dell'attività lavorativa."
 msgstr ""
 

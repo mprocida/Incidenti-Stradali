@@ -1017,3 +1017,6 @@ msgstr "Strada statale fuori dell'abitato"
 
 msgid "Strada regionale fuori l'abitato"  
 msgstr "Strada regionale fuori l'abitato"
+
+msgid "Nessuno dei due"
+msgstr "Neither of the two"

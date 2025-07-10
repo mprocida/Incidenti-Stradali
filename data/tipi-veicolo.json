@@ -263,7 +263,7 @@
   "regole_validazione": {
     "cilindrata": {
       "min": 0,
-      "max": 10000,
+      "max": 99999,
       "obbligatoria_per": ["15", "16", "17", "18"]
     },
     "peso_totale": {

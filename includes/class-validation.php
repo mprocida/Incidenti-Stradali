@@ -373,7 +373,7 @@ class IncidentiValidation {
         // Validate engine capacity if provided
         if (!empty($_POST[$prefix . 'cilindrata'])) {
             $cilindrata = intval($_POST[$prefix . 'cilindrata']);
-            if ($cilindrata < 0 || $cilindrata > 10000) {
+            if ($cilindrata < 0 || $cilindrata > 99999) {
                 $errors[] = sprintf(__('La cilindrata del veicolo %s non è valida.', 'incidenti-stradali'), chr(64 + $vehicle_num));
             }
         }

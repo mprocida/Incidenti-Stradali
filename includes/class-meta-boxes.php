@@ -1139,9 +1139,6 @@ class IncidentiMetaBoxes {
                         $('#numero_strada').val(''); // Pulisce il campo quando non visibile
                     }
                     
-                    // RIMOSSO: La progressiva chilometrica ora è sempre visibile
-                    // $('#progressiva_row').show(); // Se vuoi essere esplicito, ma non è necessario
-                    
                     // Logica esistente per nell_abitato
                     if (tipoStrada) {
                         var nellAbitato = ['1', '2', '3', '0'].includes(tipoStrada) ? '1' : '0';

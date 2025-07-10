@@ -476,15 +476,19 @@ jQuery(document).ready(function($) {
                 $numeroStradaField.prop('required', false).val('');
             }
             
-            // Mostra progressiva chilometrica per strade extraurbane
-            var tipiExtraurbani = ['5', '6', '7', '9']; // Fuori dall'abitato
-            if (tipiExtraurbani.includes(tipoStrada)) {
-                $progressivaRow.show();
-                $('#progressiva_km, #progressiva_m').prop('required', true);
-            } else {
-                $progressivaRow.hide();
-                $('#progressiva_km, #progressiva_m').prop('required', false).val('');
-            }
+            // RIMOSSO: Progressiva chilometrica ora sempre visibile
+            // var tipiExtraurbani = ['5', '6', '7', '9']; // Fuori dall'abitato
+            // if (tipiExtraurbani.includes(tipoStrada)) {
+            //     $progressivaRow.show();
+            //     $('#progressiva_km, #progressiva_m').prop('required', true);
+            // } else {
+            //     $progressivaRow.hide();
+            //     $('#progressiva_km, #progressiva_m').prop('required', false).val('');
+            // }
+
+            // La progressiva chilometrica è sempre visibile
+            $progressivaRow.show();
+
         }).trigger('change');
         
         // Validazione progressiva chilometrica

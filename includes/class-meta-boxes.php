@@ -1462,12 +1462,12 @@ class IncidentiMetaBoxes {
             <tr id="numero_strada_row">
                 <th><label for="numero_strada"><?php _e('Numero Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="numero_strada_select" name="numero_strada" class="regular-text" style="display: none;">
+                    <select id="numero_strada" name="numero_strada" class="regular-text" style="display: none;">
                         <option value=""><?php _e('Seleziona strada provinciale', 'incidenti-stradali'); ?></option>
                     </select>
-                    <input type="text" id="numero_strada_input" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
-                    <p class="description" id="numero_strada_desc"><?php _e('Numero identificativo della strada (es. SS16, SP101)', 'incidenti-stradali'); ?></p>
-                    <p class="description" id="numero_strada_desc_provinciale" style="display: none;"><?php _e('Seleziona la strada provinciale dalla lista', 'incidenti-stradali'); ?></p>
+                    <input type="text" id="numero_strada_text" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
+                    <p class="description" id="numero_strada_desc"><?php _e('Numero identificativo della strada (es. SP1, SS16)', 'incidenti-stradali'); ?></p>
+                    <p class="description" id="numero_strada_desc_provinciale" style="display: none;"><?php _e('Seleziona la strada provinciale dall\'elenco', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
         </table>
@@ -4588,13 +4588,8 @@ class IncidentiMetaBoxes {
         
         // Gestione speciale per numero_strada basata sul tipo di strada
         $tipo_strada = sanitize_text_field($_POST['tipo_strada'] ?? '');
-        if ($tipo_strada === '2') {
-            // Per strade provinciali entro l'abitato, usa il valore della select
-            $numero_strada = sanitize_text_field($_POST['numero_strada'] ?? '');
-        } else {
-            // Per altri tipi di strada, usa il valore dell'input text
-            $numero_strada = sanitize_text_field($_POST['numero_strada'] ?? '');
-        }
+        $numero_strada = sanitize_text_field($_POST['numero_strada'] ?? '');
+        
         update_post_meta($post_id, 'numero_strada', $numero_strada);
 
         foreach ($meta_fields as $field) {

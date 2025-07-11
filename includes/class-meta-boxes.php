@@ -1463,12 +1463,12 @@ class IncidentiMetaBoxes {
             <tr id="numero_strada_row">
                 <th><label for="numero_strada"><?php _e('Numero Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="numero_strada" name="numero_strada" class="regular-text" style="display: none;">
-                        <option value=""><?php _e('Seleziona strada provinciale', 'incidenti-stradali'); ?></option>
+                    <select id="numero_strada_select" name="numero_strada" class="regular-text" style="display: none;">
+                        <option value=""><?php _e('Seleziona strada', 'incidenti-stradali'); ?></option>
                     </select>
-                    <input type="text" id="numero_strada_text" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
-                    <p class="description" id="numero_strada_desc"><?php _e('Numero identificativo della strada (es. SP1, SS16)', 'incidenti-stradali'); ?></p>
-                    <p class="description" id="numero_strada_desc_provinciale" style="display: none;"><?php _e('Seleziona la strada provinciale dall\'elenco', 'incidenti-stradali'); ?></p>
+                    <input type="text" id="numero_strada_input" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text" style="display: none;">
+                    <p class="description" id="numero_strada_desc" style="display: none;"><?php _e('Numero identificativo della strada', 'incidenti-stradali'); ?></p>
+                    <p class="description" id="numero_strada_desc_provinciale" style="display: none;"><?php _e('Seleziona la strada dall\'elenco', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
         </table>
@@ -1504,8 +1504,8 @@ class IncidentiMetaBoxes {
                 function updateFieldsVisibility() {
                     var tipoStrada = $('#tipo_strada').val();
                     var numeroStradaRow = $('#numero_strada_row');
-                    var numeroStradaSelect = $('#numero_strada');
-                    var numeroStradaText = $('#numero_strada_text');
+                    var numeroStradaSelect = $('#numero_strada_select');
+                    var numeroStradaInput = $('#numero_strada_input');
                     var numeroStradaDesc = $('#numero_strada_desc');
                     var numeroStradaDescProv = $('#numero_strada_desc_provinciale');
                     
@@ -1517,14 +1517,16 @@ class IncidentiMetaBoxes {
                     if (tipiConNumero.includes(tipoStrada)) {
                         numeroStradaRow.show();
                         
-                        // Se è "Provinciale entro l'abitato" (valore 2) o "Provinciale" (valore 5)
+                        // Se è Provinciale (valore 2 o 5) o Statale (valore 3 o 6)
                         if (tipoStrada === '2' || tipoStrada === '5') {
+                            // Strade provinciali - usa select con elenco
                             numeroStradaSelect.show();
                             numeroStradaText.hide();
                             numeroStradaDesc.hide();
                             numeroStradaDescProv.show();
                             populateStradeProvinciali();
-                        } else if (tipoStrada === '3') {
+                        } else if (tipoStrada === '3' || tipoStrada === '6') {
+                            // Strade statali - usa stesso elenco delle provinciali
                             numeroStradaSelect.show();
                             numeroStradaText.hide();
                             numeroStradaDesc.hide();
@@ -1544,7 +1546,7 @@ class IncidentiMetaBoxes {
                 }
 
                 function populateStradeProvinciali() {
-                    var select = $('#numero_strada');
+                    var select = $('#numero_strada_select');
                     select.empty();
                     select.append('<option value="">Seleziona strada provinciale</option>');
                     var stradeProvinciali = [
@@ -1931,20 +1933,34 @@ class IncidentiMetaBoxes {
                     });
 
                     // Ripristina il valore salvato se presente
-                    var savedValue = $('#numero_strada').data('saved-value');
+                    var savedValue = $('#numero_strada_select').data('saved-value');
                     if (savedValue) {
-                        $('#numero_strada').val(savedValue);
+                        $('#numero_strada_select').val(savedValue);
                     }
                 }
 
                 function populateStradeStatali() {
-                    var select = $('#numero_strada');
+                    var select = $('#numero_strada_select');
                     select.empty();
                     select.append('<option value="">Seleziona strada statale</option>');
+                    var stradeStatali = [
+                        {value: "007", text: "007 - Appia"},
+                        {value: "016", text: "016 - Adriatica"},
+                        {value: "101", text: "101 - Salentina"},
+                        {value: "274", text: "274 - Gallipoli - Leuca"},
+                        {value: "275", text: "275 - Maglie - Santa Maria di Leuca"},
+                        {value: "694", text: "694 - Tangenziale Est di Lecce"}
+                    ];
                     
-                    $.each(stradeStatali, function(codice, descrizione) {
-                        select.append('<option value="' + codice + '">' + descrizione + '</option>');
+                    $.each(stradeStatali, function(index, strada) {
+                        select.append('<option value="' + strada.value + '">' + strada.text + '</option>');
                     });
+
+                    // Ripristina il valore salvato se presente
+                    var savedValue = $('#numero_strada_select').data('saved-value');
+                    if (savedValue) {
+                        $('#numero_strada_select').val(savedValue);
+                    }
                 }
 
                 // Trigger on page load and when tipo_strada changes

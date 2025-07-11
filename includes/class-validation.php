@@ -559,22 +559,13 @@ class IncidentiValidation {
             }
         }
         
-        // Conta passeggeri dei veicoli (se implementato nel tuo plugin)
+        // Conta trasportati dei veicoli
         $num_veicoli = isset($_POST['numero_veicoli_coinvolti']) ? (int) $_POST['numero_veicoli_coinvolti'] : 0;
         for ($v = 1; $v <= $num_veicoli; $v++) {
-            // Conta passeggeri maschi
-            $num_passeggeri_m = isset($_POST["veicolo_{$v}_passeggeri_m"]) ? (int) $_POST["veicolo_{$v}_passeggeri_m"] : 0;
-            for ($p = 1; $p <= $num_passeggeri_m; $p++) {
-                $esito = isset($_POST["veicolo_{$v}_passeggero_m_{$p}_esito"]) ? $_POST["veicolo_{$v}_passeggero_m_{$p}_esito"] : '';
-                if ($esito == $esito_type) {
-                    $count++;
-                }
-            }
-            
-            // Conta passeggeri femmine
-            $num_passeggeri_f = isset($_POST["veicolo_{$v}_passeggeri_f"]) ? (int) $_POST["veicolo_{$v}_passeggeri_f"] : 0;
-            for ($p = 1; $p <= $num_passeggeri_f; $p++) {
-                $esito = isset($_POST["veicolo_{$v}_passeggero_f_{$p}_esito"]) ? $_POST["veicolo_{$v}_passeggero_f_{$p}_esito"] : '';
+            // Conta i trasportati per ogni veicolo (max 4 trasportati per veicolo)
+            $num_trasportati = isset($_POST["veicolo_{$v}_numero_trasportati"]) ? (int) $_POST["veicolo_{$v}_numero_trasportati"] : 0;
+            for ($t = 1; $t <= $num_trasportati && $t <= 4; $t++) {
+                $esito = isset($_POST["veicolo_{$v}_trasportato_{$t}_esito"]) ? $_POST["veicolo_{$v}_trasportato_{$t}_esito"] : '';
                 if ($esito == $esito_type) {
                     $count++;
                 }

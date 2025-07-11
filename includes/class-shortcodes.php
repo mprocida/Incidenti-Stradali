@@ -1256,9 +1256,9 @@ class IncidentiShortcodes {
 
             // Count passengers casualties if applicable
             for ($i = 1; $i <= 3; $i++) {
-                $num_passeggeri = get_post_meta($post_id, 'veicolo_' . $i . '_numero_passeggeri', true) ?: 0;
-                for ($j = 1; $j <= intval($num_passeggeri); $j++) {
-                    $esito = get_post_meta($post_id, 'passeggero_' . $i . '_' . $j . '_esito', true);
+                $num_trasportati = get_post_meta($post_id, 'veicolo_' . $i . '_numero_trasportati', true) ?: 0;
+                for ($j = 1; $j <= intval($num_trasportati) && $j <= 4; $j++) {
+                    $esito = get_post_meta($post_id, 'veicolo_' . $i . '_trasportato_' . $j . '_esito', true);
                     if ($esito == '3' || $esito == '4') $morti++;
                     if ($esito == '2') $feriti++;
                 }

@@ -524,6 +524,20 @@ class IncidentiEmailNotifications {
                 $count++;
             }
         }
+
+        // Count passengers
+        $num_veicoli = get_post_meta($post_id, 'numero_veicoli_coinvolti', true) ?: 0;
+        for ($v = 1; $v <= $num_veicoli; $v++) {
+            $num_trasportati = get_post_meta($post_id, 'veicolo_' . $v . '_numero_trasportati', true) ?: 0;
+            for ($t = 1; $t <= $num_trasportati && $t <= 4; $t++) {
+                $esito = get_post_meta($post_id, 'veicolo_' . $v . '_trasportato_' . $t . '_esito', true);
+                if ($type === 'morti' && ($esito == '3' || $esito == '4')) {
+                    $count++;
+                } elseif ($type === 'feriti' && $esito == '2') {
+                    $count++;
+                }
+            }
+        }
         
         return $count;
     }

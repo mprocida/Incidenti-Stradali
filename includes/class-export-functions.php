@@ -465,7 +465,7 @@ class IncidentiExportFunctions {
             $esitoTXT[$indTXT] = $organo_coordinatore ?: '4';
             
             // Campo 26: Localizzazione incidente
-            $localizzazione = $this->safe_meta_string($post_id, 'nell_abitato');
+            $localizzazione = $this->safe_meta_string($post_id, 'tipo_strada');
             $indTXT++;
             $esitoTXT[$indTXT] = $localizzazione ?: ' ';
             
@@ -496,7 +496,7 @@ class IncidentiExportFunctions {
 
             // ===== CARATTERISTICHE DEL LUOGO (Posizioni 35-40) =====
             // Campo 35: Tipo di strada
-            $tipo_strada = $this->safe_meta_string($post_id, 'tipo_strada');
+            $tipo_strada = $this->safe_meta_string($post_id, 'geometria_strada');
             $indTXT++;
             $esitoTXT[$indTXT] = $tipo_strada ?: ' ';
             // Campo 36: Pavimentazione
@@ -787,7 +787,7 @@ class IncidentiExportFunctions {
                 //Età del pedone morto (2 cifre)
                 $eta_pedone_morto = $this->safe_meta_string($post_id, "pedone_morto_{$numPedone}_eta");
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($eta_pedone_morto ?: '00', 1, '0', STR_PAD_LEFT);
+                $esitoTXT[$indTXT] = mb_str_pad($eta_pedone_morto ?: '  ', 1, '0', STR_PAD_LEFT);
 
                 //Sesso del pedone ferito (1 cifra)
                 $sesso_pedone_ferito = $this->safe_meta_string($post_id, "pedone_ferito_{$numPedone}_sesso");
@@ -796,7 +796,7 @@ class IncidentiExportFunctions {
                 //Età del pedone ferito (2 cifre)
                 $eta_pedone_ferito = $this->safe_meta_string($post_id, "pedone_ferito_{$numPedone}_eta");
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($eta_pedone_ferito ?: '00', 1, '0', STR_PAD_LEFT);
+                $esitoTXT[$indTXT] = mb_str_pad($eta_pedone_ferito ?: '  ', 1, '0', STR_PAD_LEFT);
             }
 
             //Altri veicoli coinvolti altre ai veicoli A, B e C, e persone infortunate 269-278
@@ -927,7 +927,7 @@ class IncidentiExportFunctions {
             $esitoTXT[$indTXT] = mb_str_pad($minuti ?: '  ', 2, '0', STR_PAD_LEFT); // 99 = sconosciuti
 
             //Campo 1535-1564: Codice identificativo Carabinieri
-            $codice_carabinieri = $this->safe_meta_string($post_id, 'codice_carabinieri');
+            $codice_carabinieri = $this->safe_meta_string($post_id, 'identificativo_comando');
             $indTXT++;
             $esitoTXT[$indTXT] = mb_str_pad($codice_carabinieri ?: '', 30, '~', STR_PAD_RIGHT);
 
@@ -955,7 +955,7 @@ class IncidentiExportFunctions {
             $esitoTXT[$indTXT] = mb_str_pad('', 4, '~', STR_PAD_RIGHT);
 
             //Campo 1591-1690: Altra strada
-            $altra_strada = $this->safe_meta_string($post_id, 'altra_strada');
+            $altra_strada = $this->safe_meta_string($post_id, 'localizzazione_extra_ab');
             $indTXT++;
             $esitoTXT[$indTXT] = mb_str_pad($altra_strada ?: '', 100, '~', STR_PAD_RIGHT);
             
@@ -980,6 +980,11 @@ class IncidentiExportFunctions {
                 //Codice cittadinanza del conducente veicolo
                 $nazionalita_conducente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_nazionalita");
 
+                $parti_nazionalita = explode('-', $nazionalita_conducente);
+                // Assegna le parti alla variabili separate
+                $nazionalita_conducente = $parti_nazionalita[0];
+                $nazionalita_altro_conducente = $parti_nazionalita[1];
+
                 if($nazionalita_conducente==='000') {
                    $tipo_cittadinanza_conducente = '1'; // Default se non specificato
                 } else {
@@ -993,7 +998,6 @@ class IncidentiExportFunctions {
                 $esitoTXT[$indTXT] = mb_str_pad($nazionalita_conducente ?: '', 3, '~', STR_PAD_RIGHT);
 
                 //Descrizione cittadinanza conducente veicolo
-                $nazionalita_altro_conducente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_nazionalita_altro");
                 $indTXT++;
                 $esitoTXT[$indTXT] = mb_str_pad($nazionalita_altro_conducente ?: '', 30, '~', STR_PAD_RIGHT);
 

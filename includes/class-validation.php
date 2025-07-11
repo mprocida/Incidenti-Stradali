@@ -75,28 +75,6 @@ class IncidentiValidation {
                 }
             }
         }
-
-        // Validazione numero strada per strade provinciali
-        if (!empty($_POST['tipo_strada']) && in_array($_POST['tipo_strada'], ['2', '3', '5', '6'])) {
-            if (empty($_POST['numero_strada'])) {
-                $errors[] = __('Il numero della strada provinciale è obbligatorio.', 'incidenti-stradali');
-            } else {
-                // Validazione diversa in base al tipo di strada
-                if ($_POST['tipo_strada'] === '2' || $_POST['tipo_strada'] === '5') {
-                    // Per strade provinciali
-                    $strade_provinciali = $this->get_strade_provinciali_codes();
-                    if (!array_key_exists($_POST['numero_strada'], $strade_provinciali)) {
-                        $errors[] = __('Il codice della strada provinciale selezionato non è valido.', 'incidenti-stradali');
-                    }
-                } elseif ($_POST['tipo_strada'] === '3' || $_POST['tipo_strada'] === '6') {
-                    // Per strade statali - validazione con elenco specifico
-                    $strade_statali_valide = array('101', '16', '274', '275', '543', '613', '694', '7ter');
-                    if (!in_array($_POST['numero_strada'], $strade_statali_valide)) {
-                        $errors[] = __('Il codice della strada statale selezionato non è valido.', 'incidenti-stradali');
-                    }
-                }
-            }
-        }
         
         // Validate data incidente format
         if (!empty($_POST['data_incidente'])) {
@@ -407,7 +385,7 @@ class IncidentiValidation {
                 $errors[] = sprintf(__('Il peso del veicolo %s non è valido.', 'incidenti-stradali'), chr(64 + $vehicle_num));
             }
         }
-
+        
         return $errors;
     }
     

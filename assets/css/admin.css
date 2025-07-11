@@ -922,23 +922,3 @@ input[type="checkbox"]#visualizza_mappa:focus {
         height: 250px;
     }
 }
-
-
-/* Stili per il campo numero strada dinamico */
-#numero_strada, #numero_strada_text {
-    transition: all 0.3s ease;
-}
-
-#numero_strada_row .description {
-    transition: opacity 0.3s ease;
-}
-
-/* Migliora la visualizzazione del select delle strade provinciali */
-#numero_strada {
-    min-width: 400px;
-    max-width: 100%;
-}
-
-#numero_strada option {
-    padding: 5px;
-}

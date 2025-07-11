@@ -526,23 +526,16 @@ class IncidentiExportFunctions {
             $esitoTXT[$indTXT] = $meteo ?: ' ';
             
             // ===== NATURA DELL'INCIDENTE (Posizioni 41-43) ====
-            // Campo 42: Natura incidente
-            $natura_incidente = $this->safe_meta_string($post_id, 'natura_incidente');
-            $indTXT++;
-            $esitoTXT[$indTXT] = $natura_incidente ?: ' ';
-            
             // Campo 42-43: Dettaglio natura
             $dettaglio_natura = $this->safe_meta_string($post_id, 'dettaglio_natura');
             $indTXT++;
             $esitoTXT[$indTXT] = str_pad($dettaglio_natura ?: '  ', 2, '0', STR_PAD_LEFT);
             
-            // ===== VEICOLI COINVOLTI - TIPO (Posizioni 44-49) =====
-            
+            // ===== VEICOLI COINVOLTI - TIPO (Posizioni 44-49) =====        
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 $tipo_veicolo = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_tipo");
                 $indTXT++;
-                $varAppo = $tipo_veicolo;
-                $esitoTXT[$indTXT] = $cfgistat['tipo_veicolo'][$varAppo] ?? '~~';
+                $esitoTXT[$indTXT] = str_pad($tipo_veicolo ?: '  ', 2, '0', STR_PAD_LEFT);
                 if (trim($esitoTXT[$indTXT]) == '') $esitoTXT[$indTXT] = '~~';
                 $esitoTXT[$indTXT] = str_pad($esitoTXT[$indTXT], 2, '~', STR_PAD_LEFT);
             }
@@ -552,7 +545,6 @@ class IncidentiExportFunctions {
             $esitoTXT[$indTXT] = str_pad('', 12, '~', STR_PAD_RIGHT);
             
             // ===== VEICOLI - PESO TOTALE (Posizioni 62-73) =====
-            
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 $peso = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_peso_totale");
                 // Gestione sicura per valori vuoti o non numerici
@@ -610,17 +602,8 @@ class IncidentiExportFunctions {
                 $strAppo = str_pad($anno_imm ?: '  ', 2, ' ', STR_PAD_LEFT);
                 $strAppo = substr($strAppo, 2, 2);
                 $indTXT++;
-                $esitoTXT[$indTXT] = $strAppo == '00' ? '~~' : $strAppo;
-                /*
-                non c'è nel tracciato ISTAT
-                // Anno revisione (2 cifre)
-                $anno_rev = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_anno_revisione");
-                $strAppo = str_pad($anno_rev ?: '0000', 4, '0', STR_PAD_LEFT);
-                $strAppo = substr($strAppo, 2, 2);
-                
-                $indTXT++;
-                $esitoTXT[$indTXT] = $strAppo == '00' ? '~~' : $strAppo;
-                */
+                $esitoTXT[$indTXT] = $strAppo;
+
                 // Spazi n.5
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad('', 5, '~', STR_PAD_RIGHT);
@@ -652,8 +635,11 @@ class IncidentiExportFunctions {
 
                 // Anno patente conducente (2 cifre)
                 $anno_patente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_anno_patente");
+                
+                $strAppo = str_pad($anno_patente ?: '  ', 2, ' ', STR_PAD_LEFT);
+                $strAppo = substr($strAppo, 2, 2);
                 $indTXT++;
-                $esitoTXT[$indTXT] = $anno_patente ?: '  ';
+                $esitoTXT[$indTXT] = $strAppo;                
 
                 /* sul tracciato riga 325 non è specificato il numero di caratteri e se vuoto*/
                 // Conducente durante lo svolgimento di attività lavorativa o in itinere
@@ -682,21 +668,22 @@ class IncidentiExportFunctions {
                 $num_trasportati = min($num_trasportati, 4);
 
                 // Analizza ogni trasportato e categorizza per sedile
-                for ($t = 1; $t <= $num_trasportati; $t++) {
+                for ($t = 1; $t <=4; $t++) {
                     $sedile = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_sedile");
                     $eta = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_eta");
                     $sesso = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_sesso");
                     $esito = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_trasportato_{$t}_esito");
-                    if(($esito == '3') || ($esito == '4')){
-                       if ($sesso == 'M') {
+                    //if(($esito == '3') || ($esito == '4')){
+                    if($esito == '1'){
+                       if ($sesso == '3') {
                             $maschi_morti_veicolo++;
-                        } elseif ($sesso == 'F') {
+                        } elseif ($sesso == '4') {
                             $femmine_morte_veicolo++;
                         }
                     }else {
-                        if ($sesso == 'M') {
+                        if ($sesso == '3') {
                             $maschi_feriti_veicolo++;
-                        } elseif ($sesso == 'F') {
+                        } elseif ($sesso == '4') {
                             $femmine_ferite_veicolo++;
                         }
                     }
@@ -727,11 +714,9 @@ class IncidentiExportFunctions {
                         // Età
                         $indTXT++;
                         $esitoTXT[$indTXT] = str_pad($trasportato['eta'], 2, '0', STR_PAD_LEFT);
-
                         // Sesso
                         $indTXT++;
-                        $esitoTXT[$indTXT] = $cfgistat['sesso'][$trasportato['sesso']] ?? ' '; // Default maschio per ISTAT???
-                      
+                        $esitoTXT[$indTXT] =$trasportato['sesso'] ?? ' ';
                     } else {
                         // Campi vuoti se non c'è passeggero anteriore
                         $indTXT++;
@@ -756,8 +741,7 @@ class IncidentiExportFunctions {
                         $esitoTXT[$indTXT] = str_pad($trasportato['eta'], 2, '0', STR_PAD_LEFT);                       
                         // Sesso  
                         $indTXT++;
-                        $esitoTXT[$indTXT] = $cfgistat['sesso'][$trasportato['sesso']] ?? ' '; // Default maschio per ISTAT???
-
+                         $esitoTXT[$indTXT] =$trasportato['sesso'] ?? ' ';
                     } else {
                         // Campi vuoti se non c'è passeggero posteriore
                         $indTXT++;
@@ -776,6 +760,7 @@ class IncidentiExportFunctions {
                 }         
                 // Altri passeggeri infortunati sul veicolo
                 //Numero dei morti di sesso maschile (2 cifre)
+                /*
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($maschi_morti_veicolo ?: '  ', 1, ' ', STR_PAD_LEFT);
                 //Numero dei morti di sesso femminile (2 cifre)
@@ -787,29 +772,31 @@ class IncidentiExportFunctions {
                 //Numero dei feriti di sesso femminile (2 cifre)
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($femmine_ferite_veicolo ?: '  ', 2, '0', STR_PAD_LEFT);
+                */
+                //FIXARE dopo FIX FORM
+                            $indTXT++;
+            $esitoTXT[$indTXT] = str_pad('', 8, '~', STR_PAD_RIGHT);
             }//for num veicoli 140-244
 
             // Pedoni coinvolti (Posizioni 245-268)
             for ($numPedone = 1; $numPedone <= 4; $numPedone++) {
                 //Sesso del pedone morto (1 cifra)
-                $sesso_pedone_morto = $this->safe_meta_string($post_id, "pedone_{$numPedone}_sesso");
+                $sesso_pedone_morto = $this->safe_meta_string($post_id, "pedone_morto_{$numPedone}_sesso");
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($sesso_pedone_morto ?: ' ', 1, '0', STR_PAD_LEFT);
                 //Età del pedone morto (2 cifre)
-                $eta_pedone_morto = $this->safe_meta_string($post_id, "pedone_{$numPedone}_eta");
+                $eta_pedone_morto = $this->safe_meta_string($post_id, "pedone_morto_{$numPedone}_eta");
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($eta_pedone_morto ?: '00', 1, '0', STR_PAD_LEFT);
 
                 //Sesso del pedone ferito (1 cifra)
-                $sesso_pedone_ferito = $this->safe_meta_string($post_id, "pedone_{$numPedone}_sesso");
+                $sesso_pedone_ferito = $this->safe_meta_string($post_id, "pedone_ferito_{$numPedone}_sesso");
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($sesso_pedone_ferito ?: ' ', 1, '0', STR_PAD_LEFT);
                 //Età del pedone ferito (2 cifre)
-                $eta_pedone_ferito = $this->safe_meta_string($post_id, "pedone_{$numPedone}_eta");
+                $eta_pedone_ferito = $this->safe_meta_string($post_id, "pedone_ferito_{$numPedone}_eta");
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($eta_pedone_ferito ?: '00', 1, '0', STR_PAD_LEFT);
-
-                
             }
 
             //Altri veicoli coinvolti altre ai veicoli A, B e C, e persone infortunate 269-278
@@ -908,19 +895,22 @@ class IncidentiExportFunctions {
             // Tipo di coordinata (1 caratteri) 1421
             $tipo_coordinata = $this->safe_meta_string($post_id, 'tipo_coordinata');
             $indTXT++;
-            $esitoTXT[$indTXT] = str_pad($tipo_coordinata ?: '', 1, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = '1';
+            //str_pad($tipo_coordinata ?: '', 1, '~', STR_PAD_RIGHT);
             // Sistema di proiezione (1 caratteri) 1422
             $sistema_di_proiezione = $this->safe_meta_string($post_id, 'sistema_di_proiezione');
             $indTXT++;
-            $esitoTXT[$indTXT] = str_pad($sistema_di_proiezione ?: '', 1, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = '2';//str_pad($sistema_di_proiezione ?: '', 1, '~', STR_PAD_RIGHT);
             // Longitudine (10 caratteri) 1423-1472
             $longitudine = $this->safe_meta_string($post_id, 'longitudine');
+            $longitudine = str_replace(".", ",",$longitudine);
             $indTXT++;
-            $esitoTXT[$indTXT] = str_pad($longitudine ?: '', 50, '~', STR_PAD_RIGHT);            
+            $esitoTXT[$indTXT] = str_pad($longitudine ?: '', 50, '~', STR_PAD_LEFT);            
             // Latitudine (10 caratteri) 1473-1522
             $latitudine = $this->safe_meta_string($post_id, 'latitudine');
+            $latitudine = str_replace(".", ",",$latitudine);
             $indTXT++;
-            $esitoTXT[$indTXT] = str_pad($latitudine ?: '', 50, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = str_pad($latitudine ?: '', 50, '~', STR_PAD_LEFT);
             //Spazio riservato ISTAT per elaborazione 1523-1530
             //Spazi n.8
             $indTXT++;
@@ -944,12 +934,12 @@ class IncidentiExportFunctions {
             //Campo 1565-1568: Progressiva chilometrica
             $progressiva_km = $this->safe_meta_string($post_id, 'progressiva_km');
             $indTXT++;
-            $esitoTXT[$indTXT] = str_pad($progressiva_km ?: '', 4, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = str_pad($progressiva_km ?: '', 4, '0', STR_PAD_RIGHT);
 
             //Campo 1569-1571: Ettometrica
             $progressiva_m = $this->safe_meta_string($post_id, 'progressiva_m');
             $indTXT++;
-            $esitoTXT[$indTXT] = str_pad($progressiva_m ?: '', 3, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = str_pad($progressiva_m ?: '', 3, '0', STR_PAD_RIGHT);
 
             // ===== VEICOLI - CILINDRATA (Posizioni 1572-1730) =====
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
@@ -957,7 +947,7 @@ class IncidentiExportFunctions {
                 // Gestione sicura per valori vuoti o non numerici
                 $cilindrata = is_numeric($cilindrata) ? round(floatval($cilindrata)) : 0;
                 $indTXT++;
-                $esitoTXT[$indTXT] = str_pad($cilindrata ?: '     ', 5, '0', STR_PAD_LEFT);
+                $esitoTXT[$indTXT] = str_pad($cilindrata ?: '     ', 5, ' ', STR_PAD_LEFT);
             }
             //Spazio riservato ISTAT per elaborazione 1587-1590
             //Spazi n.4
@@ -972,13 +962,14 @@ class IncidentiExportFunctions {
             //Campo 1691-1730: Località
             $localita_incidente = $this->safe_meta_string($post_id, 'localita_incidente');
             $indTXT++;
-            $esitoTXT[$indTXT] = str_pad($localita_incidente ?: '', 40, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($localita_incidente ?: '', 40, '~', STR_PAD_RIGHT);
             
             //1731-1780: Riservato agli Enti in convenzione con Istat
             //Campo 1731-1770: Codice Identificativo Ente  
             $codice__ente = $this->safe_meta_string($post_id, 'codice__ente');
             $indTXT++;
             $esitoTXT[$indTXT] = str_pad($codice__ente ?: '', 40, '~', STR_PAD_RIGHT);
+            
             //Spazio riservato ISTAT per elaborazione 1771-1780
             //Spazi n.10
             $indTXT++;
@@ -986,13 +977,18 @@ class IncidentiExportFunctions {
 
             // ===== Specifiche per la registrazione delle informazioni sulla Cittadinanza dei conducenti dei veicoli A, B e C  (Posizioni 1781-1882) =====
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
-                //Cittadinanza italiana o straniera del conducente veicolo
-                $tipo_cittadinanza_conducente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_tipo_cittadinanza");
-                $indTXT++;
-                $esitoTXT[$indTXT] = str_pad($tipo_cittadinanza_conducente ?: '', 1, '~', STR_PAD_RIGHT);
-
                 //Codice cittadinanza del conducente veicolo
                 $nazionalita_conducente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_nazionalita");
+
+                if($nazionalita_conducente==='000') {
+                   $tipo_cittadinanza_conducente = '1'; // Default se non specificato
+                } else {
+                   $tipo_cittadinanza_conducente = '2';
+                }
+                 //Cittadinanza italiana o straniera del conducente veicolo
+                $indTXT++;
+                $esitoTXT[$indTXT] = str_pad($tipo_cittadinanza_conducente ?: ' ', 1, '~', STR_PAD_RIGHT);
+
                 $indTXT++;
                 $esitoTXT[$indTXT] = str_pad($nazionalita_conducente ?: '', 3, '~', STR_PAD_RIGHT);
 

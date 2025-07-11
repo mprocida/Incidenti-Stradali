@@ -449,12 +449,16 @@ jQuery(document).ready(function($) {
             var $identificativoRow = $('#identificativo_comando_row');
             var $identificativoField = $('#identificativo_comando');
             
-            if (enteValue === 'carabiniere') { // Carabiniere
+            console.log('Ente selezionato:', enteValue); // Debug
+            
+            if (enteValue === 'Carabiniere') { // CORREZIONE: Maiuscolo come nel select
                 $identificativoRow.show();
                 $identificativoField.prop('required', true);
+                console.log('Campo identificativo comando mostrato'); // Debug
             } else {
                 $identificativoRow.hide();
                 $identificativoField.prop('required', false).val('');
+                console.log('Campo identificativo comando nascosto'); // Debug
             }
         }).trigger('change'); // Trigger immediato per inizializzazione
         

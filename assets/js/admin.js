@@ -466,7 +466,7 @@ jQuery(document).ready(function($) {
             var $progressivaRow = $('#progressiva_row');
             
             // Tipi di strada che richiedono il numero strada
-            var tipiConNumero = ['2', '3', '0', '5', '6', '7', '9'];
+            var tipiConNumero = ['2', '3', '5', '6'];
             
             if (tipiConNumero.includes(tipoStrada)) {
                 $numeroStradaRow.show();

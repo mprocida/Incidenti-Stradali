@@ -1512,13 +1512,13 @@ class IncidentiMetaBoxes {
                     // Tipi di strada che richiedono il numero strada:
                     // Nell'abitato: 2 (Provinciale entro l'abitato), 3 (Statale entro l'abitato), 0 (Regionale entro l'abitato)
                     // Fuori dall'abitato: 5 (Provinciale), 6 (Statale), 7 (Autostrada), 9 (Regionale)
-                    var tipiConNumero = ['2', '3', '0', '5', '6', '7', '9'];
+                    var tipiConNumero = ['2', '3', '5', '6'];
                     
                     if (tipiConNumero.includes(tipoStrada)) {
                         numeroStradaRow.show();
                         
-                        // Se è "Provinciale entro l'abitato" (valore 2) o "Statale entro l'abitato" (valore 3)
-                        if (tipoStrada === '2') {
+                        // Se è "Provinciale entro l'abitato" (valore 2) o "Provinciale" (valore 5)
+                        if (tipoStrada === '2' || tipoStrada === '5') {
                             numeroStradaSelect.show();
                             numeroStradaText.hide();
                             numeroStradaDesc.hide();

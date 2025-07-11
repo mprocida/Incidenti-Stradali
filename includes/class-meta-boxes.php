@@ -2396,682 +2396,682 @@ class IncidentiMetaBoxes {
                         <option value="">
                             <?php _e('Seleziona nazionalità', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="000" <?php selected($nazionalita, '000' ); ?>>
+                        <option value="000-Italia" <?php selected($nazionalita, '000-Italia' ); ?>>
                             <?php _e('Italia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="201" <?php selected($nazionalita, '201' ); ?>>
+                        <option value="201-Albania" <?php selected($nazionalita, '201-Albania' ); ?>>
                             <?php _e('Albania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="202" <?php selected($nazionalita, '202' ); ?>>
+                        <option value="202-Andorra" <?php selected($nazionalita, '202-Andorra' ); ?>>
                             <?php _e('Andorra', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="203" <?php selected($nazionalita, '203' ); ?>>
+                        <option value="203-Austria" <?php selected($nazionalita, '203-Austria' ); ?>>
                             <?php _e('Austria', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="206" <?php selected($nazionalita, '206' ); ?>>
+                        <option value="206-Belgio" <?php selected($nazionalita, '206-Belgio' ); ?>>
                             <?php _e('Belgio', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="209" <?php selected($nazionalita, '209' ); ?>>
+                        <option value="209-Bulgaria" <?php selected($nazionalita, '209-Bulgaria' ); ?>>
                             <?php _e('Bulgaria', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="212" <?php selected($nazionalita, '212' ); ?>>
+                        <option value="212-Danimarca" <?php selected($nazionalita, '212-Danimarca' ); ?>>
                             <?php _e('Danimarca', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="214" <?php selected($nazionalita, '214' ); ?>>
+                        <option value="214-Finlandia" <?php selected($nazionalita, '214-Finlandia' ); ?>>
                             <?php _e('Finlandia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="215" <?php selected($nazionalita, '215' ); ?>>
+                        <option value="215-Francia" <?php selected($nazionalita, '215-Francia' ); ?>>
                             <?php _e('Francia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="216" <?php selected($nazionalita, '216' ); ?>>
+                        <option value="216-Germania" <?php selected($nazionalita, '216-Germania' ); ?>>
                             <?php _e('Germania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="219" <?php selected($nazionalita, '219' ); ?>>
+                        <option value="219-Regno Unito" <?php selected($nazionalita, '219-Regno Unito' ); ?>>
                             <?php _e('Regno Unito', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="220" <?php selected($nazionalita, '220' ); ?>>
+                        <option value="220-Grecia" <?php selected($nazionalita, '220-Grecia' ); ?>>
                             <?php _e('Grecia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="221" <?php selected($nazionalita, '221' ); ?>>
+                        <option value="221-Irlanda" <?php selected($nazionalita, '221-Irlanda' ); ?>>
                             <?php _e('Irlanda', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="223" <?php selected($nazionalita, '223' ); ?>>
+                        <option value="223-Islanda" <?php selected($nazionalita, '223-Islanda' ); ?>>
                             <?php _e('Islanda', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="225" <?php selected($nazionalita, '225' ); ?>>
+                        <option value="225-Liechtenstein" <?php selected($nazionalita, '225-Liechtenstein' ); ?>>
                             <?php _e('Liechtenstein', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="226" <?php selected($nazionalita, '226' ); ?>>
+                        <option value="226-Lussemburgo" <?php selected($nazionalita, '226-Lussemburgo' ); ?>>
                             <?php _e('Lussemburgo', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="227" <?php selected($nazionalita, '227' ); ?>>
+                        <option value="227-Malta" <?php selected($nazionalita, '227-Malta' ); ?>>
                             <?php _e('Malta', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="229" <?php selected($nazionalita, '229' ); ?>>
+                        <option value="229-Monaco" <?php selected($nazionalita, '229-Monaco' ); ?>>
                             <?php _e('Monaco', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="231" <?php selected($nazionalita, '231' ); ?>>
+                        <option value="231-Norvegia" <?php selected($nazionalita, '231-Norvegia' ); ?>>
                             <?php _e('Norvegia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="232" <?php selected($nazionalita, '232' ); ?>>
+                        <option value="232-Paesi Bassi" <?php selected($nazionalita, '232-Paesi Bassi' ); ?>>
                             <?php _e('Paesi Bassi', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="233" <?php selected($nazionalita, '233' ); ?>>
+                        <option value="233-Polonia" <?php selected($nazionalita, '233-Polonia' ); ?>>
                             <?php _e('Polonia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="234" <?php selected($nazionalita, '234' ); ?>>
+                        <option value="234-Portogallo" <?php selected($nazionalita, '234-Portogallo' ); ?>>
                             <?php _e('Portogallo', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="235" <?php selected($nazionalita, '235' ); ?>>
+                        <option value="235-Romania" <?php selected($nazionalita, '235-Romania' ); ?>>
                             <?php _e('Romania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="236" <?php selected($nazionalita, '236' ); ?>>
+                        <option value="236-San Marino" <?php selected($nazionalita, '236-San Marino' ); ?>>
                             <?php _e('San Marino', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="239" <?php selected($nazionalita, '239' ); ?>>
+                        <option value="239-Spagna" <?php selected($nazionalita, '239-Spagna' ); ?>>
                             <?php _e('Spagna', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="240" <?php selected($nazionalita, '240' ); ?>>
+                        <option value="240-Svezia" <?php selected($nazionalita, '240-Svezia' ); ?>>
                             <?php _e('Svezia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="241" <?php selected($nazionalita, '241' ); ?>>
+                        <option value="241-Svizzera" <?php selected($nazionalita, '241-Svizzera' ); ?>>
                             <?php _e('Svizzera', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="243" <?php selected($nazionalita, '243' ); ?>>
+                        <option value="243-Ucraina" <?php selected($nazionalita, '243-Ucraina' ); ?>>
                             <?php _e('Ucraina', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="244" <?php selected($nazionalita, '244' ); ?>>
+                        <option value="244-Ungheria" <?php selected($nazionalita, '244-Ungheria' ); ?>>
                             <?php _e('Ungheria', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="245" <?php selected($nazionalita, '245' ); ?>>
+                        <option value="245-Federazione russa" <?php selected($nazionalita, '245-Federazione russa' ); ?>>
                             <?php _e('Federazione russa', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="246" <?php selected($nazionalita, '246' ); ?>>
+                        <option value="246-Stato della Città del Vaticano" <?php selected($nazionalita, '246-Stato della Città del Vaticano' ); ?>>
                             <?php _e('Stato della Città del Vaticano', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="247" <?php selected($nazionalita, '247' ); ?>>
+                        <option value="247-Estonia" <?php selected($nazionalita, '247-Estonia' ); ?>>
                             <?php _e('Estonia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="248" <?php selected($nazionalita, '248' ); ?>>
+                        <option value="248-Lettonia" <?php selected($nazionalita, '248-Lettonia' ); ?>>
                             <?php _e('Lettonia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="249" <?php selected($nazionalita, '249' ); ?>>
+                        <option value="249-Lituania" <?php selected($nazionalita, '249-Lituania' ); ?>>
                             <?php _e('Lituania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="250" <?php selected($nazionalita, '250' ); ?>>
+                        <option value="250-Croazia" <?php selected($nazionalita, '250-Croazia' ); ?>>
                             <?php _e('Croazia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="251" <?php selected($nazionalita, '251' ); ?>>
+                        <option value="251-Slovenia" <?php selected($nazionalita, '251-Slovenia' ); ?>>
                             <?php _e('Slovenia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="252" <?php selected($nazionalita, '252' ); ?>>
+                        <option value="252-Bosnia-Erzegovina" <?php selected($nazionalita, '252-Bosnia-Erzegovina' ); ?>>
                             <?php _e('Bosnia-Erzegovina', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="253" <?php selected($nazionalita, '253' ); ?>>
+                        <option value="253-Ex Repubblica Jugoslava di Macedonia" <?php selected($nazionalita, '253-Ex Repubblica Jugoslava di Macedonia' ); ?>>
                             <?php _e('Ex Repubblica Jugoslava di Macedonia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="254" <?php selected($nazionalita, '254' ); ?>>
+                        <option value="254-Moldova" <?php selected($nazionalita, '254-Moldova' ); ?>>
                             <?php _e('Moldova', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="255" <?php selected($nazionalita, '255' ); ?>>
+                        <option value="255-Slovacchia" <?php selected($nazionalita, '255-Slovacchia' ); ?>>
                             <?php _e('Slovacchia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="256" <?php selected($nazionalita, '256' ); ?>>
+                        <option value="256-Bielorussia" <?php selected($nazionalita, '256-Bielorussia' ); ?>>
                             <?php _e('Bielorussia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="257" <?php selected($nazionalita, '257' ); ?>>
+                        <option value="257-Repubblica ceca" <?php selected($nazionalita, '257-Repubblica ceca' ); ?>>
                             <?php _e('Repubblica ceca', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="270" <?php selected($nazionalita, '270' ); ?>>
+                        <option value="270-Montenegro" <?php selected($nazionalita, '270-Montenegro' ); ?>>
                             <?php _e('Montenegro', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="271" <?php selected($nazionalita, '271' ); ?>>
+                        <option value="271-Serbia" <?php selected($nazionalita, '271-Serbia' ); ?>>
                             <?php _e('Serbia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="272" <?php selected($nazionalita, '272' ); ?>>
+                        <option value="272-Kosovo" <?php selected($nazionalita, '272-Kosovo' ); ?>>
                             <?php _e('Kosovo', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="301" <?php selected($nazionalita, '301' ); ?>>
+                        <option value="301-Afghanistan" <?php selected($nazionalita, '301-Afghanistan' ); ?>>
                             <?php _e('Afghanistan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="302" <?php selected($nazionalita, '302' ); ?>>
+                        <option value="302-Arabia Saudita" <?php selected($nazionalita, '302-Arabia Saudita' ); ?>>
                             <?php _e('Arabia Saudita', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="304" <?php selected($nazionalita, '304' ); ?>>
+                        <option value="304-Bahrein" <?php selected($nazionalita, '304-Bahrein' ); ?>>
                             <?php _e('Bahrein', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="305" <?php selected($nazionalita, '305' ); ?>>
+                        <option value="305-Bangladesh" <?php selected($nazionalita, '305-Bangladesh' ); ?>>
                             <?php _e('Bangladesh', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="306" <?php selected($nazionalita, '306' ); ?>>
+                        <option value="306-Bhutan" <?php selected($nazionalita, '306-Bhutan' ); ?>>
                             <?php _e('Bhutan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="307" <?php selected($nazionalita, '307' ); ?>>
+                        <option value="307-Myanmar/Birmania" <?php selected($nazionalita, '307-Myanmar/Birmania' ); ?>>
                             <?php _e('Myanmar/Birmania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="309" <?php selected($nazionalita, '309' ); ?>>
+                        <option value="309-Brunei Darussalam" <?php selected($nazionalita, '309-Brunei Darussalam' ); ?>>
                             <?php _e('Brunei Darussalam', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="310" <?php selected($nazionalita, '310' ); ?>>
+                        <option value="310-Cambogia" <?php selected($nazionalita, '310-Cambogia' ); ?>>
                             <?php _e('Cambogia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="311" <?php selected($nazionalita, '311' ); ?>>
+                        <option value="311-Sri Lanka" <?php selected($nazionalita, '311-Sri Lanka' ); ?>>
                             <?php _e('Sri Lanka', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="314" <?php selected($nazionalita, '314' ); ?>>
+                        <option value="314-Cina" <?php selected($nazionalita, '314-Cina' ); ?>>
                             <?php _e('Cina', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="315" <?php selected($nazionalita, '315' ); ?>>
+                        <option value="315-Cipro" <?php selected($nazionalita, '315-Cipro' ); ?>>
                             <?php _e('Cipro', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="319" <?php selected($nazionalita, '319' ); ?>>
+                        <option value="319-Corea del Nord" <?php selected($nazionalita, '319-Corea del Nord' ); ?>>
                             <?php _e('Corea del Nord', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="320" <?php selected($nazionalita, '320' ); ?>>
+                        <option value="320-Corea del Sud" <?php selected($nazionalita, '320-Corea del Sud' ); ?>>
                             <?php _e('Corea del Sud', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="322" <?php selected($nazionalita, '322' ); ?>>
+                        <option value="322-Emirati Arabi Uniti" <?php selected($nazionalita, '322-Emirati Arabi Uniti' ); ?>>
                             <?php _e('Emirati Arabi Uniti', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="323" <?php selected($nazionalita, '323' ); ?>>
+                        <option value="323-Filippine" <?php selected($nazionalita, '323-Filippine' ); ?>>
                             <?php _e('Filippine', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="324" <?php selected($nazionalita, '324' ); ?>>
+                        <option value="324-Palestina" <?php selected($nazionalita, '324-Palestina' ); ?>>
                             <?php _e('Palestina', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="326" <?php selected($nazionalita, '326' ); ?>>
+                        <option value="326-Giappone" <?php selected($nazionalita, '326-Giappone' ); ?>>
                             <?php _e('Giappone', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="327" <?php selected($nazionalita, '327' ); ?>>
+                        <option value="327-Giordania" <?php selected($nazionalita, '327-Giordania' ); ?>>
                             <?php _e('Giordania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="330" <?php selected($nazionalita, '330' ); ?>>
+                        <option value="330-India" <?php selected($nazionalita, '330-India' ); ?>>
                             <?php _e('India', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="331" <?php selected($nazionalita, '331' ); ?>>
+                        <option value="331-Indonesia" <?php selected($nazionalita, '331-Indonesia' ); ?>>
                             <?php _e('Indonesia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="332" <?php selected($nazionalita, '332' ); ?>>
+                        <option value="332-Iran" <?php selected($nazionalita, '332-Iran' ); ?>>
                             <?php _e('Iran', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="333" <?php selected($nazionalita, '333' ); ?>>
+                        <option value="333-Iraq" <?php selected($nazionalita, '333-Iraq' ); ?>>
                             <?php _e('Iraq', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="334" <?php selected($nazionalita, '334' ); ?>>
+                        <option value="334-Israele" <?php selected($nazionalita, '334-Israele' ); ?>>
                             <?php _e('Israele', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="335" <?php selected($nazionalita, '335' ); ?>>
+                        <option value="335-Kuwait" <?php selected($nazionalita, '335-Kuwait' ); ?>>
                             <?php _e('Kuwait', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="336" <?php selected($nazionalita, '336' ); ?>>
+                        <option value="336-Laos" <?php selected($nazionalita, '336-Laos' ); ?>>
                             <?php _e('Laos', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="337" <?php selected($nazionalita, '337' ); ?>>
+                        <option value="337-Libano" <?php selected($nazionalita, '337-Libano' ); ?>>
                             <?php _e('Libano', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="338" <?php selected($nazionalita, '338' ); ?>>
+                        <option value="338-Timor Leste" <?php selected($nazionalita, '338-Timor Leste' ); ?>>
                             <?php _e('Timor Leste', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="339" <?php selected($nazionalita, '339' ); ?>>
+                        <option value="339-Maldive" <?php selected($nazionalita, '339-Maldive' ); ?>>
                             <?php _e('Maldive', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="340" <?php selected($nazionalita, '340' ); ?>>
+                        <option value="340-Malaysia" <?php selected($nazionalita, '340-Malaysia' ); ?>>
                             <?php _e('Malaysia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="341" <?php selected($nazionalita, '341' ); ?>>
+                        <option value="341-Mongolia" <?php selected($nazionalita, '341-Mongolia' ); ?>>
                             <?php _e('Mongolia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="342" <?php selected($nazionalita, '342' ); ?>>
+                        <option value="342-Nepal" <?php selected($nazionalita, '342-Nepal' ); ?>>
                             <?php _e('Nepal', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="343" <?php selected($nazionalita, '343' ); ?>>
+                        <option value="343-Oman" <?php selected($nazionalita, '343-Oman' ); ?>>
                             <?php _e('Oman', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="344" <?php selected($nazionalita, '344' ); ?>>
+                        <option value="344-Pakistan" <?php selected($nazionalita, '344-Pakistan' ); ?>>
                             <?php _e('Pakistan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="345" <?php selected($nazionalita, '345' ); ?>>
+                        <option value="345-Qatar" <?php selected($nazionalita, '345-Qatar' ); ?>>
                             <?php _e('Qatar', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="346" <?php selected($nazionalita, '346' ); ?>>
+                        <option value="346-Singapore" <?php selected($nazionalita, '346-Singapore' ); ?>>
                             <?php _e('Singapore', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="348" <?php selected($nazionalita, '348' ); ?>>
+                        <option value="348-Siria" <?php selected($nazionalita, '348-Siria' ); ?>>
                             <?php _e('Siria', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="349" <?php selected($nazionalita, '349' ); ?>>
+                        <option value="349-Thailandia" <?php selected($nazionalita, '349-Thailandia' ); ?>>
                             <?php _e('Thailandia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="351" <?php selected($nazionalita, '351' ); ?>>
+                        <option value="351-Turchia" <?php selected($nazionalita, '351-Turchia' ); ?>>
                             <?php _e('Turchia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="353" <?php selected($nazionalita, '353' ); ?>>
+                        <option value="353-Vietnam" <?php selected($nazionalita, '353-Vietnam' ); ?>>
                             <?php _e('Vietnam', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="354" <?php selected($nazionalita, '354' ); ?>>
+                        <option value="354-Yemen" <?php selected($nazionalita, '354-Yemen' ); ?>>
                             <?php _e('Yemen', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="356" <?php selected($nazionalita, '356' ); ?>>
+                        <option value="356-Kazakhstan" <?php selected($nazionalita, '356-Kazakhstan' ); ?>>
                             <?php _e('Kazakhstan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="357" <?php selected($nazionalita, '357' ); ?>>
+                        <option value="357-Uzbekistan" <?php selected($nazionalita, '357-Uzbekistan' ); ?>>
                             <?php _e('Uzbekistan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="358" <?php selected($nazionalita, '358' ); ?>>
+                        <option value="358-Armenia" <?php selected($nazionalita, '358-Armenia' ); ?>>
                             <?php _e('Armenia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="359" <?php selected($nazionalita, '359' ); ?>>
+                        <option value="359-Azerbaigian" <?php selected($nazionalita, '359-Azerbaigian' ); ?>>
                             <?php _e('Azerbaigian', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="360" <?php selected($nazionalita, '360' ); ?>>
+                        <option value="360-Georgia" <?php selected($nazionalita, '360-Georgia' ); ?>>
                             <?php _e('Georgia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="361" <?php selected($nazionalita, '361' ); ?>>
+                        <option value="361-Kirghizistan" <?php selected($nazionalita, '361-Kirghizistan' ); ?>>
                             <?php _e('Kirghizistan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="362" <?php selected($nazionalita, '362' ); ?>>
+                        <option value="362-Tagikistan" <?php selected($nazionalita, '362-Tagikistan' ); ?>>
                             <?php _e('Tagikistan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="363" <?php selected($nazionalita, '363' ); ?>>
+                        <option value="363-Taiwan" <?php selected($nazionalita, '363-Taiwan' ); ?>>
                             <?php _e('Taiwan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="364" <?php selected($nazionalita, '364' ); ?>>
+                        <option value="364-Turkmenistan" <?php selected($nazionalita, '364-Turkmenistan' ); ?>>
                             <?php _e('Turkmenistan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="401" <?php selected($nazionalita, '401' ); ?>>
+                        <option value="401-Algeria" <?php selected($nazionalita, '401-Algeria' ); ?>>
                             <?php _e('Algeria', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="402" <?php selected($nazionalita, '402' ); ?>>
+                        <option value="402-Angola" <?php selected($nazionalita, '402-Angola' ); ?>>
                             <?php _e('Angola', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="404" <?php selected($nazionalita, '404' ); ?>>
+                        <option value="404-Costa d'Avorio" <?php selected($nazionalita, '404-Costa d\'Avorio' ); ?>>
                             <?php _e('Costa d\'Avorio', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="406" <?php selected($nazionalita, '406' ); ?>>
+                        <option value="406-Benin" <?php selected($nazionalita, '406-Benin' ); ?>>
                             <?php _e('Benin', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="408" <?php selected($nazionalita, '408' ); ?>>
+                        <option value="408-Botswana" <?php selected($nazionalita, '408-Botswana' ); ?>>
                             <?php _e('Botswana', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="409" <?php selected($nazionalita, '409' ); ?>>
+                        <option value="409-Burkina Faso" <?php selected($nazionalita, '409-Burkina Faso' ); ?>>
                             <?php _e('Burkina Faso', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="410" <?php selected($nazionalita, '410' ); ?>>
+                        <option value="410-Burundi" <?php selected($nazionalita, '410-Burundi' ); ?>>
                             <?php _e('Burundi', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="411" <?php selected($nazionalita, '411' ); ?>>
+                        <option value="411-Camerun" <?php selected($nazionalita, '411-Camerun' ); ?>>
                             <?php _e('Camerun', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="413" <?php selected($nazionalita, '413' ); ?>>
+                        <option value="413-Capo Verde" <?php selected($nazionalita, '413-Capo Verde' ); ?>>
                             <?php _e('Capo Verde', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="414" <?php selected($nazionalita, '414' ); ?>>
+                        <option value="414-Repubblica Centrafricana" <?php selected($nazionalita, '414-Repubblica Centrafricana' ); ?>>
                             <?php _e('Repubblica Centrafricana', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="415" <?php selected($nazionalita, '415' ); ?>>
+                        <option value="415-Ciad" <?php selected($nazionalita, '415-Ciad' ); ?>>
                             <?php _e('Ciad', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="417" <?php selected($nazionalita, '417' ); ?>>
+                        <option value="417-Comore" <?php selected($nazionalita, '417-Comore' ); ?>>
                             <?php _e('Comore', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="418" <?php selected($nazionalita, '418' ); ?>>
+                        <option value="418-Congo" <?php selected($nazionalita, '418-Congo' ); ?>>
                             <?php _e('Congo', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="419" <?php selected($nazionalita, '419' ); ?>>
+                        <option value="419-Egitto" <?php selected($nazionalita, '419-Egitto' ); ?>>
                             <?php _e('Egitto', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="420" <?php selected($nazionalita, '420' ); ?>>
+                        <option value="420-Etiopia" <?php selected($nazionalita, '420-Etiopia' ); ?>>
                             <?php _e('Etiopia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="421" <?php selected($nazionalita, '421' ); ?>>
+                        <option value="421-Gabon" <?php selected($nazionalita, '421-Gabon' ); ?>>
                             <?php _e('Gabon', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="422" <?php selected($nazionalita, '422' ); ?>>
+                        <option value="422-Gambia" <?php selected($nazionalita, '422-Gambia' ); ?>>
                             <?php _e('Gambia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="423" <?php selected($nazionalita, '423' ); ?>>
+                        <option value="423-Ghana" <?php selected($nazionalita, '423-Ghana' ); ?>>
                             <?php _e('Ghana', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="424" <?php selected($nazionalita, '424' ); ?>>
+                        <option value="424-Gibuti" <?php selected($nazionalita, '424-Gibuti' ); ?>>
                             <?php _e('Gibuti', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="425" <?php selected($nazionalita, '425' ); ?>>
+                        <option value="425-Guinea" <?php selected($nazionalita, '425-Guinea' ); ?>>
                             <?php _e('Guinea', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="426" <?php selected($nazionalita, '426' ); ?>>
+                        <option value="426-Guinea-Bissau" <?php selected($nazionalita, '426-Guinea-Bissau' ); ?>>
                             <?php _e('Guinea-Bissau', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="427" <?php selected($nazionalita, '427' ); ?>>
+                        <option value="427-Guinea equatoriale" <?php selected($nazionalita, '427-Guinea equatoriale' ); ?>>
                             <?php _e('Guinea equatoriale', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="428" <?php selected($nazionalita, '428' ); ?>>
+                        <option value="428-Kenya" <?php selected($nazionalita, '428-Kenya' ); ?>>
                             <?php _e('Kenya', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="429" <?php selected($nazionalita, '429' ); ?>>
+                        <option value="429-Lesotho" <?php selected($nazionalita, '429-Lesotho' ); ?>>
                             <?php _e('Lesotho', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="430" <?php selected($nazionalita, '430' ); ?>>
+                        <option value="430-Liberia" <?php selected($nazionalita, '430-Liberia' ); ?>>
                             <?php _e('Liberia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="431" <?php selected($nazionalita, '431' ); ?>>
+                        <option value="431-Libia" <?php selected($nazionalita, '431-Libia' ); ?>>
                             <?php _e('Libia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="432" <?php selected($nazionalita, '432' ); ?>>
+                        <option value="432-Madagascar" <?php selected($nazionalita, '432-Madagascar' ); ?>>
                             <?php _e('Madagascar', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="434" <?php selected($nazionalita, '434' ); ?>>
+                        <option value="434-Malawi" <?php selected($nazionalita, '434-Malawi' ); ?>>
                             <?php _e('Malawi', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="435" <?php selected($nazionalita, '435' ); ?>>
+                        <option value="435-Mali" <?php selected($nazionalita, '435-Mali' ); ?>>
                             <?php _e('Mali', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="436" <?php selected($nazionalita, '436' ); ?>>
+                        <option value="436-Marocco" <?php selected($nazionalita, '436-Marocco' ); ?>>
                             <?php _e('Marocco', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="437" <?php selected($nazionalita, '437' ); ?>>
+                        <option value="437-Mauritania" <?php selected($nazionalita, '437-Mauritania' ); ?>>
                             <?php _e('Mauritania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="438" <?php selected($nazionalita, '438' ); ?>>
+                        <option value="438-Maurizio" <?php selected($nazionalita, '438-Maurizio' ); ?>>
                             <?php _e('Maurizio', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="440" <?php selected($nazionalita, '440' ); ?>>
+                        <option value="440-Mozambico" <?php selected($nazionalita, '440-Mozambico' ); ?>>
                             <?php _e('Mozambico', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="441" <?php selected($nazionalita, '441' ); ?>>
+                        <option value="441-Namibia" <?php selected($nazionalita, '441-Namibia' ); ?>>
                             <?php _e('Namibia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="442" <?php selected($nazionalita, '442' ); ?>>
+                        <option value="442-Niger" <?php selected($nazionalita, '442-Niger' ); ?>>
                             <?php _e('Niger', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="443" <?php selected($nazionalita, '443' ); ?>>
+                        <option value="443-Nigeria" <?php selected($nazionalita, '443-Nigeria' ); ?>>
                             <?php _e('Nigeria', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="446" <?php selected($nazionalita, '446' ); ?>>
+                        <option value="446-Ruanda" <?php selected($nazionalita, '446-Ruanda' ); ?>>
                             <?php _e('Ruanda', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="448" <?php selected($nazionalita, '448' ); ?>>
+                        <option value="448-Sao Tomé e Principe" <?php selected($nazionalita, '448-Sao Tomé e Principe' ); ?>>
                             <?php _e('Sao Tomé e Principe', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="449" <?php selected($nazionalita, '449' ); ?>>
+                        <option value="449-Seychelles" <?php selected($nazionalita, '449-Seychelles' ); ?>>
                             <?php _e('Seychelles', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="450" <?php selected($nazionalita, '450' ); ?>>
+                        <option value="450-Senegal" <?php selected($nazionalita, '450-Senegal' ); ?>>
                             <?php _e('Senegal', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="451" <?php selected($nazionalita, '451' ); ?>>
+                        <option value="451-Sierra Leone" <?php selected($nazionalita, '451-Sierra Leone' ); ?>>
                             <?php _e('Sierra Leone', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="453" <?php selected($nazionalita, '453' ); ?>>
+                        <option value="453-Somalia" <?php selected($nazionalita, '453-Somalia' ); ?>>
                             <?php _e('Somalia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="454" <?php selected($nazionalita, '454' ); ?>>
+                        <option value="454-Sudafrica" <?php selected($nazionalita, '454-Sudafrica' ); ?>>
                             <?php _e('Sudafrica', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="455" <?php selected($nazionalita, '455' ); ?>>
+                        <option value="455-Sudan" <?php selected($nazionalita, '455-Sudan' ); ?>>
                             <?php _e('Sudan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="456" <?php selected($nazionalita, '456' ); ?>>
+                        <option value="456-Eswatini" <?php selected($nazionalita, '456-Eswatini' ); ?>>
                             <?php _e('Eswatini', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="457" <?php selected($nazionalita, '457' ); ?>>
+                        <option value="457-Tanzania" <?php selected($nazionalita, '457-Tanzania' ); ?>>
                             <?php _e('Tanzania', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="458" <?php selected($nazionalita, '458' ); ?>>
+                        <option value="458-Togo" <?php selected($nazionalita, '458-Togo' ); ?>>
                             <?php _e('Togo', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="460" <?php selected($nazionalita, '460' ); ?>>
+                        <option value="460-Tunisia" <?php selected($nazionalita, '460-Tunisia' ); ?>>
                             <?php _e('Tunisia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="461" <?php selected($nazionalita, '461' ); ?>>
+                        <option value="461-Uganda" <?php selected($nazionalita, '461-Uganda' ); ?>>
                             <?php _e('Uganda', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="463" <?php selected($nazionalita, '463' ); ?>>
+                        <option value="463-Repubblica Democratica del Congo" <?php selected($nazionalita, '463-Repubblica Democratica del Congo' ); ?>>
                             <?php _e('Repubblica Democratica del Congo', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="464" <?php selected($nazionalita, '464' ); ?>>
+                        <option value="464-Zambia" <?php selected($nazionalita, '464-Zambia' ); ?>>
                             <?php _e('Zambia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="465" <?php selected($nazionalita, '465' ); ?>>
+                        <option value="465-Zimbabwe" <?php selected($nazionalita, '465-Zimbabwe' ); ?>>
                             <?php _e('Zimbabwe', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="466" <?php selected($nazionalita, '466' ); ?>>
+                        <option value="466-Eritrea" <?php selected($nazionalita, '466-Eritrea' ); ?>>
                             <?php _e('Eritrea', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="467" <?php selected($nazionalita, '467' ); ?>>
+                        <option value="467-Sud Sudan" <?php selected($nazionalita, '467-Sud Sudan' ); ?>>
                             <?php _e('Sud Sudan', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="503" <?php selected($nazionalita, '503' ); ?>>
+                        <option value="503-Antigua e Barbuda" <?php selected($nazionalita, '503-Antigua e Barbuda' ); ?>>
                             <?php _e('Antigua e Barbuda', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="505" <?php selected($nazionalita, '505' ); ?>>
+                        <option value="505-Bahamas" <?php selected($nazionalita, '505-Bahamas' ); ?>>
                             <?php _e('Bahamas', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="506" <?php selected($nazionalita, '506' ); ?>>
+                        <option value="506-Barbados" <?php selected($nazionalita, '506-Barbados' ); ?>>
                             <?php _e('Barbados', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="507" <?php selected($nazionalita, '507' ); ?>>
+                        <option value="507-Belize" <?php selected($nazionalita, '507-Belize' ); ?>>
                             <?php _e('Belize', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="509" <?php selected($nazionalita, '509' ); ?>>
+                        <option value="509-Canada" <?php selected($nazionalita, '509-Canada' ); ?>>
                             <?php _e('Canada', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="513" <?php selected($nazionalita, '513' ); ?>>
+                        <option value="513-Costa Rica" <?php selected($nazionalita, '513-Costa Rica' ); ?>>
                             <?php _e('Costa Rica', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="514" <?php selected($nazionalita, '514' ); ?>>
+                        <option value="514-Cuba" <?php selected($nazionalita, '514-Cuba' ); ?>>
                             <?php _e('Cuba', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="515" <?php selected($nazionalita, '515' ); ?>>
+                        <option value="515-Dominica" <?php selected($nazionalita, '515-Dominica' ); ?>>
                             <?php _e('Dominica', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="516" <?php selected($nazionalita, '516' ); ?>>
+                        <option value="516-Repubblica Dominicana" <?php selected($nazionalita, '516-Repubblica Dominicana' ); ?>>
                             <?php _e('Repubblica Dominicana', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="517" <?php selected($nazionalita, '517' ); ?>>
+                        <option value="517-El Salvador" <?php selected($nazionalita, '517-El Salvador' ); ?>>
                             <?php _e('El Salvador', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="518" <?php selected($nazionalita, '518' ); ?>>
+                        <option value="518-Giamaica" <?php selected($nazionalita, '518-Giamaica' ); ?>>
                             <?php _e('Giamaica', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="519" <?php selected($nazionalita, '519' ); ?>>
+                        <option value="519-Grenada" <?php selected($nazionalita, '519-Grenada' ); ?>>
                             <?php _e('Grenada', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="523" <?php selected($nazionalita, '523' ); ?>>
+                        <option value="523-Guatemala" <?php selected($nazionalita, '523-Guatemala' ); ?>>
                             <?php _e('Guatemala', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="524" <?php selected($nazionalita, '524' ); ?>>
+                        <option value="524-Haiti" <?php selected($nazionalita, '524-Haiti' ); ?>>
                             <?php _e('Haiti', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="525" <?php selected($nazionalita, '525' ); ?>>
+                        <option value="525-Honduras" <?php selected($nazionalita, '525-Honduras' ); ?>>
                             <?php _e('Honduras', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="527" <?php selected($nazionalita, '527' ); ?>>
+                        <option value="527-Messico" <?php selected($nazionalita, '527-Messico' ); ?>>
                             <?php _e('Messico', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="529" <?php selected($nazionalita, '529' ); ?>>
+                        <option value="529-Nicaragua" <?php selected($nazionalita, '529-Nicaragua' ); ?>>
                             <?php _e('Nicaragua', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="530" <?php selected($nazionalita, '530' ); ?>>
+                        <option value="530-Panama" <?php selected($nazionalita, '530-Panama' ); ?>>
                             <?php _e('Panama', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="532" <?php selected($nazionalita, '532' ); ?>>
+                        <option value="532-Santa Lucia" <?php selected($nazionalita, '532-Santa Lucia' ); ?>>
                             <?php _e('Santa Lucia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="533" <?php selected($nazionalita, '533' ); ?>>
+                        <option value="533-Saint Vincent e Grenadine" <?php selected($nazionalita, '533-Saint Vincent e Grenadine' ); ?>>
                             <?php _e('Saint Vincent e Grenadine', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="534" <?php selected($nazionalita, '534' ); ?>>
+                        <option value="534-Saint Kitts e Nevis" <?php selected($nazionalita, '534-Saint Kitts e Nevis' ); ?>>
                             <?php _e('Saint Kitts e Nevis', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="536" <?php selected($nazionalita, '536' ); ?>>
+                        <option value="536-Stati Uniti d'America" <?php selected($nazionalita, '536-Stati Uniti d\'America' ); ?>>
                             <?php _e('Stati Uniti d\'America', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="602" <?php selected($nazionalita, '602' ); ?>>
+                        <option value="602-Argentina" <?php selected($nazionalita, '602-Argentina' ); ?>>
                             <?php _e('Argentina', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="604" <?php selected($nazionalita, '604' ); ?>>
+                        <option value="604-Bolivia" <?php selected($nazionalita, '604-Bolivia' ); ?>>
                             <?php _e('Bolivia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="605" <?php selected($nazionalita, '605' ); ?>>
+                        <option value="605-Brasile" <?php selected($nazionalita, '605-Brasile' ); ?>>
                             <?php _e('Brasile', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="606" <?php selected($nazionalita, '606' ); ?>>
+                        <option value="606-Cile" <?php selected($nazionalita, '606-Cile' ); ?>>
                             <?php _e('Cile', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="608" <?php selected($nazionalita, '608' ); ?>>
+                        <option value="608-Colombia" <?php selected($nazionalita, '608-Colombia' ); ?>>
                             <?php _e('Colombia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="609" <?php selected($nazionalita, '609' ); ?>>
+                        <option value="609-Ecuador" <?php selected($nazionalita, '609-Ecuador' ); ?>>
                             <?php _e('Ecuador', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="612" <?php selected($nazionalita, '612' ); ?>>
+                        <option value="612-Guyana" <?php selected($nazionalita, '612-Guyana' ); ?>>
                             <?php _e('Guyana', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="614" <?php selected($nazionalita, '614' ); ?>>
+                        <option value="614-Paraguay" <?php selected($nazionalita, '614-Paraguay' ); ?>>
                             <?php _e('Paraguay', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="615" <?php selected($nazionalita, '615' ); ?>>
+                        <option value="615-Perù" <?php selected($nazionalita, '615-Perù' ); ?>>
                             <?php _e('Perù', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="616" <?php selected($nazionalita, '616' ); ?>>
+                        <option value="616-Suriname" <?php selected($nazionalita, '616-Suriname' ); ?>>
                             <?php _e('Suriname', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="617" <?php selected($nazionalita, '617' ); ?>>
+                        <option value="617-Trinidad e Tobago" <?php selected($nazionalita, '617-Trinidad e Tobago' ); ?>>
                             <?php _e('Trinidad e Tobago', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="618" <?php selected($nazionalita, '618' ); ?>>
+                        <option value="618-Uruguay" <?php selected($nazionalita, '618-Uruguay' ); ?>>
                             <?php _e('Uruguay', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="619" <?php selected($nazionalita, '619' ); ?>>
+                        <option value="619-Venezuela" <?php selected($nazionalita, '619-Venezuela' ); ?>>
                             <?php _e('Venezuela', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="701" <?php selected($nazionalita, '701' ); ?>>
+                        <option value="701-Australia" <?php selected($nazionalita, '701-Australia' ); ?>>
                             <?php _e('Australia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="703" <?php selected($nazionalita, '703' ); ?>>
+                        <option value="703-Figi" <?php selected($nazionalita, '703-Figi' ); ?>>
                             <?php _e('Figi', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="708" <?php selected($nazionalita, '708' ); ?>>
+                        <option value="708-Kiribati" <?php selected($nazionalita, '708-Kiribati' ); ?>>
                             <?php _e('Kiribati', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="712" <?php selected($nazionalita, '712' ); ?>>
+                        <option value="712-Isole Marshall" <?php selected($nazionalita, '712-Isole Marshall' ); ?>>
                             <?php _e('Isole Marshall', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="713" <?php selected($nazionalita, '713' ); ?>>
+                        <option value="713-Stati Federati di Micronesia" <?php selected($nazionalita, '713-Stati Federati di Micronesia' ); ?>>
                             <?php _e('Stati Federati di Micronesia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="715" <?php selected($nazionalita, '715' ); ?>>
+                        <option value="715-Nauru" <?php selected($nazionalita, '715-Nauru' ); ?>>
                             <?php _e('Nauru', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="719" <?php selected($nazionalita, '719' ); ?>>
+                        <option value="719-Nuova Zelanda" <?php selected($nazionalita, '719-Nuova Zelanda' ); ?>>
                             <?php _e('Nuova Zelanda', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="720" <?php selected($nazionalita, '720' ); ?>>
+                        <option value="720-Palau" <?php selected($nazionalita, '720-Palau' ); ?>>
                             <?php _e('Palau', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="721" <?php selected($nazionalita, '721' ); ?>>
+                        <option value="721-Papua Nuova Guinea" <?php selected($nazionalita, '721-Papua Nuova Guinea' ); ?>>
                             <?php _e('Papua Nuova Guinea', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="725" <?php selected($nazionalita, '725' ); ?>>
+                        <option value="725-Isole Salomone" <?php selected($nazionalita, '725-Isole Salomone' ); ?>>
                             <?php _e('Isole Salomone', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="727" <?php selected($nazionalita, '727' ); ?>>
+                        <option value="727-Samoa" <?php selected($nazionalita, '727-Samoa' ); ?>>
                             <?php _e('Samoa', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="730" <?php selected($nazionalita, '730' ); ?>>
+                        <option value="730-Tonga" <?php selected($nazionalita, '730-Tonga' ); ?>>
                             <?php _e('Tonga', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="731" <?php selected($nazionalita, '731' ); ?>>
+                        <option value="731-Tuvalu" <?php selected($nazionalita, '731-Tuvalu' ); ?>>
                             <?php _e('Tuvalu', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="732" <?php selected($nazionalita, '732' ); ?>>
+                        <option value="732-Vanuatu" <?php selected($nazionalita, '732-Vanuatu' ); ?>>
                             <?php _e('Vanuatu', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="902" <?php selected($nazionalita, '902' ); ?>>
+                        <option value="902-Nuova Caledonia" <?php selected($nazionalita, '902-Nuova Caledonia' ); ?>>
                             <?php _e('Nuova Caledonia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="904" <?php selected($nazionalita, '904' ); ?>>
+                        <option value="904-Saint-Martin (FR)" <?php selected($nazionalita, '904-Saint-Martin (FR)' ); ?>>
                             <?php _e('Saint-Martin (FR)', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="905" <?php selected($nazionalita, '905' ); ?>>
+                        <option value="905-Sahara occidentale" <?php selected($nazionalita, '905-Sahara occidentale' ); ?>>
                             <?php _e('Sahara occidentale', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="906" <?php selected($nazionalita, '906' ); ?>>
+                        <option value="906-Saint-Barthélemy" <?php selected($nazionalita, '906-Saint-Barthélemy' ); ?>>
                             <?php _e('Saint-Barthélemy', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="908" <?php selected($nazionalita, '908' ); ?>>
+                        <option value="908-Bermuda" <?php selected($nazionalita, '908-Bermuda' ); ?>>
                             <?php _e('Bermuda', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="909" <?php selected($nazionalita, '909' ); ?>>
+                        <option value="909-Isole Cook (NZ)" <?php selected($nazionalita, '909-Isole Cook (NZ)' ); ?>>
                             <?php _e('Isole Cook (NZ)', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="910" <?php selected($nazionalita, '910' ); ?>>
+                        <option value="910-Gibilterra" <?php selected($nazionalita, '910-Gibilterra' ); ?>>
                             <?php _e('Gibilterra', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="911" <?php selected($nazionalita, '911' ); ?>>
+                        <option value="911-Isole Cayman" <?php selected($nazionalita, '911-Isole Cayman' ); ?>>
                             <?php _e('Isole Cayman', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="917" <?php selected($nazionalita, '917' ); ?>>
+                        <option value="917-Anguilla" <?php selected($nazionalita, '917-Anguilla' ); ?>>
                             <?php _e('Anguilla', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="920" <?php selected($nazionalita, '920' ); ?>>
+                        <option value="920-Polinesia francese" <?php selected($nazionalita, '920-Polinesia francese' ); ?>>
                             <?php _e('Polinesia francese', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="924" <?php selected($nazionalita, '924' ); ?>>
+                        <option value="924-Isole Fær Øer" <?php selected($nazionalita, '924-Isole Fær Øer' ); ?>>
                             <?php _e('Isole Fær Øer', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="925" <?php selected($nazionalita, '925' ); ?>>
+                        <option value="925-Jersey" <?php selected($nazionalita, '925-Jersey' ); ?>>
                             <?php _e('Jersey', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="926" <?php selected($nazionalita, '926' ); ?>>
+                        <option value="926-Aruba" <?php selected($nazionalita, '926-Aruba' ); ?>>
                             <?php _e('Aruba', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="928" <?php selected($nazionalita, '928' ); ?>>
+                        <option value="928-Sint Maarten (NL)" <?php selected($nazionalita, '928-Sint Maarten (NL)' ); ?>>
                             <?php _e('Sint Maarten (NL)', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="934" <?php selected($nazionalita, '934' ); ?>>
+                        <option value="934-Groenlandia" <?php selected($nazionalita, '934-Groenlandia' ); ?>>
                             <?php _e('Groenlandia', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="939" <?php selected($nazionalita, '939' ); ?>>
+                        <option value="939-Sark" <?php selected($nazionalita, '939-Sark' ); ?>>
                             <?php _e('Sark', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="940" <?php selected($nazionalita, '940' ); ?>>
+                        <option value="940-Guernsey" <?php selected($nazionalita, '940-Guernsey' ); ?>>
                             <?php _e('Guernsey', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="958" <?php selected($nazionalita, '958' ); ?>>
+                        <option value="958-Isole Falkland (Malvine)" <?php selected($nazionalita, '958-Isole Falkland (Malvine)' ); ?>>
                             <?php _e('Isole Falkland (Malvine)', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="959" <?php selected($nazionalita, '959' ); ?>>
+                        <option value="959-Isola di Man" <?php selected($nazionalita, '959-Isola di Man' ); ?>>
                             <?php _e('Isola di Man', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="964" <?php selected($nazionalita, '964' ); ?>>
+                        <option value="964-Montserrat" <?php selected($nazionalita, '964-Montserrat' ); ?>>
                             <?php _e('Montserrat', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="966" <?php selected($nazionalita, '966' ); ?>>
+                        <option value="966-Curaçao" <?php selected($nazionalita, '966-Curaçao' ); ?>>
                             <?php _e('Curaçao', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="972" <?php selected($nazionalita, '972' ); ?>>
+                        <option value="972-Isole Pitcairn" <?php selected($nazionalita, '972-Isole Pitcairn' ); ?>>
                             <?php _e('Isole Pitcairn', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="980" <?php selected($nazionalita, '980' ); ?>>
+                        <option value="980-Saint Pierre e Miquelon" <?php selected($nazionalita, '980-Saint Pierre e Miquelon' ); ?>>
                             <?php _e('Saint Pierre e Miquelon', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="983" <?php selected($nazionalita, '983' ); ?>>
+                        <option value="983-Sant'Elena" <?php selected($nazionalita, '983-Sant\'Elena' ); ?>>
                             <?php _e('Sant\'Elena', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="988" <?php selected($nazionalita, '988' ); ?>>
+                        <option value="988-Terre australi e antartiche francesi" <?php selected($nazionalita, '988-Terre australi e antartiche francesi' ); ?>>
                             <?php _e('Terre australi e antartiche francesi', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="992" <?php selected($nazionalita, '992' ); ?>>
+                        <option value="992-Isole Turks e Caicos" <?php selected($nazionalita, '992-Isole Turks e Caicos' ); ?>>
                             <?php _e('Isole Turks e Caicos', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="994" <?php selected($nazionalita, '994' ); ?>>
+                        <option value="994-Isole Vergini britanniche" <?php selected($nazionalita, '994-Isole Vergini britanniche' ); ?>>
                             <?php _e('Isole Vergini britanniche', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="997" <?php selected($nazionalita, '997' ); ?>>
+                        <option value="997-Wallis e Futuna" <?php selected($nazionalita, '997-Wallis e Futuna' ); ?>>
                             <?php _e('Wallis e Futuna', 'incidenti-stradali'); ?>
                         </option>
-                        <option value="777" <?php selected($nazionalita, '777' ); ?>>
+                        <option value="777-Straniera non indicata" <?php selected($nazionalita, '777-Straniera non indicata' ); ?>>
                             <?php _e('Straniera non indicata', 'incidenti-stradali'); ?>
                         </option>
                     </select>

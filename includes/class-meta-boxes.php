@@ -1463,10 +1463,11 @@ class IncidentiMetaBoxes {
             <tr id="numero_strada_row">
                 <th><label for="numero_strada"><?php _e('Numero Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="numero_strada_select" name="numero_strada" class="regular-text" style="display: none;">
+                    <select id="numero_strada" name="numero_strada" class="regular-text" style="display: none;">
                         <option value=""><?php _e('Seleziona strada provinciale', 'incidenti-stradali'); ?></option>
+                        <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
                     </select>
-                    <input type="text" id="numero_strada_input" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
+                    <input type="text" id="numero_strada_text" name="numero_strada_text" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
                     <p class="description" id="numero_strada_desc"><?php _e('Numero identificativo della strada (es. SS16, SP101)', 'incidenti-stradali'); ?></p>
                     <p class="description" id="numero_strada_desc_provinciale" style="display: none;"><?php _e('Seleziona la strada provinciale dalla lista', 'incidenti-stradali'); ?></p>
                 </td>
@@ -1543,12 +1544,54 @@ class IncidentiMetaBoxes {
                         numeroStradaSelect.val('');
                         numeroStradaText.val('');
                     }
+                
+                    // Trigger on page load and when tipo_strada changes
+                    $('#tipo_strada').on('change', function() {
+                        updateFieldsVisibility();
+                    });
+
+                    // Chiamata iniziale
+                    updateFieldsVisibility();
+                    // === NUOVA SEZIONE MAPPA ===
+                    // Inizializza mappa solo se il contenitore esiste
+                    if ($('#localizzazione-map').length === 0) return;
+                
+                    var map = L.map('localizzazione-map', {
+                        zoomControl: true,
+                        scrollWheelZoom: true,
+                        doubleClickZoom: true,
+                        boxZoom: false
+                    }).setView([40.351, 18.175], 10); // Centrato su Lecce
+                
+                    // Tile layer
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap',
+                        maxZoom: 19
+                    }).addTo(map);
+                
+                    var marker = null;
+                    var lat = parseFloat($('#latitudine_inline').val());
+                    var lng = parseFloat($('#longitudine_inline').val());
+                    
+                    // Marker esistente
+                    if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                        marker = L.marker([lat, lng], {
+                            draggable: true,
+                            title: 'Posizione incidente (trascinabile)'
+                        }).addTo(map);
+                        map.setView([lat, lng], 15);
+                    
+                    marker.on('dragend', function(e) {
+                        var position = e.target.getLatLng();
+                        $('#latitudine_inline').val(position.lat.toFixed(6));
+                        $('#longitudine_inline').val(position.lng.toFixed(6));
+                        // Sincronizza con i campi nella sidebar se esistono
+                        $('#latitudine').val(position.lat.toFixed(6));
+                        $('#longitudine').val(position.lng.toFixed(6));
+                    });
                 }
 
                 function populateStradeProvinciali() {
-                    var select = $('#numero_strada_select');
-                    select.empty();
-                    select.append('<option value="">Seleziona strada provinciale</option>');
                     var stradeProvinciali = [
                         {value: "001", text: "001 - Lecce - Vernole"},
                         {value: "001_dir_A", text: "001 dir A - Diramazione per Merine"},
@@ -1928,114 +1971,43 @@ class IncidentiMetaBoxes {
                         {value: "377", text: "377 - Circonvallazione Nord di Martignano"}
                     ];
                     
+                    var select = $('#numero_strada');
+                    select.empty();
+                    select.append('<option value="">Seleziona strada provinciale</option>');
+                    
                     $.each(stradeProvinciali, function(index, strada) {
                         select.append('<option value="' + strada.value + '">' + strada.text + '</option>');
                     });
-
-                    // Ripristina il valore salvato se presente
-                    var savedValue = $('#numero_strada_select').data('saved-value');
-                    if (savedValue) {
-                        $('#numero_strada_select').val(savedValue);
-                    }
                 }
-
-                function populateStradeStatali() {
-                    var select = $('#numero_strada_select');
-                    select.empty();
-                    select.append('<option value="">Seleziona strada statale</option>');
-                    var stradeStatali = [
-                        {value: "007", text: "007 - Appia"},
-                        {value: "016", text: "016 - Adriatica"},
-                        {value: "101", text: "101 - Salentina"},
-                        {value: "274", text: "274 - Gallipoli - Leuca"},
-                        {value: "275", text: "275 - Maglie - Santa Maria di Leuca"},
-                        {value: "694", text: "694 - Tangenziale Est di Lecce"}
-                    ];
-                    
-                    $.each(stradeStatali, function(index, strada) {
-                        select.append('<option value="' + strada.value + '">' + strada.text + '</option>');
-                    });
-
-                    // Ripristina il valore salvato se presente
-                    var savedValue = $('#numero_strada_select').data('saved-value');
-                    if (savedValue) {
-                        $('#numero_strada_select').val(savedValue);
-                    }
-                }
-
-                // Trigger on page load and when tipo_strada changes
-                    $('#tipo_strada').on('change', function() {
-                        updateFieldsVisibility();
-                    });
-
-                    // Chiamata iniziale
-                    updateFieldsVisibility();
-
-                // === SEZIONE MAPPA ===
-                // Inizializza mappa solo se il contenitore esiste
-                if ($('#localizzazione-map').length === 0) return;
-            
-                var map = L.map('localizzazione-map', {
-                    zoomControl: true,
-                    scrollWheelZoom: true,
-                    doubleClickZoom: true,
-                    boxZoom: false
-                }).setView([40.351, 18.175], 10); // Centrato su Lecce
-            
-                // Tile layer
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap',
-                    maxZoom: 19
-                }).addTo(map);
-            
-                var marker = null;
-                var lat = parseFloat($('#latitudine_inline').val());
-                var lng = parseFloat($('#longitudine_inline').val());
                 
-                // Marker esistente
-                if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                // Click sulla mappa
+                map.on('click', function(e) {
+                    var lat = e.latlng.lat;
+                    var lng = e.latlng.lng;
+                    
+                    $('#latitudine_inline').val(lat.toFixed(6));
+                    $('#longitudine_inline').val(lng.toFixed(6));
+                    // Sincronizza con i campi nella sidebar se esistono
+                    $('#latitudine').val(lat.toFixed(6));
+                    $('#longitudine').val(lng.toFixed(6));
+                    
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+                    
                     marker = L.marker([lat, lng], {
                         draggable: true,
                         title: 'Posizione incidente (trascinabile)'
                     }).addTo(map);
-                    map.setView([lat, lng], 15);
-                
+                    
                     marker.on('dragend', function(e) {
                         var position = e.target.getLatLng();
                         $('#latitudine_inline').val(position.lat.toFixed(6));
                         $('#longitudine_inline').val(position.lng.toFixed(6));
-                        // Sincronizza con i campi nella sidebar se esistono
                         $('#latitudine').val(position.lat.toFixed(6));
                         $('#longitudine').val(position.lng.toFixed(6));
                     });
-                
-                    // Click sulla mappa per aggiungere/spostare marker
-                    map.on('click', function(e) {
-                        if (marker) {
-                            map.removeLayer(marker);
-                        }
-                        
-                        marker = L.marker([e.latlng.lat, e.latlng.lng], {
-                            draggable: true,
-                            title: 'Posizione incidente (trascinabile)'
-                        }).addTo(map);
-                        
-                        $('#latitudine_inline').val(e.latlng.lat.toFixed(6));
-                        $('#longitudine_inline').val(e.latlng.lng.toFixed(6));
-                        // Sincronizza con i campi nella sidebar se esistono
-                        $('#latitudine').val(e.latlng.lat.toFixed(6));
-                        $('#longitudine').val(e.latlng.lng.toFixed(6));
-                        
-                        marker.on('dragend', function(e) {
-                            var position = e.target.getLatLng();
-                            $('#latitudine_inline').val(position.lat.toFixed(6));
-                            $('#longitudine_inline').val(position.lng.toFixed(6));
-                            // Sincronizza con i campi nella sidebar se esistono
-                            $('#latitudine').val(position.lat.toFixed(6));
-                            $('#longitudine').val(position.lng.toFixed(6));
-                        });
-                    });
-                }
+                });
                 
                 // Aggiorna mappa quando coordinate cambiano
                 $('#latitudine_inline, #longitudine_inline').on('input change', function() {
@@ -4633,16 +4605,15 @@ class IncidentiMetaBoxes {
                           'conducente_1_tipo_patente', 'conducente_2_tipo_patente', 'conducente_3_tipo_patente'];
         
         
-        // Gestione speciale per numero_strada basata sul tipo di strada
+        // Gestione speciale per numero_strada
         $tipo_strada = sanitize_text_field($_POST['tipo_strada'] ?? '');
-        if ($tipo_strada === '2') {
-            // Per strade provinciali entro l'abitato, usa il valore della select
-            $numero_strada = sanitize_text_field($_POST['numero_strada'] ?? '');
+        if ($tipo_strada === '2' || $tipo_strada === '5') {
+            // Per strade provinciali, usa il valore del select
+            $_POST['numero_strada'] = sanitize_text_field($_POST['numero_strada'] ?? '');
         } else {
-            // Per altri tipi di strada, usa il valore dell'input text
-            $numero_strada = sanitize_text_field($_POST['numero_strada'] ?? '');
+            // Per altri tipi di strada, usa il campo di testo
+            $_POST['numero_strada'] = sanitize_text_field($_POST['numero_strada_text'] ?? '');
         }
-        update_post_meta($post_id, 'numero_strada', $numero_strada);
 
         foreach ($meta_fields as $field) {
             // Salta i campi speciali che vengono gestiti separatamente

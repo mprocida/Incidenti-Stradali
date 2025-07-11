@@ -698,69 +698,9 @@ jQuery(document).ready(function($) {
     }
 
     function validateRiepilogo() {
-        // Conta i reali morti e feriti dai campi esistenti
-        var realMorti24h = 0;
-        var realMorti2_30gg = 0; 
-        var realFeriti = 0;
-        
-        // Conta conducenti
-        for (var i = 1; i <= 3; i++) {
-            var esito = $('select[name="conducente_' + i + '_esito"]').val();
-            if (esito == '3') realMorti24h++;
-            if (esito == '4') realMorti2_30gg++;
-            if (esito == '2') realFeriti++;
-        }
-        
-        // Conta pedoni
-        var numPedoni = parseInt($('input[name="numero_pedoni_coinvolti"]').val()) || 0;
-        for (var i = 1; i <= numPedoni; i++) {
-            var esito = $('select[name="pedone_' + i + '_esito"]').val();
-            if (esito == '3') realMorti24h++;
-            if (esito == '4') realMorti2_30gg++;
-            if (esito == '2') realFeriti++;
-        }
-        
-        // Conta passeggeri (se implementato)
-        $('.passeggero-esito').each(function() {
-            var esito = $(this).val();
-            if (esito == '3') realMorti24h++;
-            if (esito == '4') realMorti2_30gg++;
-            if (esito == '2') realFeriti++;
-        });
-        
-        // Leggi valori riepilogo
-        var riepilogoMorti24h = parseInt($('#riepilogo_morti_24h').val()) || 0;
-        var riepilogoMorti2_30gg = parseInt($('#riepilogo_morti_2_30gg').val()) || 0;
-        var riepilogoFeriti = parseInt($('#riepilogo_feriti').val()) || 0;
-        
-        // Validazione
-        var isValid = true;
-        var message = '';
-        
-        if (realMorti24h !== riepilogoMorti24h) {
-            isValid = false;
-            message += 'Morti 24h: rilevati ' + realMorti24h + ', inseriti ' + riepilogoMorti24h + '. ';
-        }
-        
-        if (realMorti2_30gg !== riepilogoMorti2_30gg) {
-            isValid = false;
-            message += 'Morti 2°-30° gg: rilevati ' + realMorti2_30gg + ', inseriti ' + riepilogoMorti2_30gg + '. ';
-        }
-        
-        if (realFeriti !== riepilogoFeriti) {
-            isValid = false;
-            message += 'Feriti: rilevati ' + realFeriti + ', inseriti ' + riepilogoFeriti + '. ';
-        }
-        
-        // Mostra/nascondi messaggio
-        if (isValid) {
-            $('#riepilogo-validation-message').hide();
-        } else {
-            $('#validation-text').text(message);
-            $('#riepilogo-validation-message').show();
-        }
-        
-        return isValid;
+        // Validazione rimossa - il riepilogo è calcolato automaticamente
+        $('#riepilogo-validation-message').hide();
+        return true;
     }
     
     function updateFieldValidation($field, isValid, message) {
@@ -1178,4 +1118,80 @@ jQuery(document).ready(function($) {
     // Inizializza le funzioni
     initializeDeleteHandling();
     
+    /**
+     * Calcolo automatico riepilogo infortunati
+     */
+    function calcolaRiepilogoInfortunati() {
+        var feriti = 0;
+        var morti24h = 0;
+        var morti2_30gg = 0;
+        
+        // Conta feriti
+        $('select[name*="esito_persona"]').each(function() {
+            var valore = $(this).val();
+            if (valore === '2') { // Ferito
+                feriti++;
+            } else if (valore === '1') { // Morto
+                morti24h++;
+            } else if (valore === '3') { // Morto dal 2° al 30° giorno
+                morti2_30gg++;
+            }
+        });
+        
+        // Conta anche i morti nelle sezioni nominativi
+        $('input[name*="nominativo_morto"]').each(function() {
+            if ($(this).val().trim() !== '') {
+                morti24h++;
+            }
+        });
+        
+        return {
+            feriti: feriti,
+            morti24h: morti24h,
+            morti2_30gg: morti2_30gg
+        };
+    }
+
+    function mostraConfermaPubblicazione() {
+        var riepilogo = calcolaRiepilogoInfortunati();
+        var messaggio = 'Riepilogo calcolato automaticamente:\n\n';
+        messaggio += 'Feriti: ' + riepilogo.feriti + '\n';
+        messaggio += 'Morti entro 24h: ' + riepilogo.morti24h + '\n';
+        messaggio += 'Morti dal 2° al 30° giorno: ' + riepilogo.morti2_30gg + '\n\n';
+        messaggio += 'Vuoi procedere con la pubblicazione?';
+        
+        if (confirm(messaggio)) {
+            // Aggiorna i campi nascosti
+            $('#riepilogo_feriti').val(riepilogo.feriti);
+            $('#riepilogo_morti_24h').val(riepilogo.morti24h);
+            $('#riepilogo_morti_2_30gg').val(riepilogo.morti2_30gg);
+            
+            // Salva le variabili globali per uso successivo
+            window.riepilogoCalcolato = riepilogo;
+            
+            return true;
+        }
+        return false;
+    }
+
+    // Intercetta il click sul pulsante Pubblica
+    $(document).ready(function() {
+        $('#publish').on('click', function(e) {
+            e.preventDefault();
+            
+            if (mostraConfermaPubblicazione()) {
+                // Rimuovi l'event listener per evitare loop infiniti
+                $(this).off('click');
+                $(this).click();
+            }
+        });
+        
+        // Intercetta anche "Salva bozza" se necessario
+        $('#save-post').on('click', function(e) {
+            var riepilogo = calcolaRiepilogoInfortunati();
+            $('#riepilogo_feriti').val(riepilogo.feriti);
+            $('#riepilogo_morti_24h').val(riepilogo.morti24h);
+            $('#riepilogo_morti_2_30gg').val(riepilogo.morti2_30gg);
+        });
+    });
 })(jQuery);

@@ -306,59 +306,17 @@ class IncidentiMetaBoxes {
     }
 
     public function render_riepilogo_infortunati_meta_box($post) {
+        // Sezione nascosta - i valori vengono calcolati automaticamente
         $morti_24h = get_post_meta($post->ID, 'riepilogo_morti_24h', true);
         $morti_2_30gg = get_post_meta($post->ID, 'riepilogo_morti_2_30gg', true);
         $feriti = get_post_meta($post->ID, 'riepilogo_feriti', true);
         
-        ?>
-        <div id="riepilogo-infortunati-box">
-            <table class="form-table">
-                <tr>
-                    <th><label for="riepilogo_morti_24h"><?php _e('Morti entro le 24 ore', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <input type="number" id="riepilogo_morti_24h" name="riepilogo_morti_24h" 
-                            value="<?php echo esc_attr($morti_24h); ?>" min="0" max="99">
-                    </td>
-                </tr>
-                <tr>
-                    <th><label for="riepilogo_morti_2_30gg"><?php _e('Morti dal 2° al 30° giorno', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <input type="number" id="riepilogo_morti_2_30gg" name="riepilogo_morti_2_30gg" 
-                            value="<?php echo esc_attr($morti_2_30gg); ?>" min="0" max="99">
-                    </td>
-                </tr>
-                <tr>
-                    <th><label for="riepilogo_feriti"><?php _e('Feriti', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <input type="number" id="riepilogo_feriti" name="riepilogo_feriti" 
-                            value="<?php echo esc_attr($feriti); ?>" min="0" max="99">
-                    </td>
-                </tr>
-            </table>
-            <div id="riepilogo-validation-message" style="margin-top: 10px; padding: 10px; display: none; background: #ffeeee; border: 1px solid #ff6666; color: #cc0000;">
-                <strong><?php _e('Attenzione:', 'incidenti-stradali'); ?></strong> 
-                <span id="validation-text"></span>
-            </div>
-        </div>
+        // Campi nascosti per mantenere i valori
+        echo '<input type="hidden" id="riepilogo_morti_24h" name="riepilogo_morti_24h" value="' . esc_attr($morti_24h) . '">';
+        echo '<input type="hidden" id="riepilogo_morti_2_30gg" name="riepilogo_morti_2_30gg" value="' . esc_attr($morti_2_30gg) . '">';
+        echo '<input type="hidden" id="riepilogo_feriti" name="riepilogo_feriti" value="' . esc_attr($feriti) . '">';
         
-        <script>
-        jQuery(document).ready(function($) {
-            // Validazione in tempo reale
-            $('#riepilogo_morti_24h, #riepilogo_morti_2_30gg, #riepilogo_feriti').on('change', function() {
-                validateRiepilogo();
-            });
-            
-            // Validazione al salvataggio
-            $('#post').on('submit', function(e) {
-                if (!validateRiepilogo()) {
-                    e.preventDefault();
-                    alert('<?php _e('Correggere i dati del riepilogo infortunati prima di salvare', 'incidenti-stradali'); ?>');
-                    return false;
-                }
-            });
-        });
-        </script>
-        <?php
+        echo '<p><em>Il riepilogo infortunati viene calcolato automaticamente al momento della pubblicazione.</em></p>';
     }
 
     private function get_circostanze_options($selected = '') {

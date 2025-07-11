@@ -799,6 +799,16 @@ input[type="checkbox"]#visualizza_mappa:focus {
     padding: 15px;
     background: #f9f9f9;
     border-radius: 4px;
+    display: none;
+}
+
+/* Stile per il messaggio di info */
+#riepilogo-infortunati-box p {
+    margin: 10px 0;
+    padding: 10px;
+    background: #e7f3ff;
+    border-left: 4px solid #0073aa;
+    font-style: italic;
 }
 
 #riepilogo-infortunati-box .form-table th {

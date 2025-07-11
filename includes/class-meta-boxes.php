@@ -1462,15 +1462,13 @@ class IncidentiMetaBoxes {
             <tr id="numero_strada_row">
                 <th><label for="numero_strada"><?php _e('Numero Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="numero_strada" name="numero_strada" class="regular-text">
+                    <select id="numero_strada" name="numero_strada" class="regular-text" style="display: none;">
                         <option value=""><?php _e('Seleziona strada provinciale', 'incidenti-stradali'); ?></option>
-                        <!-- Le opzioni verranno popolate dinamicamente via JavaScript -->
+                        <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
                     </select>
-                    <input type="text" id="numero_strada_text" name="numero_strada_text" 
-                        value="<?php echo esc_attr($numero_strada); ?>" 
-                        placeholder="es. SS16, A14" class="regular-text" style="display: none;">
-                    <p class="description" id="numero_strada_desc"><?php _e('Seleziona la strada provinciale dall\'elenco', 'incidenti-stradali'); ?></p>
-                    <p class="description" id="numero_strada_desc_text" style="display: none;"><?php _e('Inserire il numero identificativo della strada', 'incidenti-stradali'); ?></p>
+                    <input type="text" id="numero_strada_text" name="numero_strada_text" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
+                    <p class="description" id="numero_strada_desc"><?php _e('Numero identificativo della strada (es. SS16, SP101)', 'incidenti-stradali'); ?></p>
+                    <p class="description" id="numero_strada_desc_provinciale" style="display: none;"><?php _e('Seleziona la strada provinciale dalla lista', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
         </table>
@@ -1508,7 +1506,7 @@ class IncidentiMetaBoxes {
                     var numeroStradaSelect = $('#numero_strada');
                     var numeroStradaText = $('#numero_strada_text');
                     var numeroStradaDesc = $('#numero_strada_desc');
-                    var numeroStradaDescText = $('#numero_strada_desc_text');
+                    var numeroStradaDescProv = $('#numero_strada_desc_provinciale');
                     
                     // Tipi di strada che richiedono il numero strada:
                     // Nell'abitato: 2 (Provinciale entro l'abitato), 3 (Statale entro l'abitato), 0 (Regionale entro l'abitato)
@@ -1518,32 +1516,18 @@ class IncidentiMetaBoxes {
                     if (tipiConNumero.includes(tipoStrada)) {
                         numeroStradaRow.show();
                         
-                        // Se è "Provinciale entro l'abitato" (tipo 2) o "Provinciale" (tipo 5)
-                        if (tipoStrada === '2' || tipoStrada === '5') {
-                            // Mostra select delle strade provinciali
+                        // Se è "Provinciale entro l'abitato" (valore 2)
+                        if (tipoStrada === '2') {
                             numeroStradaSelect.show();
                             numeroStradaText.hide();
-                            numeroStradaDesc.show();
-                            numeroStradaDescText.hide();
-                            
-                            // Popola il select con le strade provinciali
-                            numeroStradaSelect.empty();
-                            numeroStradaSelect.append('<option value="">Seleziona strada provinciale</option>');
-                            $.each(stradeProvinciali, function(codice, descrizione) {
-                                numeroStradaSelect.append('<option value="' + codice + '">' + descrizione + '</option>');
-                            });
-                            
-                            // Ripristina il valore selezionato se presente
-                            var valoreSalvato = '<?php echo esc_js($numero_strada); ?>';
-                            if (valoreSalvato) {
-                                numeroStradaSelect.val(valoreSalvato);
-                            }
+                            numeroStradaDesc.hide();
+                            numeroStradaDescProv.show();
+                            populateStradeProvinciali();
                         } else {
-                            // Per altri tipi di strada mostra campo di testo
                             numeroStradaSelect.hide();
                             numeroStradaText.show();
-                            numeroStradaDesc.hide();
-                            numeroStradaDescText.show();
+                            numeroStradaDesc.show();
+                            numeroStradaDescProv.hide();
                         }
                     } else {
                         numeroStradaRow.hide();
@@ -1551,37 +1535,41 @@ class IncidentiMetaBoxes {
                         numeroStradaText.val('');
                     }
                 
-                // Trigger on page load and when tipo_strada changes
-                $('#tipo_strada').on('change', updateFieldsVisibility);
-                updateFieldsVisibility();
-                // === NUOVA SEZIONE MAPPA ===
-                // Inizializza mappa solo se il contenitore esiste
-                if ($('#localizzazione-map').length === 0) return;
+                    // Trigger on page load and when tipo_strada changes
+                    $('#tipo_strada').on('change', function() {
+                        updateFieldsVisibility();
+                    });
+
+                    // Chiamata iniziale
+                    updateFieldsVisibility();
+                    // === NUOVA SEZIONE MAPPA ===
+                    // Inizializza mappa solo se il contenitore esiste
+                    if ($('#localizzazione-map').length === 0) return;
                 
-                var map = L.map('localizzazione-map', {
-                    zoomControl: true,
-                    scrollWheelZoom: true,
-                    doubleClickZoom: true,
-                    boxZoom: false
-                }).setView([40.351, 18.175], 10); // Centrato su Lecce
+                    var map = L.map('localizzazione-map', {
+                        zoomControl: true,
+                        scrollWheelZoom: true,
+                        doubleClickZoom: true,
+                        boxZoom: false
+                    }).setView([40.351, 18.175], 10); // Centrato su Lecce
                 
-                // Tile layer
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap',
-                    maxZoom: 19
-                }).addTo(map);
-                
-                var marker = null;
-                var lat = parseFloat($('#latitudine_inline').val());
-                var lng = parseFloat($('#longitudine_inline').val());
-                
-                // Marker esistente
-                if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
-                    marker = L.marker([lat, lng], {
-                        draggable: true,
-                        title: 'Posizione incidente (trascinabile)'
+                    // Tile layer
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap',
+                        maxZoom: 19
                     }).addTo(map);
-                    map.setView([lat, lng], 15);
+                
+                    var marker = null;
+                    var lat = parseFloat($('#latitudine_inline').val());
+                    var lng = parseFloat($('#longitudine_inline').val());
+                    
+                    // Marker esistente
+                    if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                        marker = L.marker([lat, lng], {
+                            draggable: true,
+                            title: 'Posizione incidente (trascinabile)'
+                        }).addTo(map);
+                        map.setView([lat, lng], 15);
                     
                     marker.on('dragend', function(e) {
                         var position = e.target.getLatLng();
@@ -1590,6 +1578,395 @@ class IncidentiMetaBoxes {
                         // Sincronizza con i campi nella sidebar se esistono
                         $('#latitudine').val(position.lat.toFixed(6));
                         $('#longitudine').val(position.lng.toFixed(6));
+                    });
+                }
+
+                function populateStradeProvinciali() {
+                    var stradeProvinciali = [
+                        {value: "001", text: "001 - Lecce - Vernole"},
+                        {value: "001_dir_A", text: "001 dir A - Diramazione per Merine"},
+                        {value: "001_dir_B", text: "001 dir B - Diramazione per Strudà"},
+                        {value: "002", text: "002 - Vernole - Melendugno"},
+                        {value: "003", text: "003 - Carpignano - Borgagne - Melendugno"},
+                        {value: "004", text: "004 - Lecce - Novoli - Campi - Squinzano"},
+                        {value: "004_dir", text: "004 dir - Diramazione per Salice"},
+                        {value: "005", text: "005 - Squinzano - Torchiarolo"},
+                        {value: "006", text: "006 - Lecce - Monteroni - Copertino"},
+                        {value: "007", text: "007 - Lecce - Arnesano"},
+                        {value: "008", text: "008 - Villa Convento - Arnesano - Monteroni"},
+                        {value: "010", text: "010 - Lequile - San Cesario alla Lecce - Maglie"},
+                        {value: "011", text: "011 - Lequile - San Pietro - Monteroni"},
+                        {value: "012", text: "012 - Magliano - Arnesano"},
+                        {value: "013", text: "013 - Carmiano - Novoli"},
+                        {value: "014", text: "014 - Carmiano - Veglie"},
+                        {value: "015", text: "015 - Veglie - Novoli - Trepuzzi"},
+                        {value: "016", text: "016 - Lecce - San Pietro in Lama - Copertino"},
+                        {value: "017", text: "017 - Serra di Gallipoli alla Lecce -Taranto"},
+                        {value: "018", text: "018 - Galatina - Copertino"},
+                        {value: "019", text: "019 - Nardò alla Lecce - Gallipoli"},
+                        {value: "020", text: "020 - Copertino alla Lecce - Gallipoli (Grottella)"},
+                        {value: "021", text: "021 - Leverano - Porto Cesareo"},
+                        {value: "023", text: "023 - Castromediano - Cavallino"},
+                        {value: "025", text: "025 - Calimera - Lizzanello"},
+                        {value: "026", text: "026 - Calimera - Martano"},
+                        {value: "027", text: "027 - Cavallino - Caprarica"},
+                        {value: "028", text: "028 - Caprarica - Martano"},
+                        {value: "029", text: "029 - Melendugno - Calimera"},
+                        {value: "030", text: "030 - Calimera - Martignano - Sternatia"},
+                        {value: "031", text: "031 - Sternatia - Soleto"},
+                        {value: "032", text: "032 - Sternatia alla Lecce - Maglie"},
+                        {value: "033", text: "033 - Corigliano - Galatina"},
+                        {value: "034", text: "034 - Corigliano alla Lecce -Maglie"},
+                        {value: "035", text: "035 - Castrignano dei Greci alla Lecce - Maglie"},
+                        {value: "036", text: "036 - Martano - Castrignano - Melpignano alla Lecce - Maglie"},
+                        {value: "037", text: "037 - Melpignano - Cursi - Maglie"},
+                        {value: "038", text: "038 - Cursi - Bagnolo"},
+                        {value: "039", text: "039 - Dalla Martano - Otranto per Serrano, Cannole, Bagnolo alla Maglie - Otranto"},
+                        {value: "040", text: "040 - Cutrofiano - Collepasso"},
+                        {value: "041", text: "041 - Galatina - Noha - Collepasso"},
+                        {value: "041_dir_A", text: "041 dir. A - Diramazione per Aradeo da Noha"},
+                        {value: "042", text: "042 - Seclì - Neviano - Collepasso"},
+                        {value: "043", text: "043 - Alezio - Tuglie - Collepasso"},
+                        {value: "044", text: "044 - Surbo - Stazione"},
+                        {value: "045", text: "045 - Lecce - Surbo"},
+                        {value: "046", text: "046 - Galugnano - San Donato alla San Cesario - Galatina"},
+                        {value: "047", text: "047 - Galatone - Galatina - Soleto alla Lecce - Maglie"},
+                        {value: "048", text: "048 - Dalla Lecce - Maglie per Martano ad Otranto"},
+                        {value: "049", text: "049 - Corigliano alla Sogliano - Cutrofiano"},
+                        {value: "049_dir", text: "049 dir - Diramazione per la Galatina-Corigliano"},
+                        {value: "050", text: "050 - Aradeo - Sannicola"},
+                        {value: "051", text: "051 - Parabita - Tuglie - Sannicola"},
+                        {value: "052", text: "052 - Gallipoli - Chiesanuova - Sannicola"},
+                        {value: "053", text: "053 - Alezio - Sannicola alla Lecce - Gallipoli"},
+                        {value: "054", text: "054 - Taviano - Alezio"},
+                        {value: "055", text: "055 - Taviano - Matino"},
+                        {value: "056", text: "056 - Poggiardo - Minervino - Uggiano"},
+                        {value: "057", text: "057 - San Simone alla Alezio - Sannicola"},
+                        {value: "058", text: "058 - Uggiano - Giurdignano alla Maglie - Otranto"},
+                        {value: "059", text: "059 - Palmariggi - Minervino"},
+                        {value: "060", text: "060 - Minervino - Cocumola - Vaste"},
+                        {value: "061", text: "061 - Cocumola - Cerfignano alla Maglie - Santa Cesarea"},
+                        {value: "062", text: "062 - Minervino - Giuggianello - Sanarica"},
+                        {value: "063", text: "063 - Sanarica - Botrugno"},
+                        {value: "064", text: "064 - Muro - Scorrano"},
+                        {value: "065", text: "065 - Ugento - Mare"},
+                        {value: "066", text: "066 - Ugento - Taurisano"},
+                        {value: "067", text: "067 - Racale - Alliste - Felline"},
+                        {value: "068", text: "068 - Casarano - Taviano"},
+                        {value: "068_dir", text: "068 dir - Diramazione per Melissano"},
+                        {value: "069", text: "069 - Casarano alla Collepasso - Maglie"},
+                        {value: "070", text: "070 - Zollino - Stazione"},
+                        {value: "071", text: "071 - Casarano - Ruffano"},
+                        {value: "072", text: "072 - Ugento - Casarano"},
+                        {value: "073", text: "073 - Salve - Ruggiano alla Maglie - Leuca"},
+                        {value: "074", text: "074 - Castrignano del Capo - Santa Maria di Leuca"},
+                        {value: "074_dir", text: "074 dir - Santa Maria di Leuca alla Maglie - Leuca"},
+                        {value: "075", text: "075 - Tricase - Specchia alla Miggiano - Taurisano"},
+                        {value: "076", text: "076 - Presicce - Specchia"},
+                        {value: "077", text: "077 - Specchia - Miggiano"},
+                        {value: "078", text: "078 - Tricase - Tricase Porto"},
+                        {value: "078_dir", text: "078 dir - Variante alla Quercia Vallonea"},
+                        {value: "079", text: "079 - Alessano - Presicce"},
+                        {value: "080", text: "080 - Alessano alla Tiggiano - Corsano"},
+                        {value: "081", text: "081 - Vaste - Tricase - Corsano alla Alessano - Leuca"},
+                        {value: "082", text: "082 - Diso - Spongano - Surano - Nociglia"},
+                        {value: "083", text: "083 - Diso - Vignacastrisi"},
+                        {value: "084", text: "084 - Ortelle - Vignacastrisi - Castro"},
+                        {value: "085", text: "085 - Andrano - Castiglione - Montesano"},
+                        {value: "086", text: "086 - Nociglia - Supersano"},
+                        {value: "087", text: "087 - Otranto - Porto Badisco"},
+                        {value: "088", text: "088 - Torre San Giovanni - Torre Sinfonò"},
+                        {value: "090", text: "090 - Galatone - Santa Maria al Bagno"},
+                        {value: "091", text: "091 - Pescoluse - Torre San Giovanni"},
+                        {value: "092", text: "092 - Trepuzzi - Surbo"},
+                        {value: "093", text: "093 - Surbo - Torre Rinalda"},
+                        {value: "094", text: "094 - Surbo alla Lecce - Torre Chianca"},
+                        {value: "095", text: "095 - Squinzano - Cellino"},
+                        {value: "096", text: "096 - Squinzano - Casalabate"},
+                        {value: "097", text: "097 - Squinzano alla San Pietro - Torchiarolo"},
+                        {value: "098", text: "098 - Squinzano - Madonna dell`Alto"},
+                        {value: "100", text: "100 - Squinzano - Masseria Cerrate - Casalabate"},
+                        {value: "101", text: "101 - Campi - Cellino"},
+                        {value: "102", text: "102 - Campi - San Donaci"},
+                        {value: "103", text: "103 - Campi alla Carmiano - Salice"},
+                        {value: "104", text: "104 - Guagnano - Cellino"},
+                        {value: "105", text: "105 - Guagnano - Villa Baldassarri"},
+                        {value: "106", text: "106 - Guagnano - Salice"},
+                        {value: "107", text: "107 - Salice - Filippi - Avetrana"},
+                        {value: "108", text: "108 - Santa Maria al Bagno alla Lecce - Gallipoli"},
+                        {value: "109", text: "109 - Boncore - San Pancrazio"},
+                        {value: "110", text: "110 - Veglie alla San Pancrazio - Boncore"},
+                        {value: "111", text: "111 - Veglie - Cerfeta - Monteruga alla San Pancrazio - Boncore"},
+                        {value: "112", text: "112 - La Tarantina I° tronco"},
+                        {value: "113", text: "113 - Porto Cesareo alla Veglie alla San Pancrazio - Boncore"},
+                        {value: "114", text: "114 - Copertino - Sant`Isidoro"},
+                        {value: "115", text: "115 - Nardò - Leverano"},
+                        {value: "116", text: "116 - La Tarantina II° tronco"},
+                        {value: "117", text: "117 - Leverano - Carmiano"},
+                        {value: "119", text: "119 - Dalla Lecce - Arnesano per Leverano"},
+                        {value: "120", text: "120 - Carmiano - Salice"},
+                        {value: "121", text: "121 - Carmiano - Villa Convento"},
+                        {value: "122", text: "122 - Monteroni alla Lecce - Arnesano"},
+                        {value: "123", text: "123 - Monteroni - Magliano"},
+                        {value: "124", text: "124 - Copertino - Carmiano"},
+                        {value: "125", text: "125 - Dalla Lecce - Gallipoli per San Donato"},
+                        {value: "126", text: "126 - Galugnano - Stazione"},
+                        {value: "127", text: "127 - Cenate alla Galatone - Santa Maria"},
+                        {value: "130", text: "130 - Circonvallazione di San Pietro in Lama"},
+                        {value: "131", text: "131 - Lecce - Torre Chianca"},
+                        {value: "132", text: "132 - Lecce - Frigole"},
+                        {value: "133", text: "133 - Dalla Lecce - San Cataldo per Frigole - Torre Chianca - Torre Rinalda"},
+                        {value: "133_dir", text: "133 dir - Diramazione per la Lecce - San Cataldo"},
+                        {value: "134", text: "134 - Dalla Lecce - San Cataldo alle Idrovore"},
+                        {value: "134_dir", text: "134 dir - Variante alle Idrovore"},
+                        {value: "135", text: "135 - Dalla Galatina - Copertino per Collemeto alla Lecce - Gallipoli"},
+                        {value: "136", text: "136 - Lizzanello - Merine"},
+                        {value: "137", text: "137 - Sternatia alla San Cesario - Galatina"},
+                        {value: "138", text: "138 - Soleto - Sogliano"},
+                        {value: "139", text: "139 - Sogliano alla Cutrofiano - Aradeo"},
+                        {value: "140", text: "140 - Vernole - Galugnano"},
+                        {value: "141", text: "141 - Vernole alla Calimera - Melendugno"},
+                        {value: "142", text: "142 - Vernole - Acquarica - Vanze - Strudà - Pisignano"},
+                        {value: "143", text: "143 - Vanze alla San Cataldo - Otranto"},
+                        {value: "144", text: "144 - Caprarica alla Lizzanello - Calimera"},
+                        {value: "145", text: "145 - Melendugno - San Foca"},
+                        {value: "146", text: "146 - Melendugno alla Martano - Borgagne"},
+                        {value: "147", text: "147 - Martano - Borgagne"},
+                        {value: "148", text: "148 - Borgagne alla San Cataldo - Otranto"},
+                        {value: "149", text: "149 - Cannole - Stazione"},
+                        {value: "150", text: "150 - Cannole alla Martano - Otranto"},
+                        {value: "151", text: "151 - Dalla Martano - Otranto alla San Cataldo - Otranto"},
+                        {value: "152", text: "152 - Carpignano alla Martano - Otranto"},
+                        {value: "153", text: "153 - Castrignano alla Martano - Otranto"},
+                        {value: "154", text: "154 - Bagnolo - Palmariggi"},
+                        {value: "155", text: "155 - Minervino - Giurdignano"},
+                        {value: "156", text: "156 - Specchia Gallone alla Minervino - Giuggianello"},
+                        {value: "157", text: "157 - Muro alla Maglie - Otranto"},
+                        {value: "158", text: "158 - Circonvallazione di Poggiardo"},
+                        {value: "159", text: "159 - Poggiardo - Nociglia"},
+                        {value: "160", text: "160 - Poggiardo - San Cassiano - Botrugno alla Maglie - Leuca"},
+                        {value: "161", text: "161 - San Cassiano alla Maglie - Leuca"},
+                        {value: "162", text: "162 - Ortelle alla Vaste - Vitigliano"},
+                        {value: "163", text: "163 - Spongano - Ortelle"},
+                        {value: "164", text: "164 - Spongano alla Surano - Ruffano"},
+                        {value: "165", text: "165 - Spongano - Castiglione"},
+                        {value: "165_dir", text: "165 dir - Diramazione per Spongano (via Pio XII)"},
+                        {value: "167", text: "167 - Castiglione - Depressa"},
+                        {value: "168", text: "168 - Andrano - Marina di Andrano"},
+                        {value: "169", text: "169 - Marittima alla Vignacastrisi - Castro"},
+                        {value: "170", text: "170 - Castro Città - Castro Marina"},
+                        {value: "171", text: "171 - Surano alla Poggiardo - Nociglia"},
+                        {value: "172", text: "172 - Surano - Torrepaduli - Ruffano"},
+                        {value: "173", text: "173 - Scorrano - Supersano"},
+                        {value: "174", text: "174 - Supersano - Casarano"},
+                        {value: "176", text: "176 - Ruffano - Taurisano"},
+                        {value: "177", text: "177 - Marittima - Marina Marittima"},
+                        {value: "178", text: "178 - Montesano - Tricase"},
+                        {value: "179", text: "179 - Montesano - Torrepaduli"},
+                        {value: "180", text: "180 - Miggiano alla Maglie - Leuca"},
+                        {value: "181", text: "181 - Specchia - Stazione"},
+                        {value: "182", text: "182 - Tricase - Marina Serra"},
+                        {value: "184", text: "184 - Tricase alla Maglie - Leuca"},
+                        {value: "186", text: "186 - Tiggiano alla Marina Serra - Novaglie"},
+                        {value: "187", text: "187 - Corsano - Novaglie"},
+                        {value: "188", text: "188 - Corsano - Stazione"},
+                        {value: "189", text: "189 - San Dana alla Maglie - Leuca"},
+                        {value: "190", text: "190 - Dalla Montesardo - Ruggiano per Barbarano - Morciano - Torre Vado"},
+                        {value: "191", text: "191 - Castrignano del Capo - Marina di Leuca (San Giuseppe)"},
+                        {value: "192", text: "192 - Ruggiano - Barbarano - Giuliano - Patù - San Gregorio"},
+                        {value: "193", text: "193 - Presicce alla Litoranea"},
+                        {value: "194", text: "194 - Sannicola alla Gallapoli - Santa Maria"},
+                        {value: "195", text: "195 - Gagliano alla Novaglie - Leuca"},
+                        {value: "196", text: "196 - Neviano - Tuglie"},
+                        {value: "197", text: "197 - Dalla Tuglie - Collepasso al Villaggio di Montegrappa"},
+                        {value: "198", text: "198 - Cutrofiano alla Maglie - Collepasso"},
+                        {value: "201", text: "201 - Li Foggi alla Gallipoli - Leuca"},
+                        {value: "201_dir", text: "201 dir - Diramazione per Mass.a Foggi"},
+                        {value: "202", text: "202 - Racale - Torre Suda"},
+                        {value: "203", text: "203 - Felline - Melissano"},
+                        {value: "204", text: "204 - Alliste alla Racale - Torre Suda"},
+                        {value: "205", text: "205 - Dalla Ugento - Acquarica a Gemini"},
+                        {value: "206", text: "206 - Melissano - Ugento"},
+                        {value: "208", text: "208 - Vignacastrisi - Castro"},
+                        {value: "209", text: "209 - Castrignano del Capo - Salignano alla Salve - Gagliano"},
+                        {value: "210", text: "210 - Alessano - Novaglie"},
+                        {value: "211", text: "211 - Alliste - Posto Rossi"},
+                        {value: "212", text: "212 - Cursi - Carpignano"},
+                        {value: "213", text: "213 - Giuggianello - Poggiardo"},
+                        {value: "214", text: "214 - Santa Maria di Leuca - Pescoluse"},
+                        {value: "215", text: "215 - Posto Li Sorci - Torre Sinfonò"},
+                        {value: "216", text: "216 - Dalla Salice - Avetrana per San Pancrazio"},
+                        {value: "217", text: "217 - Dalla Salice - Avetrana alla litoranea"},
+                        {value: "218", text: "218 - Dalla Nardò - Avetrana alla Nardò - Copertino"},
+                        {value: "219", text: "219 - Dalla Boncore - San Pancrazio per Avetrana"},
+                        {value: "220", text: "220 - Dalla Leverano - Porto Cesareo alla Porto Cesareo alla Veglie - Boncore"},
+                        {value: "221", text: "221 - Posto Li Sorci alla Gallipoli - Leuca"},
+                        {value: "222", text: "222 - Taviano alla litoranea"},
+                        {value: "223", text: "223 - Matino alla Gallipoli - Leuca"},
+                        {value: "224", text: "224 - Carmiano alla Arnesano - Villa Convento"},
+                        {value: "224_dir", text: "224 dir - Diramazione per Magliano"},
+                        {value: "225", text: "225 - Dalla Lecce - Arnesano alla Lecce - Novoli (Via del Condò)"},
+                        {value: "226", text: "226 - Scorrano alla Maglie - Gallipoli"},
+                        {value: "227", text: "227 - Corigliano - Soleto"},
+                        {value: "228", text: "228 - Corigliano - Melpignano"},
+                        {value: "229", text: "229 - Vernole - Pisignano - Lizzanello"},
+                        {value: "230", text: "230 - Trepuzzi - Campi"},
+                        {value: "231", text: "231 - Galatone - Sannicola"},
+                        {value: "232", text: "232 - Taviano - Castelforte alla litoranea Gallipoli - Mancaversa"},
+                        {value: "233", text: "233 - Cocumola alla Vaste - Vitigliano"},
+                        {value: "234", text: "234 - Cerfignano - Vitigliano"},
+                        {value: "235", text: "235 - Giuggianello - Palmariggi"},
+                        {value: "236", text: "236 - Surbo - Casalabate"},
+                        {value: "237", text: "237 - San Cassiano - Surano"},
+                        {value: "238", text: "238 - Noha - Sogliano - Corigliano"},
+                        {value: "239", text: "239 - Li Foggi alla Posto Li Sorci - Masseria Li Sauli"},
+                        {value: "240", text: "240 - Supersano alla Montesano - Torrepaduli"},
+                        {value: "241", text: "241 - Lecce - Lizzanello"},
+                        {value: "242", text: "242 - Alessano - Specchia"},
+                        {value: "243", text: "243 - Dalla Scorrano alla Maglie - Collepasso alla Cutrofiano - Supersano"},
+                        {value: "244", text: "244 - Soleto - San Donato"},
+                        {value: "245", text: "245 - Acquarica alla San Cataldo - Otranto"},
+                        {value: "246", text: "246 - Trepuzzi alla Surbo - Casalabate"},
+                        {value: "247", text: "247 - Dalla Alliste alla Racale - Torre Suda alla litoranea"},
+                        {value: "248", text: "248 - Montesardo alla Alessano - Novaglie"},
+                        {value: "249", text: "249 - Corsano alla Alessano - Novaglie"},
+                        {value: "250", text: "250 - Montesano - Depressa"},
+                        {value: "251", text: "251 - Andrano - Spongano"},
+                        {value: "252", text: "252 - Miggiano alla Montesano - Torre Paduli"},
+                        {value: "253", text: "253 - Dalla Lecce - San Pietro alla Lecce - Monteroni"},
+                        {value: "254", text: "254 - Poggiardo - Spongano"},
+                        {value: "255", text: "255 - Salice alla Veglie - Monteruga"},
+                        {value: "256", text: "256 - Squinzano per Masseria Arciprete e Caretti alla Surbo - Casalabate"},
+                        {value: "257", text: "257 - Castrì - Pisignano"},
+                        {value: "258", text: "258 - Vitigliano alla Ortelle - Vignacastrisi"},
+                        {value: "259", text: "259 - Vignacastrisi alla Castro - Santa Cesarea"},
+                        {value: "260", text: "260 - Santa Caterina per la Cenate alla Galatone - Santa Maria"},
+                        {value: "261", text: "261 - Nardò alla Tarantina"},
+                        {value: "262", text: "262 - Dalla Casarano - Ugento per località Vetti e Sant`Anastasia alla Matino li Ponti"},
+                        {value: "263", text: "263 - Melissano alla Casarano - Ugento"},
+                        {value: "264", text: "264 - Dalla Nociglia - Supersano alla Surano - Torre Paduli"},
+                        {value: "265", text: "265 - Dalla Alliste - Posto Rossi per Posto Capilungo"},
+                        {value: "266", text: "266 - Felline - Posto Rosso"},
+                        {value: "267", text: "267 - Lecce per Cascettara alla prov. dalla Lecce - Arnesano alla Lecce - Novoli"},
+                        {value: "268", text: "268 - Dalla Salice alla Veglie - Monteruga per Magliana"},
+                        {value: "269", text: "269 - Cavallino - Tempi Nuovi"},
+                        {value: "270", text: "270 - Cavallino alla Lizzanello - Merine"},
+                        {value: "271", text: "271 - Neviano alla Collepasso - Noha"},
+                        {value: "272", text: "272 - Dalla Campi - Cellino alla Guagnano - Cellino (Giovannella)"},
+                        {value: "273", text: "273 - Salve - Posto Vecchio di Salve"},
+                        {value: "274", text: "274 - Cursi per la Bagnolo alla Maglie - Otranto"},
+                        {value: "275", text: "275 - Calimera alla Melendugno alla Martano - Borgagne"},
+                        {value: "276", text: "276 - Carpignano alla Martano - Borgagne"},
+                        {value: "277", text: "277 - Giurdigano alla Maglie - Otranto"},
+                        {value: "278", text: "278 - Dalla Cutrofiano - Aradeo alla Cutrofiano - Collepasso"},
+                        {value: "279", text: "279 - Aradeo - Foresta - Mass.a Litta"},
+                        {value: "280", text: "280 - Aradeo alla Galatone - Galatina"},
+                        {value: "280_dir", text: "280 dir - Diramazione per Galatone"},
+                        {value: "281", text: "281 - Seclì - Campolatino - Sannicola"},
+                        {value: "282", text: "282 - Scalelle - San Giovanni - Alezio"},
+                        {value: "282_dir", text: "282 dir - Diramazione per la Alezio - Gallipoli"},
+                        {value: "283", text: "283 - Acaia - Aeroporto Turistico"},
+                        {value: "283_dir", text: "283 dir - Diramazione per la Lecce - Aeroporto Turistico - Litoranea"},
+                        {value: "284", text: "284 - Strudà - Acquarica"},
+                        {value: "285", text: "285 - Caprarica alla Lecce - Maglie"},
+                        {value: "286", text: "286 - Santa Caterina - Sant`Isidoro - Porto Cesareo"},
+                        {value: "287", text: "287 - Dalla Matino alla Gallipoli - Leuca alla Taviano - Alezio"},
+                        {value: "288", text: "288 - Melissano alla Vetti - Sant`Anastasia"},
+                        {value: "289", text: "289 - Taviano per la Posto Li Sorci alla Gallipoli - Leuca"},
+                        {value: "289_dir", text: "289 dir - Diramazione alla Posto Li Sorci alla Gallipoli - Leuca per Mass.a Nuova"},
+                        {value: "290", text: "290 - Felline alla Ugento - Torre San Giovanni"},
+                        {value: "290_dir", text: "290 dir - Diramazione per Ugento"},
+                        {value: "291", text: "291 - Gemini alla litoranea"},
+                        {value: "292", text: "292 - Dalla Presicce - Litoranea alla Salve - Pescoluse"},
+                        {value: "294", text: "294 - Dalla Lecce - Gallipoli a Santa Barbara"},
+                        {value: "295", text: "295 - Lecce -San Ligorio alla San Cataldo - Frigole"},
+                        {value: "296", text: "296 - Trepuzzi alla Squinzano - Masseria Cerrate - Casalabate"},
+                        {value: "297", text: "297 - Melendugno - Torre dell`Orso"},
+                        {value: "298", text: "298 - Lecce - Aeroporto Turistico - Litoranea"},
+                        {value: "299", text: "299 - Uggiano - Cerfignano"},
+                        {value: "300", text: "300 - Casamassella alla Uggiano - Otranto"},
+                        {value: "301", text: "301 - Nociglia - Fontana alla Surano - Torrepaduli - Ruffano"},
+                        {value: "303", text: "303 - Melpignano alla Zona Industriale"},
+                        {value: "304", text: "304 - Lecce - Località Caliò Pomponio alla Frigole - San Cataldo"},
+                        {value: "305", text: "305 - Giuliano alla Maglie - Leuca"},
+                        {value: "306", text: "306 - Tricase Porto alla Tricase - Tricase Porto"},
+                        {value: "307", text: "307 - Copertino - Santa Barbara"},
+                        {value: "308", text: "308 - Botrugno alla Nociglia - Supersano"},
+                        {value: "308_dir", text: "308 dir - Diramazione per San Cassiano"},
+                        {value: "309", text: "309 - Salice - Campi"},
+                        {value: "310", text: "310 - Marittima alla Castro - Tricase Porto"},
+                        {value: "312", text: "312 - Salice alla Guagnano - San Pancrazio"},
+                        {value: "313", text: "313 - Tricase - Torre Mito - Andrano"},
+                        {value: "314", text: "314 - Circonvallazione di Aradeo"},
+                        {value: "317", text: "317 - Cincorvallazione di Calimera"},
+                        {value: "319", text: "319 - Santa Cesarea strada panoramica"},
+                        {value: "319_dir", text: "319 dir - Diramazione per la Cerfignano - Santa Cesarea"},
+                        {value: "320", text: "320 - Galatina alla Soleto - Sogliano"},
+                        {value: "321", text: "321 - Casarano alla Taviano - Matino"},
+                        {value: "322", text: "322 - Collepasso - Matino"},
+                        {value: "322_dir", text: "322 dir - Diramazione per Casarano"},
+                        {value: "323", text: "323 - Dalla Taviano - Alezio alla Gallipoli - Leuca"},
+                        {value: "324", text: "324 - Dalla Acquarica - Salve alla Acquarica - Ugento"},
+                        {value: "325", text: "325 - Dalla Ugento - Torre San Giovanni alla Presicce alla Litoranea"},
+                        {value: "326", text: "326 - Morciano - Pozzo Pasulo"},
+                        {value: "326_dir", text: "326 dir - Diramazione per la Patù - San Gregorio"},
+                        {value: "327", text: "327 - Guagnano - San Donaci"},
+                        {value: "328", text: "328 - Galatina per Torre Pinta alla Lecce - Galatina"},
+                        {value: "329", text: "329 - Dalla Galatina - Copertino alla Lecce - Gallipoli"},
+                        {value: "330", text: "330 - Taviano - Mancaversa"},
+                        {value: "331", text: "331 - Acquarica del Capo - Ruffano"},
+                        {value: "332", text: "332 - Acquarica - Torre Mozza"},
+                        {value: "333", text: "333 - Masseria Marini - Torre Pali"},
+                        {value: "334", text: "334 - Casarano alla Parabita - Collepasso"},
+                        {value: "336", text: "336 - Dalla Nociglia - Supersano alla Nociglia - Fontana"},
+                        {value: "336_dir", text: "336 dir - Diramazione per Casino Lizza Lupera"},
+                        {value: "337", text: "337 - Merine - Acaia"},
+                        {value: "338", text: "338 - Serrano per la San Carlo alla San Cataldo - Otranto"},
+                        {value: "339", text: "339 - Salve - Pescoluse"},
+                        {value: "340", text: "340 - Porto Cesareo - Punta Prosciutto"},
+                        {value: "341", text: "341 - Dalla Martano - Otranto a Lu Strittu"},
+                        {value: "341_dir", text: "341 dir - Diramazione per la San Cataldo - Otranto"},
+                        {value: "342", text: "342 - San Carlo alla San Cataldo - Otranto"},
+                        {value: "342_dir", text: "342 dir - Diramazione per la Martano - Otranto alla San Cataldo - Otranto"},
+                        {value: "343", text: "343 - Strudà - Vanze"},
+                        {value: "344", text: "344 - Cannole - Palmariggi"},
+                        {value: "345", text: "345 - Diso - Andrano"},
+                        {value: "346", text: "346 - Tricase - Serra del Porto"},
+                        {value: "347", text: "347 - Zollino alla Martano-Soleto"},
+                        {value: "348", text: "348 - Dalla Arnesano - Villa Convento per la Lecce - Arnesano alla Lecce - Novoli"},
+                        {value: "349", text: "349 - San Donato alla Lecce - Maglie"},
+                        {value: "350", text: "350 - Taviano - Ugento (ex S.S.274)"},
+                        {value: "351", text: "351 - Salve - Gagliano (ex S.S.274)"},
+                        {value: "352", text: "352 - Dalla Galatone - Galatina alla Noha - Collepasso"},
+                        {value: "353", text: "353 - Albaro - Veglie"},
+                        {value: "354", text: "354 - Castiglione alla Maglie - Leuca"},
+                        {value: "355", text: "355 - Minervino - Porto Badisco"},
+                        {value: "357", text: "357 - Adriatica"},
+                        {value: "358", text: "358 - Delle Terme Salentine"},
+                        {value: "359", text: "359 - Salentina di Manduria"},
+                        {value: "360", text: "360 - Di Casarano"},
+                        {value: "361", text: "361 - Di Parabita"},
+                        {value: "362", text: "362 - Di Galatina"},
+                        {value: "363", text: "363 - Di Maglie e Santa Cesarea"},
+                        {value: "364", text: "364 - Del Lido di Lecce"},
+                        {value: "365", text: "365 - Di Mesagne"},
+                        {value: "366", text: "366 - Di Otranto"},
+                        {value: "367", text: "367 - Mediana del Salento"},
+                        {value: "368", text: "368 - Circonvallazione sud di Martignano"},
+                        {value: "369", text: "369 - Dalla Otranto - Porto Badisco al Porto di Otranto"},
+                        {value: "370", text: "370 - Circonvallazione di Veglie"},
+                        {value: "372", text: "372 - Circonvallazione di Caprarica"},
+                        {value: "374", text: "374 - Di Taurisano"},
+                        {value: "375", text: "375 - Di Cavallino"},
+                        {value: "377", text: "377 - Circonvallazione Nord di Martignano"}
+                    ];
+                    
+                    var select = $('#numero_strada');
+                    select.empty();
+                    select.append('<option value="">Seleziona strada provinciale</option>');
+                    
+                    $.each(stradeProvinciali, function(index, strada) {
+                        select.append('<option value="' + strada.value + '">' + strada.text + '</option>');
                     });
                 }
                 

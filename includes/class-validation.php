@@ -75,6 +75,19 @@ class IncidentiValidation {
                 }
             }
         }
+
+        // Validazione numero strada per strade provinciali
+        if (!empty($_POST['tipo_strada']) && ($_POST['tipo_strada'] === '2' || $_POST['tipo_strada'] === '5')) {
+            if (empty($_POST['numero_strada'])) {
+                $errors[] = __('Il numero della strada provinciale è obbligatorio.', 'incidenti-stradali');
+            } else {
+                // Verifica che il codice strada sia valido
+                $strade_provinciali = $this->get_strade_provinciali_codes();
+                if (!array_key_exists($_POST['numero_strada'], $strade_provinciali)) {
+                    $errors[] = __('Il codice della strada provinciale selezionato non è valido.', 'incidenti-stradali');
+                }
+            }
+        }
         
         // Validate data incidente format
         if (!empty($_POST['data_incidente'])) {
@@ -385,7 +398,7 @@ class IncidentiValidation {
                 $errors[] = sprintf(__('Il peso del veicolo %s non è valido.', 'incidenti-stradali'), chr(64 + $vehicle_num));
             }
         }
-        
+
         return $errors;
     }
     

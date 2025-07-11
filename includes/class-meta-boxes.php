@@ -1051,18 +1051,18 @@ class IncidentiMetaBoxes {
                     <select id="tipo_strada" name="tipo_strada" required>
                         <option value=""><?php _e('Seleziona tipo strada', 'incidenti-stradali'); ?></option>
                         <optgroup label="<?php _e('Nell\'abitato', 'incidenti-stradali'); ?>">
-                            <option value="1" <?php selected($tipo_strada, '1'); ?>><?php _e('Strada urbana', 'incidenti-stradali'); ?></option>
-                            <option value="2" <?php selected($tipo_strada, '2'); ?>><?php _e('Provinciale entro l\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="3" <?php selected($tipo_strada, '3'); ?>><?php _e('Statale entro l\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="0" <?php selected($tipo_strada, '0'); ?>><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="Strada urbana" <?php selected($tipo_strada, 'Strada urbana'); ?>><?php _e('Strada urbana', 'incidenti-stradali'); ?></option>
+                            <option value="Provinciale entro l'abitato" <?php selected($tipo_strada, "Provinciale entro l'abitato"); ?>><?php _e('Provinciale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="Statale entro l'abitato" <?php selected($tipo_strada, "Statale entro l'abitato"); ?>><?php _e('Statale entro l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="Regionale entro l'abitato" <?php selected($tipo_strada, "Regionale entro l'abitato"); ?>><?php _e('Regionale entro l\'abitato', 'incidenti-stradali'); ?></option>
                         </optgroup>
                         <optgroup label="<?php _e('Fuori dall\'abitato', 'incidenti-stradali'); ?>">
-                            <option value="4" <?php selected($tipo_strada, '4'); ?>><?php _e('Strada comunale extraurbana', 'incidenti-stradali'); ?></option>
-                            <option value="5" <?php selected($tipo_strada, '5'); ?>><?php _e('Strada provinciale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="6" <?php selected($tipo_strada, '6'); ?>><?php _e('Strada statale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
-                            <option value="7" <?php selected($tipo_strada, '7'); ?>><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
-                            <option value="8" <?php selected($tipo_strada, '8'); ?>><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
-                            <option value="9" <?php selected($tipo_strada, '9'); ?>><?php _e('Strada regionale fuori l\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="Strada comunale extraurbana" <?php selected($tipo_strada, 'Strada comunale extraurbana'); ?>><?php _e('Strada comunale extraurbana', 'incidenti-stradali'); ?></option>
+                            <option value="Strada provinciale fuori dell'abitato" <?php selected($tipo_strada, "Strada provinciale fuori dell'abitato"); ?>><?php _e('Strada provinciale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="Strada statale fuori dell'abitato" <?php selected($tipo_strada, "Strada statale fuori dell'abitato"); ?>><?php _e('Strada statale fuori dell\'abitato', 'incidenti-stradali'); ?></option>
+                            <option value="Autostrada" <?php selected($tipo_strada, 'Autostrada'); ?>><?php _e('Autostrada', 'incidenti-stradali'); ?></option>
+                            <option value="Altra strada" <?php selected($tipo_strada, 'Altra strada'); ?>><?php _e('Altra strada', 'incidenti-stradali'); ?></option>
+                            <option value="Strada regionale fuori l'abitato" <?php selected($tipo_strada, "Strada regionale fuori l'abitato"); ?>><?php _e('Strada regionale fuori l\'abitato', 'incidenti-stradali'); ?></option>
                         </optgroup>
                     </select>
                 </td>

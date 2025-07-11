@@ -925,6 +925,10 @@ input[type="checkbox"]#visualizza_mappa:focus {
 
 
 /* Stili per il campo numero strada dinamico */
+#numero_strada, #numero_strada_text {
+    transition: all 0.3s ease;
+}
+
 #numero_strada_row .description {
     transition: opacity 0.3s ease;
 }
@@ -937,11 +941,4 @@ input[type="checkbox"]#visualizza_mappa:focus {
 
 #numero_strada option {
     padding: 5px;
-}
-
-/* Assicura che entrambi i campi abbiano la stessa larghezza */
-#numero_strada, #numero_strada_text {
-    width: 100%;
-    max-width: 400px;
-    transition: all 0.3s ease;
 }

@@ -729,6 +729,15 @@ class IncidentiMetaBoxes {
                     <p class="description"><?php _e('Seleziona l\'ente che ha rilevato l\'incidente', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
+            <tr id="identificativo_comando_row" style="display: none;">
+                <th><label for="identificativo_comando"><?php _e('Identificativo del Comando Staz. dei Carabinieri', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="text" id="identificativo_comando" name="identificativo_comando" 
+                        value="<?php echo esc_attr(get_post_meta($post->ID, 'identificativo_comando', true)); ?>" 
+                        maxlength="20" class="regular-text">
+                    <p class="description"><?php _e('Obbligatorio solo per organo Carabiniere', 'incidenti-stradali'); ?></p>
+                </td>
+            </tr>
             <tr>
                 <th><label for="nome_rilevatore"><?php _e('Rilevatore', 'incidenti-stradali'); ?></label></th>
                 <td>
@@ -758,15 +767,6 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
-            <tr id="identificativo_comando_row" style="display: none;">
-                <th><label for="identificativo_comando"><?php _e('Identificativo del Comando Staz. dei Carabinieri', 'incidenti-stradali'); ?></label></th>
-                <td>
-                    <input type="text" id="identificativo_comando" name="identificativo_comando" 
-                        value="<?php echo esc_attr(get_post_meta($post->ID, 'identificativo_comando', true)); ?>" 
-                        maxlength="20" class="regular-text">
-                    <p class="description"><?php _e('Obbligatorio solo per organo Carabiniere', 'incidenti-stradali'); ?></p>
-                </td>
-            </tr>
             <tr>
                 <th><label for="organo_coordinatore"><?php _e('Organo Coordinatore (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
@@ -790,14 +790,29 @@ class IncidentiMetaBoxes {
                     
                     if (ente.includes('POLIZIA MUNICIPALE')) {
                         organoValue = '4'; // Agente di Polizia Municipale o Locale
+                        // Nascondi il campo identificativo comando per altri enti
+                        $('#identificativo_comando_row').hide();
+                        $('#identificativo_comando').prop('required', false).val('');
                     } else if (ente === 'Carabiniere') {
                         organoValue = '2'; // Carabiniere
+                        // Mostra il campo identificativo comando
+                        $('#identificativo_comando_row').show();
+                        $('#identificativo_comando').prop('required', true);
                     } else if (ente === 'Agente di Polizia Stradale') {
                         organoValue = '1'; // Agente di Polizia Stradale
+                        // Nascondi il campo identificativo comando per altri enti
+                        $('#identificativo_comando_row').hide();
+                        $('#identificativo_comando').prop('required', false).val('');
                     } else if (ente === 'Polizia Provinciale') {
                         organoValue = '6'; // Agente di Polizia Provinciale
+                        // Nascondi il campo identificativo comando per altri enti
+                        $('#identificativo_comando_row').hide();
+                        $('#identificativo_comando').prop('required', false).val('');
                     } else {
                         organoValue = '5'; // Altri
+                        // Nascondi il campo identificativo comando per altri enti
+                        $('#identificativo_comando_row').hide();
+                        $('#identificativo_comando').prop('required', false).val('');
                     }
                     
                     $('#organo_rilevazione').val(organoValue);

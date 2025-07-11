@@ -443,13 +443,13 @@ jQuery(document).ready(function($) {
      * Initialize conditional field logic for ISTAT 2019 compliance
      */
     function initializeConditionalFields() {
-        // Mostra/nascondi identificativo comando per Carabinieri
-        $('#organo_rilevazione').on('change', function() {
-            var organoValue = $(this).val();
+        // Logica per mostrare identificativo comando Carabinieri
+        $('#ente_rilevatore').on('change', function() {
+            var enteValue = $(this).val();
             var $identificativoRow = $('#identificativo_comando_row');
             var $identificativoField = $('#identificativo_comando');
             
-            if (organoValue === '2') { // Carabiniere
+            if (enteValue === 'carabiniere') { // Carabiniere
                 $identificativoRow.show();
                 $identificativoField.prop('required', true);
             } else {

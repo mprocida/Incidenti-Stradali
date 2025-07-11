@@ -1592,6 +1592,9 @@ class IncidentiMetaBoxes {
                 }
 
                 function populateStradeProvinciali() {
+                    var select = $('#numero_strada_select');
+                    select.empty();
+                    select.append('<option value="">Seleziona strada provinciale</option>');
                     var stradeProvinciali = [
                         {value: "001", text: "001 - Lecce - Vernole"},
                         {value: "001_dir_A", text: "001 dir A - Diramazione per Merine"},
@@ -1971,13 +1974,41 @@ class IncidentiMetaBoxes {
                         {value: "377", text: "377 - Circonvallazione Nord di Martignano"}
                     ];
                     
-                    var select = $('#numero_strada');
-                    select.empty();
-                    select.append('<option value="">Seleziona strada provinciale</option>');
-                    
                     $.each(stradeProvinciali, function(index, strada) {
                         select.append('<option value="' + strada.value + '">' + strada.text + '</option>');
                     });
+
+                    // Ripristina il valore salvato se presente
+                    var savedValue = $('#numero_strada_select').data('saved-value');
+                    if (savedValue) {
+                        $('#numero_strada_select').val(savedValue);
+                    }
+                }
+
+                function populateStradeStatali() {
+                    var select = $('#numero_strada_select');
+                    select.empty();
+                    select.append('<option value="">Seleziona strada statale</option>');
+                    var stradeStatali = [
+                        {value: "101", text: "101 - Lecce - Gallipoli"},
+                        {value: "16", text: "16 - Lecce - Maglie - Oranto"},
+                        {value: "274", text: "274 - Gallipoli - S.M. di Leuca"},
+                        {value: "275", text: "275 - Maglie - S.M. di Leuca"},
+                        {value: "543", text: "543 - Lido di Lecce"},
+                        {value: "613", text: "613 - Lecce - Brindisi"},
+                        {value: "694", text: "694 - Tangenziale Ovest di Lecce"},
+                        {value: "7ter", text: "7 ter - Lecce - Campi Salentina - Guagnano"}
+                    ];
+                    
+                    $.each(stradeStatali, function(index, strada) {
+                        select.append('<option value="' + strada.value + '">' + strada.text + '</option>');
+                    });
+
+                    // Ripristina il valore salvato se presente
+                    var savedValue = $('#numero_strada_select').data('saved-value');
+                    if (savedValue) {
+                        $('#numero_strada_select').val(savedValue);
+                    }
                 }
                 
                 // Click sulla mappa

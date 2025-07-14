@@ -306,17 +306,133 @@ class IncidentiMetaBoxes {
     }
 
     public function render_riepilogo_infortunati_meta_box($post) {
-        // Sezione nascosta - i valori vengono calcolati automaticamente
         $morti_24h = get_post_meta($post->ID, 'riepilogo_morti_24h', true);
         $morti_2_30gg = get_post_meta($post->ID, 'riepilogo_morti_2_30gg', true);
         $feriti = get_post_meta($post->ID, 'riepilogo_feriti', true);
+        ?>
         
-        // Campi nascosti per mantenere i valori
-        echo '<input type="hidden" id="riepilogo_morti_24h" name="riepilogo_morti_24h" value="' . esc_attr($morti_24h) . '">';
-        echo '<input type="hidden" id="riepilogo_morti_2_30gg" name="riepilogo_morti_2_30gg" value="' . esc_attr($morti_2_30gg) . '">';
-        echo '<input type="hidden" id="riepilogo_feriti" name="riepilogo_feriti" value="' . esc_attr($feriti) . '">';
+        <div id="riepilogo-automatico-container" style="background: #e7f3ff; border: 1px solid #2271b1; padding: 15px; margin: 10px 0; border-radius: 4px;">
+            <h4 style="margin-top: 0; color: #2271b1;">📊 <?php _e('Riepilogo Automatico Infortunati', 'incidenti-stradali'); ?></h4>
+            <p style="margin: 5px 0; font-size: 13px; color: #666;">
+                <?php _e('Questo riepilogo viene calcolato automaticamente dai dati inseriti nel modulo.', 'incidenti-stradali'); ?>
+            </p>
+            
+            <div id="conteggio-automatico" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 15px 0;">
+                <div style="text-align: center; padding: 10px; background: white; border-radius: 4px; border: 1px solid #ddd;">
+                    <strong style="display: block; color: #d63638; font-size: 24px;" id="count-morti-24h">0</strong>
+                    <span style="font-size: 12px; color: #666;"><?php _e('Morti entro 24h', 'incidenti-stradali'); ?></span>
+                </div>
+                <div style="text-align: center; padding: 10px; background: white; border-radius: 4px; border: 1px solid #ddd;">
+                    <strong style="display: block; color: #d63638; font-size: 24px;" id="count-morti-2-30gg">0</strong>
+                    <span style="font-size: 12px; color: #666;"><?php _e('Morti 2°-30° giorno', 'incidenti-stradali'); ?></span>
+                </div>
+                <div style="text-align: center; padding: 10px; background: white; border-radius: 4px; border: 1px solid #ddd;">
+                    <strong style="display: block; color: #f0b849; font-size: 24px;" id="count-feriti">0</strong>
+                    <span style="font-size: 12px; color: #666;"><?php _e('Feriti', 'incidenti-stradali'); ?></span>
+                </div>
+            </div>
+            
+            <div id="riepilogo-dettagli" style="font-size: 12px; color: #666; margin-top: 10px;">
+                <p style="margin: 2px 0;"><strong><?php _e('Calcolo automatico basato su:', 'incidenti-stradali'); ?></strong></p>
+                <ul style="margin: 5px 0 0 20px; font-size: 11px;">
+                    <li><?php _e('Esiti dei conducenti dei veicoli', 'incidenti-stradali'); ?></li>
+                    <li><?php _e('Esiti dei trasportati', 'incidenti-stradali'); ?></li>
+                    <li><?php _e('Pedoni morti e feriti', 'incidenti-stradali'); ?></li>
+                    <li><?php _e('Altri passeggeri infortunati', 'incidenti-stradali'); ?></li>
+                </ul>
+            </div>
+        </div>
         
-        echo '<p><em>Il riepilogo infortunati viene calcolato automaticamente al momento della pubblicazione.</em></p>';
+        <!-- Campi nascosti per il salvataggio -->
+        <input type="hidden" id="riepilogo_morti_24h" name="riepilogo_morti_24h" value="<?php echo esc_attr($morti_24h); ?>">
+        <input type="hidden" id="riepilogo_morti_2_30gg" name="riepilogo_morti_2_30gg" value="<?php echo esc_attr($morti_2_30gg); ?>">
+        <input type="hidden" id="riepilogo_feriti" name="riepilogo_feriti" value="<?php echo esc_attr($feriti); ?>">
+        
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            function calcolaRiepilogoAutomatico() {
+                var morti24h = 0;
+                var morti2_30gg = 0;
+                var feriti = 0;
+                
+                // Conta conducenti
+                for (var i = 1; i <= 3; i++) {
+                    var esito = $('#conducente_' + i + '_esito').val();
+                    if (esito == '1' || esito == '3') { // Morto o Morto entro 24h
+                        morti24h++;
+                    } else if (esito == '4') { // Morto dal 2° al 30° giorno
+                        morti2_30gg++;
+                    } else if (esito == '2') { // Ferito
+                        feriti++;
+                    }
+                }
+                
+                // Conta trasportati
+                for (var veicolo = 1; veicolo <= 3; veicolo++) {
+                    var numTrasportati = parseInt($('#veicolo_' + veicolo + '_numero_trasportati').val()) || 0;
+                    for (var t = 1; t <= numTrasportati; t++) {
+                        var esito = $('#veicolo_' + veicolo + '_trasportato_' + t + '_esito').val();
+                        if (esito == '1') { // Morto
+                            morti24h++;
+                        } else if (esito == '2') { // Ferito
+                            feriti++;
+                        }
+                    }
+                }
+                
+                // Conta pedoni
+                var numPedoniMorti = parseInt($('#numero_pedoni_morti').val()) || 0;
+                var numPedoniFeriti = parseInt($('#numero_pedoni_feriti').val()) || 0;
+                morti24h += numPedoniMorti;
+                feriti += numPedoniFeriti;
+                
+                // Conta altri passeggeri
+                for (var v = 1; v <= 3; v++) {
+                    var altriMortiM = parseInt($('#veicolo_' + v + '_altri_morti_maschi').val()) || 0;
+                    var altriMortiF = parseInt($('#veicolo_' + v + '_altri_morti_femmine').val()) || 0;
+                    var altriFeritiM = parseInt($('#veicolo_' + v + '_altri_feriti_maschi').val()) || 0;
+                    var altriFeritiF = parseInt($('#veicolo_' + v + '_altri_feriti_femmine').val()) || 0;
+                    
+                    morti24h += altriMortiM + altriMortiF;
+                    feriti += altriFeritiM + altriFeritiF;
+                }
+                
+                // Conta altri generali
+                var altriMortiMGen = parseInt($('#altri_morti_maschi').val()) || 0;
+                var altriMortiFGen = parseInt($('#altri_morti_femmine').val()) || 0;
+                var altriFeritiMGen = parseInt($('#altri_feriti_maschi').val()) || 0;
+                var altriFeritiGen = parseInt($('#altri_feriti_femmine').val()) || 0;
+                
+                morti24h += altriMortiMGen + altriMortiFGen;
+                feriti += altriFeritiMGen + altriFeritiGen;
+                
+                // Aggiorna display
+                $('#count-morti-24h').text(morti24h);
+                $('#count-morti-2-30gg').text(morti2_30gg);
+                $('#count-feriti').text(feriti);
+                
+                // Aggiorna campi nascosti
+                $('#riepilogo_morti_24h').val(morti24h);
+                $('#riepilogo_morti_2_30gg').val(morti2_30gg);
+                $('#riepilogo_feriti').val(feriti);
+                
+                console.log('Riepilogo aggiornato:', { morti24h, morti2_30gg, feriti });
+            }
+            
+            // Ascolta i cambiamenti sui campi rilevanti
+            $(document).on('change', 'select[id*="_esito"], #numero_pedoni_morti, #numero_pedoni_feriti, select[id*="_numero_trasportati"], input[id*="_altri_morti_"], input[id*="_altri_feriti_"], #altri_morti_maschi, #altri_morti_femmine, #altri_feriti_maschi, #altri_feriti_femmine', calcolaRiepilogoAutomatico);
+            
+            // Calcola al caricamento della pagina
+            setTimeout(calcolaRiepilogoAutomatico, 1000);
+            
+            // Ricalcola quando cambia il numero di veicoli
+            $(document).on('change', '#numero_veicoli_coinvolti', function() {
+                setTimeout(calcolaRiepilogoAutomatico, 500);
+            });
+        });
+        </script>
+        
+        <?php
     }
 
     private function get_circostanze_options($selected = '') {

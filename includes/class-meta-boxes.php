@@ -358,7 +358,7 @@ class IncidentiMetaBoxes {
                 // Conta conducenti
                 for (var i = 1; i <= 3; i++) {
                     var esito = $('#conducente_' + i + '_esito').val();
-                    if (esito == '1' || esito == '3') { // Morto o Morto entro 24h
+                    if (esito == '3') { // Morto entro 24h
                         morti24h++;
                     } else if (esito == '4') { // Morto dal 2° al 30° giorno
                         morti2_30gg++;
@@ -371,8 +371,8 @@ class IncidentiMetaBoxes {
                 for (var veicolo = 1; veicolo <= 3; veicolo++) {
                     var numTrasportati = parseInt($('#veicolo_' + veicolo + '_numero_trasportati').val()) || 0;
                     for (var t = 1; t <= numTrasportati; t++) {
-                        var esito = $('#veicolo_' + veicolo + '_trasportato_' + t + '_esito').val();
-                        if (esito == '1') { // Morto
+                        var esito = $('#trasportato_' + veicolo + '_' + t + '_esito').val();
+                        if (esito == '1') { // Morto entro 24h
                             morti24h++;
                         } else if (esito == '2') { // Ferito
                             feriti++;

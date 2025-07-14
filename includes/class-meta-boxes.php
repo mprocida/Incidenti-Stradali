@@ -4207,6 +4207,7 @@ class IncidentiMetaBoxes {
             /*--------------------------------*/
             
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada',
+            'orientamento_conducente', 'presenza_barriere',
             'circostanza_tipo', 'condizioni_aggiuntive', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
             'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
             'cilindrata_veicolo_c', 'peso_pieno_carico_a', 'peso_pieno_carico_b', 'peso_pieno_carico_c',
@@ -4338,6 +4339,9 @@ class IncidentiMetaBoxes {
 
             // Campi coordinate e identificativi aggiuntivi
             'sistema_di_proiezione', 'codice_carabinieri', 'altra_strada', 'codice__ente', 'codice_strada_aci',
+            
+            // Campi luogo incidente
+            'presenza_banchina',
 
             // Campi cittadinanza conducenti
             'conducente_1_tipo_cittadinanza', 'conducente_2_tipo_cittadinanza', 'conducente_3_tipo_cittadinanza',

@@ -4235,6 +4235,7 @@ class IncidentiMetaBoxes {
             'conducente_2_nazionalita', 'conducente_2_nazionalita_altro', 
             'conducente_3_nazionalita', 'conducente_3_nazionalita_altro',
             'conducente_1_anno_patente', 'conducente_2_anno_patente', 'conducente_3_anno_patente',
+            'conducente_1_tipologia_incidente', 'conducente_2_tipologia_incidente', 'conducente_3_tipologia_incidente',
             // Circostanze presunte
             'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
             'difetto_veicolo_a', 'difetto_veicolo_b', 
@@ -4388,7 +4389,7 @@ class IncidentiMetaBoxes {
 
         // Gestione speciale per i campi checkbox
         $checkbox_fields = array(
-            'presenza_banchina', 'tappeto_usura_aperto', 'tappeto_usura_chiuso', 
+            'presenza_barriere', 'orientamento_conducente', 'tappeto_usura_aperto', 'tappeto_usura_chiuso', 
             'allagato', 'semaforizzazioni', 'cartelli_pubblicitari', 
             'leggibilita_alta', 'leggibilita_bassa', 'nuvoloso', 'foschia'
         );

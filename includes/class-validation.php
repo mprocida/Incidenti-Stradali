@@ -240,7 +240,7 @@ class IncidentiValidation {
         if (isset($_GET['validation_errors']) && $_GET['validation_errors'] === '1') {
             $errors = get_transient('incidenti_validation_errors_' . get_current_user_id());
             if ($errors) {
-                echo '<div class="notice notice-error is-dismissible">';
+                echo '<div class="notice notice-info is-dismissible" style="border-left: 4px solid #2271b1; background-color: #f0f6fc;">';
                 echo '<p><strong>' . __('Errori di validazione:', 'incidenti-stradali') . '</strong></p>';
                 echo '<ul>';
                 foreach ($errors as $error) {
@@ -492,34 +492,21 @@ class IncidentiValidation {
     public function validate_riepilogo_infortunati($post_id) {
         $errors = array();
         
-        // Verifica se i campi riepilogo sono stati compilati
-        if (empty($_POST['riepilogo_morti_24h']) && empty($_POST['riepilogo_morti_2_30gg']) && empty($_POST['riepilogo_feriti'])) {
-            // Se non sono compilati, non fare validazione (campo opzionale)
-            return $errors;
-        }
-        
         // Conta reali infortunati dai campi del modulo
         $real_morti_24h = $this->count_esito_by_type('3');
         $real_morti_2_30gg = $this->count_esito_by_type('4');
         $real_feriti = $this->count_esito_by_type('2');
-        
 
-        // Debug temporaneo per verificare il conteggio
-        error_log("DEBUG VALIDATION - Morti 24h: $real_morti_24h, Morti 2-30gg: $real_morti_2_30gg, Feriti: $real_feriti");
+        // SEMPRE mostra il riepilogo calcolato automaticamente
+        $riepilogo_message = sprintf(
+            __('📊 RIEPILOGO AUTOMATICO CALCOLATO: Feriti: %d, Morti entro 24h: %d, Morti dal 2° al 30° giorno: %d', 'incidenti-stradali'),
+            $real_feriti,
+            $real_morti_24h, 
+            $real_morti_2_30gg
+        );
 
-        // Calcola totale morti per il messaggio
-        $total_morti = $real_morti_24h + $real_morti_2_30gg;
-
-        // Aggiorna il messaggio di errore per mostrare il totale
-        if (!empty($errors)) {
-            // Modifica il primo errore per includere il riepilogo
-            array_unshift($errors, sprintf(
-                __('Riepilogo calcolato automaticamente: Feriti: %d, Morti entro 24h: %d, Morti dal 2° al 30° giorno: %d', 'incidenti-stradali'),
-                $real_feriti,
-                $real_morti_24h, 
-                $real_morti_2_30gg
-            ));
-        }
+        // Aggiungi sempre il messaggio di riepilogo come prima voce
+        $errors[] = $riepilogo_message;
         
         // Leggi valori inseriti nel riepilogo
         $riepilogo_morti_24h = isset($_POST['riepilogo_morti_24h']) ? (int) $_POST['riepilogo_morti_24h'] : 0;
@@ -563,7 +550,7 @@ class IncidentiValidation {
         // Conta conducenti
         for ($i = 1; $i <= 3; $i++) {
             $esito = isset($_POST["conducente_{$i}_esito"]) ? $_POST["conducente_{$i}_esito"] : '';
-            if (!empty($esito) && in_array($esito, [$esito_type, strval($esito_type)])) {
+            if (!empty($esito) && ($esito == $esito_type || $esito == strval($esito_type))) {
                 $count++;
             }
         }
@@ -572,7 +559,7 @@ class IncidentiValidation {
         $num_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? (int) $_POST['numero_pedoni_coinvolti'] : 0;
         for ($i = 1; $i <= $num_pedoni; $i++) {
             $esito = isset($_POST["pedone_{$i}_esito"]) ? $_POST["pedone_{$i}_esito"] : '';
-            if (!empty($esito) && in_array($esito, [$esito_type, strval($esito_type)])) {
+            if (!empty($esito) && ($esito == $esito_type || $esito == strval($esito_type))) {
                 $count++;
             }
         }
@@ -584,8 +571,38 @@ class IncidentiValidation {
             $num_trasportati = isset($_POST["veicolo_{$v}_numero_trasportati"]) ? (int) $_POST["veicolo_{$v}_numero_trasportati"] : 0;
             for ($t = 1; $t <= $num_trasportati && $t <= 4; $t++) {
                 $esito = isset($_POST["veicolo_{$v}_trasportato_{$t}_esito"]) ? $_POST["veicolo_{$v}_trasportato_{$t}_esito"] : '';
-                if (!empty($esito) && in_array($esito, [$esito_type, strval($esito_type)])) {
+                if (!empty($esito) && ($esito == $esito_type || $esito == strval($esito_type))) {
                     $count++;
+                }
+            }
+        }
+
+        // Per morti entro 24h, includi anche esito "1" (Morti sul colpo)
+        if ($esito_type == '3' || $esito_type == 3) {
+            // Conta conducenti con esito "1" (morti immediati)
+            for ($i = 1; $i <= 3; $i++) {
+                $esito = isset($_POST["conducente_{$i}_esito"]) ? $_POST["conducente_{$i}_esito"] : '';
+                if (!empty($esito) && ($esito == '1' || $esito == 1)) {
+                    $count++;
+                }
+            }
+            
+            // Conta pedoni con esito "1"
+            for ($i = 1; $i <= $num_pedoni; $i++) {
+                $esito = isset($_POST["pedone_{$i}_esito"]) ? $_POST["pedone_{$i}_esito"] : '';
+                if (!empty($esito) && ($esito == '1' || $esito == 1)) {
+                    $count++;
+                }
+            }
+            
+            // Conta trasportati con esito "1"
+            for ($v = 1; $v <= $num_veicoli; $v++) {
+                $num_trasportati = isset($_POST["veicolo_{$v}_numero_trasportati"]) ? (int) $_POST["veicolo_{$v}_numero_trasportati"] : 0;
+                for ($t = 1; $t <= $num_trasportati && $t <= 4; $t++) {
+                    $esito = isset($_POST["veicolo_{$v}_trasportato_{$t}_esito"]) ? $_POST["veicolo_{$v}_trasportato_{$t}_esito"] : '';
+                    if (!empty($esito) && ($esito == '1' || $esito == 1)) {
+                        $count++;
+                    }
                 }
             }
         }

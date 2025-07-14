@@ -503,6 +503,24 @@ class IncidentiValidation {
         $real_morti_2_30gg = $this->count_esito_by_type('4');
         $real_feriti = $this->count_esito_by_type('2');
         
+
+        // Debug temporaneo per verificare il conteggio
+        error_log("DEBUG VALIDATION - Morti 24h: $real_morti_24h, Morti 2-30gg: $real_morti_2_30gg, Feriti: $real_feriti");
+
+        // Calcola totale morti per il messaggio
+        $total_morti = $real_morti_24h + $real_morti_2_30gg;
+
+        // Aggiorna il messaggio di errore per mostrare il totale
+        if (!empty($errors)) {
+            // Modifica il primo errore per includere il riepilogo
+            array_unshift($errors, sprintf(
+                __('Riepilogo calcolato automaticamente: Feriti: %d, Morti entro 24h: %d, Morti dal 2° al 30° giorno: %d', 'incidenti-stradali'),
+                $real_feriti,
+                $real_morti_24h, 
+                $real_morti_2_30gg
+            ));
+        }
+        
         // Leggi valori inseriti nel riepilogo
         $riepilogo_morti_24h = isset($_POST['riepilogo_morti_24h']) ? (int) $_POST['riepilogo_morti_24h'] : 0;
         $riepilogo_morti_2_30gg = isset($_POST['riepilogo_morti_2_30gg']) ? (int) $_POST['riepilogo_morti_2_30gg'] : 0;
@@ -545,7 +563,7 @@ class IncidentiValidation {
         // Conta conducenti
         for ($i = 1; $i <= 3; $i++) {
             $esito = isset($_POST["conducente_{$i}_esito"]) ? $_POST["conducente_{$i}_esito"] : '';
-            if ($esito == $esito_type) {
+            if (!empty($esito) && in_array($esito, [$esito_type, strval($esito_type)])) {
                 $count++;
             }
         }
@@ -554,7 +572,7 @@ class IncidentiValidation {
         $num_pedoni = isset($_POST['numero_pedoni_coinvolti']) ? (int) $_POST['numero_pedoni_coinvolti'] : 0;
         for ($i = 1; $i <= $num_pedoni; $i++) {
             $esito = isset($_POST["pedone_{$i}_esito"]) ? $_POST["pedone_{$i}_esito"] : '';
-            if ($esito == $esito_type) {
+            if (!empty($esito) && in_array($esito, [$esito_type, strval($esito_type)])) {
                 $count++;
             }
         }
@@ -566,31 +584,31 @@ class IncidentiValidation {
             $num_trasportati = isset($_POST["veicolo_{$v}_numero_trasportati"]) ? (int) $_POST["veicolo_{$v}_numero_trasportati"] : 0;
             for ($t = 1; $t <= $num_trasportati && $t <= 4; $t++) {
                 $esito = isset($_POST["veicolo_{$v}_trasportato_{$t}_esito"]) ? $_POST["veicolo_{$v}_trasportato_{$t}_esito"] : '';
-                if ($esito == $esito_type) {
+                if (!empty($esito) && in_array($esito, [$esito_type, strval($esito_type)])) {
                     $count++;
                 }
             }
         }
 
-        // Conta altri morti e feriti dei veicoli
+        // Conta altri morti e feriti dei veicoli (solo per morti entro 24h e feriti)
         for ($v = 1; $v <= $num_veicoli; $v++) {
-            if ($esito_type == '3') { // Morti entro 24h
+            if ($esito_type == '3' || $esito_type == 3) { // Morti entro 24h
                 $altri_morti_m = isset($_POST["veicolo_{$v}_altri_morti_maschi"]) ? (int) $_POST["veicolo_{$v}_altri_morti_maschi"] : 0;
                 $altri_morti_f = isset($_POST["veicolo_{$v}_altri_morti_femmine"]) ? (int) $_POST["veicolo_{$v}_altri_morti_femmine"] : 0;
                 $count += $altri_morti_m + $altri_morti_f;
-            } elseif ($esito_type == '2') { // Feriti
+            } elseif ($esito_type == '2' || $esito_type == 2) { // Feriti
                 $altri_feriti_m = isset($_POST["veicolo_{$v}_altri_feriti_maschi"]) ? (int) $_POST["veicolo_{$v}_altri_feriti_maschi"] : 0;
                 $altri_feriti_f = isset($_POST["veicolo_{$v}_altri_feriti_femmine"]) ? (int) $_POST["veicolo_{$v}_altri_feriti_femmine"] : 0;
                 $count += $altri_feriti_m + $altri_feriti_f;
             }
         }
 
-        // Conta altri veicoli generali
-        if ($esito_type == '3') {
+        // Conta altri veicoli generali (solo per morti entro 24h e feriti)
+        if ($esito_type == '3' || $esito_type == 3) { // Morti entro 24h
             $altri_morti_m_gen = isset($_POST['altri_morti_maschi']) ? (int) $_POST['altri_morti_maschi'] : 0;
             $altri_morti_f_gen = isset($_POST['altri_morti_femmine']) ? (int) $_POST['altri_morti_femmine'] : 0;
             $count += $altri_morti_m_gen + $altri_morti_f_gen;
-        } elseif ($esito_type == '2') {
+        } elseif ($esito_type == '2' || $esito_type == 2) { // Feriti
             $altri_feriti_m_gen = isset($_POST['altri_feriti_maschi']) ? (int) $_POST['altri_feriti_maschi'] : 0;
             $altri_feriti_f_gen = isset($_POST['altri_feriti_femmine']) ? (int) $_POST['altri_feriti_femmine'] : 0;
             $count += $altri_feriti_m_gen + $altri_feriti_f_gen;

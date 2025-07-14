@@ -571,6 +571,30 @@ class IncidentiValidation {
                 }
             }
         }
+
+        // Conta altri morti e feriti dei veicoli
+        for ($v = 1; $v <= $num_veicoli; $v++) {
+            if ($esito_type == '3') { // Morti entro 24h
+                $altri_morti_m = isset($_POST["veicolo_{$v}_altri_morti_maschi"]) ? (int) $_POST["veicolo_{$v}_altri_morti_maschi"] : 0;
+                $altri_morti_f = isset($_POST["veicolo_{$v}_altri_morti_femmine"]) ? (int) $_POST["veicolo_{$v}_altri_morti_femmine"] : 0;
+                $count += $altri_morti_m + $altri_morti_f;
+            } elseif ($esito_type == '2') { // Feriti
+                $altri_feriti_m = isset($_POST["veicolo_{$v}_altri_feriti_maschi"]) ? (int) $_POST["veicolo_{$v}_altri_feriti_maschi"] : 0;
+                $altri_feriti_f = isset($_POST["veicolo_{$v}_altri_feriti_femmine"]) ? (int) $_POST["veicolo_{$v}_altri_feriti_femmine"] : 0;
+                $count += $altri_feriti_m + $altri_feriti_f;
+            }
+        }
+
+        // Conta altri veicoli generali
+        if ($esito_type == '3') {
+            $altri_morti_m_gen = isset($_POST['altri_morti_maschi']) ? (int) $_POST['altri_morti_maschi'] : 0;
+            $altri_morti_f_gen = isset($_POST['altri_morti_femmine']) ? (int) $_POST['altri_morti_femmine'] : 0;
+            $count += $altri_morti_m_gen + $altri_morti_f_gen;
+        } elseif ($esito_type == '2') {
+            $altri_feriti_m_gen = isset($_POST['altri_feriti_maschi']) ? (int) $_POST['altri_feriti_maschi'] : 0;
+            $altri_feriti_f_gen = isset($_POST['altri_feriti_femmine']) ? (int) $_POST['altri_feriti_femmine'] : 0;
+            $count += $altri_feriti_m_gen + $altri_feriti_f_gen;
+        }
         
         return $count;
     }

@@ -1264,6 +1264,34 @@ class IncidentiShortcodes {
                 }
             }
 
+            // Conta pedoni
+            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
+            for ($i = 1; $i <= $num_pedoni; $i++) {
+                $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
+                if ($esito == '3' || $esito == '4') $morti++;
+                if ($esito == '2') $feriti++;
+            }
+
+            // Conta altri morti e feriti per veicolo
+            for ($i = 1; $i <= 3; $i++) {
+                $altri_morti_m = get_post_meta($post_id, 'veicolo_' . $i . '_altri_morti_maschi', true) ?: 0;
+                $altri_morti_f = get_post_meta($post_id, 'veicolo_' . $i . '_altri_morti_femmine', true) ?: 0;
+                $altri_feriti_m = get_post_meta($post_id, 'veicolo_' . $i . '_altri_feriti_maschi', true) ?: 0;
+                $altri_feriti_f = get_post_meta($post_id, 'veicolo_' . $i . '_altri_feriti_femmine', true) ?: 0;
+                
+                $morti += intval($altri_morti_m) + intval($altri_morti_f);
+                $feriti += intval($altri_feriti_m) + intval($altri_feriti_f);
+            }
+
+            // Conta altri veicoli generali
+            $altri_morti_m_gen = get_post_meta($post_id, 'altri_morti_maschi', true) ?: 0;
+            $altri_morti_f_gen = get_post_meta($post_id, 'altri_morti_femmine', true) ?: 0;
+            $altri_feriti_m_gen = get_post_meta($post_id, 'altri_feriti_maschi', true) ?: 0;
+            $altri_feriti_f_gen = get_post_meta($post_id, 'altri_feriti_femmine', true) ?: 0;
+
+            $morti += intval($altri_morti_m_gen) + intval($altri_morti_f_gen);
+            $feriti += intval($altri_feriti_m_gen) + intval($altri_feriti_f_gen);
+
             // Applica filtro tipologia infortunati se attivo
             if ($filtro_infortunati_attivo) {
                 $include_incident = false;
@@ -1652,7 +1680,7 @@ class IncidentiShortcodes {
                 if ($esito == '3' || $esito == '4') $morti++;
                 if ($esito == '2') $feriti++;
             }
-            
+
             // Conta pedoni
             $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
             for ($i = 1; $i <= $num_pedoni; $i++) {
@@ -1661,15 +1689,35 @@ class IncidentiShortcodes {
                 if ($esito == '2') $feriti++;
             }
 
-            // Conta passeggeri
+            // Conta trasportati (passeggeri) per ogni veicolo
             for ($i = 1; $i <= 3; $i++) {
-                $num_passeggeri = get_post_meta($post_id, 'veicolo_' . $i . '_numero_passeggeri', true) ?: 0;
-                for ($j = 1; $j <= intval($num_passeggeri); $j++) {
-                    $esito = get_post_meta($post_id, 'passeggero_' . $i . '_' . $j . '_esito', true);
+                $num_trasportati = get_post_meta($post_id, 'veicolo_' . $i . '_numero_trasportati', true) ?: 0;
+                for ($j = 1; $j <= intval($num_trasportati) && $j <= 4; $j++) {
+                    $esito = get_post_meta($post_id, 'veicolo_' . $i . '_trasportato_' . $j . '_esito', true);
                     if ($esito == '3' || $esito == '4') $morti++;
                     if ($esito == '2') $feriti++;
                 }
             }
+
+            // Conta altri morti e feriti per veicolo (se presenti)
+            for ($i = 1; $i <= 3; $i++) {
+                $altri_morti_m = get_post_meta($post_id, 'veicolo_' . $i . '_altri_morti_maschi', true) ?: 0;
+                $altri_morti_f = get_post_meta($post_id, 'veicolo_' . $i . '_altri_morti_femmine', true) ?: 0;
+                $altri_feriti_m = get_post_meta($post_id, 'veicolo_' . $i . '_altri_feriti_maschi', true) ?: 0;
+                $altri_feriti_f = get_post_meta($post_id, 'veicolo_' . $i . '_altri_feriti_femmine', true) ?: 0;
+                
+                $morti += intval($altri_morti_m) + intval($altri_morti_f);
+                $feriti += intval($altri_feriti_m) + intval($altri_feriti_f);
+            }
+
+            // Conta altri veicoli generali (se presenti)
+            $altri_morti_m_gen = get_post_meta($post_id, 'altri_morti_maschi', true) ?: 0;
+            $altri_morti_f_gen = get_post_meta($post_id, 'altri_morti_femmine', true) ?: 0;
+            $altri_feriti_m_gen = get_post_meta($post_id, 'altri_feriti_maschi', true) ?: 0;
+            $altri_feriti_f_gen = get_post_meta($post_id, 'altri_feriti_femmine', true) ?: 0;
+
+            $morti += intval($altri_morti_m_gen) + intval($altri_morti_f_gen);
+            $feriti += intval($altri_feriti_m_gen) + intval($altri_feriti_f_gen);
             
             $result[] = array(
                 'id' => $post_id,

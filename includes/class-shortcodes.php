@@ -1264,14 +1264,6 @@ class IncidentiShortcodes {
                 }
             }
 
-            // Conta pedoni
-            $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
-            for ($i = 1; $i <= $num_pedoni; $i++) {
-                $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
-                if ($esito == '3' || $esito == '4') $morti++;
-                if ($esito == '2') $feriti++;
-            }
-
             // Conta altri morti e feriti per veicolo
             for ($i = 1; $i <= 3; $i++) {
                 $altri_morti_m = get_post_meta($post_id, 'veicolo_' . $i . '_altri_morti_maschi', true) ?: 0;

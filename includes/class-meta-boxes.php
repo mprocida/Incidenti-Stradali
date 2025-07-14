@@ -4287,15 +4287,33 @@ class IncidentiMetaBoxes {
             'veicolo_1_trasportato_3_eta', 'veicolo_1_trasportato_3_sesso', 'veicolo_1_trasportato_3_esito',
             'veicolo_1_trasportato_4_eta', 'veicolo_1_trasportato_4_sesso', 'veicolo_1_trasportato_4_esito',
 
+            'veicolo_1_trasportato_5_eta', 'veicolo_1_trasportato_5_sesso', 'veicolo_1_trasportato_5_esito',
+            'veicolo_1_trasportato_6_eta', 'veicolo_1_trasportato_6_sesso', 'veicolo_1_trasportato_6_esito',
+            'veicolo_1_trasportato_7_eta', 'veicolo_1_trasportato_7_sesso', 'veicolo_1_trasportato_7_esito',
+            'veicolo_1_trasportato_8_eta', 'veicolo_1_trasportato_8_sesso', 'veicolo_1_trasportato_8_esito',
+            'veicolo_1_trasportato_9_eta', 'veicolo_1_trasportato_9_sesso', 'veicolo_1_trasportato_9_esito',
+
             'veicolo_2_trasportato_1_eta', 'veicolo_2_trasportato_1_sesso', 'veicolo_2_trasportato_1_esito',
             'veicolo_2_trasportato_2_eta', 'veicolo_2_trasportato_2_sesso', 'veicolo_2_trasportato_2_esito',
             'veicolo_2_trasportato_3_eta', 'veicolo_2_trasportato_3_sesso', 'veicolo_2_trasportato_3_esito',
             'veicolo_2_trasportato_4_eta', 'veicolo_2_trasportato_4_sesso', 'veicolo_2_trasportato_4_esito',
 
+            'veicolo_2_trasportato_5_eta', 'veicolo_2_trasportato_5_sesso', 'veicolo_2_trasportato_5_esito',
+            'veicolo_2_trasportato_6_eta', 'veicolo_2_trasportato_6_sesso', 'veicolo_2_trasportato_6_esito',
+            'veicolo_2_trasportato_7_eta', 'veicolo_2_trasportato_7_sesso', 'veicolo_2_trasportato_7_esito',
+            'veicolo_2_trasportato_8_eta', 'veicolo_2_trasportato_8_sesso', 'veicolo_2_trasportato_8_esito',
+            'veicolo_2_trasportato_9_eta', 'veicolo_2_trasportato_9_sesso', 'veicolo_2_trasportato_9_esito',
+
             'veicolo_3_trasportato_1_eta', 'veicolo_3_trasportato_1_sesso', 'veicolo_3_trasportato_1_esito',
             'veicolo_3_trasportato_2_eta', 'veicolo_3_trasportato_2_sesso', 'veicolo_3_trasportato_2_esito',
             'veicolo_3_trasportato_3_eta', 'veicolo_3_trasportato_3_sesso', 'veicolo_3_trasportato_3_esito',
             'veicolo_3_trasportato_4_eta', 'veicolo_3_trasportato_4_sesso', 'veicolo_3_trasportato_4_esito',
+
+            'veicolo_3_trasportato_5_eta', 'veicolo_3_trasportato_5_sesso', 'veicolo_3_trasportato_5_esito',
+            'veicolo_3_trasportato_6_eta', 'veicolo_3_trasportato_6_sesso', 'veicolo_3_trasportato_6_esito',
+            'veicolo_3_trasportato_7_eta', 'veicolo_3_trasportato_7_sesso', 'veicolo_3_trasportato_7_esito',
+            'veicolo_3_trasportato_8_eta', 'veicolo_3_trasportato_8_sesso', 'veicolo_3_trasportato_8_esito',
+            'veicolo_3_trasportato_9_eta', 'veicolo_3_trasportato_9_sesso', 'veicolo_3_trasportato_9_esito',
 
             // Altri passeggeri infortunati per veicolo
             'veicolo_1_altri_morti_maschi', 'veicolo_1_altri_morti_femmine',
@@ -4416,8 +4434,8 @@ class IncidentiMetaBoxes {
                     update_post_meta($post_id, $tipo_patente_key, array());
                 }
                 
-                // NUOVO: Salva i trasportati per ogni veicolo (fino a 4 trasportati)
-                for ($t = 1; $t <= 4; $t++) {
+                // MODIFICATO: Salva i trasportati per ogni veicolo (fino a 9 trasportati come da tracciato ISTAT)
+                for ($t = 1; $t <= 9; $t++) {
                     $trasportato_fields = array('eta', 'sesso', 'esito', 'sedile', 'dettaglio_sedile');
                     foreach ($trasportato_fields as $field) {
                         $key = 'veicolo_' . $i . '_trasportato_' . $t . '_' . $field;
@@ -4438,8 +4456,8 @@ class IncidentiMetaBoxes {
                 );
                 
                 
-                // Aggiungi campi trasportati da eliminare
-                for ($t = 1; $t <= 4; $t++) {
+                // MODIFICATO: Aggiungi campi trasportati da eliminare (fino a 9 trasportati)
+                for ($t = 1; $t <= 9; $t++) {
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_eta';
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_sesso';
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_esito';

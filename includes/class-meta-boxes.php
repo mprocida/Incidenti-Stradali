@@ -4207,7 +4207,7 @@ class IncidentiMetaBoxes {
             /*--------------------------------*/
             
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada',
-            'circostanza_tipo', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
+            'circostanza_tipo', 'condizioni_aggiuntive', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
             'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
             'cilindrata_veicolo_c', 'peso_pieno_carico_a', 'peso_pieno_carico_b', 'peso_pieno_carico_c',
             // Campi nominativi morti
@@ -4406,7 +4406,7 @@ class IncidentiMetaBoxes {
         for ($i = 1; $i <= 3; $i++) {
             if ($i <= $numero_veicoli) {
                 $vehicle_fields = array('tipo', 'targa', 'sigla_estero', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
-                $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro', 'tipologia_incidente');
+                $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro', 'anno_patente', 'tipologia_incidente');
                 // Escluso tipo_patente perché è un array di checkbox gestito separatamente
 
                 foreach ($vehicle_fields as $field) {
@@ -4427,7 +4427,7 @@ class IncidentiMetaBoxes {
                 $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
                 if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
                     $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
-                    $values = array_filter($values); // Rimuove valori vuoti
+                    $values = array_filter($values, function($val) { return $val !== ''; }); // Rimuove valori vuoti ma mantiene lo '0'
                     update_post_meta($post_id, $tipo_patente_key, $values);
                 } else {
                     // Se nessun tipo patente selezionato, salva array vuoto

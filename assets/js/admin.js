@@ -1121,7 +1121,7 @@ jQuery(document).ready(function($) {
     /**
      * Calcolo automatico riepilogo infortunati
      */
-    function calcolaRiepilogoInfortunati() {
+    /* function calcolaRiepilogoInfortunati() {
         var feriti = 0;
         var morti24h = 0;
         var morti2_30gg = 0;
@@ -1150,24 +1150,25 @@ jQuery(document).ready(function($) {
             morti24h: morti24h,
             morti2_30gg: morti2_30gg
         };
-    }
+    } */
 
     function mostraConfermaPubblicazione() {
-        var riepilogo = calcolaRiepilogoInfortunati();
+        /* var riepilogo = calcolaRiepilogoInfortunati();
         var messaggio = 'Riepilogo calcolato automaticamente:\n\n';
         messaggio += 'Feriti: ' + riepilogo.feriti + '\n';
         messaggio += 'Morti entro 24h: ' + riepilogo.morti24h + '\n';
         messaggio += 'Morti dal 2° al 30° giorno: ' + riepilogo.morti2_30gg + '\n\n';
-        messaggio += 'Vuoi procedere con la pubblicazione?';
+        messaggio += 'Vuoi procedere con la pubblicazione?'; */
+        var messaggio = 'Vuoi procedere con la pubblicazione?';
         
         if (confirm(messaggio)) {
             // Aggiorna i campi nascosti
-            $('#riepilogo_feriti').val(riepilogo.feriti);
+            /* $('#riepilogo_feriti').val(riepilogo.feriti);
             $('#riepilogo_morti_24h').val(riepilogo.morti24h);
             $('#riepilogo_morti_2_30gg').val(riepilogo.morti2_30gg);
             
             // Salva le variabili globali per uso successivo
-            window.riepilogoCalcolato = riepilogo;
+            window.riepilogoCalcolato = riepilogo; */
             
             return true;
         }
@@ -1188,10 +1189,17 @@ jQuery(document).ready(function($) {
         
         // Intercetta anche "Salva bozza" se necessario
         $('#save-post').on('click', function(e) {
-            var riepilogo = calcolaRiepilogoInfortunati();
+            /* var riepilogo = calcolaRiepilogoInfortunati();
             $('#riepilogo_feriti').val(riepilogo.feriti);
             $('#riepilogo_morti_24h').val(riepilogo.morti24h);
-            $('#riepilogo_morti_2_30gg').val(riepilogo.morti2_30gg);
+            $('#riepilogo_morti_2_30gg').val(riepilogo.morti2_30gg); */
+            e.preventDefault();
+            
+            if (mostraConfermaPubblicazione()) {
+                // Rimuovi l'event listener per evitare loop infiniti
+                $(this).off('click');
+                $(this).click();
+            }
         });
     });
 })(jQuery);

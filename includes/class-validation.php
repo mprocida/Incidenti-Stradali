@@ -214,11 +214,11 @@ class IncidentiValidation {
             }
         }
 
-        // Validazione Riepilogo Infortunati
+        /* // Validazione Riepilogo Infortunati
         $riepilogo_errors = $this->validate_riepilogo_infortunati($postarr['ID'] ?? 0);
         if (!empty($riepilogo_errors)) {
             $errors = array_merge($errors, $riepilogo_errors);
-        }
+        } */
         
         // Store errors in transient to display later
         if (!empty($errors)) {
@@ -489,7 +489,7 @@ class IncidentiValidation {
     /**
      * Validazione del riepilogo infortunati
      */
-    public function validate_riepilogo_infortunati($post_id) {
+    /* public function validate_riepilogo_infortunati($post_id) {
         $errors = array();
         
         // Conta reali infortunati dai campi del modulo
@@ -539,7 +539,7 @@ class IncidentiValidation {
         }
         
         return $errors;
-    }
+    } */
     
     /**
      * Conta le persone per esito specifico dai campi del modulo

@@ -469,13 +469,24 @@ jQuery(document).ready(function($) {
             var $numeroStradaField = $('#numero_strada');
             var $progressivaRow = $('#progressiva_row');
             
-            // Tipi di strada che richiedono il numero strada
-            var tipiConNumero = ['2', '3', '5', '6'];
+            console.log('Admin.js - Tipo strada selezionato:', tipoStrada); // Debug
+            
+            // Tipi di strada che richiedono il numero strada (CORRETTI - usando stringhe)
+            var tipiConNumero = [
+                'Provinciale entro l\'abitato',
+                'Statale entro l\'abitato', 
+                'Strada provinciale fuori dell\'abitato',
+                'Strada statale fuori dell\'abitato'
+            ];
+            
+            console.log('Admin.js - Verifica inclusione:', tipiConNumero.includes(tipoStrada)); // Debug
             
             if (tipiConNumero.includes(tipoStrada)) {
+                console.log('Admin.js - Mostrando numero strada'); // Debug
                 $numeroStradaRow.show();
                 $numeroStradaField.prop('required', true);
             } else {
+                console.log('Admin.js - Nascondendo numero strada'); // Debug
                 $numeroStradaRow.hide();
                 $numeroStradaField.prop('required', false).val('');
             }

@@ -1216,10 +1216,13 @@ class IncidentiMetaBoxes {
                     var tipoStrada = $('#tipo_strada').val();
                     var numeroStradaRow = $('#numero_strada_row');
                     
-                    // Tipi di strada che richiedono il numero strada:
-                    // Nell'abitato: 2 (Provinciale entro l'abitato), 3 (Statale entro l'abitato), 0 (Regionale entro l'abitato)
-                    // Fuori dall'abitato: 5 (Provinciale), 6 (Statale), 7 (Autostrada), 9 (Regionale)
-                    var tipiConNumero = ['2', '3', '5', '6'];
+                    // Tipi di strada che richiedono il numero strada (usando i valori stringa effettivi)
+                    var tipiConNumero = [
+                        'Provinciale entro l\'abitato',
+                        'Statale entro l\'abitato', 
+                        'Strada provinciale fuori dell\'abitato',
+                        'Strada statale fuori dell\'abitato'
+                    ];
                     
                     if (tipiConNumero.includes(tipoStrada)) {
                         numeroStradaRow.show();
@@ -1230,7 +1233,12 @@ class IncidentiMetaBoxes {
                     
                     // Logica esistente per nell_abitato
                     if (tipoStrada) {
-                        var nellAbitato = ['1', '2', '3', '0'].includes(tipoStrada) ? '1' : '0';
+                        var nellAbitato = [
+                            'Strada urbana',
+                            'Provinciale entro l\'abitato', 
+                            'Statale entro l\'abitato',
+                            'Regionale entro l\'abitato'
+                        ].includes(tipoStrada) ? '1' : '0';
                         $('input[name="nell_abitato"]').remove();
                         $('<input>').attr({
                             type: 'hidden',

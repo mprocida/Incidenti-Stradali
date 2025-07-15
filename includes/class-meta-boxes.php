@@ -1170,7 +1170,10 @@ class IncidentiMetaBoxes {
             <tr id="numero_strada_row">
                 <th><label for="numero_strada"><?php _e('Numero Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="text" id="numero_strada" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text">
+                    <input type="text" id="numero_strada_text" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text" style="display: none;">
+                    <select id="numero_strada_select" name="numero_strada_select" class="regular-text" style="display: none;">
+                        <option value="">Seleziona strada provinciale</option>
+                    </select>
                     <p class="description"><?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
@@ -1682,7 +1685,7 @@ class IncidentiMetaBoxes {
                     });
 
                     // Ripristina il valore salvato se presente
-                    var savedValue = $('#numero_strada_select').data('saved-value');
+                    var savedValue = $('#numero_strada_select').data('saved-value') || $('#numero_strada_text').val();
                     if (savedValue) {
                         $('#numero_strada_select').val(savedValue);
                     }

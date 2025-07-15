@@ -4405,13 +4405,27 @@ class IncidentiMetaBoxes {
             }
         }
         
+        // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI ===
+        // IMPORTANTE: Gestisci tipo_patente PRIMA del loop principale
+        for ($i = 1; $i <= 3; $i++) {
+            $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
+            if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
+                $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
+                $values = array_filter($values); // Rimuove valori vuoti
+                update_post_meta($post_id, $tipo_patente_key, $values);
+            } else {
+                // Se nessun tipo patente selezionato, salva array vuoto
+                update_post_meta($post_id, $tipo_patente_key, array());
+            }
+        }
+
         // Save vehicle and driver fields
         $numero_veicoli = isset($_POST['numero_veicoli_coinvolti']) ? intval($_POST['numero_veicoli_coinvolti']) : 1;
         for ($i = 1; $i <= 3; $i++) {
             if ($i <= $numero_veicoli) {
                 $vehicle_fields = array('tipo', 'targa', 'sigla_estero', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
                 $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro', 'tipologia_incidente', 'anno_patente');
-                // tipo_patente viene gestito separatamente come array di checkbox
+                // tipo_patente già gestito sopra
 
                 foreach ($vehicle_fields as $field) {
                     $key = 'veicolo_' . $i . '_' . $field;
@@ -4426,18 +4440,7 @@ class IncidentiMetaBoxes {
                         update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
                     }
                 }
-
-                // === GESTIONE SPECIFICA TIPO_PATENTE (ARRAY) ===
-                $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
-                if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
-                    $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
-                    $values = array_filter($values); // Rimuove valori vuoti
-                    update_post_meta($post_id, $tipo_patente_key, $values);
-                } else {
-                    // Se nessun tipo patente selezionato, salva array vuoto
-                    update_post_meta($post_id, $tipo_patente_key, array());
-                }
-                
+            
                 // MODIFICATO: Salva i trasportati per ogni veicolo (fino a 9 trasportati come da tracciato ISTAT)
                 for ($t = 1; $t <= 9; $t++) {
                     $trasportato_fields = array('eta', 'sesso', 'esito', 'sedile', 'dettaglio_sedile');
@@ -4476,10 +4479,13 @@ class IncidentiMetaBoxes {
                 // NUOVO: Elimina anche i campi dei conducenti non utilizzati
                 $conducente_fields_to_delete = array(
                     'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 'conducente_' . $i . '_esito',
-                    'conducente_' . $i . '_tipo_patente', 'conducente_' . $i . '_anno_patente',
+                    'conducente_' . $i . '_anno_patente',
                     'conducente_' . $i . '_nazionalita', 'conducente_' . $i . '_nazionalita_altro',
                     'conducente_' . $i . '_tipologia_incidente'
                 );
+                
+                // Elimina separatamente il tipo_patente (che è un array)
+                delete_post_meta($post_id, 'conducente_' . $i . '_tipo_patente');
                 
                 foreach ($conducente_fields_to_delete as $field) {
                     delete_post_meta($post_id, $field);

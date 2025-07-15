@@ -4411,7 +4411,7 @@ class IncidentiMetaBoxes {
             if ($i <= $numero_veicoli) {
                 $vehicle_fields = array('tipo', 'targa', 'sigla_estero', 'anno_immatricolazione', 'cilindrata', 'peso_totale');
                 $driver_fields = array('eta', 'sesso', 'esito', 'rilascio_patente', 'tipo_cittadinanza', 'nazionalita', 'nazionalita_altro', 'tipologia_incidente', 'anno_patente');
-                // tipo_patente già gestito sopra
+                // tipo_patente viene gestito separatamente perché è un array
 
                 foreach ($vehicle_fields as $field) {
                     $key = 'veicolo_' . $i . '_' . $field;
@@ -4423,7 +4423,10 @@ class IncidentiMetaBoxes {
                 foreach ($driver_fields as $field) {
                     $key = 'conducente_' . $i . '_' . $field;
                     if (isset($_POST[$key])) {
-                        update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
+                        // Skip tipo_patente qui perché viene gestito separatamente
+                        if ($field !== 'tipo_patente') {
+                            update_post_meta($post_id, $key, sanitize_text_field($_POST[$key]));
+                        }
                     }
                 }
             
@@ -4488,6 +4491,20 @@ class IncidentiMetaBoxes {
                 update_post_meta($post_id, $tipo_patente_key, $values);
             } else {
                 update_post_meta($post_id, $tipo_patente_key, array());
+            }
+        }
+
+        // === DEBUG TEMPORANEO PER TIPO_PATENTE ===
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            for ($i = 1; $i <= 3; $i++) {
+                $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
+                error_log("DEBUG SAVE - Campo: {$tipo_patente_key}");
+                error_log("DEBUG SAVE - POST isset: " . (isset($_POST[$tipo_patente_key]) ? 'SI' : 'NO'));
+                if (isset($_POST[$tipo_patente_key])) {
+                    error_log("DEBUG SAVE - POST value: " . print_r($_POST[$tipo_patente_key], true));
+                }
+                $saved_value = get_post_meta($post_id, $tipo_patente_key, true);
+                error_log("DEBUG SAVE - Saved value: " . print_r($saved_value, true));
             }
         }
 

@@ -4405,27 +4405,6 @@ class IncidentiMetaBoxes {
             }
         }
         
-        // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI ===
-        // IMPORTANTE: Gestisci tipo_patente PRIMA del loop principale
-        for ($i = 1; $i <= 3; $i++) {
-            $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
-            
-            // DEBUG: Verifica cosa arriva dal form
-            error_log("DEBUG - Checking for key: $tipo_patente_key");
-            error_log("DEBUG - POST data for this key: " . print_r($_POST[$tipo_patente_key] ?? 'NOT SET', true));
-            
-            if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
-                $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
-                $values = array_filter($values); // Rimuove valori vuoti
-                update_post_meta($post_id, $tipo_patente_key, $values);
-                error_log("DEBUG - Saved tipo_patente for conducente $i: " . print_r($values, true));
-            } else {
-                // Se nessun tipo patente selezionato, salva array vuoto
-                update_post_meta($post_id, $tipo_patente_key, array());
-                error_log("DEBUG - No tipo_patente selected for conducente $i, saved empty array");
-            }
-        }
-
         // Save vehicle and driver fields
         $numero_veicoli = isset($_POST['numero_veicoli_coinvolti']) ? intval($_POST['numero_veicoli_coinvolti']) : 1;
         for ($i = 1; $i <= 3; $i++) {
@@ -4488,17 +4467,30 @@ class IncidentiMetaBoxes {
                     'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 'conducente_' . $i . '_esito',
                     'conducente_' . $i . '_anno_patente',
                     'conducente_' . $i . '_nazionalita', 'conducente_' . $i . '_nazionalita_altro',
-                    'conducente_' . $i . '_tipologia_incidente'
+                    'conducente_' . $i . '_tipologia_incidente',
+                    'conducente_' . $i . '_tipo_patente'
                 );
-                
-                // Elimina separatamente il tipo_patente (che è un array)
-                delete_post_meta($post_id, 'conducente_' . $i . '_tipo_patente');
+
+                // NON eliminare tipo_patente separatamente, è incluso nell'array sopra
                 
                 foreach ($conducente_fields_to_delete as $field) {
                     delete_post_meta($post_id, $field);
                 }
             }
         }
+
+        // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI (DOPO LOOP PRINCIPALE) ===
+        for ($i = 1; $i <= 3; $i++) {
+            $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
+            if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
+                $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
+                $values = array_filter($values);
+                update_post_meta($post_id, $tipo_patente_key, $values);
+            } else {
+                update_post_meta($post_id, $tipo_patente_key, array());
+            }
+        }
+
         
         // === GESTIONE CAMPI AGGIUNTIVI PER EXPORT ISTAT ===
         $additional_simple_fields = array(

@@ -2589,14 +2589,21 @@ class IncidentiMetaBoxes {
         
         // Render conducenti per ogni veicolo
         for ($i = 1; $i <= 3; $i++) {
-            $display = ($i <= $numero_veicoli) ? 'block' : 'none';
-            echo '<div id="conducente-' . $i . '" class="conducente-section" style="display: ' . $display . ';">';
-            echo '<h4>' . sprintf(__('Conducente Veicolo %s', 'incidenti-stradali'), chr(64 + $i)) . '</h4>';
-            
-            $this->render_single_conducente_fields($post, $i);
-            
-            echo '</div>';
-        }
+    // Per un nuovo post, mostra sempre almeno 2 conducenti per evitare problemi di visibilità
+    $is_new_post = (get_post_status($post->ID) === 'auto-draft');
+    if ($is_new_post) {
+        $display = ($i <= 2) ? 'block' : 'none'; // Mostra almeno 2 conducenti per i nuovi post
+    } else {
+        $display = ($i <= $numero_veicoli) ? 'block' : 'none';
+    }
+    
+    echo '<div id="conducente-' . $i . '" class="conducente-section" style="display: ' . $display . ';">';
+    echo '<h4>' . sprintf(__('Conducente Veicolo %s', 'incidenti-stradali'), chr(64 + $i)) . '</h4>';
+    
+    $this->render_single_conducente_fields($post, $i);
+    
+    echo '</div>';
+}
         
         // NUOVO: Sezione Trasportati
         echo '<h4>' . __('Trasportati', 'incidenti-stradali') . '</h4>';
@@ -2629,23 +2636,36 @@ class IncidentiMetaBoxes {
         ?>
         <script type="text/javascript">
         jQuery(document).ready(function($) {
-            // Funzione per aggiornare la visibilità dei conducenti
-            function updateConducentiVisibility() {
-                var numVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
-                
-                console.log('Aggiornamento conducenti - Numero veicoli:', numVeicoli); // Debug
-                
-                for (var i = 1; i <= 3; i++) {
-                    if (i <= numVeicoli) {
-                        $('#conducente-' + i).show();
-                    } else {
-                        $('#conducente-' + i).hide();
-                        // Pulisci i campi dei conducenti nascosti
-                        $('#conducente-' + i + ' input, #conducente-' + i + ' select').val('');
-                        $('#conducente-' + i + ' input[type="checkbox"]').prop('checked', false);
-                    }
-                }
+    // Funzione per aggiornare la visibilità dei conducenti
+    function updateConducentiVisibility() {
+        var numVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+        
+        console.log('Aggiornamento conducenti - Numero veicoli:', numVeicoli); // Debug
+               
+        for (var i = 1; i <= 3; i++) {
+            if (i <= numVeicoli) {
+                $('#conducente-' + i).show();
+                $('#conducente-' + i + ' input, #conducente-' + i + ' select').prop('disabled', false);
+            } else {
+                $('#conducente-' + i).hide();
+                // NON pulire i valori per preservare i dati già inseriti
             }
+        }
+    }
+
+     // Inizializzazione per nuovi post
+    if ($('body').hasClass('post-new-php')) {
+        // Per nuovi post, assicurati che i primi 2 conducenti siano visibili
+        $('#conducente-1, #conducente-2').show();
+        $('#conducente-1 input, #conducente-1 select').prop('disabled', false);
+        $('#conducente-2 input, #conducente-2 select').prop('disabled', false);
+        
+        // Imposta il numero di veicoli a 2 di default per nuovi post
+        if (!$('#numero_veicoli_coinvolti').val()) {
+            $('#numero_veicoli_coinvolti').val('2');
+        }
+    }
+
             
             // Gestione visibilità trasportati esistente
             function updateTrasportatiSections() {
@@ -4485,13 +4505,15 @@ class IncidentiMetaBoxes {
         // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI (DOPO LOOP PRINCIPALE) ===
         for ($i = 1; $i <= 3; $i++) {
             $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
-            if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
+           if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) 
+            {
                 $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
                 $values = array_filter($values);
                 update_post_meta($post_id, $tipo_patente_key, $values);
             } else {
-                update_post_meta($post_id, $tipo_patente_key, array());
+               update_post_meta($post_id, $tipo_patente_key, array());
             }
+   
         }
 
         

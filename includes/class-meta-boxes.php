@@ -4494,20 +4494,6 @@ class IncidentiMetaBoxes {
             }
         }
 
-        // === DEBUG TEMPORANEO PER TIPO_PATENTE ===
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            for ($i = 1; $i <= 3; $i++) {
-                $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
-                error_log("DEBUG SAVE - Campo: {$tipo_patente_key}");
-                error_log("DEBUG SAVE - POST isset: " . (isset($_POST[$tipo_patente_key]) ? 'SI' : 'NO'));
-                if (isset($_POST[$tipo_patente_key])) {
-                    error_log("DEBUG SAVE - POST value: " . print_r($_POST[$tipo_patente_key], true));
-                }
-                $saved_value = get_post_meta($post_id, $tipo_patente_key, true);
-                error_log("DEBUG SAVE - Saved value: " . print_r($saved_value, true));
-            }
-        }
-
         
         // === GESTIONE CAMPI AGGIUNTIVI PER EXPORT ISTAT ===
         $additional_simple_fields = array(

@@ -4505,15 +4505,16 @@ class IncidentiMetaBoxes {
         // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI (DOPO LOOP PRINCIPALE) ===
         for ($i = 1; $i <= 3; $i++) {
             $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
-           if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) 
-            {
+            if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
                 $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
-                $values = array_filter($values);
+                // FILTRIAMO solo i valori vuoti, mantenendo il valore "0"
+                $values = array_filter($values, function($value) {
+                    return $value !== '' && $value !== null;
+                });
                 update_post_meta($post_id, $tipo_patente_key, $values);
             } else {
-               update_post_meta($post_id, $tipo_patente_key, array());
+                update_post_meta($post_id, $tipo_patente_key, array());
             }
-   
         }
 
         

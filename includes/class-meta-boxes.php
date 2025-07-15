@@ -4279,9 +4279,9 @@ class IncidentiMetaBoxes {
             'veicolo_3_tipo', 'veicolo_3_targa', 'veicolo_3_anno_immatricolazione', 'veicolo_3_cilindrata',
 
             // Campi conducenti (pattern ripetuto per conducente_1, conducente_2, conducente_3)  
-            'conducente_1_eta', 'conducente_1_sesso', 'conducente_1_esito', 'conducente_1_tipo_patente[]', 'conducente_1_rilascio_patente',
-            'conducente_2_eta', 'conducente_2_sesso', 'conducente_2_esito', 'conducente_2_tipo_patente[]', 'conducente_2_rilascio_patente',
-            'conducente_3_eta', 'conducente_3_sesso', 'conducente_3_esito', 'conducente_3_tipo_patente[]', 'conducente_3_rilascio_patente',
+            'conducente_1_eta', 'conducente_1_sesso', 'conducente_1_esito', 'conducente_1_tipo_patente', 'conducente_1_rilascio_patente',
+            'conducente_2_eta', 'conducente_2_sesso', 'conducente_2_esito', 'conducente_2_tipo_patente', 'conducente_2_rilascio_patente',
+            'conducente_3_eta', 'conducente_3_sesso', 'conducente_3_esito', 'conducente_3_tipo_patente', 'conducente_3_rilascio_patente',
 
             // Campi trasportati - età, sesso, esito (pattern per veicolo_1_trasportato_1 fino a veicolo_3_trasportato_9)
             'veicolo_1_trasportato_1_eta', 'veicolo_1_trasportato_1_sesso', 'veicolo_1_trasportato_1_esito',
@@ -4447,7 +4447,7 @@ class IncidentiMetaBoxes {
                     'veicolo_' . $i . '_anno_immatricolazione', 'veicolo_' . $i . '_cilindrata', 
                     'veicolo_' . $i . '_peso_totale',
                     'conducente_' . $i . '_eta', 'conducente_' . $i . '_sesso', 'conducente_' . $i . '_esito',
-                    'conducente_' . $i . '_tipo_patente[]', 'conducente_' . $i . '_rilascio_patente',
+                    'conducente_' . $i . '_tipo_patente', 'conducente_' . $i . '_rilascio_patente',
                     'conducente_' . $i . '_tipo_cittadinanza', 'conducente_' . $i . '_nazionalita', 'conducente_' . $i . '_nazionalita_altro'
                 );
                 
@@ -4471,7 +4471,7 @@ class IncidentiMetaBoxes {
                     'conducente_' . $i . '_anno_patente',
                     'conducente_' . $i . '_nazionalita', 'conducente_' . $i . '_nazionalita_altro',
                     'conducente_' . $i . '_tipologia_incidente',
-                    'conducente_' . $i . '_tipo_patente[]'
+                    'conducente_' . $i . '_tipo_patente'
                 );
 
                 // NON eliminare tipo_patente separatamente, è incluso nell'array sopra
@@ -4484,7 +4484,7 @@ class IncidentiMetaBoxes {
 
         // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI (DOPO LOOP PRINCIPALE) ===
         for ($i = 1; $i <= 3; $i++) {
-            $tipo_patente_key = 'conducente_' . $i . '_tipo_patente[]';
+            $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
             if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
                 $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
                 $values = array_filter($values);
@@ -4512,7 +4512,7 @@ class IncidentiMetaBoxes {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             // Debug tipo_patente
             for ($i = 1; $i <= 3; $i++) {
-                $tipo_patente = get_post_meta($post_id, 'conducente_' . $i . '_tipo_patente[]', true);
+                $tipo_patente = get_post_meta($post_id, 'conducente_' . $i . '_tipo_patente', true);
                 error_log("DEBUG - Post $post_id, Conducente $i, tipo_patente: " . print_r($tipo_patente, true));
             }
             

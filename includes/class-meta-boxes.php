@@ -1187,6 +1187,15 @@ class IncidentiMetaBoxes {
                         <option value=""><?php _e('Seleziona strada provinciale', 'incidenti-stradali'); ?></option>
                     </select>
                     
+                    <!-- Campo select per strade statali -->
+                    <select id="numero_strada_select_statali" 
+                            name="numero_strada" 
+                            class="regular-text"
+                            style="display: none;"
+                            data-saved-value="<?php echo esc_attr($numero_strada); ?>">
+                        <option value=""><?php _e('Seleziona strada statale', 'incidenti-stradali'); ?></option>
+                    </select>
+                    
                     <p class="description" id="numero_strada_description">
                         <?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?>
                     </p>
@@ -1250,28 +1259,49 @@ class IncidentiMetaBoxes {
                         'Strada provinciale fuori dell\'abitato'
                     ];
                     
+                    // Tipi che usano la select per strade statali
+                    var tipiConSelectStatali = [
+                        'Statale entro l\'abitato',
+                        'Strada statale fuori dell\'abitato'
+                    ];
+
+                    var selectFieldStatali = $('#numero_strada_select_statali');
+
                     if (tipiConNumero.includes(tipoStrada)) {
                         numeroStradaRow.show();
                         
                         if (tipiConSelect.includes(tipoStrada)) {
-                            // Mostra select e nascondi input text
-                            inputText.hide().prop('name', ''); // Rimuovi name per non inviarlo
-                            selectField.show().prop('name', 'numero_strada'); // Aggiungi name per inviarlo
+                            // Mostra select provinciali e nascondi altri campi
+                            inputText.hide().prop('name', '');
+                            selectField.show().prop('name', 'numero_strada');
+                            selectFieldStatali.hide().prop('name', '');
                             
                             // Popola la select se è vuota
                             if (selectField.find('option').length <= 1) {
                                 populateStradeProvinciali();
                             }
+                        } else if (tipiConSelectStatali.includes(tipoStrada)) {
+                            // Mostra select statali e nascondi altri campi
+                            inputText.hide().prop('name', '');
+                            selectField.hide().prop('name', '');
+                            selectFieldStatali.show().prop('name', 'numero_strada');
+                            
+                            // Popola la select statali se è vuota
+                            if (selectFieldStatali.find('option').length <= 1) {
+                                populateStradeStatali();
+                            }
                         } else {
-                            // Mostra input text e nascondi select (per strade statali)
-                            selectField.hide().prop('name', ''); // Rimuovi name per non inviarlo
-                            inputText.show().prop('name', 'numero_strada'); // Aggiungi name per inviarlo
+                            // Mostra input text e nascondi select (per altri tipi di strade)
+                            selectField.hide().prop('name', '');
+                            selectFieldStatali.hide().prop('name', '');
+                            inputText.show().prop('name', 'numero_strada');
                         }
                     } else {
                         numeroStradaRow.hide();
-                        // Pulisci entrambi i campi quando nascosti
+                        // Pulisci tutti i campi quando nascosti
                         inputText.val('');
                         selectField.val('');
+                        selectFieldStatali.val('');
                     }
                     
                     // Logica esistente per nell_abitato
@@ -1300,7 +1330,7 @@ class IncidentiMetaBoxes {
                     // Chiamata iniziale
                     updateFieldsVisibility();
 
-                    
+
                     // === NUOVA SEZIONE MAPPA ===
                     // Inizializza mappa solo se il contenitore esiste
                     if ($('#localizzazione-map').length === 0) return;
@@ -1735,7 +1765,7 @@ class IncidentiMetaBoxes {
                 }
 
                 function populateStradeStatali() {
-                    var select = $('#numero_strada_select');
+                    var select = $('#numero_strada_select_statali');
                     select.empty();
                     select.append('<option value="">Seleziona strada statale</option>');
                     var stradeStatali = [

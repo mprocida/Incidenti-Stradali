@@ -483,28 +483,49 @@ jQuery(document).ready(function($) {
                 'Provinciale entro l\'abitato',
                 'Strada provinciale fuori dell\'abitato'
             ];
+
+            // Tipi che usano la select per strade statali
+            var tipiConSelectStatali = [
+                'Statale entro l\'abitato',
+                'Strada statale fuori dell\'abitato'
+            ];
             
+            var $numeroStradaSelectStatali = $('#numero_strada_select_statali');
+
             if (tipiConNumero.includes(tipoStrada)) {
                 $numeroStradaRow.show();
                 
                 if (tipiConSelect.includes(tipoStrada)) {
-                    // Mostra select e nascondi input text per strade provinciali
+                    // Mostra select provinciali e nascondi altri campi
                     $numeroStradaInput.hide().prop('name', '');
                     $numeroStradaSelect.show().prop('name', 'numero_strada').prop('required', true);
+                    $numeroStradaSelectStatali.hide().prop('name', '');
                     
-                    // Popola la select se è vuota (chiamata alla funzione nel meta-box)
+                    // Popola la select se è vuota
                     if ($numeroStradaSelect.find('option').length <= 1 && typeof populateStradeProvinciali === 'function') {
                         populateStradeProvinciali();
                     }
-                } else {
-                    // Mostra input text e nascondi select per strade statali
+                } else if (tipiConSelectStatali.includes(tipoStrada)) {
+                    // Mostra select statali e nascondi altri campi
+                    $numeroStradaInput.hide().prop('name', '');
                     $numeroStradaSelect.hide().prop('name', '');
+                    $numeroStradaSelectStatali.show().prop('name', 'numero_strada').prop('required', true);
+                    
+                    // Popola la select statali se è vuota
+                    if ($numeroStradaSelectStatali.find('option').length <= 1 && typeof populateStradeStatali === 'function') {
+                        populateStradeStatali();
+                    }
+                } else {
+                    // Per altri tipi di strade che richiedono numero, mostra input text
+                    $numeroStradaSelect.hide().prop('name', '');
+                    $numeroStradaSelectStatali.hide().prop('name', '');
                     $numeroStradaInput.show().prop('name', 'numero_strada').prop('required', true);
                 }
             } else {
                 $numeroStradaRow.hide();
                 $numeroStradaInput.prop('required', false).val('');
                 $numeroStradaSelect.prop('required', false).val('');
+                $numeroStradaSelectStatali.prop('required', false).val('');
             }
             
             // RIMOSSO: Progressiva chilometrica ora sempre visibile

@@ -471,24 +471,13 @@ jQuery(document).ready(function($) {
             var $progressivaRow = $('#progressiva_row');
             
             // Tipi di strada che richiedono il numero strada
-            var tipiConNumero = [
-                'Provinciale entro l\'abitato',
-                'Statale entro l\'abitato', 
-                'Strada provinciale fuori dell\'abitato',
-                'Strada statale fuori dell\'abitato'
-            ];
-            
+            var tipiConNumero = ['2', '3', '5', '6'];
+
             // Tipi che usano la select (strade provinciali)
-            var tipiConSelect = [
-                'Provinciale entro l\'abitato',
-                'Strada provinciale fuori dell\'abitato'
-            ];
+            var tipiConSelect = ['2', '5'];
 
             // Tipi che usano la select per strade statali
-            var tipiConSelectStatali = [
-                'Statale entro l\'abitato',
-                'Strada statale fuori dell\'abitato'
-            ];
+            var tipiConSelectStatali = ['3', '6'];
             
             var $numeroStradaSelectStatali = $('#numero_strada_select_statali');
 

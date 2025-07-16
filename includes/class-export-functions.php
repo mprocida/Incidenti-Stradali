@@ -1194,8 +1194,8 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'art_cds');
             
             // Coordinate
-            $row[] = $this->safe_meta_string($post_id, 'latitudine_incidente');
-            $row[] = $this->safe_meta_string($post_id, 'longitudine_incidente');
+            $row[] = $this->safe_meta_string($post_id, 'latitudine');
+            $row[] = $this->safe_meta_string($post_id, 'longitudine');
             
             // Aggiungi la riga al CSV
             $output .= '"' . implode('","', array_map('str_replace', array_fill(0, count($row), '"'), array_fill(0, count($row), '""'), $row)) . '"' . "\n";

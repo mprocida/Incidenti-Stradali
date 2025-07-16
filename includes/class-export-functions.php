@@ -1175,12 +1175,12 @@ class IncidentiExportFunctions {
             $val2 = (int) $this->safe_meta_string($post_id, 'riepilogo_morti_24h');
             $somma = $val1 + $val2;
             $row[] = $somma;
-            $row[] = $this->safe_meta_string($post_id, 'n_feriti');
+            $row[] = $this->safe_meta_string($post_id, 'riepilogo_feriti');
             
             // Informazioni strada
             $row[] = $this->safe_meta_string($post_id, 'denominazione_strada');
-            $row[] = $this->safe_meta_string($post_id, 'km_strada');
-            $row[] = $this->safe_meta_string($post_id, 'metri_strada');
+            $row[] = $this->safe_meta_string($post_id, 'progressiva_km');
+            $row[] = $this->safe_meta_string($post_id, 'progressiva_m');
             $row[] = $this->safe_meta_string($post_id, 'carreggiata');
             
             // Circostanze

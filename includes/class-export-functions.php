@@ -1171,7 +1171,10 @@ class IncidentiExportFunctions {
             
             // Conteggi persone
             $row[] = $this->safe_meta_string($post_id, 'n_pedoni');
-            $row[] = $this->safe_meta_string($post_id, 'n_deceduti');
+            $val1 = (int) $this->safe_meta_string($post_id, 'riepilogo_morti_2_30gg');
+            $val2 = (int) $this->safe_meta_string($post_id, 'riepilogo_morti_24h');
+            $somma = $val1 + $val2;
+            $row[] = $somma;
             $row[] = $this->safe_meta_string($post_id, 'n_feriti');
             
             // Informazioni strada

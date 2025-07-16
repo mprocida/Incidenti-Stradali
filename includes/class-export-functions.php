@@ -968,7 +968,7 @@ class IncidentiExportFunctions {
             //Campo 1731-1770: Codice Identificativo Ente  
             $codice__ente = $this->safe_meta_string($post_id, 'codice__ente');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($codice__ente ?: '', 40, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($codice__ente ?: '', 40, '~', STR_PAD_LEFT);
             
             //Spazio riservato ISTAT per elaborazione 1771-1780
             //Spazi n.10

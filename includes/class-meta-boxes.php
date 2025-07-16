@@ -4295,7 +4295,7 @@ class IncidentiMetaBoxes {
             /*--------------------------------*/
             
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada',
-            'orientamento_conducente', 'presenza_barriere',
+            'orientamento_conducente', 'presenza_barriere', 'presenza_banchina',
             'circostanza_tipo', 'condizioni_aggiuntive', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
             'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
             'cilindrata_veicolo_c', 'peso_pieno_carico_a', 'peso_pieno_carico_b', 'peso_pieno_carico_c',
@@ -4480,14 +4480,26 @@ class IncidentiMetaBoxes {
 
         // Gestione speciale per i campi checkbox
         $checkbox_fields = array(
-            'presenza_barriere', 'orientamento_conducente', 'tappeto_usura_aperto', 'tappeto_usura_chiuso', 
-            'allagato', 'semaforizzazioni', 'cartelli_pubblicitari', 
+            'presenza_banchina', 'allagato', 'semaforizzazioni', 'cartelli_pubblicitari', 
             'leggibilita_alta', 'leggibilita_bassa', 'nuvoloso', 'foschia'
         );
 
         foreach ($checkbox_fields as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta($post_id, $field, '1');
+            } else {
+                delete_post_meta($post_id, $field);
+            }
+        }
+
+        // Gestione speciale per i campi radio che possono essere vuoti
+        $radio_fields = array(
+            'orientamento_conducente', 'presenza_barriere'
+        );
+
+        foreach ($radio_fields as $field) {
+            if (isset($_POST[$field])) {
+                update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
             } else {
                 delete_post_meta($post_id, $field);
             }

@@ -443,6 +443,20 @@ jQuery(document).ready(function($) {
      * Initialize conditional field logic for ISTAT 2019 compliance
      */
     function initializeConditionalFields() {
+
+        // Rendi il campo titolo non editabile e nascosto
+        $('#title').prop('readonly', true).css({
+            'background-color': '#f9f9f9',
+            'color': '#666',
+            'border': '1px solid #ddd'
+        });
+        
+        // Nasconde completamente il campo titolo standard
+        /* $('#titlediv').hide(); */
+        
+        // Oppure mostra ma disabilitato con messaggio
+        $('#titlediv').prepend('<p style="color: #666; font-style: italic; margin-bottom: 8px;">Il titolo viene generato automaticamente dal sistema</p>');
+
         // Logica per mostrare identificativo comando Carabinieri
         $('#ente_rilevatore').on('change', function() {
             var enteValue = $(this).val();

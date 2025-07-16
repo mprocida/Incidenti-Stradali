@@ -819,6 +819,13 @@ class IncidentiMetaBoxes {
                     <p class="description"><?php _e('Nome e cognome del rilevatore', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
+
+            <tr style="display: none;">
+                <th><label for="codice__ente"><?php _e('Codice Ente (Auto-generato)', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="hidden" id="codice__ente" name="codice__ente" value="<?php echo esc_attr(get_post_meta($post->ID, 'codice__ente', true)); ?>">
+                </td>
+            </tr>
             
             <!-- CAMPI ESISTENTI (mantieni solo per compatibilità ISTAT) -->
             <tr style="display: none;">
@@ -4628,24 +4635,45 @@ class IncidentiMetaBoxes {
             error_log("DEBUG - Post $post_id, Circostanze: A=$circ_a, B=$circ_b, DifettoA=$difetto_a, StatoA=$stato_a");
         }
 
-        // Update post title only if needed
-        if (isset($_POST['data_incidente'])) {
-            $current_title = get_the_title($post_id);
-            $denominazione = isset($_POST['denominazione_strada']) ? $_POST['denominazione_strada'] : __('Strada non specificata', 'incidenti-stradali');
-            $new_title = sprintf(__('Incidente del %s - %s', 'incidenti-stradali'), 
-                            $_POST['data_incidente'], 
-                            $denominazione);
+        // Genera automaticamente il codice__ente e aggiorna il titolo
+        if (isset($_POST['data_incidente']) && isset($_POST['provincia_incidente']) && isset($_POST['comune_incidente'])) {
             
-            if ($current_title !== $new_title) {
-                global $wpdb;
-                $wpdb->update(
-                    $wpdb->posts,
-                    array('post_title' => $new_title),
-                    array('ID' => $post_id),
-                    array('%s'),
-                    array('%d')
-                );
+            // Genera il progressivo (5 cifre) basato sull'ID del post
+            $progressivo = str_pad($post_id, 5, '0', STR_PAD_LEFT);
+            
+            // Anno (2 cifre)
+            $anno = substr($_POST['data_incidente'], 2, 2); // YYMMDD -> YY
+            
+            // ID Ente (2 cifre) - mappa l'organo di rilevazione
+            $id_ente = '01'; // Default
+            if (isset($_POST['organo_rilevazione'])) {
+                switch ($_POST['organo_rilevazione']) {
+                    case '1': $id_ente = '01'; break; // Polizia Stradale
+                    case '2': $id_ente = '02'; break; // Carabinieri
+                    case '4': $id_ente = '04'; break; // Polizia Municipale
+                    case '6': $id_ente = '06'; break; // Polizia Provinciale
+                    default: $id_ente = '99'; break; // Altri
+                }
             }
+            
+            // ID Comune (3 cifre) - dai dati ISTAT
+            $id_comune = str_pad($_POST['comune_incidente'], 3, '0', STR_PAD_LEFT);
+            
+            // Componi il codice finale
+            $codice_ente = $progressivo . $anno . $id_ente . $id_comune;
+            
+            // Salva il codice__ente
+            update_post_meta($post_id, 'codice__ente', $codice_ente);
+            
+            // Aggiorna il titolo del post con il codice generato
+            global $wpdb;
+            $wpdb->update(
+                $wpdb->posts,
+                array('post_title' => $codice_ente),
+                array('ID' => $post_id),
+                array('%s'),
+                array('%d')
+            );
         }
         
         // Re-aggiungi l'action

@@ -1184,7 +1184,7 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'denominazione_strada');
             $row[] = $this->safe_meta_string($post_id, 'progressiva_km');
             $row[] = $this->safe_meta_string($post_id, 'progressiva_m');
-            $row[] = $this->safe_meta_string($post_id, 'carreggiata');
+            $row[] = $this->safe_meta_string($post_id, 'geometria_strada');
             
             // Circostanze
             $row[] = $this->safe_meta_string($post_id, 'omissione');

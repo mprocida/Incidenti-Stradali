@@ -1170,11 +1170,26 @@ class IncidentiMetaBoxes {
             <tr id="numero_strada_row">
                 <th><label for="numero_strada"><?php _e('Numero Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="text" id="numero_strada_text" name="numero_strada" value="<?php echo esc_attr($numero_strada); ?>" class="regular-text" style="display: none;">
-                    <select id="numero_strada_select" name="numero_strada_select" class="regular-text" style="display: none;">
-                        <option value="">Seleziona strada provinciale</option>
+                    <!-- Campo input text per strade statali -->
+                    <input type="text" 
+                        id="numero_strada_input" 
+                        name="numero_strada" 
+                        value="<?php echo esc_attr($numero_strada); ?>" 
+                        class="regular-text"
+                        style="display: none;">
+                    
+                    <!-- Campo select per strade provinciali -->
+                    <select id="numero_strada_select" 
+                            name="numero_strada" 
+                            class="regular-text"
+                            style="display: none;"
+                            data-saved-value="<?php echo esc_attr($numero_strada); ?>">
+                        <option value=""><?php _e('Seleziona strada provinciale', 'incidenti-stradali'); ?></option>
                     </select>
-                    <p class="description"><?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?></p>
+                    
+                    <p class="description" id="numero_strada_description">
+                        <?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?>
+                    </p>
                 </td>
             </tr>
             <tr id="progressiva_row">
@@ -1218,8 +1233,10 @@ class IncidentiMetaBoxes {
                 function updateFieldsVisibility() {
                     var tipoStrada = $('#tipo_strada').val();
                     var numeroStradaRow = $('#numero_strada_row');
+                    var inputText = $('#numero_strada_input');
+                    var selectField = $('#numero_strada_select');
                     
-                    // Tipi di strada che richiedono il numero strada (usando i valori stringa effettivi)
+                    // Tipi di strada che richiedono il numero strada
                     var tipiConNumero = [
                         'Provinciale entro l\'abitato',
                         'Statale entro l\'abitato', 
@@ -1227,11 +1244,34 @@ class IncidentiMetaBoxes {
                         'Strada statale fuori dell\'abitato'
                     ];
                     
+                    // Tipi che usano la select (strade provinciali)
+                    var tipiConSelect = [
+                        'Provinciale entro l\'abitato',
+                        'Strada provinciale fuori dell\'abitato'
+                    ];
+                    
                     if (tipiConNumero.includes(tipoStrada)) {
                         numeroStradaRow.show();
+                        
+                        if (tipiConSelect.includes(tipoStrada)) {
+                            // Mostra select e nascondi input text
+                            inputText.hide().prop('name', ''); // Rimuovi name per non inviarlo
+                            selectField.show().prop('name', 'numero_strada'); // Aggiungi name per inviarlo
+                            
+                            // Popola la select se è vuota
+                            if (selectField.find('option').length <= 1) {
+                                populateStradeProvinciali();
+                            }
+                        } else {
+                            // Mostra input text e nascondi select (per strade statali)
+                            selectField.hide().prop('name', ''); // Rimuovi name per non inviarlo
+                            inputText.show().prop('name', 'numero_strada'); // Aggiungi name per inviarlo
+                        }
                     } else {
                         numeroStradaRow.hide();
-                        $('#numero_strada').val(''); // Pulisce il campo quando non visibile
+                        // Pulisci entrambi i campi quando nascosti
+                        inputText.val('');
+                        selectField.val('');
                     }
                     
                     // Logica esistente per nell_abitato
@@ -1250,6 +1290,7 @@ class IncidentiMetaBoxes {
                         }).appendTo('#tipo_strada').parent();
                     }
                 }
+
                 
                     // Trigger on page load and when tipo_strada changes
                     $('#tipo_strada').on('change', function() {
@@ -1258,6 +1299,8 @@ class IncidentiMetaBoxes {
 
                     // Chiamata iniziale
                     updateFieldsVisibility();
+
+                    
                     // === NUOVA SEZIONE MAPPA ===
                     // Inizializza mappa solo se il contenitore esiste
                     if ($('#localizzazione-map').length === 0) return;
@@ -1685,7 +1728,7 @@ class IncidentiMetaBoxes {
                     });
 
                     // Ripristina il valore salvato se presente
-                    var savedValue = $('#numero_strada_select').data('saved-value') || $('#numero_strada_text').val();
+                    var savedValue = $('#numero_strada_select').data('saved-value');
                     if (savedValue) {
                         $('#numero_strada_select').val(savedValue);
                     }

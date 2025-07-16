@@ -466,43 +466,45 @@ jQuery(document).ready(function($) {
         $('#tipo_strada').on('change', function() {
             var tipoStrada = $(this).val();
             var $numeroStradaRow = $('#numero_strada_row');
-            var $numeroStradaText = $('#numero_strada_text');        // AGGIUNGI
-            var $numeroStradaSelect = $('#numero_strada_select');    // AGGIUNGI
+            var $numeroStradaInput = $('#numero_strada_input');
+            var $numeroStradaSelect = $('#numero_strada_select');
             var $progressivaRow = $('#progressiva_row');
             
-            console.log('Admin.js - Tipo strada selezionato:', tipoStrada); // Debug
-            
             // Tipi di strada che richiedono il numero strada
-            var tipiProvinciali = ["Provinciale entro l'abitato", "Strada provinciale fuori dell'abitato"];  // AGGIUNGI
-            var tipiStatali = ["Statale entro l'abitato", "Strada statale fuori dell'abitato"];              // AGGIUNGI
-            var tipiConNumero = [...tipiProvinciali, ...tipiStatali];
+            var tipiConNumero = [
+                'Provinciale entro l\'abitato',
+                'Statale entro l\'abitato', 
+                'Strada provinciale fuori dell\'abitato',
+                'Strada statale fuori dell\'abitato'
+            ];
             
-            console.log('Admin.js - Verifica inclusione:', tipiConNumero.includes(tipoStrada)); // Debug
+            // Tipi che usano la select (strade provinciali)
+            var tipiConSelect = [
+                'Provinciale entro l\'abitato',
+                'Strada provinciale fuori dell\'abitato'
+            ];
             
             if (tipiConNumero.includes(tipoStrada)) {
-                console.log('Admin.js - Mostrando numero strada'); // Debug
                 $numeroStradaRow.show();
                 
-                // Se è una strada provinciale, mostra la select
-                if (tipiProvinciali.includes(tipoStrada)) {
-                    $numeroStradaText.hide().prop('name', '').prop('required', false);
+                if (tipiConSelect.includes(tipoStrada)) {
+                    // Mostra select e nascondi input text per strade provinciali
+                    $numeroStradaInput.hide().prop('name', '');
                     $numeroStradaSelect.show().prop('name', 'numero_strada').prop('required', true);
                     
-                    // Chiama la funzione populateStradeProvinciali se esiste (definita nella meta-box)
-                    if (typeof populateStradeProvinciali === 'function') {
+                    // Popola la select se è vuota (chiamata alla funzione nel meta-box)
+                    if ($numeroStradaSelect.find('option').length <= 1 && typeof populateStradeProvinciali === 'function') {
                         populateStradeProvinciali();
                     }
-                }
-                // Se è una strada statale, mostra il campo text
-                else if (tipiStatali.includes(tipoStrada)) {
-                    $numeroStradaSelect.hide().prop('name', '').prop('required', false);
-                    $numeroStradaText.show().prop('name', 'numero_strada').prop('required', true);
+                } else {
+                    // Mostra input text e nascondi select per strade statali
+                    $numeroStradaSelect.hide().prop('name', '');
+                    $numeroStradaInput.show().prop('name', 'numero_strada').prop('required', true);
                 }
             } else {
-                console.log('Admin.js - Nascondendo numero strada'); // Debug
                 $numeroStradaRow.hide();
-                $numeroStradaText.prop('required', false).val('').prop('name', '');
-                $numeroStradaSelect.prop('required', false).val('').prop('name', '');
+                $numeroStradaInput.prop('required', false).val('');
+                $numeroStradaSelect.prop('required', false).val('');
             }
             
             // RIMOSSO: Progressiva chilometrica ora sempre visibile

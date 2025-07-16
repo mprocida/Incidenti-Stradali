@@ -452,10 +452,10 @@ jQuery(document).ready(function($) {
         });
         
         // Nasconde completamente il campo titolo standard
-        /* $('#titlediv').hide(); */
+        $('#titlediv').hide();
         
         // Oppure mostra ma disabilitato con messaggio
-        $('#titlediv').prepend('<p style="color: #666; font-style: italic; margin-bottom: 8px;">Il titolo viene generato automaticamente dal sistema</p>');
+        /* $('#titlediv').prepend('<p style="color: #666; font-style: italic; margin-bottom: 8px;">Il titolo viene generato automaticamente dal sistema</p>'); */
 
         // Logica per mostrare identificativo comando Carabinieri
         $('#ente_rilevatore').on('change', function() {

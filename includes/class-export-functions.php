@@ -1188,7 +1188,23 @@ class IncidentiExportFunctions {
             
             // Circostanze
             $row[] = $this->safe_meta_string($post_id, 'omissione');
-            $row[] = $this->safe_meta_string($post_id, 'contromano');
+
+            // Verifica se almeno un veicolo andava contromano
+            $contromano = 'N'; // Default
+            $circostanze_contromano = array('07', '26', '43', '63'); // Codici che indicano marcia contromano
+
+            // Controlla tutte le circostanze dei veicoli
+            $circostanza_a = $this->safe_meta_string($post_id, 'circostanza_veicolo_a');
+            $circostanza_b = $this->safe_meta_string($post_id, 'circostanza_veicolo_b');
+            $circostanza_c = $this->safe_meta_string($post_id, 'circostanza_veicolo_c');
+
+            if (in_array($circostanza_a, $circostanze_contromano) || 
+                in_array($circostanza_b, $circostanze_contromano) || 
+                in_array($circostanza_c, $circostanze_contromano)) {
+                $contromano = 'S';
+            }
+
+            $row[] = $contromano;
             
             // Dettaglio persone
             $row[] = $this->safe_meta_string($post_id, 'dettaglio_persone');

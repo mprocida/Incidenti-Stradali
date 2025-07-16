@@ -1061,221 +1061,144 @@ class IncidentiExportFunctions {
      * Genera CSV per Excel (formato Polizia Stradale)
      */
     public function generate_excel_csv($incidenti) {
-        // Header CSV secondo form ISTAT/Polizia
+        // Header CSV secondo la tua lista specifica
         $headers = array(
-            'ID Incidente',
+            'IDIncidenti',
             'Data',
             'Ora',
-            'Minuti',
-            'Provincia',
-            'Comune',
-            'Località',
-            'Denominazione Strada',
-            'Km',
-            'Localizzazione',
-            'Tipo Strada',
-            'Pavimentazione',
-            'Intersezione',
-            'Fondo Stradale',
-            'Segnaletica',
-            'Condizioni Meteo',
-            'Natura Incidente',
-            'Tipo Veicolo A',
-            'Tipo Veicolo B',
-            'Tipo Veicolo C',
-            'Targa A',
-            'Targa B', 
-            'Targa C',
-            'Cilindrata A',
-            'Cilindrata B',
-            'Cilindrata C',
-            'Peso A',
-            'Peso B',
-            'Peso C',
-            'Età Conducente A',
-            'Sesso Conducente A',
-            'Esito Conducente A',
-            'Età Conducente B',
-            'Sesso Conducente B',
-            'Esito Conducente B',
-            'Età Conducente C',
-            'Sesso Conducente C',
-            'Esito Conducente C',
-            
-            // NUOVE COLONNE TRASPORTATI CON SEDILE
-            'Veicolo A - Num Trasportati',
-            'Veicolo A - Trasportato 1 - Sedile',
-            'Veicolo A - Trasportato 1 - Dettaglio Sedile',
-            'Veicolo A - Trasportato 1 - Età',
-            'Veicolo A - Trasportato 1 - Sesso',
-            'Veicolo A - Trasportato 1 - Esito',
-            'Veicolo A - Trasportato 2 - Sedile',
-            'Veicolo A - Trasportato 2 - Dettaglio Sedile',
-            'Veicolo A - Trasportato 2 - Età',
-            'Veicolo A - Trasportato 2 - Sesso',
-            'Veicolo A - Trasportato 2 - Esito',
-            'Veicolo A - Trasportato 3 - Sedile',
-            'Veicolo A - Trasportato 3 - Dettaglio Sedile',
-            'Veicolo A - Trasportato 3 - Età',
-            'Veicolo A - Trasportato 3 - Sesso',
-            'Veicolo A - Trasportato 3 - Esito',
-            
-            'Veicolo B - Num Trasportati',
-            'Veicolo B - Trasportato 1 - Sedile',
-            'Veicolo B - Trasportato 1 - Dettaglio Sedile',
-            'Veicolo B - Trasportato 1 - Età',
-            'Veicolo B - Trasportato 1 - Sesso',
-            'Veicolo B - Trasportato 1 - Esito',
-            'Veicolo B - Trasportato 2 - Sedile',
-            'Veicolo B - Trasportato 2 - Dettaglio Sedile',
-            'Veicolo B - Trasportato 2 - Età',
-            'Veicolo B - Trasportato 2 - Sesso',
-            'Veicolo B - Trasportato 2 - Esito',
-            'Veicolo B - Trasportato 3 - Sedile',
-            'Veicolo B - Trasportato 3 - Dettaglio Sedile',
-            'Veicolo B - Trasportato 3 - Età',
-            'Veicolo B - Trasportato 3 - Sesso',
-            'Veicolo B - Trasportato 3 - Esito',
-            
-            'Veicolo C - Num Trasportati',
-            'Veicolo C - Trasportato 1 - Sedile',
-            'Veicolo C - Trasportato 1 - Dettaglio Sedile',
-            'Veicolo C - Trasportato 1 - Età',
-            'Veicolo C - Trasportato 1 - Sesso',
-            'Veicolo C - Trasportato 1 - Esito',
-            'Veicolo C - Trasportato 2 - Sedile',
-            'Veicolo C - Trasportato 2 - Dettaglio Sedile',
-            'Veicolo C - Trasportato 2 - Età',
-            'Veicolo C - Trasportato 2 - Sesso',
-            'Veicolo C - Trasportato 2 - Esito',
-            'Veicolo C - Trasportato 3 - Sedile',
-            'Veicolo C - Trasportato 3 - Dettaglio Sedile',
-            'Veicolo C - Trasportato 3 - Età',
-            'Veicolo C - Trasportato 3 - Sesso',
-            'Veicolo C - Trasportato 3 - Esito',
-            
-            'Feriti Totali',
-            'Morti 24h',
-            'Morti 30gg',
-            'Latitudine',
-            'Longitudine',
-            'Organo Rilevazione'
+            'IDProv',
+            'IDCom',
+            'IDTipoIncidente',
+            'IDTipoStrada',
+            'CentroAbitato',
+            'IDPolizia',
+            'IDCaratteristiche',
+            'CantiereStradale',
+            'N_Autovettura',
+            'N_Autocarro fino 3,5t',
+            'N_Autocarro > 3,5t',
+            'N_Autotreno',
+            'N_Autoarticolato',
+            'N_Autobus',
+            'N_Tram',
+            'N_Treno',
+            'N_Motociclo',
+            'N_Ciclomotore',
+            'N_Velocipede',
+            'N_Bicicletta a pedala assistita',
+            'N_Monopattini elettrici',
+            'N_Altri dispositivi micromobilita\'',
+            'N_AltrIVeicoli',
+            'Trasportanti merci pericolose',
+            'N_Pedoni',
+            'N_Deceduti',
+            'N_Feriti',
+            'Numero Nome Strada',
+            'KM',
+            'Metri',
+            'Carreggiata',
+            'Omissione',
+            'Contromano',
+            'DettaglioPersone',
+            'idPositivita',
+            'ArtCds',
+            'Coordinata X',
+            'Coordinata Y'
         );
         
+        // Inizia il CSV con gli header
         $output = '"' . implode('","', $headers) . '"' . "\n";
         
+        // Processa ogni incidente
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
+            $row = array();
             
-            $row = array(
-                $post_id,
-                get_post_meta($post_id, 'data_incidente', true),
-                get_post_meta($post_id, 'ora_incidente', true),
-                get_post_meta($post_id, 'minuti_incidente', true),
-                get_post_meta($post_id, 'provincia_incidente', true),
-                get_post_meta($post_id, 'comune_incidente', true),
-                get_post_meta($post_id, 'localita', true),
-                get_post_meta($post_id, 'denominazione_strada', true),
-                get_post_meta($post_id, 'km_strada', true),
-                get_post_meta($post_id, 'localizzazione_incidente', true),
-                get_post_meta($post_id, 'tipo_strada', true),
-                get_post_meta($post_id, 'pavimentazione', true),
-                get_post_meta($post_id, 'intersezione', true),
-                get_post_meta($post_id, 'fondo_stradale', true),
-                get_post_meta($post_id, 'segnaletica', true),
-                get_post_meta($post_id, 'condizioni_meteo', true),
-                get_post_meta($post_id, 'natura_incidente', true),
-                get_post_meta($post_id, 'veicolo_1_tipo', true),
-                get_post_meta($post_id, 'veicolo_2_tipo', true),
-                get_post_meta($post_id, 'veicolo_3_tipo', true),
-                get_post_meta($post_id, 'veicolo_1_targa', true),
-                get_post_meta($post_id, 'veicolo_2_targa', true),
-                get_post_meta($post_id, 'veicolo_3_targa', true),
-                get_post_meta($post_id, 'veicolo_1_cilindrata', true),
-                get_post_meta($post_id, 'veicolo_2_cilindrata', true),
-                get_post_meta($post_id, 'veicolo_3_cilindrata', true),
-                get_post_meta($post_id, 'veicolo_1_peso', true),
-                get_post_meta($post_id, 'veicolo_2_peso', true),
-                get_post_meta($post_id, 'veicolo_3_peso', true),
-                get_post_meta($post_id, 'conducente_1_eta', true),
-                get_post_meta($post_id, 'conducente_1_sesso', true),
-                get_post_meta($post_id, 'conducente_1_esito', true),
-                get_post_meta($post_id, 'conducente_2_eta', true),
-                get_post_meta($post_id, 'conducente_2_sesso', true),
-                get_post_meta($post_id, 'conducente_2_esito', true),
-                get_post_meta($post_id, 'conducente_3_eta', true),
-                get_post_meta($post_id, 'conducente_3_sesso', true),
-                get_post_meta($post_id, 'conducente_3_esito', true),
-
-                // NUOVI CAMPI TRASPORTATI CON SEDILE
-                // Veicolo A
-                get_post_meta($post_id, 'veicolo_1_numero_trasportati', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_1_sedile', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_1_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_1_eta', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_1_sesso', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_1_esito', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_2_sedile', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_2_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_2_eta', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_2_sesso', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_2_esito', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_3_sedile', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_3_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_3_eta', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_3_sesso', true),
-                get_post_meta($post_id, 'veicolo_1_trasportato_3_esito', true),
-
-                // Veicolo B
-                get_post_meta($post_id, 'veicolo_2_numero_trasportati', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_1_sedile', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_1_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_1_eta', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_1_sesso', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_1_esito', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_2_sedile', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_2_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_2_eta', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_2_sesso', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_2_esito', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_3_sedile', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_3_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_3_eta', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_3_sesso', true),
-                get_post_meta($post_id, 'veicolo_2_trasportato_3_esito', true),
-
-                // Veicolo C
-                get_post_meta($post_id, 'veicolo_3_numero_trasportati', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_1_sedile', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_1_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_1_eta', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_1_sesso', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_1_esito', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_2_sedile', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_2_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_2_eta', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_2_sesso', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_2_esito', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_3_sedile', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_3_dettaglio_sedile', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_3_eta', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_3_sesso', true),
-                get_post_meta($post_id, 'veicolo_3_trasportato_3_esito', true),
-
-                get_post_meta($post_id, 'feriti_totali', true),
-                get_post_meta($post_id, 'morti_entro_24_ore', true),
-                get_post_meta($post_id, 'morti_dal_2_al_30_giorno', true),
-                get_post_meta($post_id, 'latitudine', true),
-                get_post_meta($post_id, 'longitudine', true),
-                get_post_meta($post_id, 'organo_rilevazione', true)
-            );
+            // IDIncidenti
+            $row[] = $post_id;
             
-            // Escape e formattazione CSV
-            $row = array_map(function($val) {
-                return '"' . str_replace('"', '""', $val) . '"';
-            }, $row);
+            // Data
+            $data_incidente = $this->safe_meta_string($post_id, 'data_incidente');
+            $row[] = $data_incidente;
             
-            $output .= implode(',', $row) . "\n";
+            // Ora
+            $ora_incidente = $this->safe_meta_string($post_id, 'ora_incidente');
+            $row[] = $ora_incidente;
+            
+            // IDProv
+            $row[] = $this->safe_meta_string($post_id, 'provincia_incidente');
+            
+            // IDCom
+            $row[] = $this->safe_meta_string($post_id, 'comune_incidente');
+            
+            // IDTipoIncidente
+            $row[] = $this->safe_meta_string($post_id, 'natura_incidente');
+            
+            // IDTipoStrada
+            $row[] = $this->safe_meta_string($post_id, 'tipo_strada');
+            
+            // CentroAbitato
+            $row[] = $this->safe_meta_string($post_id, 'centro_abitato');
+            
+            // IDPolizia
+            $row[] = $this->safe_meta_string($post_id, 'organo_rilevazione');
+            
+            // IDCaratteristiche
+            $row[] = $this->safe_meta_string($post_id, 'caratteristiche_strada');
+            
+            // CantiereStradale
+            $row[] = $this->safe_meta_string($post_id, 'cantiere_stradale');
+            
+            // Conteggi veicoli
+            $row[] = $this->safe_meta_string($post_id, 'n_autovettura');
+            $row[] = $this->safe_meta_string($post_id, 'n_autocarro_35t');
+            $row[] = $this->safe_meta_string($post_id, 'n_autocarro_oltre_35t');
+            $row[] = $this->safe_meta_string($post_id, 'n_autotreno');
+            $row[] = $this->safe_meta_string($post_id, 'n_autoarticolato');
+            $row[] = $this->safe_meta_string($post_id, 'n_autobus');
+            $row[] = $this->safe_meta_string($post_id, 'n_tram');
+            $row[] = $this->safe_meta_string($post_id, 'n_treno');
+            $row[] = $this->safe_meta_string($post_id, 'n_motociclo');
+            $row[] = $this->safe_meta_string($post_id, 'n_ciclomotore');
+            $row[] = $this->safe_meta_string($post_id, 'n_velocipede');
+            $row[] = $this->safe_meta_string($post_id, 'n_bicicletta_assistita');
+            $row[] = $this->safe_meta_string($post_id, 'n_monopattini_elettrici');
+            $row[] = $this->safe_meta_string($post_id, 'n_altri_dispositivi_micromobilita');
+            $row[] = $this->safe_meta_string($post_id, 'n_altri_veicoli');
+            
+            // Trasportanti merci pericolose
+            $row[] = $this->safe_meta_string($post_id, 'trasportanti_merci_pericolose');
+            
+            // Conteggi persone
+            $row[] = $this->safe_meta_string($post_id, 'n_pedoni');
+            $row[] = $this->safe_meta_string($post_id, 'n_deceduti');
+            $row[] = $this->safe_meta_string($post_id, 'n_feriti');
+            
+            // Informazioni strada
+            $row[] = $this->safe_meta_string($post_id, 'denominazione_strada');
+            $row[] = $this->safe_meta_string($post_id, 'km_strada');
+            $row[] = $this->safe_meta_string($post_id, 'metri_strada');
+            $row[] = $this->safe_meta_string($post_id, 'carreggiata');
+            
+            // Circostanze
+            $row[] = $this->safe_meta_string($post_id, 'omissione');
+            $row[] = $this->safe_meta_string($post_id, 'contromano');
+            
+            // Dettaglio persone
+            $row[] = $this->safe_meta_string($post_id, 'dettaglio_persone');
+            
+            // idPositivita
+            $row[] = $this->safe_meta_string($post_id, 'id_positivita');
+            
+            // ArtCds
+            $row[] = $this->safe_meta_string($post_id, 'art_cds');
+            
+            // Coordinate
+            $row[] = $this->safe_meta_string($post_id, 'latitudine_incidente');
+            $row[] = $this->safe_meta_string($post_id, 'longitudine_incidente');
+            
+            // Aggiungi la riga al CSV
+            $output .= '"' . implode('","', array_map('str_replace', array_fill(0, count($row), '"'), array_fill(0, count($row), '""'), $row)) . '"' . "\n";
         }
         
         return $output;

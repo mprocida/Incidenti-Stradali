@@ -650,9 +650,9 @@ class IncidentiMetaBoxes {
                 <td>
                     <select id="localizzazione_extra_ab" name="localizzazione_extra_ab">
                         <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="1" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), '1'); ?>><?php _e('Su strada statale fuori dall\'autostrada', 'incidenti-stradali'); ?></option>
-                        <option value="2" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), '2'); ?>><?php _e('Su autostrada', 'incidenti-stradali'); ?></option>
-                        <option value="3" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), '3'); ?>><?php _e('Su raccordo autostradale', 'incidenti-stradali'); ?></option>
+                        <option value="Su strada statale fuori dall'autostrada" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), 'Su strada statale fuori dall\'autostrada'); ?>><?php _e('Su strada statale fuori dall\'autostrada', 'incidenti-stradali'); ?></option>
+                        <option value="Su autostrada" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), 'Su autostrada'); ?>><?php _e('Su autostrada', 'incidenti-stradali'); ?></option>
+                        <option value="Su raccordo autostradale" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), 'Su raccordo autostradale'); ?>><?php _e('Su raccordo autostradale', 'incidenti-stradali'); ?></option>
                     </select>
                 </td>
             </tr>

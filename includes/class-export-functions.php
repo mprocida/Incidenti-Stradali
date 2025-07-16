@@ -1177,7 +1177,7 @@ class IncidentiExportFunctions {
             $val1 = (int) $this->safe_meta_string($post_id, 'riepilogo_morti_2_30gg');
             $val2 = (int) $this->safe_meta_string($post_id, 'riepilogo_morti_24h');
             $somma_morti = $val1 + $val2;
-            $row[] = $somma;
+            $row[] = $somma_morti;
             $row[] = $this->safe_meta_string($post_id, 'riepilogo_feriti');
             
             // Informazioni strada

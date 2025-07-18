@@ -443,19 +443,26 @@ jQuery(document).ready(function($) {
      * Initialize conditional field logic for ISTAT 2019 compliance
      */
     function initializeConditionalFields() {
-
-        // Rendi il campo titolo non editabile e nascosto
-        $('#title').prop('readonly', true).css({
-            'background-color': '#f9f9f9',
-            'color': '#666',
-            'border': '1px solid #ddd'
-        });
+    
+        // Verifica se siamo nella pagina di editing di un incidente stradale
+        var bodyClass = $('body').attr('class');
+        var isIncidentePost = bodyClass && (
+            bodyClass.indexOf('post-type-incidente_stradale') !== -1 ||
+            (bodyClass.indexOf('post-new-php') !== -1 && window.location.href.indexOf('post_type=incidente_stradale') !== -1)
+        );
         
-        // Nasconde completamente il campo titolo standard
-        $('#titlediv').hide();
-        
-        // Oppure mostra ma disabilitato con messaggio
-        /* $('#titlediv').prepend('<p style="color: #666; font-style: italic; margin-bottom: 8px;">Il titolo viene generato automaticamente dal sistema</p>'); */
+        // Applica le modifiche al titolo solo per il post type incidente_stradale
+        if (isIncidentePost) {
+            // Rendi il campo titolo non editabile e nascosto
+            $('#title').prop('readonly', true).css({
+                'background-color': '#f9f9f9',
+                'color': '#666',
+                'border': '1px solid #ddd'
+            });
+            
+            // Nasconde completamente il campo titolo standard
+            $('#titlediv').hide();
+        }
 
         // Logica per mostrare identificativo comando Carabinieri
         $('#ente_rilevatore').on('change', function() {

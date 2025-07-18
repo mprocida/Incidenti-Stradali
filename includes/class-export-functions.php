@@ -1135,39 +1135,39 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'natura_incidente');
             
             // IDTipoStrada
-            $row[] = $this->safe_meta_string($post_id, 'tipo_strada');
+            $row[] = $this->safe_meta_string($post_id, 'csv_tipo_strada');
             
             // CentroAbitato
-            $row[] = $this->safe_meta_string($post_id, 'centro_abitato');
+            $row[] = $this->safe_meta_string($post_id, 'csv_centro_abitato');
             
             // IDPolizia
             $row[] = $this->safe_meta_string($post_id, 'organo_rilevazione');
             
             // IDCaratteristiche
-            $row[] = $this->safe_meta_string($post_id, 'caratteristiche_strada');
+            $row[] = $this->safe_meta_string($post_id, 'csv_caratteristiche');
             
             // CantiereStradale
-            $row[] = $this->safe_meta_string($post_id, 'cantiere_stradale');
+            $row[] = $this->safe_meta_string($post_id, 'csv_cantiere_stradale');
             
-            // Conteggi veicoli
-            $row[] = $this->safe_meta_string($post_id, 'n_autovettura');
-            $row[] = $this->safe_meta_string($post_id, 'n_autocarro_35t');
-            $row[] = $this->safe_meta_string($post_id, 'n_autocarro_oltre_35t');
-            $row[] = $this->safe_meta_string($post_id, 'n_autotreno');
-            $row[] = $this->safe_meta_string($post_id, 'n_autoarticolato');
-            $row[] = $this->safe_meta_string($post_id, 'n_autobus');
-            $row[] = $this->safe_meta_string($post_id, 'n_tram');
-            $row[] = $this->safe_meta_string($post_id, 'n_treno');
-            $row[] = $this->safe_meta_string($post_id, 'n_motociclo');
-            $row[] = $this->safe_meta_string($post_id, 'n_ciclomotore');
-            $row[] = $this->safe_meta_string($post_id, 'n_velocipede');
-            $row[] = $this->safe_meta_string($post_id, 'n_bicicletta_assistita');
-            $row[] = $this->safe_meta_string($post_id, 'n_monopattini_elettrici');
-            $row[] = $this->safe_meta_string($post_id, 'n_altri_dispositivi_micromobilita');
-            $row[] = $this->safe_meta_string($post_id, 'n_altri_veicoli');
-            
-            // Trasportanti merci pericolose
-            $row[] = $this->safe_meta_string($post_id, 'trasportanti_merci_pericolose');
+            // Conteggi veicoli - NUOVO: usa i campi CSV
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_autovettura');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_autocarro_35t');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_autocarro_oltre_35t');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_autotreno');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_autoarticolato');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_autobus');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_tram');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_treno');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_motociclo');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_ciclomotore');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_velocipede');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_bicicletta_assistita');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_monopattini');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_altri_micromobilita');
+            $row[] = $this->safe_meta_string($post_id, 'csv_n_altri_veicoli');
+
+            // Trasportanti merci pericolose - NUOVO: usa i campi CSV
+            $row[] = $this->safe_meta_string($post_id, 'csv_trasportanti_merci_pericolose');
             
             // Conteggi persone
             $val1_pedoni_feriti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_feriti');
@@ -1186,34 +1186,20 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'progressiva_m');
             $row[] = $this->safe_meta_string($post_id, 'geometria_strada');
             
-            // Circostanze
-            $row[] = $this->safe_meta_string($post_id, 'omissione');
+            // Circostanze - NUOVO: usa i campi CSV
+            $row[] = $this->safe_meta_string($post_id, 'csv_omissione');
 
-            // Verifica se almeno un veicolo andava contromano
-            $contromano = 'N'; // Default
-            $circostanze_contromano = array('07', '26', '43', '63'); // Codici che indicano marcia contromano
+            // Contromano - NUOVO: usa i campi CSV (più semplice)
+            $row[] = $this->safe_meta_string($post_id, 'csv_contromano');
 
-            // Controlla tutte le circostanze dei veicoli
-            $circostanza_a = $this->safe_meta_string($post_id, 'circostanza_veicolo_a');
-            $circostanza_b = $this->safe_meta_string($post_id, 'circostanza_veicolo_b');
-            $circostanza_c = $this->safe_meta_string($post_id, 'circostanza_veicolo_c');
+            // Dettaglio persone - NUOVO: usa i campi CSV
+            $row[] = $this->safe_meta_string($post_id, 'csv_dettaglio_persone_decedute');
 
-            if (in_array($circostanza_a, $circostanze_contromano) || 
-                in_array($circostanza_b, $circostanze_contromano) || 
-                in_array($circostanza_c, $circostanze_contromano)) {
-                $contromano = 'S';
-            }
+            // idPositivita - NUOVO: usa i campi CSV
+            $row[] = $this->safe_meta_string($post_id, 'csv_positivita');
 
-            $row[] = $contromano;
-            
-            // Dettaglio persone
-            $row[] = $this->safe_meta_string($post_id, 'dettaglio_persone');
-            
-            // idPositivita
-            $row[] = $this->safe_meta_string($post_id, 'id_positivita');
-            
-            // ArtCds
-            $row[] = $this->safe_meta_string($post_id, 'art_cds');
+            // ArtCds - NUOVO: usa i campi CSV
+            $row[] = $this->safe_meta_string($post_id, 'csv_art_cds');
             
             // Coordinate
             $row[] = $this->safe_meta_string($post_id, 'latitudine');

@@ -12,58 +12,16 @@ class IncidentiCustomPostType {
         add_filter('wp_insert_post_data', array($this, 'validate_insert_post'), 10, 2);
         add_action('admin_menu', array($this, 'fix_menu_position'), 999);
         add_action('admin_notices', array($this, 'debug_menu_registration'));
-        add_action('restrict_manage_posts', [$this, 'filtro_organo_rilevatore']);
-
+        /* add_action('admin_notices', array($this, 'show_debug_info')); */
 
         add_filter('query_vars', array($this, 'add_query_vars'));
         add_action('parse_request', array($this, 'parse_incidente_request'));
-        add_filter('parse_query', [$this, 'applica_filtro_organo_rilevatore']);
-
         
         // Force registration immediately if we're in admin
         if (is_admin()) {
             $this->register_post_type();
         }
     }
-
-    public function filtro_organo_rilevatore() {
-        global $typenow;
-
-        if ($typenow !== 'incidente_stradale') {
-            return;
-        }
-
-        $tax_slug = 'organo_rilevazione'; // o il nome della tassonomia che usi per gli enti
-
-        $info_taxonomy = get_taxonomy($tax_slug);
-
-        wp_dropdown_categories([
-            'show_option_all' => __("Tutti gli " . $info_taxonomy->label),
-            'taxonomy'        => $tax_slug,
-            'name'            => $tax_slug,
-            'orderby'         => 'name',
-            'selected'        => isset($_GET[$tax_slug]) ? $_GET[$tax_slug] : '',
-            'hierarchical'    => true,
-            'depth'           => 3,
-            'show_count'      => true,
-            'hide_empty'      => false,
-        ]);
-    }
-
-    public function applica_filtro_organo_rilevatore($query) {
-        global $pagenow;
-
-        $tax_slug = 'organo_rilevazione'; // stessa tassonomia
-
-        if (
-            $pagenow === 'edit.php' &&
-            isset($_GET['post_type']) && $_GET['post_type'] === 'incidente_stradale' &&
-            isset($_GET[$tax_slug]) && is_numeric($_GET[$tax_slug]) && $_GET[$tax_slug] != 0
-        ) {
-            $query->query_vars[$tax_slug] = $_GET[$tax_slug];
-        }
-    }
-
 
     /**
      * Aggiungi query vars personalizzate

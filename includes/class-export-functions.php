@@ -166,6 +166,9 @@ class IncidentiExportFunctions {
             <?php submit_button(__('Esporta TXT ISTAT (1939 caratteri)', 'incidenti-stradali'), 'primary'); ?>
         </form>
     </div>
+
+    <!-- TEMPORANEAMENTE NASCOSTO - Esportazione CSV -->
+    <?php if (false): // Cambia a true per riattivare ?>
     <div class="card">
         <h2>
             <?php _e('Esportazione Formato Excel (CSV)', 'incidenti-stradali'); ?>
@@ -211,6 +214,8 @@ class IncidentiExportFunctions {
             <?php submit_button(__('Esporta CSV Excel', 'incidenti-stradali'), 'secondary'); ?>
         </form>
     </div>
+    <?php endif; ?>
+<!-- FINE BLOCCO TEMPORANEAMENTE NASCOSTO -->
     <div class="card">
         <h2>
             <?php _e('Log Esportazioni', 'incidenti-stradali'); ?>

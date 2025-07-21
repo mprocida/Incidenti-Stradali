@@ -1189,3 +1189,6 @@ msgstr "Strada statale fuori dell'abitato"
 
 msgid "Strada regionale fuori l'abitato"  
 msgstr "Strada regionale fuori l'abitato"
+
+msgid "Ente di appartenenza dell'operatore"
+msgstr "Ente di appartenenza dell'operatore"

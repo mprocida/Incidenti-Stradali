@@ -5230,19 +5230,60 @@ class IncidentiMetaBoxes {
             // jsPDF da CDN con caricamento manuale inline
             ?>
             <script>
-            // Carica jsPDF dinamicamente con gestione migliore
-            if (!window.jspdfLoaded) {
-                window.jspdfLoaded = true;
-                var script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-                script.onload = function() {
-                    console.log('jsPDF UMD caricato:', typeof window.jsPDF);
-                    window.jsPDFReady = true;
-                };
-                script.onerror = function() {
-                    console.error('Errore nel caricamento di jsPDF');
-                };
-                document.head.appendChild(script);
+            // Carica jsPDF con approccio sincrono
+            if (!window.jsPDFLoaded) {
+                window.jsPDFLoaded = true;
+                
+                // Prova prima con CDN principale
+                function loadJsPDF(callback) {
+                    var script = document.createElement('script');
+                    script.src = 'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js';
+                    script.onload = function() {
+                        console.log('jsPDF caricato da unpkg:', typeof window.jsPDF);
+                        if (window.jsPDF) {
+                            window.jsPDFReady = true;
+                            callback(true);
+                        } else {
+                            callback(false);
+                        }
+                    };
+                    script.onerror = function() {
+                        console.log('Errore unpkg, provo cdnjs...');
+                        callback(false);
+                    };
+                    document.head.appendChild(script);
+                }
+                
+                // Fallback con cdnjs
+                function loadJsPDFFallback(callback) {
+                    var script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    script.onload = function() {
+                        console.log('jsPDF caricato da cdnjs:', typeof window.jsPDF);
+                        if (window.jsPDF) {
+                            window.jsPDFReady = true;
+                            callback(true);
+                        } else {
+                            callback(false);
+                        }
+                    };
+                    script.onerror = function() {
+                        console.error('Errore anche con cdnjs');
+                        callback(false);
+                    };
+                    document.head.appendChild(script);
+                }
+                
+                // Carica con fallback
+                loadJsPDF(function(success) {
+                    if (!success) {
+                        loadJsPDFFallback(function(success2) {
+                            if (!success2) {
+                                console.error('Impossibile caricare jsPDF da entrambi i CDN');
+                            }
+                        });
+                    }
+                });
             }
             </script>
             <?php
@@ -5252,7 +5293,7 @@ class IncidentiMetaBoxes {
                 'incidenti-pdf-print',
                 plugin_dir_url(__FILE__) . '../assets/js/pdf-print.js',
                 array('jquery'),
-                '1.0.2', // Incrementa versione per forzare reload
+                '1.0.3', // Incrementa versione per forzare reload
                 true
             );
             
@@ -5335,23 +5376,31 @@ class IncidentiMetaBoxes {
                         button.prop('disabled', false);
                         
                         if (response.success) {
-                            // Attendi un momento per assicurarsi che jsPDF sia caricato
-                            // Attendi che jsPDF sia completamente caricato
-                            function waitForJsPDF(callback, maxTries = 20) {
-                                if (window.jsPDFReady && window.jsPDF) {
+                            // Attendi che jsPDF sia completamente caricato con diagnostica migliorata
+                            function waitForJsPDF(callback, maxTries = 30) {
+                                console.log('Controllo jsPDF - tentativo:', (31 - maxTries), 'window.jsPDF:', typeof window.jsPDF, 'window.jsPDFReady:', window.jsPDFReady);
+                                
+                                if (window.jsPDF && (window.jsPDFReady || typeof window.jsPDF === 'function' || typeof window.jsPDF.jsPDF === 'function')) {
+                                    console.log('jsPDF trovato, eseguendo callback');
                                     callback();
                                 } else if (maxTries > 0) {
-                                    setTimeout(() => waitForJsPDF(callback, maxTries - 1), 250);
+                                    setTimeout(() => waitForJsPDF(callback, maxTries - 1), 500);
                                 } else {
                                     console.error('jsPDF non si è caricato entro il timeout');
+                                    console.log('Stato finale - window.jsPDF:', window.jsPDF);
+                                    console.log('Oggetti window con "pdf":', Object.keys(window).filter(k => k.toLowerCase().includes('pdf')));
                                     error.show();
+                                    button.prop('disabled', false);
                                 }
                             }
 
-                            waitForJsPDF(function() {
-                                generateClientSidePDF();
-                                success.show();
-                            });
+                            // Aggiungi un delay iniziale per dare tempo al caricamento
+                            setTimeout(function() {
+                                waitForJsPDF(function() {
+                                    generateClientSidePDF();
+                                    success.show();
+                                });
+                            }, 1000);
                         } else {
                             error.show();
                             console.error('Errore PDF:', response.data);

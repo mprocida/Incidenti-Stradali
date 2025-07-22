@@ -4,41 +4,37 @@
  */
 
     window.generateIncidentePDF = function() {
-    console.log('Inizializzazione generateIncidentePDF');
-    console.log('window.jsPDF disponibile:', typeof window.jsPDF);
-    console.log('window.jsPDFReady:', window.jsPDFReady);
+    console.log('=== INIZIO generateIncidentePDF ===');
+    console.log('window.jsPDF:', window.jsPDF);
+    console.log('typeof window.jsPDF:', typeof window.jsPDF);
     
-    // Gestione migliorata del caricamento jsPDF
-    let jsPDF;
+    // Gestione robusta di jsPDF con multiple verifiche
+    let jsPDF = null;
     
-    // Controllo per la versione UMD
-    if (typeof window.jsPDF !== 'undefined') {
-        if (typeof window.jsPDF.jsPDF === 'function') {
-            jsPDF = window.jsPDF.jsPDF; // Versione UMD
-            console.log('Usando jsPDF UMD');
-        } else if (typeof window.jsPDF === 'function') {
-            jsPDF = window.jsPDF; // Versione standard
-            console.log('Usando jsPDF standard');
-        }
+    // Verifica 1: jsPDF UMD format
+    if (window.jsPDF && typeof window.jsPDF.jsPDF === 'function') {
+        jsPDF = window.jsPDF.jsPDF;
+        console.log('✓ Trovato jsPDF UMD format');
     }
-        
-        if (!jsPDF) {
-            console.error('jsPDF non disponibile');
-            console.log('Oggetti window disponibili:', Object.keys(window).filter(k => k.toLowerCase().includes('pdf')));
-            console.log('Tentativo di ricaricamento...');
-            
-            // Tentativo di ricaricamento
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            script.onload = function() {
-                console.log('jsPDF ricaricato, riprovando...');
-                setTimeout(() => window.generateIncidentePDF(), 1000);
-            };
-            document.head.appendChild(script);
-            return;
-        }
-
-        console.log('jsPDF inizializzato correttamente, procedendo con la generazione...');
+    // Verifica 2: jsPDF direct function
+    else if (typeof window.jsPDF === 'function') {
+        jsPDF = window.jsPDF;
+        console.log('✓ Trovato jsPDF direct function');
+    }
+    // Verifica 3: namespace jspdf
+    else if (window.jspdf && typeof window.jspdf.jsPDF === 'function') {
+        jsPDF = window.jspdf.jsPDF;
+        console.log('✓ Trovato jspdf namespace');
+    }
+    
+    if (!jsPDF) {
+        console.error('❌ jsPDF non trovato in nessun formato');
+        console.log('Oggetti disponibili:', Object.keys(window).filter(k => k.toLowerCase().includes('pdf')));
+        jQuery('#pdf-error').show();
+        return;
+    }
+    
+    console.log('✓ jsPDF pronto per l\'uso');
 
         const pdf = new jsPDF('p', 'mm', 'a4');
     

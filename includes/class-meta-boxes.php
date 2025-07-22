@@ -5380,7 +5380,8 @@ class IncidentiMetaBoxes {
                     
                     // Salva come file HTML (che può essere stampato come PDF)
                     $upload_dir = wp_upload_dir();
-                    $pdf_dir = $upload_dir['basedir'] . '/incidenti-pdf/';
+                    //$pdf_dir = $upload_dir['basedir'] . '/incidenti-pdf/';
+                    $pdf_dir = $upload_dir['basedir'] . '/pdf/' . 'incidenti-pdf/';
                     
                     if (!file_exists($pdf_dir)) {
                         wp_mkdir_p($pdf_dir);

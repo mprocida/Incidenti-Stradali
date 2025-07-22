@@ -18,6 +18,7 @@ class IncidentiMetaBoxes {
         // NUOVO: Azioni per stampa PDF
         add_action('admin_enqueue_scripts', array($this, 'enqueue_pdf_scripts'));
         add_action('wp_ajax_print_incidente_pdf', array($this, 'generate_pdf'));
+        add_action('wp_ajax_get_incidente_data_for_pdf', array($this, 'get_incidente_data_for_pdf'));
         add_action('add_meta_boxes', array($this, 'add_print_meta_box'));
     }
     
@@ -5227,11 +5228,20 @@ class IncidentiMetaBoxes {
         global $post;
         
         if ($hook === 'post.php' && $post && $post->post_type === 'incidente_stradale') {
-            // Script leggero solo per l'interfaccia
+            // jsPDF dalla CDN
+            wp_enqueue_script(
+                'jspdf',
+                'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+                array(),
+                '2.5.1',
+                true
+            );
+            
+            // Script per l'interfaccia
             wp_enqueue_script(
                 'incidenti-pdf-interface',
-                plugin_dir_url(__FILE__) . '../assets/js/pdf-interface.js',
-                array('jquery'),
+                plugin_dir_url(__FILE__) . '../assets/js/pdf-print.js',
+                array('jquery', 'jspdf'),
                 '2.0.0',
                 true
             );
@@ -5249,6 +5259,18 @@ class IncidentiMetaBoxes {
      * Render della meta box per la stampa
      */
     public function render_stampa_pdf_meta_box($post) {
+        // Solo per incidenti già salvati
+        if ($post->post_status === 'auto-draft' || !$post->ID) {
+            ?>
+            <div class="incidenti-stampa-container" style="text-align: center; padding: 20px;">
+                <p style="color: #666; font-style: italic;">
+                    <?php _e('Salva l\'incidente per abilitare la stampa PDF.', 'incidenti-stradali'); ?>
+                </p>
+            </div>
+            <?php
+            return;
+        }
+        
         wp_nonce_field('incidente_print_pdf', 'incidente_print_pdf_nonce');
         
         ?>
@@ -5298,51 +5320,40 @@ class IncidentiMetaBoxes {
                 loading.show();
                 button.prop('disabled', true);
                 
-                // Raccogli tutti i dati del form
-                var formData = new FormData(document.getElementById('post'));
-                formData.append('action', 'print_incidente_pdf');
-                formData.append('security', incidentiPDF.nonce);
-                formData.append('post_id', incidentiPDF.post_id);
+                // Verifica se jsPDF è caricato
+                if (typeof window.jsPDF === 'undefined') {
+                    loading.hide();
+                    error.show();
+                    button.prop('disabled', false);
+                    console.error('jsPDF non caricato');
+                    return;
+                }
                 
+                // Chiamata AJAX per ottenere i dati
                 $.ajax({
                     url: incidentiPDF.ajax_url,
                     type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
+                    data: {
+                        action: 'get_incidente_data_for_pdf',
+                        security: incidentiPDF.nonce,
+                        post_id: incidentiPDF.post_id
+                    },
                     success: function(response) {
                         loading.hide();
                         button.prop('disabled', false);
                         
                         if (response.success) {
-                            // Attendi che jsPDF sia completamente caricato con diagnostica migliorata
-                            function waitForJsPDF(callback, maxTries = 30) {
-                                console.log('Controllo jsPDF - tentativo:', (31 - maxTries), 'window.jsPDF:', typeof window.jsPDF, 'window.jsPDFReady:', window.jsPDFReady);
-                                
-                                if (window.jsPDF && (window.jsPDFReady || typeof window.jsPDF === 'function' || typeof window.jsPDF.jsPDF === 'function')) {
-                                    console.log('jsPDF trovato, eseguendo callback');
-                                    callback();
-                                } else if (maxTries > 0) {
-                                    setTimeout(() => waitForJsPDF(callback, maxTries - 1), 500);
-                                } else {
-                                    console.error('jsPDF non si è caricato entro il timeout');
-                                    console.log('Stato finale - window.jsPDF:', window.jsPDF);
-                                    console.log('Oggetti window con "pdf":', Object.keys(window).filter(k => k.toLowerCase().includes('pdf')));
-                                    error.show();
-                                    button.prop('disabled', false);
-                                }
+                            // Genera PDF lato client
+                            try {
+                                generatePDF(response.data);
+                                success.show();
+                            } catch (e) {
+                                console.error('Errore generazione PDF:', e);
+                                error.show();
                             }
-
-                            // Aggiungi un delay iniziale per dare tempo al caricamento
-                            setTimeout(function() {
-                                waitForJsPDF(function() {
-                                    generateClientSidePDF();
-                                    success.show();
-                                });
-                            }, 1000);
                         } else {
                             error.show();
-                            console.error('Errore PDF:', response.data);
+                            console.error('Errore dati:', response.data);
                         }
                     },
                     error: function(xhr, status, errorThrown) {
@@ -5354,11 +5365,41 @@ class IncidentiMetaBoxes {
                 });
             });
             
-            function generateClientSidePDF() {
-                // Questa funzione sarà implementata nel file JavaScript separato
-                if (typeof window.generateIncidentePDF === 'function') {
-                    window.generateIncidentePDF();
+            function generatePDF(data) {
+                const { jsPDF } = window.jsPDF;
+                const doc = new jsPDF();
+                
+                // Aggiungi intestazione
+                doc.setFontSize(16);
+                doc.text('VERBALE INCIDENTE STRADALE', 20, 20);
+                
+                // Aggiungi dati principali
+                doc.setFontSize(12);
+                let y = 40;
+                
+                if (data.data_incidente) {
+                    doc.text('Data: ' + data.data_incidente, 20, y);
+                    y += 10;
                 }
+                
+                if (data.ora_incidente) {
+                    doc.text('Ora: ' + data.ora_incidente, 20, y);
+                    y += 10;
+                }
+                
+                if (data.via_piazza) {
+                    doc.text('Luogo: ' + data.via_piazza, 20, y);
+                    y += 10;
+                }
+                
+                if (data.natura_incidente) {
+                    doc.text('Natura: ' + data.natura_incidente, 20, y);
+                    y += 10;
+                }
+                
+                // Salva il PDF
+                const filename = 'incidente_' + incidentiPDF.post_id + '.pdf';
+                doc.save(filename);
             }
         });
         </script>
@@ -5483,5 +5524,34 @@ class IncidentiMetaBoxes {
         );
         
         return $data;
+    }
+
+    /**
+     * Restituisce i dati dell'incidente per la generazione PDF
+     */
+    public function get_incidente_data_for_pdf() {
+        // Verifica nonce
+        if (!wp_verify_nonce($_POST['security'], 'incidente_pdf_nonce')) {
+            wp_die('Accesso negato');
+        }
+        
+        $post_id = intval($_POST['post_id']);
+        
+        if (!current_user_can('edit_post', $post_id)) {
+            wp_send_json_error('Permessi insufficienti');
+        }
+        
+        // Raccogli i dati dell'incidente
+        $data = array(
+            'data_incidente' => get_post_meta($post_id, 'data_incidente', true),
+            'ora_incidente' => get_post_meta($post_id, 'ora_incidente', true),
+            'via_piazza' => get_post_meta($post_id, 'via_piazza', true),
+            'natura_incidente' => get_post_meta($post_id, 'natura_incidente', true),
+            'provincia' => get_post_meta($post_id, 'provincia', true),
+            'comune' => get_post_meta($post_id, 'comune', true),
+            'tipo_strada' => get_post_meta($post_id, 'tipo_strada', true)
+        );
+        
+        wp_send_json_success($data);
     }
 }

@@ -1,31 +1,28 @@
-// File finale per interfaccia PDF - UNICO HANDLER
+/**
+ * Script per la gestione della stampa PDF degli incidenti stradali
+ * File: assets/js/pdf-print.js
+ */
+
 jQuery(document).ready(function($) {
-    // Assicurati che ci sia un solo event listener
-    $('#stampa-incidente-pdf').off('click').on('click', function() {
+    
+    // Gestione click del pulsante PDF
+    $('#stampa-incidente-pdf').on('click', function(e) {
+        e.preventDefault();
+        
         var button = $(this);
-        var loading = $('#pdf-loading');
-        var success = $('#pdf-success');
-        var error = $('#pdf-error');
+        var loadingDiv = $('#pdf-loading');
+        var successDiv = $('#pdf-success');
+        var errorDiv = $('#pdf-error');
         
-        // Previeni multiple chiamate
-        if (button.prop('disabled')) {
-            console.log('Bottone già disabilitato, ignoro il click');
-            return false;
-        }
+        // Reset dello stato
+        successDiv.hide();
+        errorDiv.hide();
         
-        // Reset stati
-        success.hide();
-        error.hide();
-        loading.show();
-        button.prop('disabled', true);
+        // Disabilita il pulsante e mostra loading
+        button.prop('disabled', true).text('Generazione in corso...');
+        loadingDiv.show();
         
-        // Debug
-        console.log('Avvio generazione PDF...', {
-            ajax_url: incidentiPDF.ajax_url,
-            post_id: incidentiPDF.post_id
-        });
-        
-        // Chiamata AJAX al server per generazione PDF
+        // Chiamata AJAX
         $.ajax({
             url: incidentiPDF.ajax_url,
             type: 'POST',
@@ -35,65 +32,105 @@ jQuery(document).ready(function($) {
                 post_id: incidentiPDF.post_id
             },
             timeout: 30000, // 30 secondi di timeout
+            
             success: function(response) {
-                console.log('Risposta ricevuta:', response);
+                console.log('Risposta server:', response);
                 
-                loading.hide();
-                button.prop('disabled', false);
-                
-                if (response.success) {
-                    success.show();
+                if (response.success && response.data.download_url) {
+                    // Successo - mostra messaggio e inizia download
+                    successDiv.show();
                     
-                    // Auto-download del PDF se disponibile
-                    if (response.data && response.data.download_url) {
-                        console.log('Avvio download:', response.data.download_url);
-                        
-                        // Attendi un momento prima del download per mostrare il messaggio di successo
-                        setTimeout(function() {
-                            var link = document.createElement('a');
-                            link.href = response.data.download_url;
-                            link.download = response.data.filename || 'incidente.pdf';
-                            link.style.display = 'none';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            console.log('Download completato');
-                        }, 500);
-                    } else {
-                        console.warn('URL download non trovato nella risposta');
-                    }
+                    // Crea link temporaneo per il download
+                    var link = document.createElement('a');
+                    link.href = response.data.download_url;
+                    link.download = response.data.filename || 'incidente.pdf';
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Nascondi il messaggio di successo dopo 5 secondi
+                    setTimeout(function() {
+                        successDiv.fadeOut();
+                    }, 5000);
+                    
                 } else {
-                    error.show();
-                    console.error('Errore PDF:', response.data || response);
+                    // Errore dal server
+                    var errorMessage = response.data || 'Errore sconosciuto nella generazione del PDF';
+                    console.error('Errore PDF:', errorMessage);
                     
-                    // Mostra errore più dettagliato se disponibile
-                    if (response.data && typeof response.data === 'string') {
-                        var errorSpan = error.find('span:last');
-                        if (errorSpan.length) {
-                            errorSpan.text('Errore: ' + response.data);
-                        }
-                    }
+                    errorDiv.find('span').last().text('Errore: ' + errorMessage);
+                    errorDiv.show();
                 }
             },
-            error: function(xhr, status, errorThrown) {
-                console.error('Errore AJAX:', {
-                    status: status,
-                    error: errorThrown,
-                    response: xhr.responseText
-                });
+            
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Errore AJAX:', textStatus, errorThrown);
+                console.error('Risposta server:', xhr.responseText);
                 
-                loading.hide();
-                button.prop('disabled', false);
-                error.show();
+                var errorMessage = 'Errore di comunicazione con il server';
                 
-                // Mostra errore più specifico
-                var errorSpan = error.find('span:last');
-                if (errorSpan.length) {
-                    errorSpan.text('Errore di comunicazione: ' + (errorThrown || status));
+                if (textStatus === 'timeout') {
+                    errorMessage = 'La generazione del PDF sta richiedendo troppo tempo. Riprova.';
+                } else if (xhr.status === 500) {
+                    errorMessage = 'Errore interno del server. Controlla i log.';
+                } else if (xhr.status === 403) {
+                    errorMessage = 'Non hai i permessi per generare questo PDF.';
+                } else if (xhr.status === 0) {
+                    errorMessage = 'Problema di connessione. Verifica la tua connessione internet.';
                 }
+                
+                errorDiv.find('span').last().text(errorMessage);
+                errorDiv.show();
+            },
+            
+            complete: function() {
+                // Ripristina sempre il pulsante
+                loadingDiv.hide();
+                button.prop('disabled', false);
+                button.html('<span class="dashicons dashicons-media-document" style="margin-right: 5px;"></span>Genera PDF');
             }
         });
-        
-        return false; // Previeni comportamenti predefiniti
     });
+    
+    // Funzione helper per il debug
+    function debugPDFGeneration() {
+        if (window.console && console.log) {
+            console.log('PDF Generator - Post ID:', incidentiPDF.post_id);
+            console.log('PDF Generator - AJAX URL:', incidentiPDF.ajax_url);
+            console.log('PDF Generator - Nonce:', incidentiPDF.nonce);
+        }
+    }
+    
+    // Avvia debug se necessario
+    if (typeof incidentiPDF !== 'undefined') {
+        debugPDFGeneration();
+    }
+    
+    // Gestione errori globali per debugging
+    window.addEventListener('error', function(e) {
+        if (e.filename && e.filename.includes('pdf-print.js')) {
+            console.error('Errore JavaScript in pdf-print.js:', e.message, 'Riga:', e.lineno);
+        }
+    });
+    
+    // Aggiunge informazioni di debug al pulsante (solo in modalità debug)
+    if (typeof WP_DEBUG !== 'undefined' && WP_DEBUG) {
+        $('#stampa-incidente-pdf').attr('title', 'Post ID: ' + incidentiPDF.post_id);
+    }
 });
+
+/**
+ * Funzione di utilità per verificare se il browser supporta il download
+ */
+function browserSupportsDownload() {
+    var a = document.createElement('a');
+    return typeof a.download !== 'undefined';
+}
+
+/**
+ * Fallback per browser che non supportano download automatico
+ */
+function openPDFInNewTab(url) {
+    window.open(url, '_blank');
+}

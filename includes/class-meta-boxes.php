@@ -20,6 +20,9 @@ class IncidentiMetaBoxes {
         add_action('wp_ajax_print_incidente_pdf', array($this, 'generate_pdf'));
         add_action('wp_ajax_get_incidente_data_for_pdf', array($this, 'get_incidente_data_for_pdf'));
         add_action('add_meta_boxes', array($this, 'add_print_meta_box'));
+
+        add_action('wp_ajax_print_incidente_pdf', array($this, 'generate_pdf'));
+        add_action('wp_ajax_nopriv_print_incidente_pdf', array($this, 'generate_pdf')); // Se serve per utenti non loggati
     }
     
     public function add_meta_boxes() {
@@ -5222,20 +5225,18 @@ class IncidentiMetaBoxes {
     }
 
     /**
-     * Enqueue degli script necessari per il PDF - VERSIONE CORRETTA
+     * Aggiorna il metodo di enqueue per includere il nuovo JS
      */
     public function enqueue_pdf_scripts($hook) {
         global $post;
         
         if ($hook === 'post.php' && $post && $post->post_type === 'incidente_stradale') {
-            // NON caricare più jsPDF - genera PDF lato server
-            
-            // Solo script per l'interfaccia (opzionale se usi JavaScript inline)
+            // Enqueue del JavaScript per l'interfaccia PDF
             wp_enqueue_script(
                 'incidenti-pdf-interface',
                 plugin_dir_url(__FILE__) . '../assets/js/pdf-print.js',
                 array('jquery'),
-                '2.1.0',
+                '2.2.0', // Aggiorna versione
                 true
             );
             
@@ -5243,7 +5244,8 @@ class IncidentiMetaBoxes {
             wp_localize_script('incidenti-pdf-interface', 'incidentiPDF', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('incidente_pdf_nonce'),
-                'post_id' => $post->ID
+                'post_id' => $post->ID,
+                'debug' => defined('WP_DEBUG') && WP_DEBUG
             ));
         }
     }
@@ -5304,150 +5306,630 @@ class IncidentiMetaBoxes {
     }
 
     /**
-     * Genera i dati per il PDF via AJAX - VERSIONE CORRETTA
+     * Genera PDF via AJAX - VERSIONE AGGIORNATA E COMPLETA
      */
     public function generate_pdf() {
         // Verifica nonce
         if (!wp_verify_nonce($_POST['security'], 'incidente_pdf_nonce')) {
-            wp_send_json_error('Accesso negato');
+            wp_send_json_error('Accesso negato - Token di sicurezza non valido');
             return;
         }
         
         $post_id = intval($_POST['post_id']);
         
+        // Verifica che il post esista e sia del tipo corretto
+        $post = get_post($post_id);
+        if (!$post || $post->post_type !== 'incidente_stradale') {
+            wp_send_json_error('Incidente non trovato o tipo non valido');
+            return;
+        }
+        
+        // Verifica permessi
         if (!current_user_can('edit_post', $post_id)) {
-            wp_send_json_error('Permessi insufficienti');
+            wp_send_json_error('Non hai i permessi per modificare questo incidente');
             return;
         }
         
         try {
-            // Verifica se esiste la classe PDF_Generator
-            if (!class_exists('PDF_Generator')) {
-                // Se non esiste, crea un PDF base con dati essenziali
-                $pdf_content = $this->generate_simple_pdf($post_id);
+            // Prova a usare la classe PDF_Generator se disponibile
+            if (class_exists('PDF_Generator')) {
+                
+                error_log("PDF Generator: Generando PDF per post {$post_id}");
+                
+                $pdf_generator = new PDF_Generator();
+                $pdf_path = $pdf_generator->generate_incidente_pdf($post_id);
+                
+                if ($pdf_path && file_exists($pdf_path)) {
+                    
+                    // Converte il path in URL
+                    $upload_dir = wp_upload_dir();
+                    $pdf_url = str_replace($upload_dir['basedir'], $upload_dir['baseurl'], $pdf_path);
+                    
+                    // Verifica che l'URL sia accessibile
+                    if (filter_var($pdf_url, FILTER_VALIDATE_URL)) {
+                        
+                        error_log("PDF Generator: PDF creato con successo - {$pdf_url}");
+                        
+                        wp_send_json_success(array(
+                            'download_url' => $pdf_url,
+                            'filename' => basename($pdf_path),
+                            'message' => 'PDF generato con successo',
+                            'file_size' => $this->format_bytes(filesize($pdf_path))
+                        ));
+                        return;
+                        
+                    } else {
+                        error_log("PDF Generator: URL non valido - {$pdf_url}");
+                        wp_send_json_error('URL del PDF non valido');
+                        return;
+                    }
+                    
+                } else {
+                    error_log("PDF Generator: File PDF non creato o non trovato - {$pdf_path}");
+                    wp_send_json_error('File PDF non creato. Controlla i permessi della cartella uploads.');
+                    return;
+                }
+                
+            } else {
+                // Fallback: genera PDF semplice se TCPDF non disponibile
+                error_log("PDF Generator: Classe PDF_Generator non trovata, uso fallback");
+                
+                $pdf_content = $this->generate_simple_html_pdf($post_id);
                 
                 if ($pdf_content) {
-                    // Crea il file PDF nella directory uploads
+                    
+                    // Salva come file HTML (che può essere stampato come PDF)
                     $upload_dir = wp_upload_dir();
                     $pdf_dir = $upload_dir['basedir'] . '/incidenti-pdf/';
                     
-                    // Crea la directory se non esiste
                     if (!file_exists($pdf_dir)) {
                         wp_mkdir_p($pdf_dir);
                     }
                     
-                    $filename = 'incidente_' . $post_id . '_' . date('Y-m-d_H-i-s') . '.pdf';
+                    $filename = 'incidente_' . $post_id . '_' . date('Y-m-d_H-i-s') . '.html';
                     $pdf_path = $pdf_dir . $filename;
                     
-                    // Salva il PDF
                     if (file_put_contents($pdf_path, $pdf_content)) {
+                        
                         $pdf_url = $upload_dir['baseurl'] . '/incidenti-pdf/' . $filename;
                         
                         wp_send_json_success(array(
                             'download_url' => $pdf_url,
-                            'filename' => $filename
+                            'filename' => $filename,
+                            'message' => 'Documento HTML generato (stampabile come PDF)',
+                            'file_size' => $this->format_bytes(strlen($pdf_content))
                         ));
                         return;
+                        
                     } else {
                         wp_send_json_error('Impossibile salvare il file PDF');
                         return;
                     }
+                    
                 } else {
                     wp_send_json_error('Errore nella generazione del contenuto PDF');
                     return;
                 }
             }
             
-            // Se esiste PDF_Generator, usalo
-            $pdf_generator = new PDF_Generator();
-            $pdf_path = $pdf_generator->generate_incidente_pdf($post_id);
-            
-            if ($pdf_path && file_exists($pdf_path)) {
-                // Invia URL per download
-                $pdf_url = str_replace(WP_CONTENT_DIR, WP_CONTENT_URL, $pdf_path);
-                wp_send_json_success(array(
-                    'download_url' => $pdf_url,
-                    'filename' => basename($pdf_path)
-                ));
-            } else {
-                wp_send_json_error('Errore nella generazione del PDF - file non trovato');
-            }
-            
         } catch (Exception $e) {
-            error_log('Errore PDF: ' . $e->getMessage());
-            wp_send_json_error('Errore interno del server: ' . $e->getMessage());
+            error_log('Errore PDF Generator: ' . $e->getMessage());
+            error_log('Stack trace: ' . $e->getTraceAsString());
+            wp_send_json_error('Errore interno: ' . $e->getMessage());
+        } catch (Error $e) {
+            error_log('Errore fatale PDF Generator: ' . $e->getMessage());
+            wp_send_json_error('Errore fatale nella generazione PDF');
         }
     }
 
     /**
      * Genera un PDF semplice senza librerie esterne
      */
-    private function generate_simple_pdf($post_id) {
-        // Raccogli dati di base
+    private function generate_simple_html_pdf($post_id) {
+        $post = get_post($post_id);
+        if (!$post) return false;
+        
+        // Raccogli TUTTI i dati principali (molto più della versione precedente)
         $data_incidente = get_post_meta($post_id, 'data_incidente', true);
         $ora_incidente = get_post_meta($post_id, 'ora_incidente', true);
         $minuti_incidente = get_post_meta($post_id, 'minuti_incidente', true);
         $comune = get_post_meta($post_id, 'comune_incidente', true);
-        $tipo_strada = get_post_meta($post_id, 'tipo_strada', true);
         $denominazione_strada = get_post_meta($post_id, 'denominazione_strada', true);
         $natura_incidente = get_post_meta($post_id, 'natura_incidente', true);
         $codice_ente = get_post_meta($post_id, 'codice__ente', true);
+        $ente_rilevatore = get_post_meta($post_id, 'ente_rilevatore', true);
+        $nome_rilevatore = get_post_meta($post_id, 'nome_rilevatore', true);
+        $numero_veicoli = get_post_meta($post_id, 'numero_veicoli_coinvolti', true);
+        $tipo_strada = get_post_meta($post_id, 'tipo_strada', true);
+        $latitudine = get_post_meta($post_id, 'latitudine', true);
+        $longitudine = get_post_meta($post_id, 'longitudine', true);
         
-        // Mappa i comuni
+        // Dati conducenti
+        $conducente_1_eta = get_post_meta($post_id, 'conducente_1_eta', true);
+        $conducente_1_sesso = get_post_meta($post_id, 'conducente_1_sesso', true);
+        $conducente_1_esito = get_post_meta($post_id, 'conducente_1_esito', true);
+        
+        // Dati pedoni
+        $pedoni_feriti = get_post_meta($post_id, 'numero_pedoni_feriti', true);
+        $pedoni_morti = get_post_meta($post_id, 'numero_pedoni_morti', true);
+        
+        // Mappa comuni (usa la funzione che già hai)
         $comuni_lecce = $this->get_comuni_lecce();
         $nome_comune = isset($comuni_lecce[$comune]) ? $comuni_lecce[$comune] : $comune;
         
-        // Crea contenuto HTML
+        // Mappa natura incidente
+        $nature_map = array(
+            'A' => 'Tra veicoli in marcia',
+            'B' => 'Tra veicolo e pedoni', 
+            'C' => 'Veicolo in marcia che urta veicolo fermo o altro',
+            'D' => 'Veicolo in marcia senza urto',
+            'E' => 'Altro'
+        );
+        $natura_nome = isset($nature_map[$natura_incidente]) ? $nature_map[$natura_incidente] : $natura_incidente;
+        
+        // Mappa tipo strada
+        $tipi_strada = array(
+            '0' => 'Regionale entro l\'abitato',
+            '1' => 'Strada urbana',
+            '2' => 'Provinciale entro l\'abitato',
+            '3' => 'Statale entro l\'abitato',
+            '4' => 'Strada comunale extraurbana',
+            '5' => 'Strada provinciale fuori dell\'abitato',
+            '6' => 'Strada statale fuori dell\'abitato',
+            '7' => 'Autostrada',
+            '8' => 'Altra strada'
+        );
+        $tipo_strada_nome = isset($tipi_strada[$tipo_strada]) ? $tipi_strada[$tipo_strada] : $tipo_strada;
+        
+        // HTML completo e professionale per stampa PDF
         $html = '<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Verbale Incidente Stradale</title>
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
-        .header { text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 30px; }
-        .section { margin-bottom: 20px; }
-        .label { font-weight: bold; }
-        .data-row { margin-bottom: 10px; }
-    </style>
-</head>
-<body>
-    <div class="header">VERBALE INCIDENTE STRADALE</div>
-    
-    <div class="section">
-        <div class="data-row"><span class="label">Codice:</span> ' . esc_html($codice_ente) . '</div>
-        <div class="data-row"><span class="label">Data:</span> ' . esc_html($data_incidente) . '</div>
-        <div class="data-row"><span class="label">Ora:</span> ' . esc_html($ora_incidente . ':' . $minuti_incidente) . '</div>
-        <div class="data-row"><span class="label">Comune:</span> ' . esc_html($nome_comune) . '</div>
-        <div class="data-row"><span class="label">Via/Strada:</span> ' . esc_html($denominazione_strada) . '</div>
-        <div class="data-row"><span class="label">Natura Incidente:</span> ' . esc_html($natura_incidente) . '</div>
-    </div>
-    
-    <div class="section">
-        <div class="label">Note:</div>
-        <p>Verbale generato automaticamente dal sistema di gestione incidenti stradali.</p>
-        <p>Data generazione: ' . date('d/m/Y H:i:s') . '</p>
-    </div>
-</body>
-</html>';
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verbale Incidente Stradale - ' . esc_html($codice_ente) . '</title>
+        <style>
+            @media print {
+                body { margin: 0; }
+                .no-print { display: none; }
+                .page-break { page-break-before: always; }
+            }
+            
+            body { 
+                font-family: Arial, sans-serif; 
+                font-size: 11px; 
+                line-height: 1.4; 
+                margin: 15px; 
+                background: white;
+                color: black;
+            }
+            
+            .header { 
+                text-align: center; 
+                font-size: 16px; 
+                font-weight: bold; 
+                margin-bottom: 25px; 
+                border-bottom: 3px solid #333; 
+                padding-bottom: 12px; 
+            }
+            
+            .section { 
+                margin-bottom: 18px; 
+                break-inside: avoid; 
+            }
+            
+            .section-title { 
+                font-weight: bold; 
+                font-size: 12px; 
+                background-color: #e9e9e9; 
+                padding: 6px 10px; 
+                margin-bottom: 8px; 
+                border-left: 4px solid #333; 
+            }
+            
+            .field { 
+                margin: 4px 0; 
+            }
+            
+            .field-label { 
+                font-weight: bold; 
+                display: inline-block; 
+                width: 180px; 
+                vertical-align: top; 
+            }
+            
+            .field-value { 
+                display: inline-block; 
+                width: calc(100% - 190px);
+            }
+            
+            .two-columns {
+                display: table;
+                width: 100%;
+            }
+            
+            .column {
+                display: table-cell;
+                width: 48%;
+                vertical-align: top;
+                padding-right: 2%;
+            }
+            
+            .print-button {
+                background: #0073aa;
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 13px;
+                margin-bottom: 15px;
+            }
+            
+            .print-button:hover {
+                background: #005a87;
+            }
+            
+            .footer {
+                margin-top: 30px;
+                font-size: 9px;
+                color: #666;
+                border-top: 1px solid #ccc;
+                padding-top: 8px;
+            }
+            
+            .veicolo-box {
+                border-left: 3px solid #007cba;
+                padding: 8px;
+                margin: 10px 0;
+                background: #f8f9fa;
+            }
+            
+            .veicolo-title {
+                color: #007cba;
+                font-weight: bold;
+                margin: 0 0 8px 0;
+            }
+            
+            @page {
+                margin: 1.5cm;
+                size: A4;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="no-print">
+            <button class="print-button" onclick="window.print()">🖨️ Stampa come PDF</button>
+            <button class="print-button" onclick="window.close()" style="background: #666;">✖️ Chiudi</button>
+        </div>
         
-        // Per ora ritorna HTML (potresti convertirlo in PDF con una libreria)
-        // Se vuoi un vero PDF, dovresti utilizzare una libreria come TCPDF o mPDF
+        <div class="header">
+            VERBALE INCIDENTE STRADALE<br>
+            <div style="font-size: 12px; margin-top: 8px; font-weight: normal;">
+                Rilevazione statistica degli incidenti stradali con lesioni a persone
+            </div>
+        </div>
         
-        return $html; // Questo genererà un "PDF" che è in realtà HTML
+        <div class="section">
+            <div class="section-title">DATI GENERALI</div>
+            <div class="two-columns">
+                <div class="column">';
+                
+                    if ($codice_ente) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Codice Ente:</span>
+                            <span class="field-value">' . esc_html($codice_ente) . '</span>
+                        </div>';
+                    }
+                    
+                    if ($data_incidente) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Data Incidente:</span>
+                            <span class="field-value">' . esc_html($this->format_date_simple($data_incidente)) . '</span>
+                        </div>';
+                    }
+                    
+                    if ($ora_incidente) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Ora:</span>
+                            <span class="field-value">' . esc_html($ora_incidente . ':' . str_pad($minuti_incidente, 2, '0', STR_PAD_LEFT)) . '</span>
+                        </div>';
+                    }
+                    
+                    $html .= '<div class="field">
+                        <span class="field-label">Provincia:</span>
+                        <span class="field-value">Lecce (075)</span>
+                    </div>';
+                    
+                $html .= '</div>
+                <div class="column">';
+                
+                    if ($nome_comune) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Comune:</span>
+                            <span class="field-value">' . esc_html($nome_comune) . '</span>
+                        </div>';
+                    }
+                    
+                    if ($denominazione_strada) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Via/Strada:</span>
+                            <span class="field-value">' . esc_html($denominazione_strada) . '</span>
+                        </div>';
+                    }
+                    
+                    if ($ente_rilevatore) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Ente Rilevatore:</span>
+                            <span class="field-value">' . esc_html($ente_rilevatore) . '</span>
+                        </div>';
+                    }
+                    
+                    if ($nome_rilevatore) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Rilevatore:</span>
+                            <span class="field-value">' . esc_html($nome_rilevatore) . '</span>
+                        </div>';
+                    }
+                    
+                $html .= '</div>
+            </div>
+        </div>';
         
-        // Se hai TCPDF disponibile, usa questo codice invece:
-        /*
-        if (class_exists('TCPDF')) {
-            $pdf = new TCPDF();
-            $pdf->AddPage();
-            $pdf->writeHTML($html);
-            return $pdf->Output('', 'S'); // Ritorna come stringa
+        // LOCALIZZAZIONE
+        if ($tipo_strada || $latitudine || $longitudine) {
+            $html .= '<div class="section">
+                <div class="section-title">LOCALIZZAZIONE</div>';
+                
+                if ($tipo_strada_nome) {
+                    $html .= '<div class="field">
+                        <span class="field-label">Tipo Strada:</span>
+                        <span class="field-value">' . esc_html($tipo_strada_nome) . '</span>
+                    </div>';
+                }
+                
+                if ($latitudine && $longitudine) {
+                    $html .= '<div class="field">
+                        <span class="field-label">Coordinate GPS:</span>
+                        <span class="field-value">Lat: ' . esc_html($latitudine) . ' - Long: ' . esc_html($longitudine) . '</span>
+                    </div>';
+                }
+                
+            $html .= '</div>';
         }
-        */
         
-        // Ritorna false se non può generare PDF
-        return false;
+        // NATURA INCIDENTE
+        if ($natura_nome || $numero_veicoli) {
+            $html .= '<div class="section">
+                <div class="section-title">NATURA DELL\'INCIDENTE</div>
+                <div class="two-columns">
+                    <div class="column">';
+                    
+                        if ($natura_nome) {
+                            $html .= '<div class="field">
+                                <span class="field-label">Natura:</span>
+                                <span class="field-value">' . esc_html($natura_nome) . '</span>
+                            </div>';
+                        }
+                        
+                    $html .= '</div>
+                    <div class="column">';
+                    
+                        if ($numero_veicoli) {
+                            $html .= '<div class="field">
+                                <span class="field-label">Veicoli Coinvolti:</span>
+                                <span class="field-value">' . esc_html($numero_veicoli) . '</span>
+                            </div>';
+                        }
+                        
+                    $html .= '</div>
+                </div>
+            </div>';
+        }
+        
+        // VEICOLI
+        $num_veicoli = intval($numero_veicoli ?: 1);
+        if ($num_veicoli > 0) {
+            $has_veicoli = false;
+            
+            // Controlla se ci sono dati veicoli
+            for ($i = 1; $i <= $num_veicoli; $i++) {
+                $tipo_veicolo = get_post_meta($post_id, "veicolo_{$i}_tipo", true);
+                $targa = get_post_meta($post_id, "veicolo_{$i}_targa", true);
+                if ($tipo_veicolo || $targa) {
+                    $has_veicoli = true;
+                    break;
+                }
+            }
+            
+            if ($has_veicoli) {
+                $html .= '<div class="section">
+                    <div class="section-title">VEICOLI COINVOLTI</div>';
+                    
+                for ($i = 1; $i <= $num_veicoli; $i++) {
+                    $tipo_veicolo = get_post_meta($post_id, "veicolo_{$i}_tipo", true);
+                    $targa = get_post_meta($post_id, "veicolo_{$i}_targa", true);
+                    $anno = get_post_meta($post_id, "veicolo_{$i}_anno_immatricolazione", true);
+                    
+                    if ($tipo_veicolo || $targa) {
+                        $html .= '<div class="veicolo-box">
+                            <div class="veicolo-title">Veicolo ' . chr(64 + $i) . '</div>';
+                            
+                        if ($tipo_veicolo) {
+                            $html .= '<div class="field">
+                                <span class="field-label">Tipo:</span>
+                                <span class="field-value">' . esc_html($this->get_tipo_veicolo_name_simple($tipo_veicolo)) . '</span>
+                            </div>';
+                        }
+                        
+                        if ($targa) {
+                            $html .= '<div class="field">
+                                <span class="field-label">Targa:</span>
+                                <span class="field-value">' . esc_html($targa) . '</span>
+                            </div>';
+                        }
+                        
+                        if ($anno) {
+                            $html .= '<div class="field">
+                                <span class="field-label">Anno Immatricolazione:</span>
+                                <span class="field-value">' . esc_html($anno) . '</span>
+                            </div>';
+                        }
+                        
+                        $html .= '</div>';
+                    }
+                }
+                
+                $html .= '</div>';
+            }
+        }
+        
+        // CONDUCENTI
+        if ($conducente_1_eta || $conducente_1_sesso || $conducente_1_esito) {
+            $html .= '<div class="section">
+                <div class="section-title">CONDUCENTI</div>';
+                
+            for ($i = 1; $i <= $num_veicoli; $i++) {
+                $eta = get_post_meta($post_id, "conducente_{$i}_eta", true);
+                $sesso = get_post_meta($post_id, "conducente_{$i}_sesso", true);
+                $esito = get_post_meta($post_id, "conducente_{$i}_esito", true);
+                
+                if ($eta || $sesso || $esito) {
+                    $html .= '<div class="veicolo-box">
+                        <div class="veicolo-title">Conducente Veicolo ' . chr(64 + $i) . '</div>';
+                        
+                    if ($eta) {
+                        $html .= '<div class="field">
+                            <span class="field-label">Età:</span>
+                            <span class="field-value">' . esc_html($eta) . ' anni</span>
+                        </div>';
+                    }
+                    
+                    if ($sesso) {
+                        $sesso_nome = ($sesso === '1') ? 'Maschio' : (($sesso === '2') ? 'Femmina' : $sesso);
+                        $html .= '<div class="field">
+                            <span class="field-label">Sesso:</span>
+                            <span class="field-value">' . esc_html($sesso_nome) . '</span>
+                        </div>';
+                    }
+                    
+                    if ($esito) {
+                        $esiti = array('1' => 'Incolume', '2' => 'Ferito', '3' => 'Morto entro 24h', '4' => 'Morto 2°-30° giorno');
+                        $esito_nome = isset($esiti[$esito]) ? $esiti[$esito] : $esito;
+                        $html .= '<div class="field">
+                            <span class="field-label">Esito:</span>
+                            <span class="field-value">' . esc_html($esito_nome) . '</span>
+                        </div>';
+                    }
+                    
+                    $html .= '</div>';
+                }
+            }
+            
+            $html .= '</div>';
+        }
+        
+        // PEDONI
+        if ($pedoni_feriti || $pedoni_morti) {
+            $html .= '<div class="section">
+                <div class="section-title">PEDONI COINVOLTI</div>
+                <div class="two-columns">
+                    <div class="column">';
+                    
+                        if ($pedoni_feriti) {
+                            $html .= '<div class="field">
+                                <span class="field-label">Pedoni Feriti:</span>
+                                <span class="field-value">' . esc_html($pedoni_feriti) . '</span>
+                            </div>';
+                        }
+                        
+                    $html .= '</div>
+                    <div class="column">';
+                    
+                        if ($pedoni_morti) {
+                            $html .= '<div class="field">
+                                <span class="field-label">Pedoni Morti:</span>
+                                <span class="field-value">' . esc_html($pedoni_morti) . '</span>
+                            </div>';
+                        }
+                        
+                    $html .= '</div>
+                </div>
+            </div>';
+        }
+        
+        $html .= '<div class="footer">
+            <div class="field">
+                <span class="field-label">Data generazione:</span>
+                <span class="field-value">' . date('d/m/Y H:i:s') . '</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Sistema:</span>
+                <span class="field-value">Sistema Gestione Incidenti Stradali</span>
+            </div>
+            <div class="field">
+                <span class="field-label">ID Incidente:</span>
+                <span class="field-value">' . esc_html($post_id) . '</span>
+            </div>
+        </div>
+        
+        <script>
+            // Funzione di stampa migliorata
+            window.addEventListener("load", function() {
+                // Imposta il titolo della finestra per la stampa
+                document.title = "Incidente_' . esc_js($codice_ente ?: $post_id) . '_' . date('Y-m-d') . '";
+            });
+            
+            // Gestione della stampa
+            function printDocument() {
+                window.print();
+            }
+            
+            // Chiudi finestra dopo stampa (opzionale)
+            window.addEventListener("afterprint", function() {
+                // Decommentare se vuoi chiudere automaticamente dopo stampa
+                // setTimeout(function() { window.close(); }, 1000);
+            });
+        </script>
+    </body>
+    </html>';
+        
+        return $html;
+    }
+
+    private function format_date_simple($date) {
+        if (empty($date)) return '';
+        $timestamp = strtotime($date);
+        return $timestamp ? date('d/m/Y', $timestamp) : $date;
+    }
+
+    private function get_tipo_veicolo_name_simple($codice) {
+        $tipi = array(
+            '1' => 'Autovettura privata',
+            '2' => 'Autovettura con rimorchio',
+            '3' => 'Autovettura pubblica',
+            '4' => 'Autovettura di soccorso/polizia',
+            '5' => 'Autobus urbano',
+            '6' => 'Autobus extraurbano',
+            '7' => 'Tram',
+            '8' => 'Autocarro',
+            '9' => 'Autotreno',
+            '10' => 'Autosnodato',
+            '11' => 'Veicoli speciali',
+            '12' => 'Trattore stradale',
+            '13' => 'Macchina agricola',
+            '14' => 'Velocipede',
+            '15' => 'Ciclomotore',
+            '16' => 'Motociclo a solo',
+            '17' => 'Motociclo con passeggero',
+            '18' => 'Motocarro',
+            '19' => 'Veicolo a trazione animale',
+            '20' => 'Veicolo ignoto (fuga)',
+            '21' => 'Quadriciclo',
+            '22' => 'Monopattino',
+            '23' => 'Bicicletta elettrica'
+        );
+        return isset($tipi[$codice]) ? $tipi[$codice] : "Tipo veicolo {$codice}";
     }
 
     /**

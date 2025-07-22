@@ -5227,21 +5227,28 @@ class IncidentiMetaBoxes {
         global $post;
         
         if ($hook === 'post.php' && $post && $post->post_type === 'incidente_stradale') {
-            // jsPDF da CDN - versione standard invece di UMD
-            wp_enqueue_script(
-                'jspdf',
-                'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.min.js',
-                array(),
-                '2.5.1',
-                true
-            );
+            // jsPDF da CDN con caricamento manuale inline
+            ?>
+            <script>
+            // Carica jsPDF dinamicamente
+            if (!window.jspdfLoaded) {
+                window.jspdfLoaded = true;
+                var script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.min.js';
+                script.onload = function() {
+                    console.log('jsPDF caricato:', typeof window.jsPDF);
+                };
+                document.head.appendChild(script);
+            }
+            </script>
+            <?php
             
             // Script personalizzato per la stampa
             wp_enqueue_script(
                 'incidenti-pdf-print',
                 plugin_dir_url(__FILE__) . '../assets/js/pdf-print.js',
-                array('jquery', 'jspdf'),
-                '1.0.0',
+                array('jquery'),
+                '1.0.1', // Incrementa versione per forzare reload
                 true
             );
             

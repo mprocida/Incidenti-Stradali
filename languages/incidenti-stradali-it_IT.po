@@ -1020,9 +1020,3 @@ msgstr "Strada regionale fuori l'abitato"
 
 msgid "Nessuno dei due"
 msgstr "Neither of the two"
-
-msgid "Autore:"
-msgstr "Autore:"
-
-msgid "Tutti gli autori"
-msgstr "Tutti gli autori"

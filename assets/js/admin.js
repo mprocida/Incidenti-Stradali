@@ -1176,6 +1176,18 @@ jQuery(document).ready(function($) {
     // Inizializza le funzioni
     initializeDeleteHandling();
     
+    // Gestione filtro autore
+    if ($('#filter-by-author').length) {
+        $('#filter-by-author').on('change', function() {
+            var selectedAuthor = $(this).val();
+            if (selectedAuthor !== '') {
+                console.log('Filtrando per autore ID:', selectedAuthor);
+            } else {
+                console.log('Filtro autore rimosso');
+            }
+        });
+    }
+    
     /**
      * Calcolo automatico riepilogo infortunati
      */
@@ -1260,4 +1272,5 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
 })(jQuery);

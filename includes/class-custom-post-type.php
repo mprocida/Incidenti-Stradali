@@ -9,6 +9,8 @@ class IncidentiCustomPostType {
         add_action('init', array($this, 'register_post_type'), 5);
         add_action('admin_init', array($this, 'check_menu_visibility'), 20);
         add_action('pre_get_posts', array($this, 'filter_posts_by_user_role'));
+        add_action('restrict_manage_posts', array($this, 'add_author_filter_dropdown'));
+
         add_filter('wp_insert_post_data', array($this, 'validate_insert_post'), 10, 2);
         add_action('admin_menu', array($this, 'fix_menu_position'), 999);
         add_action('admin_notices', array($this, 'debug_menu_registration'));
@@ -280,6 +282,11 @@ class IncidentiCustomPostType {
         if ('incidente_stradale' !== $query->get('post_type')) {
             return;
         }
+
+        // Filtro per autore (solo per amministratori)
+        if (current_user_can('manage_all_incidenti') && !empty($_GET['author'])) {
+            $query->set('author', intval($_GET['author']));
+        }
         
         $current_user = wp_get_current_user();
         
@@ -318,6 +325,60 @@ class IncidentiCustomPostType {
         }
         
         return $data;
+    }
+
+    /**
+     * Add author filter dropdown to posts list (only for admins)
+     */
+    public function add_author_filter_dropdown() {
+        global $typenow;
+        
+        if ($typenow !== 'incidente_stradale') {
+            return;
+        }
+        
+        // Solo per amministratori
+        if (!current_user_can('manage_all_incidenti')) {
+            return;
+        }
+        
+        $selected_author = isset($_GET['author']) ? intval($_GET['author']) : 0;
+        
+        // Ottieni tutti gli utenti che hanno effettivamente creato incidenti
+        global $wpdb;
+        $author_ids = $wpdb->get_col("
+            SELECT DISTINCT post_author 
+            FROM {$wpdb->posts} 
+            WHERE post_type = 'incidente_stradale' 
+            AND post_status IN ('publish', 'draft', 'pending', 'private')
+        ");
+
+        if (!empty($author_ids)) {
+            $users = get_users(array(
+                'include' => $author_ids,
+                'fields' => array('ID', 'display_name'),
+                'orderby' => 'display_name',
+                'order' => 'ASC'
+            ));
+        } else {
+            $users = array();
+        }
+        
+        if (!empty($users)) {
+            echo '<select name="author" id="filter-by-author">';
+            echo '<option value="">' . __('Tutti gli autori', 'incidenti-stradali') . '</option>';
+            
+            foreach ($users as $user) {
+                printf(
+                    '<option value="%s"%s>%s</option>',
+                    $user->ID,
+                    selected($selected_author, $user->ID, false),
+                    esc_html($user->display_name)
+                );
+            }
+            
+            echo '</select>';
+        }
     }
     
 }

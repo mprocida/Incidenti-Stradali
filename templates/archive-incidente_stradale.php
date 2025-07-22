@@ -28,7 +28,6 @@ $gravita = isset($_GET['gravita']) ? sanitize_text_field($_GET['gravita']) : '';
 $orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'date';
 $order = isset($_GET['order']) ? sanitize_text_field($_GET['order']) : 'DESC';
 $view = isset($_GET['view']) ? sanitize_text_field($_GET['view']) : 'list';
-$autore = isset($_GET['autore']) ? absint($_GET['autore']) : '';
 
 // Set default dates if custom period is selected but dates are not provided
 if ($periodo === 'custom' && (empty($data_inizio) || empty($data_fine))) {
@@ -250,11 +249,6 @@ if ($gravita === 'morti') {
     );
 }
 
-// Add author filter (only for administrators)
-if (!empty($autore) && current_user_can('manage_all_incidenti')) {
-    $args['author'] = $autore;
-}
-
 // Add orderby
 if ($orderby === 'date') {
     $args['meta_key'] = 'data_incidente';
@@ -449,26 +443,6 @@ get_header();
                                     <option value="solo_danni" <?php selected($gravita, 'solo_danni'); ?>><?php _e('Solo danni', 'incidenti-stradali'); ?></option>
                                 </select>
                             </div>
-
-                            <?php if (current_user_can('manage_all_incidenti')): ?>
-                                <div class="filter-group">
-                                    <label for="autore"><?php _e('Autore:', 'incidenti-stradali'); ?></label>
-                                    <select name="autore" id="autore">
-                                        <option value=""><?php _e('Tutti gli autori', 'incidenti-stradali'); ?></option>
-                                        <?php
-                                        $users = get_users(array(
-                                            'capability' => 'edit_incidenti',
-                                            'orderby' => 'display_name',
-                                            'order' => 'ASC'
-                                        ));
-                                        foreach ($users as $user) {
-                                            $selected = selected($autore, $user->ID, false);
-                                            echo '<option value="' . $user->ID . '" ' . $selected . '>' . esc_html($user->display_name) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            <?php endif; ?>
                             
                             <div class="filter-group">
                                 <label for="orderby"><?php _e('Ordina per:', 'incidenti-stradali'); ?></label>

@@ -366,8 +366,8 @@ class IncidentiMetaBoxes {
                 
                 $(this).addClass('disabled').text('⏳ Generazione PDF...');
                 
-                // Apri il PDF in una nuova finestra
-                var url = ajaxurl + '?action=stampa_modulo_pdf&post_id=' + postId + '_nonce=' + nonce;
+                // Apri il PDF in una nuova finestra  
+                var url = ajaxurl + '?action=stampa_modulo_pdf&post_id=' + postId + '&_nonce=' + nonce;
                 window.open(url, '_blank');
                 
                 setTimeout(() => {

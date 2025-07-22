@@ -5251,7 +5251,7 @@ class IncidentiMetaBoxes {
     }
 
     /**
-     * Render della meta box per la stampa - SENZA JAVASCRIPT INLINE
+     * Render della meta box per la stampa - VERSIONE CORRETTA
      */
     public function render_stampa_pdf_meta_box($post) {
         // Solo per incidenti già salvati
@@ -5300,8 +5300,61 @@ class IncidentiMetaBoxes {
                 </span>
             </div>
         </div>
-        
-        <!-- NESSUN JAVASCRIPT INLINE - tutto gestito da pdf-print.js -->
+
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $('#stampa-incidente-pdf').on('click', function() {
+                var button = $(this);
+                var loading = $('#pdf-loading');
+                var success = $('#pdf-success');
+                var error = $('#pdf-error');
+                
+                // Reset stati
+                success.hide();
+                error.hide();
+                loading.show();
+                button.prop('disabled', true);
+                
+                // Chiamata AJAX diretta al server per generazione PDF
+                $.ajax({
+                    url: incidentiPDF.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'print_incidente_pdf',
+                        security: incidentiPDF.nonce,
+                        post_id: incidentiPDF.post_id
+                    },
+                    success: function(response) {
+                        loading.hide();
+                        button.prop('disabled', false);
+                        
+                        if (response.success) {
+                            success.show();
+                            
+                            // Auto-download del PDF
+                            if (response.data.download_url) {
+                                var link = document.createElement('a');
+                                link.href = response.data.download_url;
+                                link.download = response.data.filename || 'incidente.pdf';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            }
+                        } else {
+                            error.show();
+                            console.error('Errore PDF:', response.data);
+                        }
+                    },
+                    error: function(xhr, status, errorThrown) {
+                        loading.hide();
+                        button.prop('disabled', false);
+                        error.show();
+                        console.error('Errore AJAX:', errorThrown);
+                    }
+                });
+            });
+        });
+        </script>
         <?php
     }
 

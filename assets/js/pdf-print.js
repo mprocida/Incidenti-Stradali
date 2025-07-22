@@ -4,26 +4,41 @@
  */
 
     window.generateIncidentePDF = function() {
-        // Verifica che jsPDF sia caricato - supporta entrambi i formati
-        let jsPDF;
-        
-        if (typeof window.jsPDF !== 'undefined') {
-            // Se jsPDF è disponibile come oggetto
-            if (typeof window.jsPDF.jsPDF !== 'undefined') {
-                jsPDF = window.jsPDF.jsPDF; // Formato UMD
-            } else if (typeof window.jsPDF === 'function') {
-                jsPDF = window.jsPDF; // Formato standard
-            }
-        } else if (typeof window.jspdf !== 'undefined') {
-            jsPDF = window.jspdf.jsPDF;
+    console.log('Inizializzazione generateIncidentePDF');
+    console.log('window.jsPDF disponibile:', typeof window.jsPDF);
+    console.log('window.jsPDFReady:', window.jsPDFReady);
+    
+    // Gestione migliorata del caricamento jsPDF
+    let jsPDF;
+    
+    // Controllo per la versione UMD
+    if (typeof window.jsPDF !== 'undefined') {
+        if (typeof window.jsPDF.jsPDF === 'function') {
+            jsPDF = window.jsPDF.jsPDF; // Versione UMD
+            console.log('Usando jsPDF UMD');
+        } else if (typeof window.jsPDF === 'function') {
+            jsPDF = window.jsPDF; // Versione standard
+            console.log('Usando jsPDF standard');
         }
+    }
         
         if (!jsPDF) {
-            console.error('jsPDF non è caricato correttamente');
-            console.log('window.jsPDF:', window.jsPDF);
-            console.log('Oggetti disponibili:', Object.keys(window).filter(key => key.toLowerCase().includes('pdf')));
+            console.error('jsPDF non disponibile');
+            console.log('Oggetti window disponibili:', Object.keys(window).filter(k => k.toLowerCase().includes('pdf')));
+            console.log('Tentativo di ricaricamento...');
+            
+            // Tentativo di ricaricamento
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = function() {
+                console.log('jsPDF ricaricato, riprovando...');
+                setTimeout(() => window.generateIncidentePDF(), 1000);
+            };
+            document.head.appendChild(script);
             return;
         }
+
+        console.log('jsPDF inizializzato correttamente, procedendo con la generazione...');
 
         const pdf = new jsPDF('p', 'mm', 'a4');
     

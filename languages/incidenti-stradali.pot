@@ -1192,3 +1192,9 @@ msgstr "Strada regionale fuori l'abitato"
 
 msgid "Ente di appartenenza dell'operatore"
 msgstr "Ente di appartenenza dell'operatore"
+
+msgid "Autore:"
+msgstr ""
+
+msgid "Tutti gli autori"
+msgstr ""

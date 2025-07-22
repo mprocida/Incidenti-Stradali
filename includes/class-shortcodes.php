@@ -1156,6 +1156,11 @@ class IncidentiShortcodes {
                 )
             )
         );
+
+        // Add author filter (only for administrators)
+        if (!empty($filters['autore']) && current_user_can('manage_all_incidenti')) {
+            $args['author'] = absint($filters['autore']);
+        }
         
         // Apply filters
         if (!empty($filters['comune'])) {

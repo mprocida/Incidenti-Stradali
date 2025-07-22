@@ -14,6 +14,11 @@ class IncidentiMetaBoxes {
         add_action('wp_trash_post', array($this, 'on_post_trashed'));
         add_action('before_delete_post', array($this, 'on_post_deleted'));
         add_action('untrash_post', array($this, 'on_post_untrashed'));
+
+        // NUOVO: Azioni per stampa PDF
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_pdf_scripts'));
+        add_action('wp_ajax_print_incidente_pdf', array($this, 'generate_pdf'));
+        add_action('add_meta_boxes', array($this, 'add_print_meta_box'));
     }
     
     public function add_meta_boxes() {
@@ -133,6 +138,15 @@ class IncidentiMetaBoxes {
             'incidente_stradale',
             'side',  // Posiziona nella sidebar
             'low'
+        );
+
+        add_meta_box(
+            'incidente_stampa_pdf',
+            __('Stampa Modulo', 'incidenti-stradali'),
+            array($this, 'render_stampa_pdf_meta_box'),
+            'incidente_stradale',
+            'side',
+            'high'
         );
 
         //BLOCCO PER DATI CSV IN FORM
@@ -5197,5 +5211,243 @@ class IncidentiMetaBoxes {
             default:
                 return '';
         }
+    }
+
+    /**
+     * Aggiunge meta box per la stampa PDF
+     */
+    public function add_print_meta_box() {
+        // Questa funzione è già chiamata in add_meta_boxes()
+    }
+
+    /**
+     * Enqueue degli script necessari per il PDF
+     */
+    public function enqueue_pdf_scripts($hook) {
+        global $post;
+        
+        if ($hook === 'post.php' && $post && $post->post_type === 'incidente_stradale') {
+            // jsPDF da CDN
+            wp_enqueue_script(
+                'jspdf',
+                'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+                array(),
+                '2.5.1',
+                true
+            );
+            
+            // Script personalizzato per la stampa
+            wp_enqueue_script(
+                'incidenti-pdf-print',
+                plugin_dir_url(__FILE__) . '../assets/js/pdf-print.js',
+                array('jquery', 'jspdf'),
+                '1.0.0',
+                true
+            );
+            
+            // Localizzazione per AJAX
+            wp_localize_script('incidenti-pdf-print', 'incidentiPDF', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('incidente_pdf_nonce'),
+                'post_id' => $post->ID
+            ));
+        }
+    }
+
+    /**
+     * Render della meta box per la stampa
+     */
+    public function render_stampa_pdf_meta_box($post) {
+        wp_nonce_field('incidente_print_pdf', 'incidente_print_pdf_nonce');
+        
+        ?>
+        <div class="incidenti-stampa-container" style="text-align: center; padding: 20px;">
+            <p class="description" style="margin-bottom: 15px;">
+                <?php _e('Genera un PDF professionale con tutti i dati dell\'incidente compilati.', 'incidenti-stradali'); ?>
+            </p>
+            
+            <button type="button" id="stampa-incidente-pdf" class="button button-primary button-large" style="width: 100%; padding: 10px; font-size: 14px;">
+                <span class="dashicons dashicons-media-document" style="margin-right: 5px;"></span>
+                <?php _e('Genera PDF', 'incidenti-stradali'); ?>
+            </button>
+            
+            <div id="pdf-loading" style="display: none; margin-top: 15px;">
+                <span class="spinner is-active" style="float: none; margin: 0;"></span>
+                <p style="margin: 10px 0 0 0; font-style: italic; color: #666;">
+                    <?php _e('Generazione PDF in corso...', 'incidenti-stradali'); ?>
+                </p>
+            </div>
+            
+            <div id="pdf-success" style="display: none; margin-top: 15px; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">
+                <span class="dashicons dashicons-yes-alt" style="color: #155724;"></span>
+                <span style="color: #155724; font-weight: bold;">
+                    <?php _e('PDF generato con successo!', 'incidenti-stradali'); ?>
+                </span>
+            </div>
+            
+            <div id="pdf-error" style="display: none; margin-top: 15px; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                <span class="dashicons dashicons-warning" style="color: #721c24;"></span>
+                <span style="color: #721c24; font-weight: bold;">
+                    <?php _e('Errore nella generazione del PDF', 'incidenti-stradali'); ?>
+                </span>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $('#stampa-incidente-pdf').on('click', function() {
+                var button = $(this);
+                var loading = $('#pdf-loading');
+                var success = $('#pdf-success');
+                var error = $('#pdf-error');
+                
+                // Reset stati
+                success.hide();
+                error.hide();
+                loading.show();
+                button.prop('disabled', true);
+                
+                // Raccogli tutti i dati del form
+                var formData = new FormData(document.getElementById('post'));
+                formData.append('action', 'print_incidente_pdf');
+                formData.append('security', incidentiPDF.nonce);
+                formData.append('post_id', incidentiPDF.post_id);
+                
+                $.ajax({
+                    url: incidentiPDF.ajax_url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        loading.hide();
+                        button.prop('disabled', false);
+                        
+                        if (response.success) {
+                            success.show();
+                            // Il PDF viene generato lato client, non è necessario il download
+                            generateClientSidePDF();
+                        } else {
+                            error.show();
+                            console.error('Errore PDF:', response.data);
+                        }
+                    },
+                    error: function(xhr, status, errorThrown) {
+                        loading.hide();
+                        button.prop('disabled', false);
+                        error.show();
+                        console.error('Errore AJAX:', errorThrown);
+                    }
+                });
+            });
+            
+            function generateClientSidePDF() {
+                // Questa funzione sarà implementata nel file JavaScript separato
+                if (typeof window.generateIncidentePDF === 'function') {
+                    window.generateIncidentePDF();
+                }
+            }
+        });
+        </script>
+        <?php
+    }
+
+    /**
+     * Genera i dati per il PDF via AJAX
+     */
+    public function generate_pdf() {
+        // Verifica nonce
+        if (!wp_verify_nonce($_POST['security'], 'incidente_pdf_nonce')) {
+            wp_die('Accesso negato');
+        }
+        
+        $post_id = intval($_POST['post_id']);
+        
+        if (!current_user_can('edit_post', $post_id)) {
+            wp_send_json_error('Permessi insufficienti');
+        }
+        
+        // Raccogli tutti i meta data dell'incidente
+        $data = $this->collect_incidente_data($post_id);
+        
+        wp_send_json_success($data);
+    }
+
+    /**
+     * Raccoglie tutti i dati dell'incidente per il PDF
+     */
+    private function collect_incidente_data($post_id) {
+        $data = array();
+        
+        // Dati generali
+        $data['dati_generali'] = array(
+            'codice_ente' => get_post_meta($post_id, 'codice__ente', true),
+            'data_incidente' => get_post_meta($post_id, 'data_incidente', true),
+            'ora_incidente' => get_post_meta($post_id, 'ora_incidente', true),
+            'minuti_incidente' => get_post_meta($post_id, 'minuti_incidente', true),
+            'provincia_incidente' => get_post_meta($post_id, 'provincia_incidente', true),
+            'comune_incidente' => get_post_meta($post_id, 'comune_incidente', true),
+            'localita_incidente' => get_post_meta($post_id, 'localita_incidente', true),
+            'ente_rilevatore' => get_post_meta($post_id, 'ente_rilevatore', true),
+            'nome_rilevatore' => get_post_meta($post_id, 'nome_rilevatore', true)
+        );
+        
+        // Localizzazione
+        $data['localizzazione'] = array(
+            'tipo_strada' => get_post_meta($post_id, 'tipo_strada', true),
+            'denominazione_strada' => get_post_meta($post_id, 'denominazione_strada', true),
+            'numero_strada' => get_post_meta($post_id, 'numero_strada', true),
+            'latitudine' => get_post_meta($post_id, 'latitudine', true),
+            'longitudine' => get_post_meta($post_id, 'longitudine', true)
+        );
+        
+        // Natura incidente
+        $data['natura'] = array(
+            'natura_incidente' => get_post_meta($post_id, 'natura_incidente', true),
+            'dettaglio_natura' => get_post_meta($post_id, 'dettaglio_natura', true),
+            'numero_veicoli_coinvolti' => get_post_meta($post_id, 'numero_veicoli_coinvolti', true)
+        );
+        
+        // Veicoli e conducenti
+        $numero_veicoli = (int) get_post_meta($post_id, 'numero_veicoli_coinvolti', true) ?: 1;
+        $data['veicoli'] = array();
+        
+        for ($i = 1; $i <= $numero_veicoli; $i++) {
+            $data['veicoli'][$i] = array(
+                'tipo' => get_post_meta($post_id, "veicolo_{$i}_tipo", true),
+                'targa' => get_post_meta($post_id, "veicolo_{$i}_targa", true),
+                'anno_immatricolazione' => get_post_meta($post_id, "veicolo_{$i}_anno_immatricolazione", true),
+                'conducente' => array(
+                    'eta' => get_post_meta($post_id, "conducente_{$i}_eta", true),
+                    'sesso' => get_post_meta($post_id, "conducente_{$i}_sesso", true),
+                    'esito' => get_post_meta($post_id, "conducente_{$i}_esito", true),
+                    'nazionalita' => get_post_meta($post_id, "conducente_{$i}_nazionalita", true)
+                )
+            );
+        }
+        
+        // Pedoni
+        $data['pedoni'] = array(
+            'numero_morti' => get_post_meta($post_id, 'numero_pedoni_morti', true),
+            'numero_feriti' => get_post_meta($post_id, 'numero_pedoni_feriti', true)
+        );
+        
+        // Circostanze
+        $data['circostanze'] = array(
+            'circostanza_veicolo_a' => get_post_meta($post_id, 'circostanza_veicolo_a', true),
+            'circostanza_veicolo_b' => get_post_meta($post_id, 'circostanza_veicolo_b', true),
+            'difetto_veicolo_a' => get_post_meta($post_id, 'difetto_veicolo_a', true),
+            'stato_psicofisico_a' => get_post_meta($post_id, 'stato_psicofisico_a', true)
+        );
+        
+        // Condizioni ambientali
+        $data['condizioni'] = array(
+            'condizioni_meteo' => get_post_meta($post_id, 'condizioni_meteo', true),
+            'illuminazione' => get_post_meta($post_id, 'illuminazione', true),
+            'stato_fondo_strada' => get_post_meta($post_id, 'stato_fondo_strada', true),
+            'geometria_strada' => get_post_meta($post_id, 'geometria_strada', true)
+        );
+        
+        return $data;
     }
 }

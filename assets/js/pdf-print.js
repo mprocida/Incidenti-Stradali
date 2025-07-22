@@ -1,10 +1,17 @@
-// File corretto per interfaccia PDF - solo server-side
+// File finale per interfaccia PDF - UNICO HANDLER
 jQuery(document).ready(function($) {
-    $('#stampa-incidente-pdf').on('click', function() {
+    // Assicurati che ci sia un solo event listener
+    $('#stampa-incidente-pdf').off('click').on('click', function() {
         var button = $(this);
         var loading = $('#pdf-loading');
         var success = $('#pdf-success');
         var error = $('#pdf-error');
+        
+        // Previeni multiple chiamate
+        if (button.prop('disabled')) {
+            console.log('Bottone già disabilitato, ignoro il click');
+            return false;
+        }
         
         // Reset stati
         success.hide();
@@ -27,6 +34,7 @@ jQuery(document).ready(function($) {
                 security: incidentiPDF.nonce,
                 post_id: incidentiPDF.post_id
             },
+            timeout: 30000, // 30 secondi di timeout
             success: function(response) {
                 console.log('Risposta ricevuta:', response);
                 
@@ -40,13 +48,17 @@ jQuery(document).ready(function($) {
                     if (response.data && response.data.download_url) {
                         console.log('Avvio download:', response.data.download_url);
                         
-                        var link = document.createElement('a');
-                        link.href = response.data.download_url;
-                        link.download = response.data.filename || 'incidente.pdf';
-                        link.target = '_blank'; // Apri in nuova finestra come fallback
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+                        // Attendi un momento prima del download per mostrare il messaggio di successo
+                        setTimeout(function() {
+                            var link = document.createElement('a');
+                            link.href = response.data.download_url;
+                            link.download = response.data.filename || 'incidente.pdf';
+                            link.style.display = 'none';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            console.log('Download completato');
+                        }, 500);
                     } else {
                         console.warn('URL download non trovato nella risposta');
                     }
@@ -56,7 +68,10 @@ jQuery(document).ready(function($) {
                     
                     // Mostra errore più dettagliato se disponibile
                     if (response.data && typeof response.data === 'string') {
-                        error.find('span:last').text('Errore: ' + response.data);
+                        var errorSpan = error.find('span:last');
+                        if (errorSpan.length) {
+                            errorSpan.text('Errore: ' + response.data);
+                        }
                     }
                 }
             },
@@ -72,8 +87,13 @@ jQuery(document).ready(function($) {
                 error.show();
                 
                 // Mostra errore più specifico
-                error.find('span:last').text('Errore di comunicazione: ' + (errorThrown || status));
+                var errorSpan = error.find('span:last');
+                if (errorSpan.length) {
+                    errorSpan.text('Errore di comunicazione: ' + (errorThrown || status));
+                }
             }
         });
+        
+        return false; // Previeni comportamenti predefiniti
     });
 });

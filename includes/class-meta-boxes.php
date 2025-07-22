@@ -5227,78 +5227,17 @@ class IncidentiMetaBoxes {
         global $post;
         
         if ($hook === 'post.php' && $post && $post->post_type === 'incidente_stradale') {
-            // jsPDF da CDN con caricamento manuale inline
-            ?>
-            <script>
-            // Carica jsPDF con approccio sincrono
-            if (!window.jsPDFLoaded) {
-                window.jsPDFLoaded = true;
-                
-                // Prova prima con CDN principale
-                function loadJsPDF(callback) {
-                    var script = document.createElement('script');
-                    script.src = 'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js';
-                    script.onload = function() {
-                        console.log('jsPDF caricato da unpkg:', typeof window.jsPDF);
-                        if (window.jsPDF) {
-                            window.jsPDFReady = true;
-                            callback(true);
-                        } else {
-                            callback(false);
-                        }
-                    };
-                    script.onerror = function() {
-                        console.log('Errore unpkg, provo cdnjs...');
-                        callback(false);
-                    };
-                    document.head.appendChild(script);
-                }
-                
-                // Fallback con cdnjs
-                function loadJsPDFFallback(callback) {
-                    var script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-                    script.onload = function() {
-                        console.log('jsPDF caricato da cdnjs:', typeof window.jsPDF);
-                        if (window.jsPDF) {
-                            window.jsPDFReady = true;
-                            callback(true);
-                        } else {
-                            callback(false);
-                        }
-                    };
-                    script.onerror = function() {
-                        console.error('Errore anche con cdnjs');
-                        callback(false);
-                    };
-                    document.head.appendChild(script);
-                }
-                
-                // Carica con fallback
-                loadJsPDF(function(success) {
-                    if (!success) {
-                        loadJsPDFFallback(function(success2) {
-                            if (!success2) {
-                                console.error('Impossibile caricare jsPDF da entrambi i CDN');
-                            }
-                        });
-                    }
-                });
-            }
-            </script>
-            <?php
-            
-            // Script personalizzato per la stampa
+            // Script leggero solo per l'interfaccia
             wp_enqueue_script(
-                'incidenti-pdf-print',
-                plugin_dir_url(__FILE__) . '../assets/js/pdf-print.js',
+                'incidenti-pdf-interface',
+                plugin_dir_url(__FILE__) . '../assets/js/pdf-interface.js',
                 array('jquery'),
-                '1.0.3', // Incrementa versione per forzare reload
+                '2.0.0',
                 true
             );
             
             // Localizzazione per AJAX
-            wp_localize_script('incidenti-pdf-print', 'incidentiPDF', array(
+            wp_localize_script('incidenti-pdf-interface', 'incidentiPDF', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('incidente_pdf_nonce'),
                 'post_id' => $post->ID
@@ -5441,10 +5380,31 @@ class IncidentiMetaBoxes {
             wp_send_json_error('Permessi insufficienti');
         }
         
-        // Raccogli tutti i meta data dell'incidente
-        $data = $this->collect_incidente_data($post_id);
-        
-        wp_send_json_success($data);
+        try {
+            // Include TCPDF se non già caricato
+            if (!class_exists('TCPDF')) {
+                require_once(plugin_dir_path(__FILE__) . '../vendor/tcpdf/tcpdf.php');
+            }
+            
+            // Genera PDF server-side
+            $pdf_generator = new PDF_Generator();
+            $pdf_path = $pdf_generator->generate_incidente_pdf($post_id);
+            
+            if ($pdf_path) {
+                // Invia URL per download
+                $pdf_url = str_replace(WP_CONTENT_DIR, WP_CONTENT_URL, $pdf_path);
+                wp_send_json_success(array(
+                    'download_url' => $pdf_url,
+                    'filename' => basename($pdf_path)
+                ));
+            } else {
+                wp_send_json_error('Errore nella generazione del PDF');
+            }
+            
+        } catch (Exception $e) {
+            error_log('Errore PDF: ' . $e->getMessage());
+            wp_send_json_error('Errore interno del server');
+        }
     }
 
     /**

@@ -5331,9 +5331,11 @@ class IncidentiMetaBoxes {
                         button.prop('disabled', false);
                         
                         if (response.success) {
-                            success.show();
-                            // Il PDF viene generato lato client, non è necessario il download
-                            generateClientSidePDF();
+                            // Attendi un momento per assicurarsi che jsPDF sia caricato
+                            setTimeout(function() {
+                                generateClientSidePDF();
+                                success.show();
+                            }, 500);
                         } else {
                             error.show();
                             console.error('Errore PDF:', response.data);

@@ -5320,7 +5320,7 @@ class IncidentiMetaBoxes {
                 loading.show();
                 button.prop('disabled', true);
                 
-                // Funzione per attendere il caricamento di jsPDF (solo una volta)
+                // Funzione per attendere il caricamento di jsPDF
                 function waitForJsPDF(callback, attempts = 0) {
                     if (attempts > 50) { // Timeout dopo 5 secondi
                         loading.hide();
@@ -5353,7 +5353,7 @@ class IncidentiMetaBoxes {
                             button.prop('disabled', false);
                             
                             if (response.success) {
-                                // Genera PDF lato client - jsPDF è già verificato
+                                // Genera PDF lato client
                                 try {
                                     generatePDF(response.data);
                                     success.show();
@@ -5377,7 +5377,6 @@ class IncidentiMetaBoxes {
             });
             
             function generatePDF(data) {
-                // jsPDF è già verificato, non serve ricontrollare
                 const { jsPDF } = window.jsPDF;
                 const doc = new jsPDF();
                 
@@ -5422,8 +5421,42 @@ class IncidentiMetaBoxes {
      * Genera i dati per il PDF via AJAX
      */
     public function generate_pdf() {
-        // Funzione deprecata - ora usiamo get_incidente_data_for_pdf
-        wp_send_json_error('Funzione deprecata');
+        // Verifica nonce
+        if (!wp_verify_nonce($_POST['security'], 'incidente_pdf_nonce')) {
+            wp_die('Accesso negato');
+        }
+        
+        $post_id = intval($_POST['post_id']);
+        
+        if (!current_user_can('edit_post', $post_id)) {
+            wp_send_json_error('Permessi insufficienti');
+        }
+        
+        try {
+            // Include TCPDF se non già caricato
+            if (!class_exists('TCPDF')) {
+                require_once(plugin_dir_path(__FILE__) . '../vendor/tcpdf/tcpdf.php');
+            }
+            
+            // Genera PDF server-side
+            $pdf_generator = new PDF_Generator();
+            $pdf_path = $pdf_generator->generate_incidente_pdf($post_id);
+            
+            if ($pdf_path) {
+                // Invia URL per download
+                $pdf_url = str_replace(WP_CONTENT_DIR, WP_CONTENT_URL, $pdf_path);
+                wp_send_json_success(array(
+                    'download_url' => $pdf_url,
+                    'filename' => basename($pdf_path)
+                ));
+            } else {
+                wp_send_json_error('Errore nella generazione del PDF');
+            }
+            
+        } catch (Exception $e) {
+            error_log('Errore PDF: ' . $e->getMessage());
+            wp_send_json_error('Errore interno del server');
+        }
     }
 
     /**

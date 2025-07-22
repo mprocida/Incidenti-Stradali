@@ -5320,48 +5320,59 @@ class IncidentiMetaBoxes {
                 loading.show();
                 button.prop('disabled', true);
                 
-                // Verifica se jsPDF è caricato
-                if (typeof window.jsPDF === 'undefined') {
-                    loading.hide();
-                    error.show();
-                    button.prop('disabled', false);
-                    console.error('jsPDF non caricato');
-                    return;
+                // Funzione per attendere il caricamento di jsPDF
+                function waitForJsPDF(callback, attempts = 0) {
+                    if (attempts > 50) { // Timeout dopo 5 secondi
+                        loading.hide();
+                        error.show();
+                        button.prop('disabled', false);
+                        console.error('jsPDF non si è caricato entro il timeout');
+                        return;
+                    }
+                    
+                    if (typeof window.jsPDF !== 'undefined' && window.jsPDF.jsPDF) {
+                        callback();
+                    } else {
+                        setTimeout(() => waitForJsPDF(callback, attempts + 1), 100);
+                    }
                 }
                 
-                // Chiamata AJAX per ottenere i dati
-                $.ajax({
-                    url: incidentiPDF.ajax_url,
-                    type: 'POST',
-                    data: {
-                        action: 'get_incidente_data_for_pdf',
-                        security: incidentiPDF.nonce,
-                        post_id: incidentiPDF.post_id
-                    },
-                    success: function(response) {
-                        loading.hide();
-                        button.prop('disabled', false);
-                        
-                        if (response.success) {
-                            // Genera PDF lato client
-                            try {
-                                generatePDF(response.data);
-                                success.show();
-                            } catch (e) {
-                                console.error('Errore generazione PDF:', e);
+                // Aspetta che jsPDF sia caricato, poi procedi
+                waitForJsPDF(function() {
+                    // Chiamata AJAX per ottenere i dati
+                    $.ajax({
+                        url: incidentiPDF.ajax_url,
+                        type: 'POST',
+                        data: {
+                            action: 'get_incidente_data_for_pdf',
+                            security: incidentiPDF.nonce,
+                            post_id: incidentiPDF.post_id
+                        },
+                        success: function(response) {
+                            loading.hide();
+                            button.prop('disabled', false);
+                            
+                            if (response.success) {
+                                // Genera PDF lato client
+                                try {
+                                    generatePDF(response.data);
+                                    success.show();
+                                } catch (e) {
+                                    console.error('Errore generazione PDF:', e);
+                                    error.show();
+                                }
+                            } else {
                                 error.show();
+                                console.error('Errore dati:', response.data);
                             }
-                        } else {
+                        },
+                        error: function(xhr, status, errorThrown) {
+                            loading.hide();
+                            button.prop('disabled', false);
                             error.show();
-                            console.error('Errore dati:', response.data);
+                            console.error('Errore AJAX:', errorThrown);
                         }
-                    },
-                    error: function(xhr, status, errorThrown) {
-                        loading.hide();
-                        button.prop('disabled', false);
-                        error.show();
-                        console.error('Errore AJAX:', errorThrown);
-                    }
+                    });
                 });
             });
             

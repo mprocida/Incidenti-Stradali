@@ -5227,10 +5227,10 @@ class IncidentiMetaBoxes {
         global $post;
         
         if ($hook === 'post.php' && $post && $post->post_type === 'incidente_stradale') {
-            // jsPDF da CDN
+            // jsPDF da CDN - versione standard invece di UMD
             wp_enqueue_script(
                 'jspdf',
-                'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.min.js',
                 array(),
                 '2.5.1',
                 true

@@ -3,15 +3,29 @@
  * Utilizza jsPDF per la creazione del documento
  */
 
-window.generateIncidentePDF = function() {
-    // Verifica che jsPDF sia caricato
-    if (typeof window.jsPDF === 'undefined') {
-        console.error('jsPDF non è caricato');
-        return;
-    }
+    window.generateIncidentePDF = function() {
+        // Verifica che jsPDF sia caricato - supporta entrambi i formati
+        let jsPDF;
+        
+        if (typeof window.jsPDF !== 'undefined') {
+            // Se jsPDF è disponibile come oggetto
+            if (typeof window.jsPDF.jsPDF !== 'undefined') {
+                jsPDF = window.jsPDF.jsPDF; // Formato UMD
+            } else if (typeof window.jsPDF === 'function') {
+                jsPDF = window.jsPDF; // Formato standard
+            }
+        } else if (typeof window.jspdf !== 'undefined') {
+            jsPDF = window.jspdf.jsPDF;
+        }
+        
+        if (!jsPDF) {
+            console.error('jsPDF non è caricato correttamente');
+            console.log('window.jsPDF:', window.jsPDF);
+            console.log('Oggetti disponibili:', Object.keys(window).filter(key => key.toLowerCase().includes('pdf')));
+            return;
+        }
 
-    const { jsPDF } = window.jsPDF;
-    const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdf = new jsPDF('p', 'mm', 'a4');
     
     // Configurazione documento
     const pageWidth = pdf.internal.pageSize.getWidth();

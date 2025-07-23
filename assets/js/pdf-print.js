@@ -1,4 +1,4 @@
-// File semplificato per interfaccia PDF senza jsPDF
+// File semplificato per interfaccia PDF
 jQuery(document).ready(function($) {
     $('#stampa-incidente-pdf').on('click', function() {
         var button = $(this);
@@ -12,12 +12,12 @@ jQuery(document).ready(function($) {
         loading.show();
         button.prop('disabled', true);
         
-        // Chiamata AJAX per generazione PDF server-side
+        // Chiamata AJAX semplificata
         $.ajax({
             url: incidentiPDF.ajax_url,
             type: 'POST',
             data: {
-                action: 'generate_pdf', // o 'print_incidente_pdf' a seconda del tuo handler
+                action: 'print_incidente_pdf',
                 security: incidentiPDF.nonce,
                 post_id: incidentiPDF.post_id
             },
@@ -28,29 +28,23 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     success.show();
                     
-                    // Se c'è un URL di download, avvia il download automatico
-                    if (response.data && response.data.download_url) {
-                        var link = document.createElement('a');
-                        link.href = response.data.download_url;
-                        link.download = response.data.filename || 'incidente.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }
+                    // Auto-download del PDF
+                    var link = document.createElement('a');
+                    link.href = response.data.download_url;
+                    link.download = response.data.filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 } else {
                     error.show();
-                    if (incidentiPDF.debug) {
-                        console.error('Errore PDF:', response.data);
-                    }
+                    console.error('Errore PDF:', response.data);
                 }
             },
             error: function(xhr, status, errorThrown) {
                 loading.hide();
                 button.prop('disabled', false);
                 error.show();
-                if (incidentiPDF.debug) {
-                    console.error('Errore AJAX:', errorThrown);
-                }
+                console.error('Errore AJAX:', errorThrown);
             }
         });
     });

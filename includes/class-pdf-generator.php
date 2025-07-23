@@ -56,21 +56,160 @@ class PDF_Generator {
         ob_start();
         ?>
         <style>
-        body { font-family: helvetica, sans-serif; font-size: 9pt; line-height: 1.3; }
-        .header { text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-        .section { margin-bottom: 12px; page-break-inside: avoid; }
-        .section-title { font-weight: bold; font-size: 15pt; background-color: #e9e9e9; padding: 4px 8px; margin-bottom: 8px; }
-        .field { margin: 3px 0; }
-        .field-label { font-weight: bold; display: inline-block; width: 35%; vertical-align: top; }
-        .field-value { display: inline-block; width: 63%; }
-        .table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 8pt; }
-        .table th, .table td { border: 1px solid #666; padding: 3px; text-align: left; }
-        .table th { background-color: #f0f0f0; font-weight: bold; font-size: 8pt; }
-        .two-columns { display: table; width: 100%; }
-        .column { display: table-cell; width: 48%; vertical-align: top; padding-right: 2%; }
-        .highlight { background-color: #fff3cd; padding: 3px; }
-        .warning { color: #856404; font-weight: bold; }
-        .page-break { page-break-before: always; }
+        body { 
+            font-family: helvetica, sans-serif; 
+            font-size: 9pt; 
+            line-height: 1.3; 
+        }
+        .header { 
+            text-align: center; 
+            font-size: 14pt; 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+            border-bottom: 2px solid #333; 
+            padding-bottom: 10px; 
+        }
+        .section { 
+            margin-bottom: 12px; 
+            page-break-inside: avoid; 
+        }
+        .section-title { 
+            font-weight: bold; 
+            font-size: 11pt; 
+            background-color: #e9e9e9; 
+            padding: 6px 10px; 
+            margin-bottom: 10px; 
+            border-left: 4px solid #007cba;
+        }
+        
+        /* Sistema a due colonne migliorato */
+        .two-columns { 
+            display: table; 
+            width: 100%; 
+            table-layout: fixed;
+        }
+        .column { 
+            display: table-cell; 
+            width: 50%; 
+            vertical-align: top; 
+            padding-right: 8px; 
+        }
+        .column:last-child {
+            padding-right: 0;
+            padding-left: 8px;
+        }
+        
+        /* Layout per campi singoli */
+        .field { 
+            margin: 4px 0; 
+            display: table; 
+            width: 100%;
+            table-layout: fixed;
+        }
+        .field-label { 
+            font-weight: bold; 
+            display: table-cell; 
+            width: 40%; 
+            vertical-align: top; 
+            padding-right: 8px;
+            font-size: 8.5pt;
+        }
+        .field-value { 
+            display: table-cell; 
+            width: 60%; 
+            font-size: 9pt;
+            word-wrap: break-word;
+        }
+        
+        /* Layout compatto per informazioni semplici */
+        .compact-grid {
+            display: table;
+            width: 100%;
+            margin: 6px 0;
+        }
+        .compact-row {
+            display: table-row;
+        }
+        .compact-cell {
+            display: table-cell;
+            width: 25%;
+            padding: 2px 4px;
+            font-size: 8pt;
+            border-bottom: 1px dotted #ccc;
+        }
+        .compact-cell.label {
+            font-weight: bold;
+            width: 15%;
+        }
+        .compact-cell.value {
+            width: 35%;
+        }
+        
+        /* Tabelle */
+        .table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 8px 0; 
+            font-size: 8pt; 
+        }
+        .table th, .table td { 
+            border: 1px solid #666; 
+            padding: 4px; 
+            text-align: left; 
+        }
+        .table th { 
+            background-color: #f0f0f0; 
+            font-weight: bold; 
+            font-size: 8pt; 
+        }
+        
+        /* Stili per evidenziazione */
+        .highlight { 
+            background-color: #fff3cd; 
+            padding: 3px 6px; 
+            border-radius: 2px;
+        }
+        .warning { 
+            color: #856404; 
+            font-weight: bold; 
+        }
+        .page-break { 
+            page-break-before: always; 
+        }
+        
+        /* Miglioramenti per veicoli e persone */
+        .veicolo-header {
+            background-color: #f8f9fa;
+            padding: 4px 8px;
+            margin: 8px 0 4px 0;
+            border-left: 3px solid #007cba;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+        
+        .persona-header {
+            background-color: #e8f5e8;
+            padding: 4px 8px;
+            margin: 8px 0 4px 0;
+            border-left: 3px solid #28a745;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+        
+        /* Layout a tre colonne per dati compatti */
+        .three-columns {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        .three-columns .column {
+            width: 33.33%;
+            padding-right: 4px;
+        }
+        .three-columns .column:last-child {
+            padding-right: 0;
+            padding-left: 0;
+        }
         </style>
         
         <div class="header">
@@ -112,13 +251,13 @@ class PDF_Generator {
         
         <div class="section">
             <div class="section-title">INFORMAZIONI DOCUMENTO</div>
-            <div class="field">
-                <span class="field-label">Data generazione:</span>
-                <span class="field-value"><?php echo date('d/m/Y H:i:s'); ?></span>
-            </div>
-            <div class="field">
-                <span class="field-label">Generato da:</span>
-                <span class="field-value">Sistema Gestione Incidenti Stradali</span>
+            <div class="two-columns">
+                <div class="column">
+                    <?php $this->render_field('Data generazione', date('d/m/Y H:i:s')); ?>
+                </div>
+                <div class="column">
+                    <?php $this->render_field('Generato da', 'Sistema Gestione Incidenti Stradali'); ?>
+                </div>
             </div>
         </div>
         
@@ -132,7 +271,7 @@ class PDF_Generator {
             <div class="section-title">DATI GENERALI</div>
             <div class="two-columns">
                 <div class="column">
-                    <?php $this->render_field('Incidente', $meta['codice__ente'][0] ?? ''); ?>
+                    <?php $this->render_field('ID Incidente', $meta['codice__ente'][0] ?? ''); ?>
                     <?php $this->render_field('Data Incidente', $this->format_date($meta['data_incidente'][0] ?? '')); ?>
                     <?php $this->render_field('Ora', $this->format_time($meta['ora_incidente'][0] ?? '', $meta['minuti_incidente'][0] ?? '')); ?>
                     <?php $this->render_field('Provincia', $this->get_provincia_name($meta['provincia_incidente'][0] ?? '')); ?>
@@ -145,7 +284,9 @@ class PDF_Generator {
                 </div>
             </div>
             <?php if (!empty($meta['identificativo_comando'][0])): ?>
-                <?php $this->render_field('Identificativo Comando Carabinieri', $meta['identificativo_comando'][0]); ?>
+                <div style="margin-top: 8px;">
+                    <?php $this->render_field('Identificativo Comando Carabinieri', $meta['identificativo_comando'][0]); ?>
+                </div>
             <?php endif; ?>
         </div>
         <?php
@@ -209,10 +350,10 @@ class PDF_Generator {
             <div class="section-title">CARATTERISTICHE DEL LUOGO</div>
             <div class="two-columns">
                 <div class="column">
-                    <?php $this->render_field('Configurazione Carreggiate', $this->get_geometria_strada_name($meta['geometria_strada'][0] ?? '')); ?>
+                    <?php $this->render_field('Configurazione', $this->get_geometria_strada_name($meta['geometria_strada'][0] ?? '')); ?>
                     <?php $this->render_field('Pavimentazione', $this->get_pavimentazione_name($meta['pavimentazione_strada'][0] ?? '')); ?>
                     <?php $this->render_field('Intersezione/Tronco', $this->get_intersezione_name($meta['intersezione_tronco'][0] ?? '')); ?>
-                    <?php $this->render_field('Stato Fondo Strada', $this->get_fondo_strada_name($meta['stato_fondo_strada'][0] ?? '')); ?>
+                    <?php $this->render_field('Stato Fondo', $this->get_fondo_strada_name($meta['stato_fondo_strada'][0] ?? '')); ?>
                 </div>
                 <div class="column">
                     <?php $this->render_field('Segnaletica', $this->get_segnaletica_name($meta['segnaletica_strada'][0] ?? '')); ?>
@@ -226,45 +367,53 @@ class PDF_Generator {
         </div>
         <?php
     }
+
+    private function render_field_compact($label, $value, $highlight = false) {
+        if (empty($value) && $value !== '0') return;
+        
+        $class = $highlight ? 'field highlight' : 'field';
+        echo '<div class="' . $class . '">';
+        echo '<span class="field-label">' . esc_html($label) . ':</span>';
+        echo '<span class="field-value">' . esc_html($value) . '</span>';
+        echo '</div>';
+    }
     
     private function render_veicoli_section($meta) {
         $numero_veicoli = intval($meta['numero_veicoli_coinvolti'][0] ?? 1);
         
         ?>
         <div class="section">
-            <div class="section-title">VEICOLI COINVOLTI</div>
+            <div class="section-title">VEICOLI COINVOLTI (<?php echo $numero_veicoli; ?>)</div>
             <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
                 <?php if (!empty($meta["veicolo_{$i}_tipo"][0])): ?>
-                    <div class="section" style="padding-left: 10px; margin-bottom: 15px;">
-                        <h4 style="margin: 5px 0; color: #007cba;">Veicolo <?php echo chr(64 + $i); ?></h4>
-                        <div class="two-columns">
-                            <div class="column">
-                                <?php $this->render_field('Tipo Veicolo', $this->get_tipo_veicolo_name($meta["veicolo_{$i}_tipo"][0] ?? '')); ?>
-                                <?php $this->render_field('Targa', $meta["veicolo_{$i}_targa"][0] ?? ''); ?>
-                                <?php if (!empty($meta["veicolo_{$i}_sigla_estero"][0])): ?>
-                                    <?php $this->render_field('Sigla Estero', $meta["veicolo_{$i}_sigla_estero"][0]); ?>
-                                <?php endif; ?>
-                                <?php $this->render_field('Anno Immatricolazione', $meta["veicolo_{$i}_anno_immatricolazione"][0] ?? ''); ?>
-                            </div>
-                            <div class="column">
-                                <?php if (!empty($meta["veicolo_{$i}_cilindrata"][0])): ?>
-                                    <?php $this->render_field('Cilindrata (cc)', $meta["veicolo_{$i}_cilindrata"][0]); ?>
-                                <?php endif; ?>
-                                <?php if (!empty($meta["veicolo_{$i}_peso_totale"][0])): ?>
-                                    <?php $this->render_field('Peso Totale (q)', $meta["veicolo_{$i}_peso_totale"][0]); ?>
-                                <?php endif; ?>
-                                <?php if (!empty($meta["veicolo_{$i}_tipo_rimorchio"][0])): ?>
-                                    <?php $this->render_field('Tipo Rimorchio', $this->get_tipo_rimorchio_name($meta["veicolo_{$i}_tipo_rimorchio"][0])); ?>
-                                    <?php if (!empty($meta["veicolo_{$i}_targa_rimorchio"][0])): ?>
-                                        <?php $this->render_field('Targa Rimorchio', $meta["veicolo_{$i}_targa_rimorchio"][0]); ?>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        <?php if (!empty($meta["veicolo_{$i}_danni_riportati"][0])): ?>
-                            <?php $this->render_field('Danni Riportati', $meta["veicolo_{$i}_danni_riportati"][0]); ?>
-                        <?php endif; ?>
+                    <div class="veicolo-header">
+                        Veicolo <?php echo chr(64 + $i); ?> - <?php echo $this->get_tipo_veicolo_name($meta["veicolo_{$i}_tipo"][0] ?? ''); ?>
                     </div>
+                    <div class="two-columns" style="margin-bottom: 12px;">
+                        <div class="column">
+                            <?php $this->render_field_compact('Targa', $meta["veicolo_{$i}_targa"][0] ?? ''); ?>
+                            <?php if (!empty($meta["veicolo_{$i}_sigla_estero"][0])): ?>
+                                <?php $this->render_field_compact('Sigla Estero', $meta["veicolo_{$i}_sigla_estero"][0]); ?>
+                            <?php endif; ?>
+                            <?php $this->render_field_compact('Anno Immatric.', $meta["veicolo_{$i}_anno_immatricolazione"][0] ?? ''); ?>
+                        </div>
+                        <div class="column">
+                            <?php if (!empty($meta["veicolo_{$i}_cilindrata"][0])): ?>
+                                <?php $this->render_field_compact('Cilindrata (cc)', $meta["veicolo_{$i}_cilindrata"][0]); ?>
+                            <?php endif; ?>
+                            <?php if (!empty($meta["veicolo_{$i}_peso_totale"][0])): ?>
+                                <?php $this->render_field_compact('Peso Tot. (q)', $meta["veicolo_{$i}_peso_totale"][0]); ?>
+                            <?php endif; ?>
+                            <?php if (!empty($meta["veicolo_{$i}_tipo_rimorchio"][0])): ?>
+                                <?php $this->render_field_compact('Rimorchio', $this->get_tipo_rimorchio_name($meta["veicolo_{$i}_tipo_rimorchio"][0])); ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php if (!empty($meta["veicolo_{$i}_danni_riportati"][0])): ?>
+                        <div style="font-size: 8pt; color: #666; margin-bottom: 8px;">
+                            <strong>Danni:</strong> <?php echo esc_html($meta["veicolo_{$i}_danni_riportati"][0]); ?>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             <?php endfor; ?>
         </div>

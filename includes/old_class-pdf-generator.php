@@ -22,9 +22,9 @@ class PDF_Generator {
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         
-        // Margini ottimizzati
-        $pdf->SetMargins(10, 10, 10);
-        $pdf->SetAutoPageBreak(true, 10);
+        // Margini
+        $pdf->SetMargins(15, 15, 15);
+        $pdf->SetAutoPageBreak(true, 15);
         
         // Aggiungi pagina
         $pdf->AddPage();
@@ -56,302 +56,26 @@ class PDF_Generator {
         ob_start();
         ?>
         <style>
-        /* STILI GENERALI */
-        body { 
-            font-family: 'DejaVu Sans', Arial, sans-serif; 
-            font-size: 8pt; 
-            line-height: 1.2; 
-            color: #333; 
-            margin: 0; 
-            padding: 0;
-        }
-        
-        /* HEADER PRINCIPALE */
-        .main-header { 
-            text-align: center; 
-            padding: 15px 0; 
-            margin-bottom: 20px; 
-            border: 2px solid #2c3e50;
-            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-            color: white;
-            border-radius: 5px;
-        }
-        .main-header h1 { 
-            font-size: 16pt; 
-            font-weight: bold; 
-            margin: 0 0 5px 0; 
-            letter-spacing: 1px;
-        }
-        .main-header h2 { 
-            font-size: 10pt; 
-            margin: 0; 
-            font-weight: normal; 
-            opacity: 0.9;
-        }
-        
-        /* SEZIONI PRINCIPALI */
-        .form-section { 
-            margin-bottom: 15px; 
-            page-break-inside: avoid; 
-            border: 1px solid #bdc3c7;
-            border-radius: 5px;
-            overflow: hidden;
-            background: #ffffff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .section-header { 
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white; 
-            padding: 8px 12px; 
-            font-weight: bold; 
-            font-size: 10pt; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0;
-            border-bottom: 2px solid #2980b9;
-        }
-        
-        .section-content { 
-            padding: 12px; 
-            background: #f8f9fa;
-        }
-        
-        /* CAMPO SINGOLO */
-        .form-field { 
-            margin-bottom: 8px; 
-            border: 1px solid #d5d9dd;
-            border-radius: 3px;
-            background: #ffffff;
-            overflow: hidden;
-        }
-        
-        .field-label { 
-            background: #ecf0f1; 
-            color: #2c3e50; 
-            font-weight: bold; 
-            font-size: 7pt; 
-            padding: 4px 8px; 
-            text-transform: uppercase;
-            border-bottom: 1px solid #d5d9dd;
-            letter-spacing: 0.3px;
-        }
-        
-        .field-value { 
-            padding: 6px 8px; 
-            font-size: 8pt; 
-            min-height: 12px;
-            background: #ffffff;
-            border-left: 3px solid #3498db;
-        }
-        
-        .field-value.empty { 
-            color: #95a5a6; 
-            font-style: italic; 
-            background: #fafbfc;
-        }
-        
-        /* CAMPO EVIDENZIATO */
-        .field-highlight .field-label { 
-            background: #f39c12; 
-            color: white; 
-        }
-        .field-highlight .field-value { 
-            border-left-color: #f39c12;
-            background: #fef9e7;
-        }
-        
-        /* TABELLE */
-        .data-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 8px 0; 
-            background: #ffffff;
-            border: 1px solid #bdc3c7;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        
-        .data-table th { 
-            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-            color: white; 
-            font-weight: bold; 
-            font-size: 7pt; 
-            padding: 6px 8px; 
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            border-bottom: 2px solid #2c3e50;
-        }
-        
-        .data-table td { 
-            border: 1px solid #d5d9dd; 
-            padding: 6px 8px; 
-            text-align: center; 
-            font-size: 8pt;
-            background: #f8f9fa;
-        }
-        
-        .data-table tr:nth-child(even) td { 
-            background: #ecf0f1; 
-        }
-        
-        /* VEICOLI E PERSONE */
-        .vehicle-block, .person-block { 
-            margin: 10px 0; 
-            border: 2px solid #27ae60;
-            border-radius: 5px;
-            background: #ffffff;
-            overflow: hidden;
-        }
-        
-        .vehicle-header, .person-header { 
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-            color: white; 
-            padding: 6px 10px; 
-            font-weight: bold; 
-            font-size: 9pt;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .vehicle-content, .person-content { 
-            padding: 10px; 
-            background: #f1f8e9;
-        }
-        
-        /* RIEPILOGO INFORTUNATI */
-        .summary-box { 
-            border: 3px solid #e74c3c;
-            border-radius: 5px;
-            background: #ffffff;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-        
-        .summary-header { 
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white; 
-            padding: 8px 12px; 
-            font-weight: bold; 
-            font-size: 10pt;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .summary-content { 
-            padding: 12px; 
-            background: #fdf2f2;
-        }
-        
-        .summary-table { 
-            width: 100%; 
-            border-collapse: collapse;
-            background: #ffffff;
-            border: 1px solid #e74c3c;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        
-        .summary-table th { 
-            background: #e74c3c; 
-            color: white; 
-            padding: 8px; 
-            font-weight: bold; 
-            font-size: 8pt;
-            text-transform: uppercase;
-        }
-        
-        .summary-table td { 
-            padding: 10px 8px; 
-            text-align: center; 
-            font-weight: bold; 
-            font-size: 12pt;
-            border: 1px solid #e74c3c;
-        }
-        
-        .morti { color: #e74c3c; }
-        .feriti { color: #f39c12; }
-        .totale { color: #2c3e50; background: #ecf0f1; }
-        
-        /* LAYOUT RESPONSIVE */
-        .two-column { 
-            display: table; 
-            width: 100%;
-            border-spacing: 5px;
-        }
-        
-        .column { 
-            display: table-cell; 
-            width: 50%; 
-            vertical-align: top;
-        }
-        
-        /* NOMINATIVI */
-        .nominativi-section { 
-            border: 2px solid #8e44ad;
-            border-radius: 5px;
-            background: #ffffff;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-        
-        .nominativi-header { 
-            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
-            color: white; 
-            padding: 8px 12px; 
-            font-weight: bold; 
-            font-size: 10pt;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .nominativi-content { 
-            padding: 12px; 
-            background: #f8f5ff;
-        }
-        
-        /* AVVISI LEGALI */
-        .legal-notice { 
-            background: #fff3cd; 
-            border: 2px solid #ffc107; 
-            border-radius: 5px;
-            padding: 12px; 
-            margin: 15px 0;
-            font-size: 7pt;
-            line-height: 1.3;
-        }
-        
-        .legal-notice .title { 
-            font-weight: bold; 
-            color: #856404; 
-            font-size: 8pt;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            letter-spacing: 0.3px;
-        }
-        
-        /* FOOTER */
-        .document-footer { 
-            margin-top: 20px; 
-            border-top: 2px solid #bdc3c7; 
-            padding-top: 10px;
-            text-align: center;
-            font-size: 7pt;
-            color: #7f8c8d;
-        }
-        
-        /* UTILITY */
+        body { font-family: helvetica, sans-serif; font-size: 9pt; line-height: 1.3; }
+        .header { text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .section { margin-bottom: 12px; page-break-inside: avoid; }
+        .section-title { font-weight: bold; font-size: 15pt; background-color: #e9e9e9; padding: 4px 8px; margin-bottom: 8px; }
+        .field { margin: 3px 0; }
+        .field-label { font-weight: bold; display: inline-block; width: 35%; vertical-align: top; }
+        .field-value { display: inline-block; width: 63%; }
+        .table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 8pt; }
+        .table th, .table td { border: 1px solid #666; padding: 3px; text-align: left; }
+        .table th { background-color: #f0f0f0; font-weight: bold; font-size: 8pt; }
+        .two-columns { display: table; width: 100%; }
+        .column { display: table-cell; width: 48%; vertical-align: top; padding-right: 2%; }
+        .highlight { background-color: #fff3cd; padding: 3px; }
+        .warning { color: #856404; font-weight: bold; }
         .page-break { page-break-before: always; }
-        .no-break { page-break-inside: avoid; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .font-bold { font-weight: bold; }
         </style>
         
-        <div class="main-header">
-            <h1>MODULO INCIDENTE STRADALE</h1>
-            <h2>Rilevazione statistica degli incidenti stradali con lesioni a persone</h2>
+        <div class="header">
+            MODULO INCIDENTE STRADALE<br>
+            <span style="font-size: 11pt;">Rilevazione statistica degli incidenti stradali con lesioni a persone</span>
         </div>
         
         <?php
@@ -386,43 +110,22 @@ class PDF_Generator {
         $this->render_nominativi_section($meta);
         ?>
         
-        <div class="form-section">
-            <div class="section-header">INFORMAZIONI DOCUMENTO</div>
-            <div class="section-content">
-                <div class="two-column">
-                    <div class="column">
-                        <?php $this->render_field('Data generazione', date('d/m/Y H:i:s')); ?>
-                    </div>
-                    <div class="column">
-                        <?php $this->render_field('Generato da', 'Sistema Gestione Incidenti Stradali'); ?>
-                    </div>
-                </div>
+        <div class="section">
+            <div class="section-title">INFORMAZIONI DOCUMENTO</div>
+            <div class="field">
+                <span class="field-label">Data generazione:</span>
+                <span class="field-value"><?php echo date('d/m/Y H:i:s'); ?></span>
             </div>
-        </div>
-        
-        <div class="document-footer">
-            <p>Documento generato automaticamente dal Sistema di Gestione Incidenti Stradali</p>
-            <p>ID Incidente: <?php echo $post_id; ?> | Data: <?php echo date('d/m/Y H:i:s'); ?></p>
+            <div class="field">
+                <span class="field-label">Generato da:</span>
+                <span class="field-value">Sistema Gestione Incidenti Stradali</span>
+            </div>
         </div>
         
         <?php
         return ob_get_clean();
     }
     
-    // ===== MODIFICA SOLO QUESTO METODO HELPER =====
-    private function render_field($label, $value, $highlight = false) {
-        $class = $highlight ? 'form-field field-highlight' : 'form-field';
-        $value_class = (empty($value) && $value !== '0') ? 'field-value empty' : 'field-value';
-        $display_value = (empty($value) && $value !== '0') ? 'Non specificato' : esc_html($value);
-        
-        echo '<div class="' . $class . '">';
-        echo '<div class="field-label">' . esc_html($label) . '</div>';
-        echo '<div class="' . $value_class . '">' . $display_value . '</div>';
-        echo '</div>';
-    }
-    
-    // ===== COPIA QUI TUTTI I METODI DAL FILE ORIGINALE =====
-    // Copia da render_dati_generali_section fino alla fine del file
     private function render_dati_generali_section($meta) {
         ?>
         <div class="section">
@@ -447,6 +150,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_localizzazione_section($meta) {
         ?>
         <div class="section">
@@ -475,7 +179,8 @@ class PDF_Generator {
             </div>
         </div>
         <?php
-    } 
+    }
+    
     private function render_natura_incidente_section($meta) {
         ?>
         <div class="section">
@@ -497,6 +202,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_caratteristiche_luogo_section($meta) {
         ?>
         <div class="section">
@@ -520,6 +226,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_veicoli_section($meta) {
         $numero_veicoli = intval($meta['numero_veicoli_coinvolti'][0] ?? 1);
         
@@ -563,6 +270,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_persone_section($meta) {
         $numero_veicoli = intval($meta['numero_veicoli_coinvolti'][0] ?? 1);
         
@@ -602,6 +310,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_trasportati_section($meta, $numero_veicoli) {
         $has_trasportati = false;
         
@@ -643,6 +352,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_altri_passeggeri_section($meta, $numero_veicoli) {
         $has_altri = false;
         
@@ -696,6 +406,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_pedoni_section($meta) {
         $pedoni_feriti = intval($meta['numero_pedoni_feriti'][0] ?? 0);
         $pedoni_morti = intval($meta['numero_pedoni_morti'][0] ?? 0);
@@ -738,6 +449,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_circostanze_section($meta) {
         $has_circostanze = false;
         
@@ -792,6 +504,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_riepilogo_section($meta) {
         $morti_24h = intval($meta['riepilogo_morti_24h'][0] ?? 0);
         $morti_2_30gg = intval($meta['riepilogo_morti_2_30gg'][0] ?? 0);
@@ -823,6 +536,7 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
     private function render_nominativi_section($meta) {
         // Verifica se ci sono nominativi da mostrare
         $has_nominativi = false;
@@ -940,6 +654,21 @@ class PDF_Generator {
         </div>
         <?php
     }
+    
+    // ===== METODI HELPER PER RENDERING =====
+    
+    private function render_field($label, $value, $highlight = false) {
+        if (empty($value) && $value !== '0') return;
+        
+        $class = $highlight ? 'field highlight' : 'field';
+        echo '<div class="' . $class . '">';
+        echo '<span class="field-label">' . esc_html($label) . ':</span>';
+        echo '<span class="field-value">' . esc_html($value) . '</span>';
+        echo '</div>';
+    }
+    
+    // ===== METODI PER MAPPARE CODICI A NOMI =====
+    
     private function format_date($date) {
         if (empty($date)) return '';
         return date('d/m/Y', strtotime($date));
@@ -953,6 +682,7 @@ class PDF_Generator {
     private function get_provincia_name($codice) {
         return $codice === '075' ? 'Lecce (075)' : $codice;
     }
+    
     private function get_comune_name($codice) {
         $comuni = array(
             '002' => 'Alessano', '003' => 'Alezio', '004' => 'Alliste', '005' => 'Andrano',
@@ -983,6 +713,7 @@ class PDF_Generator {
         );
         return isset($comuni[$codice]) ? $comuni[$codice] . ' (' . $codice . ')' : $codice;
     }
+    
     private function get_tipo_strada_name($codice) {
         $tipi = array(
             '0' => 'Regionale entro l\'abitato',
@@ -998,6 +729,7 @@ class PDF_Generator {
         );
         return isset($tipi[$codice]) ? $tipi[$codice] : $codice;
     }
+    
     private function get_tronco_strada_name($codice) {
         $tronchi = array(
             '1' => 'diramazione; dir. A',
@@ -1015,6 +747,7 @@ class PDF_Generator {
         );
         return isset($tronchi[$codice]) ? $tronchi[$codice] : $codice;
     }
+    
     private function get_natura_incidente_name($codice) {
         $nature = array(
             'A' => 'Tra veicoli in marcia',
@@ -1025,6 +758,7 @@ class PDF_Generator {
         );
         return isset($nature[$codice]) ? $nature[$codice] : $codice;
     }
+    
     private function get_dettaglio_natura_name($codice, $natura) {
         $dettagli = array(
             'A' => array(
@@ -1051,6 +785,7 @@ class PDF_Generator {
         );
         return isset($dettagli[$natura][$codice]) ? $dettagli[$natura][$codice] : $codice;
     }
+    
     private function get_geometria_strada_name($codice) {
         $geometrie = array(
             '1' => 'Una carreggiata senso unico',
@@ -1060,6 +795,7 @@ class PDF_Generator {
         );
         return isset($geometrie[$codice]) ? $geometrie[$codice] : $codice;
     }
+    
     private function get_pavimentazione_name($codice) {
         $pavimentazioni = array(
             '1' => 'Strada pavimentata',
@@ -1068,6 +804,7 @@ class PDF_Generator {
         );
         return isset($pavimentazioni[$codice]) ? $pavimentazioni[$codice] : $codice;
     }
+    
     private function get_intersezione_name($codice) {
         $intersezioni = array(
             '1' => 'Incrocio',
@@ -1091,6 +828,7 @@ class PDF_Generator {
         );
         return isset($intersezioni[$codice]) ? $intersezioni[$codice] : $codice;
     }
+    
     private function get_fondo_strada_name($codice) {
         $fondi = array(
             '1' => 'Asciutto',
@@ -1101,6 +839,7 @@ class PDF_Generator {
         );
         return isset($fondi[$codice]) ? $fondi[$codice] : $codice;
     }
+    
     private function get_segnaletica_name($codice) {
         $segnaletica = array(
             '1' => 'Assente',
@@ -1111,6 +850,7 @@ class PDF_Generator {
         );
         return isset($segnaletica[$codice]) ? $segnaletica[$codice] : $codice;
     }
+    
     private function get_condizioni_meteo_name($codice) {
         $meteo = array(
             '1' => 'Sereno',
@@ -1123,6 +863,7 @@ class PDF_Generator {
         );
         return isset($meteo[$codice]) ? $meteo[$codice] : $codice;
     }
+    
     private function get_illuminazione_name($codice) {
         $illuminazioni = array(
             '1' => 'Luce diurna',
@@ -1134,6 +875,7 @@ class PDF_Generator {
         );
         return isset($illuminazioni[$codice]) ? $illuminazioni[$codice] : $codice;
     }
+    
     private function get_tipo_veicolo_name($codice) {
         $tipi = array(
             '1' => 'Autovettura privata',
@@ -1162,6 +904,7 @@ class PDF_Generator {
         );
         return isset($tipi[$codice]) ? $tipi[$codice] : $codice;
     }
+    
     private function get_tipo_rimorchio_name($codice) {
         $rimorchi = array(
             '1' => 'Rimorchio',
@@ -1170,18 +913,23 @@ class PDF_Generator {
         );
         return isset($rimorchi[$codice]) ? $rimorchi[$codice] : $codice;
     }
+    
     private function get_sesso_name($codice) {
         return $codice === '1' ? 'Maschio' : ($codice === '2' ? 'Femmina' : $codice);
     }
+    
     private function get_sesso_trasportato_name($codice) {
         return $codice === '3' ? 'Maschio' : ($codice === '4' ? 'Femmina' : $codice);
     }
+    
     private function get_sesso_pedone_name($codice) {
         return $codice === '3' ? 'Maschio' : ($codice === '4' ? 'Femmina' : $codice);
     }
+    
     private function get_sesso_pedone_morto_name($codice) {
         return $codice === '1' ? 'Maschio' : ($codice === '2' ? 'Femmina' : $codice);
     }
+    
     private function get_esito_conducente_name($codice) {
         $esiti = array(
             '1' => 'Incolume',
@@ -1191,17 +939,21 @@ class PDF_Generator {
         );
         return isset($esiti[$codice]) ? $esiti[$codice] : $codice;
     }
+    
     private function get_esito_trasportato_name($codice) {
         return $codice === '1' ? 'Morto' : ($codice === '2' ? 'Ferito' : $codice);
     }
+    
     private function get_posizione_sedile_name($codice) {
         return $codice === 'anteriore' ? 'Sedile anteriore' : ($codice === 'posteriore' ? 'Sedile posteriore' : $codice);
     }
+    
     private function get_nazionalita_name($codice) {
         if (empty($codice)) return '';
         $parts = explode('-', $codice);
         return count($parts) > 1 ? $parts[1] : $codice;
     }
+    
     private function get_tipo_patente_names($patenti) {
         if (!is_array($patenti)) return '';
         
@@ -1227,6 +979,7 @@ class PDF_Generator {
         
         return implode(', ', $result);
     }
+    
     private function get_tipologia_incidente_name($codice) {
         $tipologie = array(
             '1' => 'Incidente durante attività lavorativa',
@@ -1234,6 +987,7 @@ class PDF_Generator {
         );
         return isset($tipologie[$codice]) ? $tipologie[$codice] : '';
     }
+    
     private function get_circostanza_tipo_name($codice) {
         $tipi = array(
             'intersezione' => 'Incidente all\'intersezione stradale',
@@ -1244,6 +998,7 @@ class PDF_Generator {
         );
         return isset($tipi[$codice]) ? $tipi[$codice] : $codice;
     }
+    
     private function get_circostanza_name($codice) {
         // Mappa semplificata delle circostanze principali
         $circostanze = array(
@@ -1264,6 +1019,7 @@ class PDF_Generator {
         );
         return isset($circostanze[$codice]) ? $circostanze[$codice] : $codice;
     }
+    
     private function get_difetto_veicolo_name($codice) {
         $difetti = array(
             '80' => 'Rottura o insufficienza dei freni',
@@ -1279,6 +1035,7 @@ class PDF_Generator {
         );
         return isset($difetti[$codice]) ? $difetti[$codice] : $codice;
     }
+    
     private function get_stato_psicofisico_name($codice) {
         $stati = array(
             '90' => 'Anormale per ebbrezza da alcool',
@@ -1292,5 +1049,4 @@ class PDF_Generator {
         );
         return isset($stati[$codice]) ? $stati[$codice] : $codice;
     }
-    
 }

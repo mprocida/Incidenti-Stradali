@@ -59,7 +59,7 @@ class PDF_Generator {
         /* STILI GENERALI */
         body { 
             font-family: 'DejaVu Sans', Arial, sans-serif; 
-            font-size: 8pt; 
+            font-size: 10pt; 
             line-height: 1.2; 
             color: #333; 
             margin: 0; 
@@ -90,6 +90,31 @@ class PDF_Generator {
         }
         
         /* SEZIONI PRINCIPALI */
+.form-grid {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 20px;
+}
+
+.form-group {
+    width: calc(50% - 10px);
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.form-group span {
+    display: block;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    border-radius: 3px;
+    background: #f9f9f9;
+}
+
         .form-section { 
             margin-bottom: 15px; 
             page-break-inside: avoid; 
@@ -139,10 +164,10 @@ class PDF_Generator {
         
         .field-value { 
             padding: 6px 8px; 
-            font-size: 8pt; 
+            font-size: 10pt; 
             min-height: 12px;
             background: #ffffff;
-            border-left: 3px solid #3498db;
+            /*border-left: 3px solid #3498db;*/
         }
         
         .field-value.empty { 
@@ -157,7 +182,7 @@ class PDF_Generator {
             color: white; 
         }
         .field-highlight .field-value { 
-            border-left-color: #f39c12;
+            /*border-left-color: #f39c12;*/
             background: #fef9e7;
         }
         
@@ -188,7 +213,7 @@ class PDF_Generator {
             border: 1px solid #d5d9dd; 
             padding: 6px 8px; 
             text-align: center; 
-            font-size: 8pt;
+            font-size: 10pt;
             background: #f8f9fa;
         }
         
@@ -258,7 +283,7 @@ class PDF_Generator {
             color: white; 
             padding: 8px; 
             font-weight: bold; 
-            font-size: 8pt;
+            font-size: 10pt;
             text-transform: uppercase;
         }
         
@@ -325,7 +350,7 @@ class PDF_Generator {
         .legal-notice .title { 
             font-weight: bold; 
             color: #856404; 
-            font-size: 8pt;
+            font-size: 10pt;
             text-transform: uppercase;
             margin-bottom: 5px;
             letter-spacing: 0.3px;
@@ -627,7 +652,7 @@ class PDF_Generator {
                     <h5 style="color: #6c757d; margin: 10px 0 5px 0;">Veicolo <?php echo chr(64 + $i); ?> - <?php echo $num_trasportati; ?> trasportati</h5>
                     <?php for ($t = 1; $t <= $num_trasportati; $t++): ?>
                         <?php if (!empty($meta["veicolo_{$i}_trasportato_{$t}_eta"][0])): ?>
-                            <div style="margin-left: 15px; margin-bottom: 8px; font-size: 8pt;">
+                            <div style="margin-left: 15px; margin-bottom: 8px; font-size: 10pt;">
                                 <strong>Trasportato <?php echo $t; ?>:</strong>
                                 Età: <?php echo $meta["veicolo_{$i}_trasportato_{$t}_eta"][0]; ?> anni,
                                 Sesso: <?php echo $this->get_sesso_trasportato_name($meta["veicolo_{$i}_trasportato_{$t}_sesso"][0] ?? ''); ?>,
@@ -711,7 +736,7 @@ class PDF_Generator {
                     <?php if ($pedoni_feriti > 0): ?>
                         <?php for ($i = 1; $i <= $pedoni_feriti; $i++): ?>
                             <?php if (!empty($meta["pedone_ferito_{$i}_eta"][0])): ?>
-                                <div style="margin-left: 15px; font-size: 8pt;">
+                                <div style="margin-left: 15px; font-size: 10pt;">
                                     <strong>Pedone Ferito <?php echo $i; ?>:</strong>
                                     Età: <?php echo $meta["pedone_ferito_{$i}_eta"][0]; ?> anni,
                                     Sesso: <?php echo $this->get_sesso_pedone_name($meta["pedone_ferito_{$i}_sesso"][0] ?? ''); ?>
@@ -725,7 +750,7 @@ class PDF_Generator {
                     <?php if ($pedoni_morti > 0): ?>
                         <?php for ($i = 1; $i <= $pedoni_morti; $i++): ?>
                             <?php if (!empty($meta["pedone_morto_{$i}_eta"][0])): ?>
-                                <div style="margin-left: 15px; font-size: 8pt;">
+                                <div style="margin-left: 15px; font-size: 10pt;">
                                     <strong>Pedone Morto <?php echo $i; ?>:</strong>
                                     Età: <?php echo $meta["pedone_morto_{$i}_eta"][0]; ?> anni,
                                     Sesso: <?php echo $this->get_sesso_pedone_morto_name($meta["pedone_morto_{$i}_sesso"][0] ?? ''); ?>
@@ -928,7 +953,7 @@ class PDF_Generator {
             <?php endif; ?>
             <div class="warning" style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
                 <strong>SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI</strong><br>
-                <span style="font-size: 8pt;">
+                <span style="font-size: 10pt;">
                     Decreto legislativo 6 settembre 1989, n. 322 - Norme sul Sistema statistico nazionale e sulla riorganizzazione dell\'Istituto nazionale di statistica<br/>
                     Decreto legislativo 30 giugno 2003, n. 196 - Codice in materia di protezione dei dati personali<br/>
                     Regolamento UE 2016/679 - Regolamento generale sulla protezione dei dati<br/>

@@ -59,7 +59,7 @@ class PDF_Generator {
         body { font-family: helvetica, sans-serif; font-size: 9pt; line-height: 1.3; }
         .header { text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; }
         .section { margin-bottom: 12px; page-break-inside: avoid; }
-        .section-title { font-weight: bold; font-size: 10pt; background-color: #e9e9e9; padding: 4px 8px; margin-bottom: 8px; border-left: 3px solid #333; }
+        .section-title { font-weight: bold; font-size: 15pt; background-color: #e9e9e9; padding: 4px 8px; margin-bottom: 8px; }
         .field { margin: 3px 0; }
         .field-label { font-weight: bold; display: inline-block; width: 35%; vertical-align: top; }
         .field-value { display: inline-block; width: 63%; }
@@ -132,7 +132,7 @@ class PDF_Generator {
             <div class="section-title">DATI GENERALI</div>
             <div class="two-columns">
                 <div class="column">
-                    <?php $this->render_field('Codice Ente', $meta['codice__ente'][0] ?? ''); ?>
+                    <?php $this->render_field('Incidente', $meta['codice__ente'][0] ?? ''); ?>
                     <?php $this->render_field('Data Incidente', $this->format_date($meta['data_incidente'][0] ?? '')); ?>
                     <?php $this->render_field('Ora', $this->format_time($meta['ora_incidente'][0] ?? '', $meta['minuti_incidente'][0] ?? '')); ?>
                     <?php $this->render_field('Provincia', $this->get_provincia_name($meta['provincia_incidente'][0] ?? '')); ?>
@@ -235,7 +235,7 @@ class PDF_Generator {
             <div class="section-title">VEICOLI COINVOLTI</div>
             <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
                 <?php if (!empty($meta["veicolo_{$i}_tipo"][0])): ?>
-                    <div class="section" style="border-left: 3px solid #007cba; padding-left: 10px; margin-bottom: 15px;">
+                    <div class="section" style="padding-left: 10px; margin-bottom: 15px;">
                         <h4 style="margin: 5px 0; color: #007cba;">Veicolo <?php echo chr(64 + $i); ?></h4>
                         <div class="two-columns">
                             <div class="column">
@@ -279,7 +279,7 @@ class PDF_Generator {
             <div class="section-title">CONDUCENTI</div>
             <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
                 <?php if (!empty($meta["conducente_{$i}_eta"][0])): ?>
-                    <div class="section" style="border-left: 3px solid #28a745; padding-left: 10px; margin-bottom: 12px;">
+                    <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
                         <h4 style="margin: 5px 0; color: #28a745;">Conducente Veicolo <?php echo chr(64 + $i); ?></h4>
                         <div class="two-columns">
                             <div class="column">
@@ -565,13 +565,6 @@ class PDF_Generator {
         <div class="section page-break">
             <div class="section-title">NOMINATIVI MORTI E FERITI</div>
             
-            <div class="warning" style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
-                <strong>SEGRETO STATISTICO - TUTELA DELLA RISERVATEZZA</strong><br>
-                <span style="font-size: 8pt;">
-                    I dati sono tutelati dal segreto statistico (D.lgs. 322/1989) e dalla normativa sulla protezione dei dati personali (Reg. UE 2016/679).
-                </span>
-            </div>
-            
             <!-- MORTI -->
             <?php 
             $morti_presenti = false;
@@ -647,6 +640,17 @@ class PDF_Generator {
                     </table>
                 </div>
             <?php endif; ?>
+            <div class="warning" style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                <strong>SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI</strong><br>
+                <span style="font-size: 8pt;">
+                    Decreto legislativo 6 settembre 1989, n. 322 - Norme sul Sistema statistico nazionale e sulla riorganizzazione dell\'Istituto nazionale di statistica<br/>
+                    Decreto legislativo 30 giugno 2003, n. 196 - Codice in materia di protezione dei dati personali<br/>
+                    Regolamento UE 2016/679 - Regolamento generale sulla protezione dei dati<br/>
+                    I dati raccolti sono tutelati dal segreto statistico e sottoposti alla normativa in materia di protezione dei dati personali e potranno essere utilizzati, anche per successivi trattamenti, esclusivamente per fini statistici dai soggetti del Sistema statistico nazionale ed essere comunicati per finalità di ricerca scientifica alle condizioni e secondo le modalità previste dall\'art 7 del Codice di deontologia e di buona condotta per i trattamenti di dati personali a scopi statistici.<br/>
+                    Titolare del trattamento dei dati è l\'ISTAT – Istituto nazionale di statistica - Via Cesare Balbo, 16 – 00184 Roma. Responsabili del trattamento dei dati sono, per le fasi di rispettiva competenza, il Direttore centrale per le statistiche e le indagini sulle istituzioni sociali dell\'Istat e il preposto all\'Ufficio di statistica della Regione o Provincia autonoma<br/>
+                    L\'inserimento dei nominativi è OBBLIGATORIO ai sensi dell\'art. 7 del d.lgs. n. 322/1989 e fatto obbligo alle amministrazioni, enti ed organismi pubblici, di fornire tutti i dati e le notizie richieste nel modello di rilevazione.
+                </span>
+            </div>
         </div>
         <?php
     }

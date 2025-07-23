@@ -79,7 +79,7 @@ class PDF_Generator {
             background-color: #e9e9e9; 
             padding: 6px 10px; 
             margin-bottom: 10px; 
-            border-left: 4px solid #007cba;
+            /*border-left: 4px solid #007cba;*/
         }
         
         /* Sistema a due colonne migliorato */
@@ -182,7 +182,7 @@ class PDF_Generator {
             background-color: #f8f9fa;
             padding: 4px 8px;
             margin: 8px 0 4px 0;
-            border-left: 3px solid #007cba;
+            /*border-left: 3px solid #007cba;*/
             font-weight: bold;
             font-size: 9pt;
         }
@@ -191,7 +191,7 @@ class PDF_Generator {
             background-color: #e8f5e8;
             padding: 4px 8px;
             margin: 8px 0 4px 0;
-            border-left: 3px solid #28a745;
+            /*border-left: 3px solid #28a745;*/
             font-weight: bold;
             font-size: 9pt;
         }

@@ -32,6 +32,8 @@ class PDF_Generator {
         // Genera contenuto
         $html = $this->generate_pdf_content($post_id);
         $pdf->writeHTML($html, true, false, true, false, '');
+        // Aggiungi footer fisso nell'ultima pagina
+        $this->add_document_info_footer($pdf, $post_id);
         
         // Salva file
         $upload_dir = wp_upload_dir();
@@ -48,6 +50,56 @@ class PDF_Generator {
         
         return file_exists($filepath) ? $filepath : false;
     }
+
+    //Nuovo metodo per aggiungere il footer fisso
+    private function add_document_info_footer($pdf, $post_id) {
+        // Ottieni il numero totale di pagine
+        $total_pages = $pdf->getNumPages();
+        
+        // Vai all'ultima pagina
+        $pdf->setPage($total_pages);
+        
+        // Calcola la posizione Y per il footer (bottom della pagina)
+        $page_height = $pdf->getPageHeight();
+        $margin_bottom = 15; // Margine bottom
+        $footer_height = 25; // Altezza stimata del footer
+        $footer_y = $page_height - $margin_bottom - $footer_height;
+        
+        // Verifica se c'è spazio sufficiente nella pagina corrente
+        $current_y = $pdf->GetY();
+        
+        // Se non c'è spazio, aggiungi una nuova pagina
+        if ($current_y > $footer_y - 10) {
+            $pdf->AddPage();
+            $footer_y = $page_height - $margin_bottom - $footer_height;
+        }
+        
+        // Posiziona il cursore per il footer
+        $pdf->SetY($footer_y);
+        
+        // HTML del footer
+        $footer_html = '
+        <div style="border-top: 2px solid #333; margin-top: 20px; padding-top: 10px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+                <tr>
+                    <td style="width: 50%; padding: 3px; border: none;">
+                        <strong>Data generazione:</strong> ' . date('d/m/Y H:i:s') . '
+                    </td>
+                    <td style="width: 50%; padding: 3px; border: none;">
+                        <strong>Generato da:</strong> Sistema Gestione Incidenti Stradali
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding: 3px; border: none; text-align: center; font-size: 8pt; color: #666;">
+                        Documento ID: ' . $post_id . ' - Pagina ' . $pdf->getAliasNumPage() . ' di ' . $pdf->getAliasNbPages() . '
+                    </td>
+                </tr>
+            </table>
+        </div>';
+        
+        // Scrivi il footer
+        $pdf->writeHTML($footer_html, true, false, true, false, '');
+    }
     
     private function generate_pdf_content($post_id) {
         $post = get_post($post_id);
@@ -56,160 +108,24 @@ class PDF_Generator {
         ob_start();
         ?>
         <style>
-        body { 
-            font-family: helvetica, sans-serif; 
-            font-size: 9pt; 
-            line-height: 1.3; 
-        }
-        .header { 
-            text-align: center; 
-            font-size: 14pt; 
-            font-weight: bold; 
-            margin-bottom: 15px; 
-            border-bottom: 2px solid #333; 
-            padding-bottom: 10px; 
-        }
-        .section { 
-            margin-bottom: 12px; 
-            page-break-inside: avoid; 
-        }
-        .section-title { 
-            font-weight: bold; 
-            font-size: 11pt; 
-            background-color: #e9e9e9; 
-            padding: 6px 10px; 
-            margin-bottom: 10px; 
-            /*border-left: 4px solid #007cba;*/
-        }
-        
-        /* Sistema a due colonne migliorato */
-        .two-columns { 
-            display: table; 
-            width: 100%; 
-            table-layout: fixed;
-        }
-        .column { 
-            display: table-cell; 
-            width: 50%; 
-            vertical-align: top; 
-            padding-right: 8px; 
-        }
-        .column:last-child {
-            padding-right: 0;
-            padding-left: 8px;
-        }
-        
-        /* Layout per campi singoli */
-        .field { 
-            margin: 4px 0; 
-            display: table; 
-            width: 100%;
-            table-layout: fixed;
-        }
-        .field-label { 
-            font-weight: bold; 
-            display: table-cell; 
-            width: 40%; 
-            vertical-align: top; 
-            padding-right: 8px;
-            font-size: 8.5pt;
-        }
-        .field-value { 
-            display: table-cell; 
-            width: 60%; 
-            font-size: 9pt;
-            word-wrap: break-word;
-        }
-        
-        /* Layout compatto per informazioni semplici */
-        .compact-grid {
-            display: table;
-            width: 100%;
-            margin: 6px 0;
-        }
-        .compact-row {
-            display: table-row;
-        }
-        .compact-cell {
-            display: table-cell;
-            width: 25%;
-            padding: 2px 4px;
-            font-size: 8pt;
-            border-bottom: 1px dotted #ccc;
-        }
-        .compact-cell.label {
-            font-weight: bold;
-            width: 15%;
-        }
-        .compact-cell.value {
-            width: 35%;
-        }
-        
-        /* Tabelle */
-        .table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 8px 0; 
-            font-size: 8pt; 
-        }
-        .table th, .table td { 
-            border: 1px solid #666; 
-            padding: 4px; 
-            text-align: left; 
-        }
-        .table th { 
-            background-color: #f0f0f0; 
-            font-weight: bold; 
-            font-size: 8pt; 
-        }
-        
-        /* Stili per evidenziazione */
-        .highlight { 
-            background-color: #fff3cd; 
-            padding: 3px 6px; 
-            border-radius: 2px;
-        }
-        .warning { 
-            color: #856404; 
-            font-weight: bold; 
-        }
-        .page-break { 
-            page-break-before: always; 
-        }
-        
-        /* Miglioramenti per veicoli e persone */
-        .veicolo-header {
-            background-color: #f8f9fa;
-            padding: 4px 8px;
-            margin: 8px 0 4px 0;
-            /*border-left: 3px solid #007cba;*/
-            font-weight: bold;
-            font-size: 9pt;
-        }
-        
-        .persona-header {
-            background-color: #e8f5e8;
-            padding: 4px 8px;
-            margin: 8px 0 4px 0;
-            /*border-left: 3px solid #28a745;*/
-            font-weight: bold;
-            font-size: 9pt;
-        }
-        
-        /* Layout a tre colonne per dati compatti */
-        .three-columns {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-        .three-columns .column {
-            width: 33.33%;
-            padding-right: 4px;
-        }
-        .three-columns .column:last-child {
-            padding-right: 0;
-            padding-left: 0;
-        }
+            body { font-family: helvetica, sans-serif; font-size: 9pt; line-height: 1.3; }
+            .header { text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+            .section { margin-bottom: 12px; }
+            .section-title { font-weight: bold; font-size: 15pt; background-color: #e9e9e9; padding: 4px 8px; margin-bottom: 8px; }
+            .field { margin: 3px 0; }
+            .field-label { font-weight: bold; display: inline-block; width: 35%; vertical-align: top; }
+            .field-value { display: inline-block; width: 63%; }
+            .table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 8pt; }
+            .table th, .table td { border: 1px solid #666; padding: 3px; text-align: left; }
+            .table th { background-color: #f0f0f0; font-weight: bold; font-size: 8pt; }
+            /* NUOVO STILE PER LAYOUT A 2 COLONNE CON TABELLA */
+            .data-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 9pt; }
+            .data-table td { border: none; padding: 3px 5px; vertical-align: top; width: 50%; }
+            .data-table .field-label { font-weight: bold; display: inline-block; width: 40%; }
+            .data-table .field-value { display: inline-block; width: 58%; }
+            .highlight { background-color: #fff3cd; padding: 3px; }
+            .warning { color: #856404; font-weight: bold; }
+            .page-break { page-break-before: always; }
         </style>
         
         <div class="header">
@@ -249,204 +165,273 @@ class PDF_Generator {
         $this->render_nominativi_section($meta);
         ?>
         
-        <div class="section">
-            <div class="section-title">INFORMAZIONI DOCUMENTO</div>
-            <div class="two-columns">
-                <div class="column">
-                    <?php $this->render_field('Data generazione', date('d/m/Y H:i:s')); ?>
-                </div>
-                <div class="column">
-                    <?php $this->render_field('Generato da', 'Sistema Gestione Incidenti Stradali'); ?>
-                </div>
-            </div>
-        </div>
-        
         <?php
         return ob_get_clean();
     }
-    
+
+    // 2. NUOVA FUNZIONE HELPER PER RENDERING A 2 COLONNE
+    private function render_field_in_table($label1, $value1, $label2 = '', $value2 = '') {
+        if ((empty($value1) && $value1 !== '0') && (empty($value2) && $value2 !== '0')) return '';
+        
+        echo '<tr>';
+        
+        // Prima colonna
+        echo '<td>';
+        if (!empty($value1) || $value1 === '0') {
+            echo '<span class="field-label">' . esc_html($label1) . ':</span> ';
+            echo '<span class="field-value">' . esc_html($value1) . '</span>';
+        }
+        echo '</td>';
+        
+        // Seconda colonna
+        echo '<td>';
+        if (!empty($value2) || $value2 === '0') {
+            echo '<span class="field-label">' . esc_html($label2) . ':</span> ';
+            if($label2!='Coordinate GPS'){
+                echo '<span class="field-value">' . esc_html($value2) . '</span>';
+            }else{
+                echo '<span class="field-value">' . $value2 . '</span>';
+            }
+        }
+        echo '</td>';
+        
+        echo '</tr>';
+    }
+
+    // 3. MODIFICA SEZIONE DATI GENERALI
     private function render_dati_generali_section($meta) {
         ?>
         <div class="section">
             <div class="section-title">DATI GENERALI</div>
-            <div class="two-columns">
-                <div class="column">
-                    <?php $this->render_field('ID Incidente', $meta['codice__ente'][0] ?? ''); ?>
-                    <?php $this->render_field('Data Incidente', $this->format_date($meta['data_incidente'][0] ?? '')); ?>
-                    <?php $this->render_field('Ora', $this->format_time($meta['ora_incidente'][0] ?? '', $meta['minuti_incidente'][0] ?? '')); ?>
-                    <?php $this->render_field('Provincia', $this->get_provincia_name($meta['provincia_incidente'][0] ?? '')); ?>
+                <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                    <table class="data-table">
+                        <?php 
+                        $this->render_field_in_table(
+                            'Incidente', $meta['codice__ente'][0] ?? '',
+                            'Comune', $this->get_comune_name($meta['comune_incidente'][0] ?? '')
+                        );
+                        $this->render_field_in_table(
+                            'Data Incidente', $this->format_date($meta['data_incidente'][0] ?? ''),
+                            'Località', $meta['localita_incidente'][0] ?? ''
+                        );
+                        $this->render_field_in_table(
+                            'Ora', $this->format_time($meta['ora_incidente'][0] ?? '', $meta['minuti_incidente'][0] ?? ''),
+                            'Ente Rilevatore', $meta['ente_rilevatore'][0] ?? ''
+                        );
+                        $this->render_field_in_table(
+                            'Provincia', $this->get_provincia_name($meta['provincia_incidente'][0] ?? ''),
+                            'Rilevatore', $meta['nome_rilevatore'][0] ?? ''
+                        );
+                        ?>
+                        <?php if (!empty($meta['identificativo_comando'][0])): ?>
+                            <tr>
+                                <td colspan="2">
+                                    <span class="field-label">Identificativo Comando Carabinieri:</span>
+                                    <span class="field-value"><?php echo esc_html($meta['identificativo_comando'][0]); ?></span>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </table>
                 </div>
-                <div class="column">
-                    <?php $this->render_field('Comune', $this->get_comune_name($meta['comune_incidente'][0] ?? '')); ?>
-                    <?php $this->render_field('Località', $meta['localita_incidente'][0] ?? ''); ?>
-                    <?php $this->render_field('Ente Rilevatore', $meta['ente_rilevatore'][0] ?? ''); ?>
-                    <?php $this->render_field('Rilevatore', $meta['nome_rilevatore'][0] ?? ''); ?>
-                </div>
-            </div>
-            <?php if (!empty($meta['identificativo_comando'][0])): ?>
-                <div style="margin-top: 8px;">
-                    <?php $this->render_field('Identificativo Comando Carabinieri', $meta['identificativo_comando'][0]); ?>
-                </div>
-            <?php endif; ?>
         </div>
         <?php
     }
-    
+
+    // 4. MODIFICA SEZIONE LOCALIZZAZIONE
     private function render_localizzazione_section($meta) {
         ?>
         <div class="section">
             <div class="section-title">LOCALIZZAZIONE DELL'INCIDENTE</div>
-            <div class="two-columns">
-                <div class="column">
-                    <?php $this->render_field('Tipo di Strada', $this->get_tipo_strada_name($meta['tipo_strada'][0] ?? '')); ?>
-                    <?php $this->render_field('Denominazione Strada', $meta['denominazione_strada'][0] ?? ''); ?>
-                    <?php if (!empty($meta['numero_strada'][0])): ?>
-                        <?php $this->render_field('Numero Strada', $meta['numero_strada'][0]); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($meta['tronco_strada'][0])): ?>
-                        <?php $this->render_field('Tronco Strada', $this->get_tronco_strada_name($meta['tronco_strada'][0])); ?>
-                    <?php endif; ?>
+                <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                    <table class="data-table">
+                        <?php 
+                        $this->render_field_in_table(
+                            'Tipo di Strada', $this->get_tipo_strada_name($meta['tipo_strada'][0] ?? ''),
+                            'Denominazione Strada', $meta['denominazione_strada'][0] ?? ''
+                        );
+                        
+                        if (!empty($meta['numero_strada'][0]) || !empty($meta['tronco_strada'][0])) {
+                            $this->render_field_in_table(
+                                'Numero Strada', $meta['numero_strada'][0] ?? '',
+                                'Tronco Strada', $this->get_tronco_strada_name($meta['tronco_strada'][0] ?? '')
+                            );
+                        }
+                        
+                        if (!empty($meta['progressiva_km'][0]) || !empty($meta['progressiva_m'][0]) || 
+                            (!empty($meta['latitudine'][0]) && !empty($meta['longitudine'][0]))) {
+                            $progressiva = '';
+                            if (!empty($meta['progressiva_km'][0]) || !empty($meta['progressiva_m'][0])) {
+                                $progressiva = 'Km: ' . ($meta['progressiva_km'][0] ?? '0') . ' - Mt: ' . ($meta['progressiva_m'][0] ?? '0');
+                            }
+                            
+                            $coordinate = '';
+                            if (!empty($meta['latitudine'][0]) && !empty($meta['longitudine'][0])) {
+                                /* $coordinate = 'Lat: ' . $meta['latitudine'][0] . ' - Long: ' . $meta['longitudine'][0]; */
+                                $coordinate = '<br/>Lat: ' . $meta['latitudine'][0] . '<br/>Long: ' . $meta['longitudine'][0];
+                            }
+                            
+                            $this->render_field_in_table(
+                                'Progressiva Chilometrica', $progressiva,
+                                'Coordinate GPS', $coordinate
+                            );
+                        }
+                        ?>
+                    </table>
                 </div>
-                <div class="column">
-                    <?php if (!empty($meta['progressiva_km'][0]) || !empty($meta['progressiva_m'][0])): ?>
-                        <?php $this->render_field('Progressiva Chilometrica', 
-                            'Km: ' . ($meta['progressiva_km'][0] ?? '0') . ' - Mt: ' . ($meta['progressiva_m'][0] ?? '0')); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($meta['latitudine'][0]) && !empty($meta['longitudine'][0])): ?>
-                        <?php $this->render_field('Coordinate GPS', 
-                            'Lat: ' . $meta['latitudine'][0] . ' - Long: ' . $meta['longitudine'][0]); ?>
-                    <?php endif; ?>
-                </div>
-            </div>
         </div>
         <?php
     }
-    
+
+    // 5. MODIFICA SEZIONE NATURA INCIDENTE
     private function render_natura_incidente_section($meta) {
         ?>
         <div class="section">
             <div class="section-title">NATURA DELL'INCIDENTE</div>
-            <div class="two-columns">
-                <div class="column">
-                    <?php $this->render_field('Natura Incidente', $this->get_natura_incidente_name($meta['natura_incidente'][0] ?? '')); ?>
-                    <?php if (!empty($meta['dettaglio_natura'][0])): ?>
-                        <?php $this->render_field('Dettaglio', $this->get_dettaglio_natura_name($meta['dettaglio_natura'][0], $meta['natura_incidente'][0] ?? '')); ?>
-                    <?php endif; ?>
+                <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                    <table class="data-table">
+                        <?php 
+                        $this->render_field_in_table(
+                            'Natura Incidente', $this->get_natura_incidente_name($meta['natura_incidente'][0] ?? ''),
+                            'Numero Veicoli Coinvolti', $meta['numero_veicoli_coinvolti'][0] ?? '1'
+                        );
+                        
+                        if (!empty($meta['dettaglio_natura'][0]) || !empty($meta['altro_natura_testo'][0])) {
+                            $this->render_field_in_table(
+                                'Dettaglio', $this->get_dettaglio_natura_name($meta['dettaglio_natura'][0] ?? '', $meta['natura_incidente'][0] ?? ''),
+                                'Altro (specificato)', $meta['altro_natura_testo'][0] ?? ''
+                            );
+                        }
+                        ?>
+                    </table>
                 </div>
-                <div class="column">
-                    <?php $this->render_field('Numero Veicoli Coinvolti', $meta['numero_veicoli_coinvolti'][0] ?? '1'); ?>
-                    <?php if (!empty($meta['altro_natura_testo'][0])): ?>
-                        <?php $this->render_field('Altro (specificato)', $meta['altro_natura_testo'][0]); ?>
-                    <?php endif; ?>
-                </div>
-            </div>
         </div>
         <?php
     }
-    
+
+    // 6. MODIFICA SEZIONE CARATTERISTICHE LUOGO
     private function render_caratteristiche_luogo_section($meta) {
         ?>
         <div class="section">
             <div class="section-title">CARATTERISTICHE DEL LUOGO</div>
-            <div class="two-columns">
-                <div class="column">
-                    <?php $this->render_field('Configurazione', $this->get_geometria_strada_name($meta['geometria_strada'][0] ?? '')); ?>
-                    <?php $this->render_field('Pavimentazione', $this->get_pavimentazione_name($meta['pavimentazione_strada'][0] ?? '')); ?>
-                    <?php $this->render_field('Intersezione/Tronco', $this->get_intersezione_name($meta['intersezione_tronco'][0] ?? '')); ?>
-                    <?php $this->render_field('Stato Fondo', $this->get_fondo_strada_name($meta['stato_fondo_strada'][0] ?? '')); ?>
-                </div>
-                <div class="column">
-                    <?php $this->render_field('Segnaletica', $this->get_segnaletica_name($meta['segnaletica_strada'][0] ?? '')); ?>
-                    <?php $this->render_field('Condizioni Meteo', $this->get_condizioni_meteo_name($meta['condizioni_meteo'][0] ?? '')); ?>
-                    <?php $this->render_field('Illuminazione', $this->get_illuminazione_name($meta['illuminazione'][0] ?? '')); ?>
-                    <?php if (!empty($meta['presenza_banchina'][0])): ?>
-                        <?php $this->render_field('Banchina', 'Presente'); ?>
-                    <?php endif; ?>
-                </div>
+            <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                <table class="data-table">
+                    <?php 
+                    $this->render_field_in_table(
+                        'Configurazione Carreggiate', $this->get_geometria_strada_name($meta['geometria_strada'][0] ?? ''),
+                        'Segnaletica', $this->get_segnaletica_name($meta['segnaletica_strada'][0] ?? '')
+                    );
+                    $this->render_field_in_table(
+                        'Pavimentazione', $this->get_pavimentazione_name($meta['pavimentazione_strada'][0] ?? ''),
+                        'Condizioni Meteo', $this->get_condizioni_meteo_name($meta['condizioni_meteo'][0] ?? '')
+                    );
+                    $this->render_field_in_table(
+                        'Intersezione/Tronco', $this->get_intersezione_name($meta['intersezione_tronco'][0] ?? ''),
+                        'Illuminazione', $this->get_illuminazione_name($meta['illuminazione'][0] ?? '')
+                    );
+                    
+                    $banchina = !empty($meta['presenza_banchina'][0]) ? 'Presente' : '';
+                    $this->render_field_in_table(
+                        'Stato Fondo Strada', $this->get_fondo_strada_name($meta['stato_fondo_strada'][0] ?? ''),
+                        'Banchina', $banchina
+                    );
+                    ?>
+                </table>
             </div>
         </div>
         <?php
     }
 
-    private function render_field_compact($label, $value, $highlight = false) {
-        if (empty($value) && $value !== '0') return;
-        
-        $class = $highlight ? 'field highlight' : 'field';
-        echo '<div class="' . $class . '">';
-        echo '<span class="field-label">' . esc_html($label) . ':</span>';
-        echo '<span class="field-value">' . esc_html($value) . '</span>';
-        echo '</div>';
-    }
-    
+    // 7. MODIFICA SEZIONE VEICOLI (esempio per un veicolo)
     private function render_veicoli_section($meta) {
         $numero_veicoli = intval($meta['numero_veicoli_coinvolti'][0] ?? 1);
         
         ?>
         <div class="section">
-            <div class="section-title">VEICOLI COINVOLTI (<?php echo $numero_veicoli; ?>)</div>
+            <div class="section-title">VEICOLI COINVOLTI</div>
             <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
                 <?php if (!empty($meta["veicolo_{$i}_tipo"][0])): ?>
-                    <div class="veicolo-header">
-                        Veicolo <?php echo chr(64 + $i); ?> - <?php echo $this->get_tipo_veicolo_name($meta["veicolo_{$i}_tipo"][0] ?? ''); ?>
+                    <div class="section" style="padding-left: 10px; margin-bottom: 10px;">
+                        <h4 style="margin: 5px 0;">Veicolo <?php echo chr(64 + $i); ?></h4>
+                        <table class="data-table">
+                            <?php 
+                            $this->render_field_in_table(
+                                'Tipo Veicolo', $this->get_tipo_veicolo_name($meta["veicolo_{$i}_tipo"][0] ?? ''),
+                                'Targa', $meta["veicolo_{$i}_targa"][0] ?? ''
+                            );
+                            
+                            $sigla_estero = !empty($meta["veicolo_{$i}_sigla_estero"][0]) ? $meta["veicolo_{$i}_sigla_estero"][0] : '';
+                            $this->render_field_in_table(
+                                'Anno Immatricolazione', $meta["veicolo_{$i}_anno_immatricolazione"][0] ?? '',
+                                'Sigla Estero', $sigla_estero
+                            );
+                            
+                            $cilindrata = !empty($meta["veicolo_{$i}_cilindrata"][0]) ? $meta["veicolo_{$i}_cilindrata"][0] : '';
+                            $peso = !empty($meta["veicolo_{$i}_peso_totale"][0]) ? $meta["veicolo_{$i}_peso_totale"][0] : '';
+                            if ($cilindrata || $peso) {
+                                $this->render_field_in_table(
+                                    'Cilindrata (cc)', $cilindrata,
+                                    'Peso Totale (q)', $peso
+                                );
+                            }
+                            
+                            if (!empty($meta["veicolo_{$i}_tipo_rimorchio"][0])) {
+                                $targa_rimorchio = !empty($meta["veicolo_{$i}_targa_rimorchio"][0]) ? $meta["veicolo_{$i}_targa_rimorchio"][0] : '';
+                                $this->render_field_in_table(
+                                    'Tipo Rimorchio', $this->get_tipo_rimorchio_name($meta["veicolo_{$i}_tipo_rimorchio"][0]),
+                                    'Targa Rimorchio', $targa_rimorchio
+                                );
+                            }
+                            ?>
+                        </table>
+                        <?php if (!empty($meta["veicolo_{$i}_danni_riportati"][0])): ?>
+                            <div class="field">
+                                <span class="field-label">Danni Riportati:</span>
+                                <span class="field-value"><?php echo esc_html($meta["veicolo_{$i}_danni_riportati"][0]); ?></span>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <div class="two-columns" style="margin-bottom: 12px;">
-                        <div class="column">
-                            <?php $this->render_field_compact('Targa', $meta["veicolo_{$i}_targa"][0] ?? ''); ?>
-                            <?php if (!empty($meta["veicolo_{$i}_sigla_estero"][0])): ?>
-                                <?php $this->render_field_compact('Sigla Estero', $meta["veicolo_{$i}_sigla_estero"][0]); ?>
-                            <?php endif; ?>
-                            <?php $this->render_field_compact('Anno Immatric.', $meta["veicolo_{$i}_anno_immatricolazione"][0] ?? ''); ?>
-                        </div>
-                        <div class="column">
-                            <?php if (!empty($meta["veicolo_{$i}_cilindrata"][0])): ?>
-                                <?php $this->render_field_compact('Cilindrata (cc)', $meta["veicolo_{$i}_cilindrata"][0]); ?>
-                            <?php endif; ?>
-                            <?php if (!empty($meta["veicolo_{$i}_peso_totale"][0])): ?>
-                                <?php $this->render_field_compact('Peso Tot. (q)', $meta["veicolo_{$i}_peso_totale"][0]); ?>
-                            <?php endif; ?>
-                            <?php if (!empty($meta["veicolo_{$i}_tipo_rimorchio"][0])): ?>
-                                <?php $this->render_field_compact('Rimorchio', $this->get_tipo_rimorchio_name($meta["veicolo_{$i}_tipo_rimorchio"][0])); ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php if (!empty($meta["veicolo_{$i}_danni_riportati"][0])): ?>
-                        <div style="font-size: 8pt; color: #666; margin-bottom: 8px;">
-                            <strong>Danni:</strong> <?php echo esc_html($meta["veicolo_{$i}_danni_riportati"][0]); ?>
-                        </div>
-                    <?php endif; ?>
                 <?php endif; ?>
             <?php endfor; ?>
         </div>
         <?php
     }
     
+    // 8. MODIFICA SEZIONE PERSONE (CONDUCENTI)
     private function render_persone_section($meta) {
         $numero_veicoli = intval($meta['numero_veicoli_coinvolti'][0] ?? 1);
         
         ?>
-        <div class="section page-break">
+        <div class="section">
             <div class="section-title">CONDUCENTI</div>
             <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
                 <?php if (!empty($meta["conducente_{$i}_eta"][0])): ?>
                     <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
-                        <h4 style="margin: 5px 0; color: #28a745;">Conducente Veicolo <?php echo chr(64 + $i); ?></h4>
-                        <div class="two-columns">
-                            <div class="column">
-                                <?php $this->render_field('Età', $meta["conducente_{$i}_eta"][0] . ' anni'); ?>
-                                <?php $this->render_field('Sesso', $this->get_sesso_name($meta["conducente_{$i}_sesso"][0] ?? '')); ?>
-                                <?php $this->render_field('Esito', $this->get_esito_conducente_name($meta["conducente_{$i}_esito"][0] ?? '')); ?>
-                                <?php $this->render_field('Nazionalità', $this->get_nazionalita_name($meta["conducente_{$i}_nazionalita"][0] ?? '')); ?>
-                            </div>
-                            <div class="column">
-                                <?php $this->render_field('Tipo Patente', $this->get_tipo_patente_names($meta["conducente_{$i}_tipo_patente"][0] ?? array())); ?>
-                                <?php if (!empty($meta["conducente_{$i}_anno_patente"][0])): ?>
-                                    <?php $this->render_field('Anno Rilascio Patente', $meta["conducente_{$i}_anno_patente"][0]); ?>
-                                <?php endif; ?>
-                                <?php if (!empty($meta["conducente_{$i}_tipologia_incidente"][0])): ?>
-                                    <?php $this->render_field('Tipo Incidente Lavorativo', $this->get_tipologia_incidente_name($meta["conducente_{$i}_tipologia_incidente"][0])); ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+                        <h4 style="margin: 5px 0;">Conducente Veicolo <?php echo chr(64 + $i); ?></h4>
+                        <table class="data-table">
+                            <?php 
+                            $this->render_field_in_table(
+                                'Età', $meta["conducente_{$i}_eta"][0] . ' anni',
+                                'Sesso', $this->get_sesso_name($meta["conducente_{$i}_sesso"][0] ?? '')
+                            );
+                            $this->render_field_in_table(
+                                'Esito', $this->get_esito_conducente_name($meta["conducente_{$i}_esito"][0] ?? ''),
+                                'Nazionalità', $this->get_nazionalita_name($meta["conducente_{$i}_nazionalita"][0] ?? '')
+                            );
+                            
+                            $anno_patente = !empty($meta["conducente_{$i}_anno_patente"][0]) ? $meta["conducente_{$i}_anno_patente"][0] : '';
+                            $this->render_field_in_table(
+                                'Tipo Patente', $this->get_tipo_patente_names($meta["conducente_{$i}_tipo_patente"][0] ?? array()),
+                                'Anno Rilascio Patente', $anno_patente
+                            );
+                            
+                            if (!empty($meta["conducente_{$i}_tipologia_incidente"][0])) {
+                                $this->render_field_in_table(
+                                    'Tipo Incidente Lavorativo', $this->get_tipologia_incidente_name($meta["conducente_{$i}_tipologia_incidente"][0]),
+                                    '', ''
+                                );
+                            }
+                            ?>
+                        </table>
                     </div>
                 <?php endif; ?>
             <?php endfor; ?>
@@ -459,7 +444,8 @@ class PDF_Generator {
         </div>
         <?php
     }
-    
+
+    // 9. MODIFICA SEZIONE TRASPORTATI
     private function render_trasportati_section($meta, $numero_veicoli) {
         $has_trasportati = false;
         
@@ -483,25 +469,46 @@ class PDF_Generator {
                 if ($num_trasportati > 0): 
                 ?>
                     <h5 style="color: #6c757d; margin: 10px 0 5px 0;">Veicolo <?php echo chr(64 + $i); ?> - <?php echo $num_trasportati; ?> trasportati</h5>
-                    <?php for ($t = 1; $t <= $num_trasportati; $t++): ?>
-                        <?php if (!empty($meta["veicolo_{$i}_trasportato_{$t}_eta"][0])): ?>
-                            <div style="margin-left: 15px; margin-bottom: 8px; font-size: 8pt;">
-                                <strong>Trasportato <?php echo $t; ?>:</strong>
-                                Età: <?php echo $meta["veicolo_{$i}_trasportato_{$t}_eta"][0]; ?> anni,
-                                Sesso: <?php echo $this->get_sesso_trasportato_name($meta["veicolo_{$i}_trasportato_{$t}_sesso"][0] ?? ''); ?>,
-                                <?php if (!empty($meta["veicolo_{$i}_trasportato_{$t}_sedile"][0])): ?>
-                                    Posizione: <?php echo $this->get_posizione_sedile_name($meta["veicolo_{$i}_trasportato_{$t}_sedile"][0]); ?>,
-                                <?php endif; ?>
-                                Esito: <?php echo $this->get_esito_trasportato_name($meta["veicolo_{$i}_trasportato_{$t}_esito"][0] ?? ''); ?>
-                            </div>
-                        <?php endif; ?>
-                    <?php endfor; ?>
+                    <table class="data-table">
+                        <?php 
+                        for ($t = 1; $t <= $num_trasportati; $t += 2) {
+                            $trasportato1 = '';
+                            $trasportato2 = '';
+                            
+                            if (!empty($meta["veicolo_{$i}_trasportato_{$t}_eta"][0])) {
+                                $posizione1 = !empty($meta["veicolo_{$i}_trasportato_{$t}_sedile"][0]) ? 
+                                    $this->get_posizione_sedile_name($meta["veicolo_{$i}_trasportato_{$t}_sedile"][0]) : '';
+                                $trasportato1 = 'Trasportato ' . $t . ': Età ' . $meta["veicolo_{$i}_trasportato_{$t}_eta"][0] . ' anni, ' .
+                                    'Sesso: ' . $this->get_sesso_trasportato_name($meta["veicolo_{$i}_trasportato_{$t}_sesso"][0] ?? '') . ', ' .
+                                    ($posizione1 ? 'Pos: ' . $posizione1 . ', ' : '') .
+                                    'Esito: ' . $this->get_esito_trasportato_name($meta["veicolo_{$i}_trasportato_{$t}_esito"][0] ?? '');
+                            }
+                            
+                            if (($t + 1) <= $num_trasportati && !empty($meta["veicolo_{$i}_trasportato_" . ($t + 1) . "_eta"][0])) {
+                                $posizione2 = !empty($meta["veicolo_{$i}_trasportato_" . ($t + 1) . "_sedile"][0]) ? 
+                                    $this->get_posizione_sedile_name($meta["veicolo_{$i}_trasportato_" . ($t + 1) . "_sedile"][0]) : '';
+                                $trasportato2 = 'Trasportato ' . ($t + 1) . ': Età ' . $meta["veicolo_{$i}_trasportato_" . ($t + 1) . "_eta"][0] . ' anni, ' .
+                                    'Sesso: ' . $this->get_sesso_trasportato_name($meta["veicolo_{$i}_trasportato_" . ($t + 1) . "_sesso"][0] ?? '') . ', ' .
+                                    ($posizione2 ? 'Pos: ' . $posizione2 . ', ' : '') .
+                                    'Esito: ' . $this->get_esito_trasportato_name($meta["veicolo_{$i}_trasportato_" . ($t + 1) . "_esito"][0] ?? '');
+                            }
+                            
+                            if ($trasportato1 || $trasportato2) {
+                                echo '<tr>';
+                                echo '<td style="font-size: 8pt;">' . esc_html($trasportato1) . '</td>';
+                                echo '<td style="font-size: 8pt;">' . esc_html($trasportato2) . '</td>';
+                                echo '</tr>';
+                            }
+                        }
+                        ?>
+                    </table>
                 <?php endif; ?>
             <?php endfor; ?>
         </div>
         <?php
     }
-    
+
+    // 10. MODIFICA SEZIONE ALTRI PASSEGGERI
     private function render_altri_passeggeri_section($meta, $numero_veicoli) {
         $has_altri = false;
         
@@ -521,41 +528,44 @@ class PDF_Generator {
         ?>
         <div class="section">
             <div class="section-title">ALTRI PASSEGGERI INFORTUNATI</div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Veicolo</th>
-                        <th>Morti Maschi</th>
-                        <th>Morti Femmine</th>
-                        <th>Feriti Maschi</th>
-                        <th>Feriti Femmine</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
-                        <?php 
-                        $morti_m = $meta["veicolo_{$i}_altri_morti_maschi"][0] ?? '';
-                        $morti_f = $meta["veicolo_{$i}_altri_morti_femmine"][0] ?? '';
-                        $feriti_m = $meta["veicolo_{$i}_altri_feriti_maschi"][0] ?? '';
-                        $feriti_f = $meta["veicolo_{$i}_altri_feriti_femmine"][0] ?? '';
-                        
-                        if ($morti_m || $morti_f || $feriti_m || $feriti_f):
-                        ?>
-                            <tr>
-                                <td><?php echo chr(64 + $i); ?></td>
-                                <td><?php echo $morti_m ?: '0'; ?></td>
-                                <td><?php echo $morti_f ?: '0'; ?></td>
-                                <td><?php echo $feriti_m ?: '0'; ?></td>
-                                <td><?php echo $feriti_f ?: '0'; ?></td>
-                            </tr>
-                        <?php endif; ?>
-                    <?php endfor; ?>
-                </tbody>
-            </table>
+                <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                    <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Veicolo</th>
+                            <th>Morti Maschi</th>
+                            <th>Morti Femmine</th>
+                            <th>Feriti Maschi</th>
+                            <th>Feriti Femmine</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
+                            <?php 
+                            $morti_m = $meta["veicolo_{$i}_altri_morti_maschi"][0] ?? '';
+                            $morti_f = $meta["veicolo_{$i}_altri_morti_femmine"][0] ?? '';
+                            $feriti_m = $meta["veicolo_{$i}_altri_feriti_maschi"][0] ?? '';
+                            $feriti_f = $meta["veicolo_{$i}_altri_feriti_femmine"][0] ?? '';
+                            
+                            if ($morti_m || $morti_f || $feriti_m || $feriti_f):
+                            ?>
+                                <tr>
+                                    <td><?php echo chr(64 + $i); ?></td>
+                                    <td><?php echo $morti_m ?: '0'; ?></td>
+                                    <td><?php echo $morti_f ?: '0'; ?></td>
+                                    <td><?php echo $feriti_m ?: '0'; ?></td>
+                                    <td><?php echo $feriti_f ?: '0'; ?></td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </tbody>
+                    </table>
+                </div>
         </div>
         <?php
     }
-    
+
+    // 11. MODIFICA SEZIONE PEDONI
     private function render_pedoni_section($meta) {
         $pedoni_feriti = intval($meta['numero_pedoni_feriti'][0] ?? 0);
         $pedoni_morti = intval($meta['numero_pedoni_morti'][0] ?? 0);
@@ -565,40 +575,74 @@ class PDF_Generator {
         ?>
         <div class="section">
             <div class="section-title">PEDONI COINVOLTI</div>
-            <div class="two-columns">
-                <div class="column">
-                    <?php $this->render_field('Numero Pedoni Feriti', $pedoni_feriti); ?>
-                    <?php if ($pedoni_feriti > 0): ?>
-                        <?php for ($i = 1; $i <= $pedoni_feriti; $i++): ?>
-                            <?php if (!empty($meta["pedone_ferito_{$i}_eta"][0])): ?>
-                                <div style="margin-left: 15px; font-size: 8pt;">
-                                    <strong>Pedone Ferito <?php echo $i; ?>:</strong>
-                                    Età: <?php echo $meta["pedone_ferito_{$i}_eta"][0]; ?> anni,
-                                    Sesso: <?php echo $this->get_sesso_pedone_name($meta["pedone_ferito_{$i}_sesso"][0] ?? ''); ?>
-                                </div>
-                            <?php endif; ?>
-                        <?php endfor; ?>
-                    <?php endif; ?>
+                <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                    <table class="data-table">
+                        <?php 
+                        $this->render_field_in_table(
+                            'Numero Pedoni Feriti', $pedoni_feriti,
+                            'Numero Pedoni Morti', $pedoni_morti
+                        );
+                        ?>
+                    </table>
                 </div>
-                <div class="column">
-                    <?php $this->render_field('Numero Pedoni Morti', $pedoni_morti); ?>
-                    <?php if ($pedoni_morti > 0): ?>
-                        <?php for ($i = 1; $i <= $pedoni_morti; $i++): ?>
-                            <?php if (!empty($meta["pedone_morto_{$i}_eta"][0])): ?>
-                                <div style="margin-left: 15px; font-size: 8pt;">
-                                    <strong>Pedone Morto <?php echo $i; ?>:</strong>
-                                    Età: <?php echo $meta["pedone_morto_{$i}_eta"][0]; ?> anni,
-                                    Sesso: <?php echo $this->get_sesso_pedone_morto_name($meta["pedone_morto_{$i}_sesso"][0] ?? ''); ?>
-                                </div>
-                            <?php endif; ?>
-                        <?php endfor; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
+            
+            <?php if ($pedoni_feriti > 0 || $pedoni_morti > 0): ?>
+                <table class="data-table">
+                    <?php 
+                    // Pedoni feriti e morti in righe alternate
+                    $max_pedoni = max($pedoni_feriti, $pedoni_morti);
+                    for ($i = 1; $i <= $max_pedoni; $i += 2) {
+                        $ferito1 = '';
+                        $ferito2 = '';
+                        $morto1 = '';
+                        $morto2 = '';
+                        
+                        // Pedoni feriti
+                        if ($i <= $pedoni_feriti && !empty($meta["pedone_ferito_{$i}_eta"][0])) {
+                            $ferito1 = 'Pedone Ferito ' . $i . ': Età ' . $meta["pedone_ferito_{$i}_eta"][0] . ' anni, ' .
+                                'Sesso: ' . $this->get_sesso_pedone_name($meta["pedone_ferito_{$i}_sesso"][0] ?? '');
+                        }
+                        
+                        if (($i + 1) <= $pedoni_feriti && !empty($meta["pedone_ferito_" . ($i + 1) . "_eta"][0])) {
+                            $ferito2 = 'Pedone Ferito ' . ($i + 1) . ': Età ' . $meta["pedone_ferito_" . ($i + 1) . "_eta"][0] . ' anni, ' .
+                                'Sesso: ' . $this->get_sesso_pedone_name($meta["pedone_ferito_" . ($i + 1) . "_sesso"][0] ?? '');
+                        }
+                        
+                        // Pedoni morti
+                        if ($i <= $pedoni_morti && !empty($meta["pedone_morto_{$i}_eta"][0])) {
+                            $morto1 = 'Pedone Morto ' . $i . ': Età ' . $meta["pedone_morto_{$i}_eta"][0] . ' anni, ' .
+                                'Sesso: ' . $this->get_sesso_pedone_morto_name($meta["pedone_morto_{$i}_sesso"][0] ?? '');
+                        }
+                        
+                        if (($i + 1) <= $pedoni_morti && !empty($meta["pedone_morto_" . ($i + 1) . "_eta"][0])) {
+                            $morto2 = 'Pedone Morto ' . ($i + 1) . ': Età ' . $meta["pedone_morto_" . ($i + 1) . "_eta"][0] . ' anni, ' .
+                                'Sesso: ' . $this->get_sesso_pedone_morto_name($meta["pedone_morto_" . ($i + 1) . "_sesso"][0] ?? '');
+                        }
+                        
+                        // Stampa feriti se presenti
+                        if ($ferito1 || $ferito2) {
+                            echo '<tr>';
+                            echo '<td style="font-size: 8pt;">' . esc_html($ferito1) . '</td>';
+                            echo '<td style="font-size: 8pt;">' . esc_html($ferito2) . '</td>';
+                            echo '</tr>';
+                        }
+                        
+                        // Stampa morti se presenti
+                        if ($morto1 || $morto2) {
+                            echo '<tr>';
+                            echo '<td style="font-size: 8pt;">' . esc_html($morto1) . '</td>';
+                            echo '<td style="font-size: 8pt;">' . esc_html($morto2) . '</td>';
+                            echo '</tr>';
+                        }
+                    }
+                    ?>
+                </table>
+            <?php endif; ?>
         </div>
         <?php
     }
     
+    // 12. MODIFICA SEZIONE CIRCOSTANZE
     private function render_circostanze_section($meta) {
         $has_circostanze = false;
         
@@ -619,41 +663,71 @@ class PDF_Generator {
         if (!$has_circostanze) return;
         
         ?>
-        <div class="section page-break">
+        <div class="section">
             <div class="section-title">CIRCOSTANZE PRESUNTE DELL'INCIDENTE</div>
             
             <?php if (!empty($meta['circostanza_tipo'][0])): ?>
-                <?php $this->render_field('Tipo di Incidente', $this->get_circostanza_tipo_name($meta['circostanza_tipo'][0])); ?>
+                <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                    <table class="data-table">
+                        <?php 
+                        $this->render_field_in_table(
+                            'Tipo di Incidente', $this->get_circostanza_tipo_name($meta['circostanza_tipo'][0]),
+                            '', ''
+                        );
+                        ?>
+                    </table>
+                </div>
             <?php endif; ?>
-            
-            <div class="two-columns">
-                <div class="column">
-                    <?php if (!empty($meta['circostanza_veicolo_a'][0])): ?>
-                        <?php $this->render_field('Circostanza Veicolo A', $this->get_circostanza_name($meta['circostanza_veicolo_a'][0])); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($meta['difetto_veicolo_a'][0])): ?>
-                        <?php $this->render_field('Difetto Veicolo A', $this->get_difetto_veicolo_name($meta['difetto_veicolo_a'][0])); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($meta['stato_psicofisico_a'][0])): ?>
-                        <?php $this->render_field('Stato Psicofisico A', $this->get_stato_psicofisico_name($meta['stato_psicofisico_a'][0])); ?>
-                    <?php endif; ?>
-                </div>
-                <div class="column">
-                    <?php if (!empty($meta['circostanza_veicolo_b'][0])): ?>
-                        <?php $this->render_field('Circostanza Veicolo B', $this->get_circostanza_name($meta['circostanza_veicolo_b'][0])); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($meta['difetto_veicolo_b'][0])): ?>
-                        <?php $this->render_field('Difetto Veicolo B', $this->get_difetto_veicolo_name($meta['difetto_veicolo_b'][0])); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($meta['stato_psicofisico_b'][0])): ?>
-                        <?php $this->render_field('Stato Psicofisico B', $this->get_stato_psicofisico_name($meta['stato_psicofisico_b'][0])); ?>
-                    <?php endif; ?>
-                </div>
+
+            <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                <table class="data-table">
+                    <?php 
+                    // Circostanze veicoli
+                    $this->render_field_in_table(
+                        'Circostanza Veicolo A', $this->get_circostanza_name($meta['circostanza_veicolo_a'][0] ?? ''),
+                        'Circostanza Veicolo B', $this->get_circostanza_name($meta['circostanza_veicolo_b'][0] ?? '')
+                    );
+                    
+                    /* if (!empty($meta['circostanza_veicolo_c'][0])) {
+                        $this->render_field_in_table(
+                            'Circostanza Veicolo C', $this->get_circostanza_name($meta['circostanza_veicolo_c'][0]),
+                            '', ''
+                        );
+                    } */
+                    
+                    // Difetti veicoli
+                    $this->render_field_in_table(
+                        'Difetto Veicolo A', $this->get_difetto_veicolo_name($meta['difetto_veicolo_a'][0] ?? ''),
+                        'Difetto Veicolo B', $this->get_difetto_veicolo_name($meta['difetto_veicolo_b'][0] ?? '')
+                    );
+                    
+                    /* if (!empty($meta['difetto_veicolo_c'][0])) {
+                        $this->render_field_in_table(
+                            'Difetto Veicolo C', $this->get_difetto_veicolo_name($meta['difetto_veicolo_c'][0]),
+                            '', ''
+                        );
+                    } */
+                    
+                    // Stati psicofisici
+                    $this->render_field_in_table(
+                        'Stato Psicofisico A', $this->get_stato_psicofisico_name($meta['stato_psicofisico_a'][0] ?? ''),
+                        'Stato Psicofisico B', $this->get_stato_psicofisico_name($meta['stato_psicofisico_b'][0] ?? '')
+                    );
+                    
+                    if (!empty($meta['stato_psicofisico_c'][0])) {
+                        $this->render_field_in_table(
+                            'Stato Psicofisico C', $this->get_stato_psicofisico_name($meta['stato_psicofisico_c'][0]),
+                            '', ''
+                        );
+                    }
+                    ?>
+                </table>
             </div>
         </div>
         <?php
     }
     
+    // 13. SEZIONE RIEPILOGO
     private function render_riepilogo_section($meta) {
         $morti_24h = intval($meta['riepilogo_morti_24h'][0] ?? 0);
         $morti_2_30gg = intval($meta['riepilogo_morti_2_30gg'][0] ?? 0);
@@ -664,28 +738,31 @@ class PDF_Generator {
         ?>
         <div class="section">
             <div class="section-title">RIEPILOGO INFORTUNATI</div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Morti entro 24h</th>
-                        <th>Morti 2°-30° giorno</th>
-                        <th>Feriti</th>
-                        <th>Totale Infortunati</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="text-align: center; font-weight: bold; color: #d63638;"><?php echo $morti_24h; ?></td>
-                        <td style="text-align: center; font-weight: bold; color: #d63638;"><?php echo $morti_2_30gg; ?></td>
-                        <td style="text-align: center; font-weight: bold; color: #f0b849;"><?php echo $feriti; ?></td>
-                        <td style="text-align: center; font-weight: bold;"><?php echo ($morti_24h + $morti_2_30gg + $feriti); ?></td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="section" style="padding-left: 10px; margin-bottom: 12px;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Morti entro 24h</th>
+                                <th>Morti 2°-30° giorno</th>
+                                <th>Feriti</th>
+                                <th>Totale Infortunati</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;"><?php echo $morti_24h; ?></td>
+                                <td style="text-align: center; font-weight: bold;"><?php echo $morti_2_30gg; ?></td>
+                                <td style="text-align: center; font-weight: bold;"><?php echo $feriti; ?></td>
+                                <td style="text-align: center; font-weight: bold;"><?php echo ($morti_24h + $morti_2_30gg + $feriti); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
         </div>
         <?php
     }
     
+    // 14. SEZIONE NOMINATIVI
     private function render_nominativi_section($meta) {
         // Verifica se ci sono nominativi da mostrare
         $has_nominativi = false;
@@ -711,7 +788,7 @@ class PDF_Generator {
         if (!$has_nominativi) return;
         
         ?>
-        <div class="section page-break">
+        <div class="section">
             <div class="section-title">NOMINATIVI MORTI E FERITI</div>
             
             <!-- MORTI -->
@@ -727,7 +804,7 @@ class PDF_Generator {
             if ($morti_presenti):
             ?>
                 <div class="section">
-                    <h4 style="color: #d63638; margin: 10px 0 5px 0;">MORTI</h4>
+                    <h4 style="margin: 10px 0 5px 0;">MORTI</h4>
                     <table class="table">
                         <thead>
                             <tr>
@@ -764,7 +841,7 @@ class PDF_Generator {
             if ($feriti_presenti):
             ?>
                 <div class="section">
-                    <h4 style="color: #f0b849; margin: 10px 0 5px 0;">FERITI</h4>
+                    <h4 style="margin: 10px 0 5px 0;">FERITI</h4>
                     <table class="table">
                         <thead>
                             <tr>

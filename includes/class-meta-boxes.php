@@ -2118,6 +2118,8 @@ class IncidentiMetaBoxes {
         $geometria_strada = get_post_meta($post->ID, 'geometria_strada', true);
         $pavimentazione = get_post_meta($post->ID, 'pavimentazione_strada', true);
         $intersezione = get_post_meta($post->ID, 'intersezione_tronco', true);
+        $accessi_laterali = get_post_meta($post->ID, 'accessi_laterali', true);
+        $caratteristiche_geom = get_post_meta($post->ID, 'caratteristiche_geometriche', true);
         $fondo_strada = get_post_meta($post->ID, 'stato_fondo_strada', true);
         $segnaletica = get_post_meta($post->ID, 'segnaletica_strada', true);
         $condizioni_meteo = get_post_meta($post->ID, 'condizioni_meteo', true);
@@ -2168,10 +2170,10 @@ class IncidentiMetaBoxes {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Condizioni Manto', 'incidenti-stradali'); ?></th>
+                        <th><i style="font-weight: 400;"><?php _e('Condizioni Manto', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="radio" name="condizioni_manto" value="aperto" <?php checked($condizioni_manto, 'aperto'); ?>> <?php _e('Tappeto d\'usura aperto', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="condizioni_manto" value="chiuso" <?php checked($condizioni_manto, 'chiuso'); ?>> <?php _e('Tappeto d\'usura chiuso', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="radio" name="condizioni_manto" value="aperto" <?php checked($condizioni_manto, 'aperto'); ?>> <?php _e('Tappeto d\'usura aperto', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="condizioni_manto" value="chiuso" <?php checked($condizioni_manto, 'chiuso'); ?>> <?php _e('Tappeto d\'usura chiuso', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                 </table>
@@ -2205,13 +2207,25 @@ class IncidentiMetaBoxes {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Caratteristiche Geometriche', 'incidenti-stradali'); ?></th>
+                        <th><?php _e('Elementi Aggiuntivi', 'incidenti-stradali'); ?></th>
                         <td>
-                            <label><input type="radio" name="intersezione_tronco" value="14" <?php checked($intersezione, '14'); ?>> <?php _e('Cunetta', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="15" <?php checked($intersezione, '15'); ?>> <?php _e('Cavalcavia', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="16" <?php checked($intersezione, '16'); ?>> <?php _e('Trincea', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="17" <?php checked($intersezione, '17'); ?>> <?php _e('Rilevato', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="intersezione_tronco" value="18" <?php checked($intersezione, '18'); ?>> <?php _e('Accessi laterali', 'incidenti-stradali'); ?></label>
+                            <label><input type="checkbox" name="accessi_laterali" value="1" <?php checked($accessi_laterali, '1'); ?>> <?php _e('Accessi laterali', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Nuova sezione separata per Caratteristiche Geometriche -->
+            <div class="sezione-luogo">
+                <h4><?php _e('Caratteristiche Geometriche', 'incidenti-stradali'); ?></h4>
+                <table class="form-table">
+                    <tr>
+                        <th style="font-weight: 400;"><i><?php _e('Tipo Caratteristica', 'incidenti-stradali'); ?></i></th>
+                        <td>
+                            <i><label><input type="radio" name="caratteristiche_geometriche" value="14" <?php checked($caratteristiche_geom, '14'); ?>> <?php _e('Cunetta', 'incidenti-stradali'); ?></label><br></i>
+                            <i><label><input type="radio" name="caratteristiche_geometriche" value="15" <?php checked($caratteristiche_geom, '15'); ?>> <?php _e('Cavalcavia', 'incidenti-stradali'); ?></label><br></i>
+                            <i><label><input type="radio" name="caratteristiche_geometriche" value="16" <?php checked($caratteristiche_geom, '16'); ?>> <?php _e('Trincea', 'incidenti-stradali'); ?></label><br></i>
+                            <i><label><input type="radio" name="caratteristiche_geometriche" value="17" <?php checked($caratteristiche_geom, '17'); ?>> <?php _e('Rilevato', 'incidenti-stradali'); ?></label><br></i>
                         </td>
                     </tr>
                 </table>
@@ -2229,7 +2243,7 @@ class IncidentiMetaBoxes {
                             <label><input type="radio" name="stato_fondo_strada" value="3" <?php checked($fondo_strada, '3'); ?>> <?php _e('Sdrucciolevole', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="stato_fondo_strada" value="4" <?php checked($fondo_strada, '4'); ?>> <?php _e('Ghiacciato', 'incidenti-stradali'); ?></label><br>
                             <label><input type="radio" name="stato_fondo_strada" value="5" <?php checked($fondo_strada, '5'); ?>> <?php _e('Innevato', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="checkbox" name="allagato" value="1" <?php checked($allagato, '1'); ?>> <?php _e('Allagato', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="checkbox" name="allagato" value="1" <?php checked($allagato, '1'); ?>> <?php _e('Allagato', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                 </table>
@@ -2278,10 +2292,10 @@ class IncidentiMetaBoxes {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Condizioni Aggiuntive', 'incidenti-stradali'); ?></th>
+                        <th style="font-weight: 400;"><i><?php _e('Condizioni Aggiuntive', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="checkbox" name="nuvoloso" value="1" <?php checked($nuvoloso, '1'); ?>> <?php _e('Nuvoloso', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="checkbox" name="foschia" value="1" <?php checked($foschia, '1'); ?>> <?php _e('Foschia', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="checkbox" name="nuvoloso" value="1" <?php checked($nuvoloso, '1'); ?>> <?php _e('Nuvoloso', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="checkbox" name="foschia" value="1" <?php checked($foschia, '1'); ?>> <?php _e('Foschia', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                 </table>
@@ -4557,6 +4571,7 @@ class IncidentiMetaBoxes {
             'circostanza_tipo', 'condizioni_aggiuntive', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
             'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
             'cilindrata_veicolo_c', 'peso_pieno_carico_a', 'peso_pieno_carico_b', 'peso_pieno_carico_c',
+            'caratteristiche_geometriche',
             // Campi nominativi morti
             'morto_1_nome', 'morto_1_cognome',
             'morto_2_nome', 'morto_2_cognome',
@@ -4618,6 +4633,7 @@ class IncidentiMetaBoxes {
             'riepilogo_morti_24h', 'riepilogo_morti_2_30gg', 'riepilogo_feriti',
             // Campi localizzazione aggiuntivi
             'abitato', 'illuminazione', 'pavimentazione', 'intersezione',
+            'accessi_laterali', 'caratteristiche_geometriche',
 
             // Campi veicoli (pattern ripetuto per veicolo_1, veicolo_2, veicolo_3)
             'veicolo_1_tipo', 'veicolo_1_targa', 'veicolo_1_anno_immatricolazione', 'veicolo_1_cilindrata',
@@ -4866,9 +4882,9 @@ class IncidentiMetaBoxes {
         
         // === GESTIONE CAMPI AGGIUNTIVI PER EXPORT ISTAT ===
         $additional_simple_fields = array(
-            'abitato', 'illuminazione', 'pavimentazione', 'intersezione', 
-            'sistema_di_proiezione', 'codice_carabinieri', 'altra_strada', 
-            'codice__ente', 'codice_strada_aci'
+            'abitato', 'illuminazione', 'pavimentazione', 'intersezione',
+            'sistema_di_proiezione', 'codice_carabinieri',
+            'altra_strada', 'codice__ente', 'codice_strada_aci'
         );
 
         foreach ($additional_simple_fields as $field) {

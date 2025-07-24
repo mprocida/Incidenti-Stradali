@@ -2412,7 +2412,6 @@ class IncidentiMetaBoxes {
                         <option value="B" <?php selected($natura_incidente, 'B'); ?>><?php _e('Tra veicolo e pedoni', 'incidenti-stradali'); ?></option>
                         <option value="C" <?php selected($natura_incidente, 'C'); ?>><?php _e('Veicolo in marcia che urta veicolo fermo o altro', 'incidenti-stradali'); ?></option>
                         <option value="D" <?php selected($natura_incidente, 'D'); ?>><?php _e('Veicolo in marcia senza urto', 'incidenti-stradali'); ?></option>
-                        <option value="E" <?php selected($natura_incidente, 'E'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
                     </select>
                 </td>
             </tr>
@@ -2424,14 +2423,14 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
-            <tr id="altro_natura_row" style="display: none;">
-                <th><label for="altro_natura_testo"><?php _e('Specifica Altro', 'incidenti-stradali'); ?></label></th>
+            <tr id="altro_natura_row">
+                <th><label for="altro_natura_testo"><?php _e('Altro (specificare)', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <input type="text" id="altro_natura_testo" name="altro_natura_testo" 
                         value="<?php echo esc_attr(get_post_meta($post->ID, 'altro_natura_testo', true)); ?>" 
                         class="regular-text" maxlength="100" 
-                        placeholder="<?php _e('Descrivi la natura dell\'incidente', 'incidenti-stradali'); ?>">
-                    <p class="description"><?php _e('Descrizione personalizzata della natura dell\'incidente (max 100 caratteri)', 'incidenti-stradali'); ?></p>
+                        placeholder="<?php _e('Specifica se diverso dalle opzioni standard', 'incidenti-stradali'); ?>">
+                    <p class="description"><?php _e('Campo opzionale per specificare natura diversa dalle opzioni standard (max 100 caratteri)', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
             <tr id="numero_veicoli_row">
@@ -2446,11 +2445,11 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
             <tr id="salto_carreggiata_row" style="display: none;">
-                <th><label for="salto_carreggiata"><?php _e('Salto carreggiata', 'incidenti-stradali'); ?></label></th>
+                <th style="font-weight: 400;"><i><label for="salto_carreggiata"><?php _e('Salto carreggiata', 'incidenti-stradali'); ?></label></i></th>
                 <td>
                     <input type="checkbox" id="salto_carreggiata" name="salto_carreggiata" value="1" 
                         <?php checked($salto_carreggiata, '1'); ?> />
-                    <label for="salto_carreggiata"><?php _e('Salto carreggiata presente', 'incidenti-stradali'); ?></label>
+                    <label for="salto_carreggiata"><i><?php _e('Salto carreggiata presente', 'incidenti-stradali'); ?></i></label>
                 </td>
             </tr>
         </table>
@@ -2486,33 +2485,22 @@ class IncidentiMetaBoxes {
                 var natura = $(this).val();
                 var dettaglioSelect = $('#dettaglio_natura');
                 var dettaglioRow = $('#dettaglio_natura_row');
-                var altroRow = $('#altro_natura_row');
-                var altroInput = $('#altro_natura_testo');
                 
                 // Reset fields
                 dettaglioSelect.empty().append('<option value="">Seleziona dettaglio</option>');
-                altroInput.val('');
                 
-                if (natura === 'E') {
-                    // Mostra campo "Altro" e nascondi dettaglio
-                    altroRow.show();
-                    dettaglioRow.hide();
-                    dettaglioSelect.val('');
-                } else {
-                    // Nascondi campo "Altro" e mostra dettaglio
-                    altroRow.hide();
+                if (natura && naturaOptions[natura]) {
                     dettaglioRow.show();
-                    
-                    if (natura && naturaOptions[natura]) {
-                        $.each(naturaOptions[natura], function(value, text) {
-                            dettaglioSelect.append('<option value="' + value + '">' + text + '</option>');
-                        });
-                        // Ripristina il valore salvato
-                        var savedDettaglio = '<?php echo esc_js($dettaglio_natura); ?>';
-                        if (savedDettaglio) {
-                            dettaglioSelect.val(savedDettaglio);
-                        }
+                    $.each(naturaOptions[natura], function(value, text) {
+                        dettaglioSelect.append('<option value="' + value + '">' + text + '</option>');
+                    });
+                    // Ripristina il valore salvato
+                    var savedDettaglio = '<?php echo esc_js($dettaglio_natura); ?>';
+                    if (savedDettaglio) {
+                        dettaglioSelect.val(savedDettaglio);
                     }
+                } else {
+                    dettaglioRow.hide();
                 }
                 
                 // Mostra/nascondi campo numero veicoli

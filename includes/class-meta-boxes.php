@@ -2127,15 +2127,13 @@ class IncidentiMetaBoxes {
         $visibilita = get_post_meta($post->ID, 'visibilita', true);
         $traffico = get_post_meta($post->ID, 'traffico', true);
         $segnaletica_semaforica = get_post_meta($post->ID, 'segnaletica_semaforica', true);
+        $elementi_aggiuntivi_1 = get_post_meta($post->ID, 'elementi_aggiuntivi_1', true);
+        $elementi_aggiuntivi_2 = get_post_meta($post->ID, 'elementi_aggiuntivi_2', true);
         $orientamento_conducente = get_post_meta($post->ID, 'orientamento_conducente', true);
         $presenza_banchina = get_post_meta($post->ID, 'presenza_banchina', true);
         $presenza_barriere = get_post_meta($post->ID, 'presenza_barriere', true);
         $condizioni_manto = get_post_meta($post->ID, 'condizioni_manto', true);
         $allagato = get_post_meta($post->ID, 'allagato', true);
-        $semaforizzazioni = get_post_meta($post->ID, 'semaforizzazioni', true);
-        $cartelli_pubblicitari = get_post_meta($post->ID, 'cartelli_pubblicitari', true);
-        $leggibilita_alta = get_post_meta($post->ID, 'leggibilita_alta', true);
-        $leggibilita_bassa = get_post_meta($post->ID, 'leggibilita_bassa', true);
         $nuvoloso = get_post_meta($post->ID, 'nuvoloso', true);
         $foschia = get_post_meta($post->ID, 'foschia', true);
         
@@ -2263,15 +2261,22 @@ class IncidentiMetaBoxes {
                             <label><input type="radio" name="segnaletica_strada" value="5" <?php checked($segnaletica, '5'); ?>> <?php _e('Temporanea di cantiere', 'incidenti-stradali'); ?></label>
                         </td>
                     </tr>
+                    <!-- -->
                     <tr>
-                        <th><?php _e('Elementi Aggiuntivi', 'incidenti-stradali'); ?></th>
+                        <th><?php _e('Elementi Aggiuntivi 1', 'incidenti-stradali'); ?></th>
                         <td>
-                            <label><input type="checkbox" name="semaforizzazioni" value="1" <?php checked($semaforizzazioni, '1'); ?>> <?php _e('Semaforizzazioni', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="checkbox" name="cartelli_pubblicitari" value="1" <?php checked($cartelli_pubblicitari, '1'); ?>> <?php _e('Cartelli pubblicitari', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="checkbox" name="leggibilita_alta" value="1" <?php checked($leggibilita_alta, '1'); ?>> <?php _e('Leggibilità alta', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="checkbox" name="leggibilita_bassa" value="1" <?php checked($leggibilita_bassa, '1'); ?>> <?php _e('Leggibilità bassa', 'incidenti-stradali'); ?></label>
+                            <label><input type="radio" name="elementi_aggiuntivi_1" value="1" <?php checked($elementi_aggiuntivi_1, '1'); ?>> <?php _e('Semaforizzazioni', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="elementi_aggiuntivi_1" value="2" <?php checked($elementi_aggiuntivi_1, '2'); ?>> <?php _e('Cartelli pubblicitari', 'incidenti-stradali'); ?></label>
                         </td>
                     </tr>
+                    <tr>
+                        <th><?php _e('Elementi Aggiuntivi 2', 'incidenti-stradali'); ?></th>
+                        <td>
+                            <label><input type="radio" name="elementi_aggiuntivi_2" value="1" <?php checked($elementi_aggiuntivi_2, '1'); ?>> <?php _e('Leggibilità alta', 'incidenti-stradali'); ?></label><br>
+                            <label><input type="radio" name="elementi_aggiuntivi_2" value="2" <?php checked($elementi_aggiuntivi_2, '2'); ?>> <?php _e('Leggibilità bassa', 'incidenti-stradali'); ?></label>
+                        </td>
+                    </tr>    
+                    <!-- -->
                 </table>
             </div>
 
@@ -2394,6 +2399,7 @@ class IncidentiMetaBoxes {
         $natura_incidente = get_post_meta($post->ID, 'natura_incidente', true);
         $dettaglio_natura = get_post_meta($post->ID, 'dettaglio_natura', true);
         $numero_veicoli = get_post_meta($post->ID, 'numero_veicoli_coinvolti', true);
+        $salto_carreggiata = get_post_meta($post->ID, 'salto_carreggiata', true);
         
         ?>
         <table class="form-table">
@@ -2439,6 +2445,14 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
+            <tr id="salto_carreggiata_row" style="display: none;">
+                <th><label for="salto_carreggiata"><?php _e('Salto carreggiata', 'incidenti-stradali'); ?></label></th>
+                <td>
+                    <input type="checkbox" id="salto_carreggiata" name="salto_carreggiata" value="1" 
+                        <?php checked($salto_carreggiata, '1'); ?> />
+                    <label for="salto_carreggiata"><?php _e('Salto carreggiata presente', 'incidenti-stradali'); ?></label>
+                </td>
+            </tr>
         </table>
         
         <script type="text/javascript">
@@ -2448,8 +2462,7 @@ class IncidentiMetaBoxes {
                     '1': 'Scontro frontale',
                     '2': 'Scontro frontale-laterale',
                     '3': 'Scontro laterale',
-                    '4': 'Tamponamento',
-                    '5': 'Salto carreggiata'
+                    '4': 'Tamponamento'
                 },
                 'B': {
                     '5': 'Investimento di pedoni'
@@ -2508,6 +2521,14 @@ class IncidentiMetaBoxes {
                 } else {
                     $('#numero_veicoli_row').hide();
                     $('#numero_veicoli_coinvolti').val('1');
+                }
+
+                // Mostra/nascondi checkbox salto carreggiata (SOLO per natura A)
+                if (natura === 'A') {
+                    $('#salto_carreggiata_row').show();
+                } else {
+                    $('#salto_carreggiata_row').hide();
+                    $('#salto_carreggiata').prop('checked', false); // Reset checkbox
                 }
             });
             
@@ -4552,9 +4573,11 @@ class IncidentiMetaBoxes {
             'localita_incidente', 'organo_rilevazione', 'organo_coordinatore', 'nell_abitato', 'tipo_strada', 'denominazione_strada',
             'numero_strada', 'progressiva_km', 'progressiva_m', 'geometria_strada', 'pavimentazione_strada',
             'condizioni_manto', 'intersezione_tronco', 'stato_fondo_strada', 'segnaletica_strada', 'condizioni_meteo',
+            'elementi_aggiuntivi_1', 'elementi_aggiuntivi_2',
 
             // CAMPI NATURA INCIDENTE:
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'altro_natura_testo',
+            'salto_carreggiata',
             
             // CAMPI PEDONI:
             'numero_pedoni_feriti', 'numero_pedoni_morti',
@@ -4762,8 +4785,7 @@ class IncidentiMetaBoxes {
 
         // Gestione speciale per i campi checkbox
         $checkbox_fields = array(
-            'presenza_banchina', 'allagato', 'semaforizzazioni', 'cartelli_pubblicitari', 
-            'leggibilita_alta', 'leggibilita_bassa', 'nuvoloso', 'foschia'
+            'presenza_banchina', 'allagato', 'nuvoloso', 'foschia', 'salto_carreggiata'
         );
 
         foreach ($checkbox_fields as $field) {

@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 class IncidentiImportFunctions {
     
     public function __construct() {
-        add_action('admin_menu', array($this, 'add_import_menu'), 21);
+        //add_action('admin_menu', array($this, 'add_import_menu'), 21);
         add_action('admin_post_import_incidenti_csv', array($this, 'handle_csv_import'));
         add_action('wp_ajax_preview_csv_import', array($this, 'preview_csv_import'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts')); 

@@ -880,16 +880,18 @@ class IncidentiMetaBoxes {
                     <p class="description"><?php _e('Veicoli coinvolti oltre ai 3 già inseriti', 'incidenti-stradali'); ?></p>
                 </td>
             </tr>
-            
             <tr>
-                <th><label for="localizzazione_extra_ab"><?php _e('Localizzazione extraurbana', 'incidenti-stradali'); ?></label></th>
+                <th><label for="localizzazione_extra_ab"><?php _e('Altra strada', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <select id="localizzazione_extra_ab" name="localizzazione_extra_ab">
-                        <option value=""><?php _e('Seleziona', 'incidenti-stradali'); ?></option>
-                        <option value="Su strada statale fuori dall'autostrada" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), 'Su strada statale fuori dall\'autostrada'); ?>><?php _e('Su strada statale fuori dall\'autostrada', 'incidenti-stradali'); ?></option>
-                        <option value="Su autostrada" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), 'Su autostrada'); ?>><?php _e('Su autostrada', 'incidenti-stradali'); ?></option>
-                        <option value="Su raccordo autostradale" <?php selected(get_post_meta($post->ID, 'localizzazione_extra_ab', true), 'Su raccordo autostradale'); ?>><?php _e('Su raccordo autostradale', 'incidenti-stradali'); ?></option>
-                    </select>
+                    <textarea id="localizzazione_extra_ab" 
+                            name="localizzazione_extra_ab" 
+                            maxlength="100"
+                            placeholder="<?php _e('Inserisci denominazione strada (max 100 caratteri)', 'incidenti-stradali'); ?>"
+                            style="resize: vertical;"
+                            rows="3"><?php echo esc_textarea(get_post_meta($post->ID, 'localizzazione_extra_ab', true)); ?></textarea>
+                    <p class="description">
+                        <?php _e('Massimo 100 caratteri consentiti', 'incidenti-stradali'); ?>
+                    </p>
                 </td>
             </tr>
         </table>

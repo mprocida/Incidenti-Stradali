@@ -1474,7 +1474,7 @@ class IncidentiExportFunctions {
         echo '<th>' . __('Tipo', 'incidenti-stradali') . '</th>';
         echo '<th>' . __('Record', 'incidenti-stradali') . '</th>';
         echo '<th>' . __('File', 'incidenti-stradali') . '</th>';
-        echo '<th>' . __('Errori', 'incidenti-stradali') . '</th>';
+        //echo '<th>' . __('Errori', 'incidenti-stradali') . '</th>';
         echo '</tr></thead><tbody>';
         
         foreach ($logs as $log) {
@@ -1487,13 +1487,14 @@ class IncidentiExportFunctions {
             echo '<td><span class="export-type ' . strtolower($log['tipo_export']) . '">' . esc_html($log['tipo_export']) . '</span></td>';
             echo '<td><strong>' . esc_html($log['num_record']) . '</strong></td>';
             echo '<td><code>' . esc_html($log['filename']) . '</code></td>';
-            echo '<td>';
+            /*echo '<td>';
             if (empty($log['errori'])) {
                 echo '<span class="dashicons dashicons-yes-alt" style="color: green;"></span> ' . __('Nessuno', 'incidenti-stradali');
             } else {
                 echo '<span class="dashicons dashicons-warning" style="color: orange;"></span> ' . count($log['errori']) . ' ' . __('errori', 'incidenti-stradali');
             }
             echo '</td>';
+            */
             echo '</tr>';
         }
         

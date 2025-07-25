@@ -911,6 +911,36 @@ input[type="checkbox"]#visualizza_mappa:focus {
     overflow: hidden;
 }
 
+
+/* Stili per il campo tipo incidente quando è disabilitato */
+#circostanza_tipo:disabled {
+    background-color: #f0f0f0;
+    color: #666;
+    cursor: not-allowed;
+    border-color: #ddd;
+}
+
+/* Evidenziazione del campo quando è automaticamente popolato */
+#circostanza_tipo.auto-populated {
+    background-color: #e8f5e8;
+    border-color: #4CAF50;
+}
+
+/* Tooltip o messaggio di aiuto per i campi bloccati */
+.field-locked-message {
+    font-style: italic;
+    color: #666;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+/* Stile per evidenziare la dipendenza tra campi */
+.field-dependency-highlight {
+    border-left: 3px solid #2196F3;
+    padding-left: 10px;
+    background-color: #f8f9fa;
+}
+
 /* Responsive per la nuova mappa */
 @media screen and (max-width: 782px) {
     .coordinate-inputs-inline {

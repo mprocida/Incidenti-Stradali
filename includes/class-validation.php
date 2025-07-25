@@ -75,6 +75,18 @@ class IncidentiValidation {
                 }
             }
         }
+
+        $natura_incidente = isset($_POST['natura_incidente']) ? $_POST['natura_incidente'] : '';
+        $circostanza_tipo = isset($_POST['circostanza_tipo']) ? $_POST['circostanza_tipo'] : '';
+        
+        if ($natura_incidente && $circostanza_tipo) {
+            if (!$this->validate_natura_tipo_coerenza($natura_incidente, $circostanza_tipo)) {
+                $errors[] = sprintf(
+                    __('Il tipo di incidente "%s" non è compatibile con la natura dell\'incidente selezionata.', 'incidenti-stradali'),
+                    $circostanza_tipo
+                );
+            }
+        }
         
         // Validate data incidente format
         if (!empty($_POST['data_incidente'])) {
@@ -446,6 +458,25 @@ class IncidentiValidation {
         
         return $errors;
     }
+
+    public function validate_natura_tipo_coerenza($natura_incidente, $circostanza_tipo) {
+        $mappatura_valida = array(
+            'A' => array('intersezione', 'non_intersezione'), // Tra veicoli in marcia
+            'B' => array('investimento'),                      // Tra veicolo e pedoni
+            'C' => array('urto_fermo'),                       // Veicolo in marcia che urta veicolo fermo o altro
+            'D' => array('senza_urto')                        // Veicolo in marcia senza urto
+        );
+        
+        if (!$natura_incidente || !$circostanza_tipo) {
+            return true; // Se uno dei campi è vuoto, la validazione base si occuperà dell'errore
+        }
+        
+        if (!isset($mappatura_valida[$natura_incidente])) {
+            return false;
+        }
+        
+        return in_array($circostanza_tipo, $mappatura_valida[$natura_incidente]);
+    }
     
     public function get_validation_rules() {
         return array(
@@ -486,64 +517,6 @@ class IncidentiValidation {
         );
     }
 
-    /**
-     * Validazione del riepilogo infortunati
-     */
-    /* public function validate_riepilogo_infortunati($post_id) {
-        $errors = array();
-        
-        // Conta reali infortunati dai campi del modulo
-        $real_morti_24h = $this->count_esito_by_type('3');
-        $real_morti_2_30gg = $this->count_esito_by_type('4');
-        $real_feriti = $this->count_esito_by_type('2');
-
-        // SEMPRE mostra il riepilogo calcolato automaticamente
-        $riepilogo_message = sprintf(
-            __('📊 RIEPILOGO AUTOMATICO CALCOLATO: Feriti: %d, Morti entro 24h: %d, Morti dal 2° al 30° giorno: %d', 'incidenti-stradali'),
-            $real_feriti,
-            $real_morti_24h, 
-            $real_morti_2_30gg
-        );
-
-        // Aggiungi sempre il messaggio di riepilogo come prima voce
-        $errors[] = $riepilogo_message;
-        
-        // Leggi valori inseriti nel riepilogo
-        $riepilogo_morti_24h = isset($_POST['riepilogo_morti_24h']) ? (int) $_POST['riepilogo_morti_24h'] : 0;
-        $riepilogo_morti_2_30gg = isset($_POST['riepilogo_morti_2_30gg']) ? (int) $_POST['riepilogo_morti_2_30gg'] : 0;
-        $riepilogo_feriti = isset($_POST['riepilogo_feriti']) ? (int) $_POST['riepilogo_feriti'] : 0;
-        
-        // Confronta i valori
-        if ($real_morti_24h !== $riepilogo_morti_24h) {
-            $errors[] = sprintf(
-                __('Morti entro 24h non corrispondono: rilevati %d dal modulo, inseriti %d nel riepilogo', 'incidenti-stradali'), 
-                $real_morti_24h, 
-                $riepilogo_morti_24h
-            );
-        }
-        
-        if ($real_morti_2_30gg !== $riepilogo_morti_2_30gg) {
-            $errors[] = sprintf(
-                __('Morti dal 2° al 30° giorno non corrispondono: rilevati %d dal modulo, inseriti %d nel riepilogo', 'incidenti-stradali'), 
-                $real_morti_2_30gg, 
-                $riepilogo_morti_2_30gg
-            );
-        }
-        
-        if ($real_feriti !== $riepilogo_feriti) {
-            $errors[] = sprintf(
-                __('Feriti non corrispondono: rilevati %d dal modulo, inseriti %d nel riepilogo', 'incidenti-stradali'), 
-                $real_feriti, 
-                $riepilogo_feriti
-            );
-        }
-        
-        return $errors;
-    } */
-    
-    /**
-     * Conta le persone per esito specifico dai campi del modulo
-     */
     private function count_esito_by_type($esito_type) {
         $count = 0;
         

@@ -2138,9 +2138,15 @@ class IncidentiMetaBoxes {
         $foschia = get_post_meta($post->ID, 'foschia', true);
         
         ?>
+        <script>
+        function azzeraRadioSezione(classeSezione) {
+            jQuery('#' + classeSezione + ' input[type="radio"]').prop('checked', false);
+        }
+        </script>
         <div class="luogo-incidente-sections">
             <!-- Sezione Tipi di Strada -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-tipi-di-strada">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-tipi-di-strada');">Cancella scelta</span>
                 <h4><?php _e('Tipi di Strada', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2154,9 +2160,9 @@ class IncidentiMetaBoxes {
                     </tr>
                 </table>
             </div>
-
             <!-- Sezione Pavimentazione -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-pavimentazione">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-pavimentazione');">Cancella scelta</span>
                 <h4><?php _e('Pavimentazione', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2178,7 +2184,8 @@ class IncidentiMetaBoxes {
             </div>
 
             <!-- Sezione Intersezione/Non Intersezione -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-intersezione-nonintersezione">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-intersezione-nonintersezione');">Cancella scelta</span>
                 <h4><?php _e('Intersezione', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2214,7 +2221,8 @@ class IncidentiMetaBoxes {
             </div>
 
             <!-- Nuova sezione separata per Caratteristiche Geometriche -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-caratteristiche-geometriche">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-caratteristiche-geometriche');">Cancella scelta</span>
                 <h4><?php _e('Caratteristiche Geometriche', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2230,7 +2238,8 @@ class IncidentiMetaBoxes {
             </div>
 
             <!-- Sezione Fondo Stradale -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-fondo-stradale">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-fondo-stradale');">Cancella scelta</span>
                 <h4><?php _e('Fondo Stradale', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2248,7 +2257,8 @@ class IncidentiMetaBoxes {
             </div>
 
             <!-- Sezione Segnaletica -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-segnaletica">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-segnaletica');">Cancella scelta</span>
                 <h4><?php _e('Segnaletica', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2281,7 +2291,8 @@ class IncidentiMetaBoxes {
             </div>
 
             <!-- Sezione Condizioni Meteorologiche -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-condizioni-meteorologiche">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-condizioni-meteorologiche');">Cancella scelta</span>
                 <h4><?php _e('Condizioni Meteorologiche', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2306,7 +2317,8 @@ class IncidentiMetaBoxes {
                 </table>
             </div>
 
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-illuminazione">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-illuminazione');">Cancella scelta</span>
                 <h4><?php _e('Illuminazione', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
@@ -2324,7 +2336,8 @@ class IncidentiMetaBoxes {
             </div>
 
             <!-- Sezione Orientamento e Infrastrutture -->
-            <div class="sezione-luogo">
+            <div class="sezione-luogo" id="sezione-altre-caratteristiche">
+                <span style="float: right; cursor: pointer; border: 1px solid #2271b1; padding: 2px; color: #fff; background-color: #2271b1;" onclick="javascript:azzeraRadioSezione('sezione-altre-caratteristiche');">Cancella scelta</span>
                 <h4><?php _e('Altre Caratteristiche', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>

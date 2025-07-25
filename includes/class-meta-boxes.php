@@ -2415,6 +2415,9 @@ class IncidentiMetaBoxes {
         $dettaglio_natura = get_post_meta($post->ID, 'dettaglio_natura', true);
         $numero_veicoli = get_post_meta($post->ID, 'numero_veicoli_coinvolti', true);
         $salto_carreggiata = get_post_meta($post->ID, 'salto_carreggiata', true);
+
+        $urto_frontale = get_post_meta($post->ID, 'urto_frontale', true);
+        $urto_laterale = get_post_meta($post->ID, 'urto_laterale', true);
         
         ?>
         <table class="form-table">
@@ -2438,6 +2441,23 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
+
+            <tr id="urto_checkboxes_row" style="display: none;">
+                <th style="font-weight: 400;"><i><label><?php _e('Tipo di Urto', 'incidenti-stradali'); ?></label></i></th>
+                <td>
+                    <label for="urto_frontale">
+                        <input type="checkbox" id="urto_frontale" name="urto_frontale" value="1" 
+                            <?php checked($urto_frontale, '1'); ?> />
+                        <i><?php _e('Urto frontale', 'incidenti-stradali'); ?></i>
+                    </label><br>
+                    <label for="urto_laterale">
+                        <input type="checkbox" id="urto_laterale" name="urto_laterale" value="1" 
+                            <?php checked($urto_laterale, '1'); ?> />
+                        <i><?php _e('Urto laterale', 'incidenti-stradali'); ?></i>
+                    </label>
+                </td>
+            </tr>
+
             <tr id="altro_natura_row">
                 <th><label for="altro_natura_testo"><?php _e('Altro (specificare)', 'incidenti-stradali'); ?></label></th>
                 <td>
@@ -2482,8 +2502,6 @@ class IncidentiMetaBoxes {
                     '5': 'Investimento di pedoni'
                 },
                 'C': {
-                    'frontale': 'Urto frontale',
-                    'laterale': 'Urto laterale',
                     '6': 'Urto con veicolo in fermata o in arresto',
                     '7': 'Urto con veicolo in sosta',
                     '8': 'Urto con ostacolo',
@@ -2524,6 +2542,14 @@ class IncidentiMetaBoxes {
                 } else {
                     $('#numero_veicoli_row').hide();
                     $('#numero_veicoli_coinvolti').val('1');
+                }
+
+                // Mostra checkbox urto SOLO per natura C
+                if (natura === 'C') {
+                    $('#urto_checkboxes_row').show();
+                } else {
+                    $('#urto_checkboxes_row').hide();
+                    $('#urto_frontale, #urto_laterale').prop('checked', false);
                 }
 
                 // Mostra/nascondi checkbox salto carreggiata (SOLO per natura A)
@@ -4572,7 +4598,7 @@ class IncidentiMetaBoxes {
 
             // CAMPI NATURA INCIDENTE:
             'natura_incidente', 'dettaglio_natura', 'numero_veicoli_coinvolti', 'altro_natura_testo',
-            'salto_carreggiata',
+            'salto_carreggiata', 'urto_laterale ', 'urto_laterale',
             
             // CAMPI PEDONI:
             'numero_pedoni_feriti', 'numero_pedoni_morti',
@@ -4780,7 +4806,7 @@ class IncidentiMetaBoxes {
 
         // Gestione speciale per i campi checkbox
         $checkbox_fields = array(
-            'presenza_banchina', 'allagato', 'nuvoloso', 'foschia', 'salto_carreggiata'
+            'presenza_banchina', 'allagato', 'nuvoloso', 'foschia', 'salto_carreggiata', 'urto_frontale ', 'urto_laterale',
         );
 
         foreach ($checkbox_fields as $field) {

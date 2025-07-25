@@ -3103,14 +3103,6 @@ class IncidentiMetaBoxes {
                                 </select>
                             </td>
                         </tr>
-                        <tr id="<?php echo $prefix; ?>dettaglio_sedile_row" style="display: none;">
-                            <th><label id="<?php echo $prefix; ?>dettaglio_label"><?php _e('Dettaglio', 'incidenti-stradali'); ?></label></th>
-                            <td>
-                                <input type="text" name="<?php echo $prefix; ?>dettaglio_sedile" id="<?php echo $prefix; ?>dettaglio_sedile" 
-                                    value="<?php echo esc_attr(get_post_meta($post->ID, $prefix . 'dettaglio_sedile', true)); ?>" 
-                                    placeholder="<?php _e('Specifica la posizione...', 'incidenti-stradali'); ?>" class="regular-text">
-                            </td>
-                        </tr>
                         <tr>
                             <th><label><?php _e('Età', 'incidenti-stradali'); ?></label></th>
                             <td><input type="number" name="<?php echo $prefix; ?>eta" value="<?php echo esc_attr(get_post_meta($post->ID, $prefix . 'eta', true)); ?>" min="0" max="120"></td>
@@ -4614,33 +4606,33 @@ class IncidentiMetaBoxes {
             'difetto_veicolo_a', 'difetto_veicolo_b', 
             'stato_psicofisico_a', 'stato_psicofisico_b',
             // Trasportati - sedile e dettaglio
-            'veicolo_1_trasportato_1_sedile', 'veicolo_1_trasportato_1_dettaglio_sedile',
-            'veicolo_1_trasportato_2_sedile', 'veicolo_1_trasportato_2_dettaglio_sedile',
-            'veicolo_1_trasportato_3_sedile', 'veicolo_1_trasportato_3_dettaglio_sedile',
-            'veicolo_1_trasportato_4_sedile', 'veicolo_1_trasportato_4_dettaglio_sedile',
-            'veicolo_1_trasportato_5_sedile', 'veicolo_1_trasportato_5_dettaglio_sedile',
-            'veicolo_1_trasportato_6_sedile', 'veicolo_1_trasportato_6_dettaglio_sedile',
-            'veicolo_1_trasportato_7_sedile', 'veicolo_1_trasportato_7_dettaglio_sedile',
-            'veicolo_1_trasportato_8_sedile', 'veicolo_1_trasportato_8_dettaglio_sedile',
-            'veicolo_1_trasportato_9_sedile', 'veicolo_1_trasportato_9_dettaglio_sedile',
-            'veicolo_2_trasportato_1_sedile', 'veicolo_2_trasportato_1_dettaglio_sedile',
-            'veicolo_2_trasportato_2_sedile', 'veicolo_2_trasportato_2_dettaglio_sedile',
-            'veicolo_2_trasportato_3_sedile', 'veicolo_2_trasportato_3_dettaglio_sedile',
-            'veicolo_2_trasportato_4_sedile', 'veicolo_2_trasportato_4_dettaglio_sedile',
-            'veicolo_2_trasportato_5_sedile', 'veicolo_2_trasportato_5_dettaglio_sedile',
-            'veicolo_2_trasportato_6_sedile', 'veicolo_2_trasportato_6_dettaglio_sedile',
-            'veicolo_2_trasportato_7_sedile', 'veicolo_2_trasportato_7_dettaglio_sedile',
-            'veicolo_2_trasportato_8_sedile', 'veicolo_2_trasportato_8_dettaglio_sedile',
-            'veicolo_2_trasportato_9_sedile', 'veicolo_2_trasportato_9_dettaglio_sedile',
-            'veicolo_3_trasportato_1_sedile', 'veicolo_3_trasportato_1_dettaglio_sedile',
-            'veicolo_3_trasportato_2_sedile', 'veicolo_3_trasportato_2_dettaglio_sedile',
-            'veicolo_3_trasportato_3_sedile', 'veicolo_3_trasportato_3_dettaglio_sedile',
-            'veicolo_3_trasportato_4_sedile', 'veicolo_3_trasportato_4_dettaglio_sedile',
-            'veicolo_3_trasportato_5_sedile', 'veicolo_3_trasportato_5_dettaglio_sedile',
-            'veicolo_3_trasportato_6_sedile', 'veicolo_3_trasportato_6_dettaglio_sedile',
-            'veicolo_3_trasportato_7_sedile', 'veicolo_3_trasportato_7_dettaglio_sedile',
-            'veicolo_3_trasportato_8_sedile', 'veicolo_3_trasportato_8_dettaglio_sedile',
-            'veicolo_3_trasportato_9_sedile', 'veicolo_3_trasportato_9_dettaglio_sedile',
+            'veicolo_1_trasportato_1_sedile',
+            'veicolo_1_trasportato_2_sedile',
+            'veicolo_1_trasportato_3_sedile',
+            'veicolo_1_trasportato_4_sedile',
+            'veicolo_1_trasportato_5_sedile',
+            'veicolo_1_trasportato_6_sedile',
+            'veicolo_1_trasportato_7_sedile',
+            'veicolo_1_trasportato_8_sedile',
+            'veicolo_1_trasportato_9_sedile',
+            'veicolo_2_trasportato_1_sedile',
+            'veicolo_2_trasportato_2_sedile',
+            'veicolo_2_trasportato_3_sedile',
+            'veicolo_2_trasportato_4_sedile',
+            'veicolo_2_trasportato_5_sedile',
+            'veicolo_2_trasportato_6_sedile',
+            'veicolo_2_trasportato_7_sedile',
+            'veicolo_2_trasportato_8_sedile',
+            'veicolo_2_trasportato_9_sedile',
+            'veicolo_3_trasportato_1_sedile',
+            'veicolo_3_trasportato_2_sedile',
+            'veicolo_3_trasportato_3_sedile',
+            'veicolo_3_trasportato_4_sedile',
+            'veicolo_3_trasportato_5_sedile',
+            'veicolo_3_trasportato_6_sedile',
+            'veicolo_3_trasportato_7_sedile',
+            'veicolo_3_trasportato_8_sedile',
+            'veicolo_3_trasportato_9_sedile',
             'riepilogo_morti_24h', 'riepilogo_morti_2_30gg', 'riepilogo_feriti',
             // Campi localizzazione aggiuntivi
             'abitato', 'illuminazione', 'pavimentazione', 'intersezione',
@@ -4824,7 +4816,7 @@ class IncidentiMetaBoxes {
             
                 // MODIFICATO: Salva i trasportati per ogni veicolo (fino a 9 trasportati come da tracciato ISTAT)
                 for ($t = 1; $t <= 9; $t++) {
-                    $trasportato_fields = array('eta', 'sesso', 'esito', 'sedile', 'dettaglio_sedile');
+                    $trasportato_fields = array('eta', 'sesso', 'esito', 'sedile');
                     foreach ($trasportato_fields as $field) {
                         $key = 'veicolo_' . $i . '_trasportato_' . $t . '_' . $field;
                         if (isset($_POST[$key])) {
@@ -4850,7 +4842,6 @@ class IncidentiMetaBoxes {
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_sesso';
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_esito';
                     $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_sedile';
-                    $all_vehicle_fields[] = 'veicolo_' . $i . '_trasportato_' . $t . '_dettaglio_sedile';
                 }
                 
                 foreach ($all_vehicle_fields as $field) {

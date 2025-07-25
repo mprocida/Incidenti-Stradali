@@ -181,7 +181,7 @@ jQuery(document).ready(function($) {
             })(v);
         }
         // Gestione selezione sedile e controllo esclusività sedile anteriore
-        $('select[name*="_sedile"]').on('change', function() {
+        /* $('select[name*="_sedile"]').on('change', function() {
             var $select = $(this);
             var veicolo = $select.data('veicolo');
             var trasportato = $select.data('trasportato');
@@ -206,7 +206,7 @@ jQuery(document).ready(function($) {
                 $('#' + prefix + 'dettaglio_sedile_row').hide();
                 $('#' + prefix + 'dettaglio_sedile').val('');
             }
-        });
+        }); */
 
         // Funzione per controllare l'esclusività del sedile anteriore
         function controllaEsclusivitaSedileAnteriore(veicolo, trasportatoCorrente) {

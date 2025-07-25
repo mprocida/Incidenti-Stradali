@@ -802,20 +802,6 @@ input[type="checkbox"]#visualizza_mappa:focus {
     min-width: 200px;
 }
 
-.trasportati-section input[name*="_dettaglio_sedile"] {
-    width: 100%;
-    max-width: 300px;
-}
-
-#trasportato-dettaglio-row {
-    background-color: #f8f9fa;
-}
-
-/* Evidenzia campi obbligatori quando sedile è selezionato */
-.sedile-selected input[name*="_dettaglio_sedile"] {
-    border-left: 3px solid #0073aa;
-}
-
 #riepilogo-infortunati-box {
     border: 1px solid #ddd;
     padding: 15px;

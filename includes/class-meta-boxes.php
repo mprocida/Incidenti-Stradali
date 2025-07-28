@@ -929,13 +929,13 @@ class IncidentiMetaBoxes {
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="data_incidente"><?php _e('Data dell\'Incidente', 'incidenti-stradali'); ?> *</label></th>
+                <th class="required-field"><label for="data_incidente"><?php _e('Data dell\'Incidente', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <input type="date" id="data_incidente" name="data_incidente" value="<?php echo esc_attr($data_incidente); ?>" required>
                 </td>
             </tr>
             <tr>
-                <th><label for="ora_incidente"><?php _e('Ora dell\'Incidente', 'incidenti-stradali'); ?> *</label></th>
+                <th class="required-field"><label for="ora_incidente"><?php _e('Ora dell\'Incidente', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="ora_incidente" name="ora_incidente" required>
                         <option value=""><?php _e('Seleziona ora', 'incidenti-stradali'); ?></option>
@@ -957,7 +957,7 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
             <tr>
-                <th><label for="provincia_incidente"><?php _e('Provincia', 'incidenti-stradali'); ?> *</label></th>
+                <th class="required-field"><label for="provincia_incidente"><?php _e('Provincia', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <input type="hidden" id="provincia_incidente" name="provincia_incidente" value="075">
                     <input type="text" value="Lecce (075)" disabled class="regular-text">
@@ -965,7 +965,7 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
             <tr>
-            <th><label for="comune_incidente"><?php _e('Comune', 'incidenti-stradali'); ?> *</label></th>
+            <th class="required-field"><label for="comune_incidente"><?php _e('Comune', 'incidenti-stradali'); ?></label></th>
             <td>
                 <?php
                 // Controllo restrizioni utente
@@ -1057,7 +1057,7 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
             <tr id="identificativo_comando_row" style="display: none;">
-                <th><label for="identificativo_comando"><?php _e('Identificativo del Comando Staz. dei Carabinieri', 'incidenti-stradali'); ?></label></th>
+                <th class="required-field"s><label for="identificativo_comando"><?php _e('Identificativo del Comando Staz. dei Carabinieri', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <input type="text" id="identificativo_comando" name="identificativo_comando" 
                         value="<?php echo esc_attr(get_post_meta($post->ID, 'identificativo_comando', true)); ?>" 
@@ -1380,7 +1380,7 @@ class IncidentiMetaBoxes {
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="tipo_strada"><?php _e('Tipo di Strada', 'incidenti-stradali'); ?> *</label></th>
+                <th class="required-field"><label for="tipo_strada"><?php _e('Tipo di Strada', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="tipo_strada" name="tipo_strada" required>
                         <option value=""><?php _e('Seleziona tipo strada', 'incidenti-stradali'); ?></option>
@@ -1483,7 +1483,7 @@ class IncidentiMetaBoxes {
                     <strong><?php _e('Sistema:', 'incidenti-stradali'); ?></strong> WGS84 (GPS) • 
                     <strong><?php _e('Clic sulla mappa', 'incidenti-stradali'); ?></strong> per impostare le coordinate
                 </p>
-                <div class="coordinate-inputs-inline">
+                <div class="coordinate-inputs-inline required-field">
                     <label for="latitudine_inline"><?php _e('Latitudine:', 'incidenti-stradali'); ?></label>
                     <input type="text" id="latitudine_inline" name="latitudine" 
                         value="<?php echo esc_attr(get_post_meta($post->ID, 'latitudine', true)); ?>" 
@@ -2422,7 +2422,7 @@ class IncidentiMetaBoxes {
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="natura_incidente"><?php _e('Natura dell\'Incidente', 'incidenti-stradali'); ?> *</label></th>
+                <th class="required-field"><label for="natura_incidente"><?php _e('Natura dell\'Incidente', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="natura_incidente" name="natura_incidente" required>
                         <option value=""><?php _e('Seleziona natura', 'incidenti-stradali'); ?></option>
@@ -4373,7 +4373,7 @@ class IncidentiMetaBoxes {
             <h4><?php _e('Per inconvenienti di circolazione', 'incidenti-stradali'); ?></h4>
             <table class="form-table">
                 <tr>
-                    <th><label for="circostanza_tipo"><?php _e('Tipo di incidente', 'incidenti-stradali'); ?></label></th>
+                    <th class="required-field"><label for="circostanza_tipo"><?php _e('Tipo di incidente', 'incidenti-stradali'); ?></label></th>
                     <td>
                         <select id="circostanza_tipo" name="circostanza_tipo">
                             <option value=""><?php _e('Seleziona tipo', 'incidenti-stradali'); ?></option>

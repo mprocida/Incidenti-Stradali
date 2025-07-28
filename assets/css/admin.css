@@ -941,6 +941,24 @@ input[type="checkbox"]#visualizza_mappa:focus {
     background-color: #f8f9fa;
 }
 
+
+.required-field label,
+.sezione-luogo#sezione-pavimentazione h4,
+.sezione-luogo#sezione-fondo-stradale h4,
+.sezione-luogo#sezione-illuminazione h4,
+.sezione-luogo#sezione-condizioni-meteorologiche h4 {
+    font-weight: bold;
+}
+
+.required-field label:after,
+.sezione-luogo#sezione-pavimentazione h4:after,
+.sezione-luogo#sezione-fondo-stradale h4:after,
+.sezione-luogo#sezione-illuminazione h4:after,
+.sezione-luogo#sezione-condizioni-meteorologiche h4:after {
+    content: " *";
+    color: red;
+}
+
 /* Responsive per la nuova mappa */
 @media screen and (max-width: 782px) {
     .coordinate-inputs-inline {

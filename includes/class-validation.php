@@ -59,7 +59,15 @@ class IncidentiValidation {
             'comune_incidente' => __('Comune', 'incidenti-stradali'),
             'tipo_strada' => __('Tipo di strada', 'incidenti-stradali'),
             'natura_incidente' => __('Natura dell\'incidente', 'incidenti-stradali'),
-            'circostanza_tipo' => __('Tipo di circostanza', 'incidenti-stradali')
+            'latitudine' => __('Latitudine', 'incidenti-stradali'),
+            'longitudine' => __('Longitudine', 'incidenti-stradali'),
+            'circostanza_tipo' => __('Tipo di circostanza', 'incidenti-stradali'),
+            'organo_rilevazione' => __('Organo di rilevazione', 'incidenti-stradali'),
+            'segnaletica_semaforica' => __('Segnaletica semaforica', 'incidenti-stradali'),
+            'pavimentazione' => __('Pavimentazione', 'incidenti-stradali'),
+            'stato_fondo_strada' => __('Stato fondo stradale', 'incidenti-stradali'),
+            'illuminazione' => __('Illuminazione', 'incidenti-stradali'),
+            'condizioni_meteo' => __('Condizioni meteorologiche', 'incidenti-stradali')
         );
         
         foreach ($required_fields as $field => $label) {

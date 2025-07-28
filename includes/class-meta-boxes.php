@@ -2783,18 +2783,10 @@ class IncidentiMetaBoxes {
             });
 
             // Trigger al caricamento pagina se c'è già un valore
-            if ($('#circostanza_tipo').val()) {
-                $('#circostanza_tipo').trigger('change');
-                
-                // Ripristina i valori selezionati
+            if ($('#circostanza_tipo').val() || $('#circostanza_tipo').attr('data-current-value')) {
                 setTimeout(function() {
-                    if ('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_a", true)); ?>') {
-                        $('#circostanza_veicolo_a').val('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_a", true)); ?>');
-                    }
-                    if ('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_b", true)); ?>') {
-                        $('#circostanza_veicolo_b').val('<?php echo esc_js(get_post_meta($post->ID, "circostanza_veicolo_b", true)); ?>');
-                    }
-                }, 100);
+                    $('#circostanza_tipo').trigger('change');
+                }, 200);
             }
         });
         </script>
@@ -4375,7 +4367,9 @@ class IncidentiMetaBoxes {
                 <tr>
                     <th class="required-field"><label for="circostanza_tipo"><?php _e('Tipo di incidente', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="circostanza_tipo" name="circostanza_tipo">
+                        <select id="circostanza_tipo" name="circostanza_tipo" 
+                            data-current-value="<?php echo esc_attr($circostanza_tipo); ?>"
+                            data-saved-value="<?php echo esc_attr($circostanza_tipo); ?>">
                             <option value=""><?php _e('Seleziona tipo', 'incidenti-stradali'); ?></option>
                             <!-- Le opzioni verranno popolate dinamicamente tramite JavaScript -->
                         </select>
@@ -4384,7 +4378,9 @@ class IncidentiMetaBoxes {
                 <tr>
                     <th><label for="circostanza_veicolo_a"><?php _e('Circostanza Veicolo A', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="circostanza_veicolo_a" name="circostanza_veicolo_a">
+                        <select id="circostanza_veicolo_a" name="circostanza_veicolo_a"
+                            data-current-value="<?php echo esc_attr($circostanza_veicolo_a); ?>"
+                            data-saved-value="<?php echo esc_attr($circostanza_veicolo_a); ?>">
                             <option value=""><?php _e('Seleziona circostanza', 'incidenti-stradali'); ?></option>
                             <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
                         </select>
@@ -4393,7 +4389,9 @@ class IncidentiMetaBoxes {
                 <tr>
                     <th><label for="circostanza_veicolo_b"><?php _e('Circostanza Veicolo B/Pedone/Ostacolo', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="circostanza_veicolo_b" name="circostanza_veicolo_b">
+                        <select id="circostanza_veicolo_b" name="circostanza_veicolo_b"
+                            data-current-value="<?php echo esc_attr($circostanza_veicolo_b); ?>"
+                            data-saved-value="<?php echo esc_attr($circostanza_veicolo_b); ?>">
                             <option value=""><?php _e('Seleziona circostanza', 'incidenti-stradali'); ?></option>
                             <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
                         </select>
@@ -4402,7 +4400,9 @@ class IncidentiMetaBoxes {
                 <tr id="circostanza_veicolo_c_row" style="display: none;">
                     <th><label for="circostanza_veicolo_c"><?php _e('Circostanza Veicolo C', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="circostanza_veicolo_c" name="circostanza_veicolo_c">
+                        <select id="circostanza_veicolo_c" name="circostanza_veicolo_c"
+                            data-current-value="<?php echo esc_attr($circostanza_veicolo_c); ?>"
+                            data-saved-value="<?php echo esc_attr($circostanza_veicolo_c); ?>">
                             <option value=""><?php _e('Seleziona circostanza', 'incidenti-stradali'); ?></option>
                             <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
                         </select>
@@ -4493,6 +4493,11 @@ class IncidentiMetaBoxes {
                     var $tipoSelect = $('#circostanza_tipo');
                     var currentValue = $tipoSelect.val();
                     
+                    // MIGLIORA: Salva il valore corrente prima di pulire
+                    var savedValue = $tipoSelect.data('saved-value') || 
+                                    $tipoSelect.attr('data-current-value') || 
+                                    currentValue;
+                    
                     // Pulisci le opzioni
                     $tipoSelect.empty().append('<option value=""><?php _e('Seleziona tipo', 'incidenti-stradali'); ?></option>');
                     
@@ -4503,16 +4508,32 @@ class IncidentiMetaBoxes {
                         if (keys.length === 1) {
                             // Se c'è una sola opzione, selezionala automaticamente e disabilita il campo
                             var uniqueKey = keys[0];
-                            $tipoSelect.append('<option value="' + uniqueKey + '" selected>' + opzioni[uniqueKey] + '</option>');
+                            var selected = (uniqueKey === savedValue) ? ' selected' : '';
+                            $tipoSelect.append('<option value="' + uniqueKey + '"' + selected + '>' + opzioni[uniqueKey] + '</option>');
                             $tipoSelect.prop('disabled', true);
-                            $tipoSelect.val(uniqueKey).trigger('change');
+                            $tipoSelect.val(uniqueKey);
+                            
+                            // Trigger change per aggiornare le circostanze
+                            setTimeout(function() {
+                                $tipoSelect.trigger('change');
+                            }, 100);
                         } else {
                             // Se ci sono più opzioni, abilita il campo e popolalo
                             $tipoSelect.prop('disabled', false);
                             $.each(opzioni, function(key, value) {
-                                var selected = (key === currentValue) ? ' selected' : '';
+                                var selected = (key === savedValue) ? ' selected' : '';
                                 $tipoSelect.append('<option value="' + key + '"' + selected + '>' + value + '</option>');
                             });
+                            
+                            // Ripristina il valore salvato se valido
+                            if (savedValue && opzioni[savedValue]) {
+                                $tipoSelect.val(savedValue);
+                                
+                                // Trigger change anche qui per consistency
+                                setTimeout(function() {
+                                    $tipoSelect.trigger('change');
+                                }, 100);
+                            }
                         }
                     } else {
                         $tipoSelect.prop('disabled', false);
@@ -4531,14 +4552,244 @@ class IncidentiMetaBoxes {
                     updateTipoIncidenteOptions(naturaCorrente);
                 }
 
-                // Resto del codice JavaScript esistente per le circostanze...
+                // Definizione completa dei codici circostanze per tipo di incidente
                 var circostanzeData = {
-                    // ... mantieni tutto il codice esistente delle circostanze
+                    'intersezione': {
+                        'veicolo_a': {
+                            '01': 'Procedeva regolarmente senza svoltare',
+                            '02': 'Procedeva con guida distratta e andamento indeciso',
+                            '03': 'Procedeva senza mantenere la distanza di sicurezza',
+                            '04': 'Procedeva senza dare la precedenza al veicolo proveniente da destra',
+                            '05': 'Procedeva senza rispettare lo stop',
+                            '06': 'Procedeva senza rispettare il segnale di dare precedenza',
+                            '07': 'Procedeva contromano',
+                            '08': 'Procedeva senza rispettare le segnalazioni semaforiche o dell\'agente',
+                            '10': 'Procedeva senza rispettare i segnali di divieto di transito',
+                            '11': 'Procedeva con eccesso di velocità',
+                            '12': 'Procedeva senza rispettare i limiti di velocità',
+                            '13': 'Procedeva con le luci abbaglianti incrociando altri veicoli',
+                            '14': 'Svoltava a destra regolarmente',
+                            '15': 'Svoltava a destra irregolarmente',
+                            '16': 'Svoltava a sinistra regolarmente',
+                            '17': 'Svoltava a sinistra irregolarmente',
+                            '18': 'Sorpassava (all\'incrocio)'
+                        },
+                        'veicolo_b': {
+                            '01': 'Procedeva regolarmente senza svoltare',
+                            '02': 'Procedeva con guida distratta e andamento indeciso',
+                            '03': 'Procedeva senza mantenere la distanza di sicurezza',
+                            '04': 'Procedeva senza dare la precedenza al veicolo proveniente da destra',
+                            '05': 'Procedeva senza rispettare lo stop',
+                            '06': 'Procedeva senza rispettare il segnale di dare precedenza',
+                            '07': 'Procedeva contromano',
+                            '08': 'Procedeva senza rispettare le segnalazioni semaforiche o dell\'agente',
+                            '10': 'Procedeva senza rispettare i segnali di divieto di transito',
+                            '11': 'Procedeva con eccesso di velocità',
+                            '12': 'Procedeva senza rispettare i limiti di velocità',
+                            '13': 'Procedeva con le luci abbaglianti incrociando altri veicoli',
+                            '14': 'Svoltava a destra regolarmente',
+                            '15': 'Svoltava a destra irregolarmente',
+                            '16': 'Svoltava a sinistra regolarmente',
+                            '17': 'Svoltava a sinistra irregolarmente',  
+                            '18': 'Sorpassava (all\'incrocio)'
+                        }
+                    },
+                    'non_intersezione': {
+                        'veicolo_a': {
+                            '20': 'Procedeva regolarmente',
+                            '21': 'Procedeva con guida distratta e andamento indeciso',
+                            '22': 'Procedeva senza mantenere la distanza di sicurezza',
+                            '23': 'Procedeva con eccesso di velocità',
+                            '24': 'Procedeva senza rispettare i limiti di velocità',
+                            '25': 'Procedeva non in prossimità del margine destro della carreggiata',
+                            '26': 'Procedeva contromano',
+                            '27': 'Procedeva senza rispettare i segnali di divieto di transito',
+                            '28': 'Procedeva con le luci abbaglianti incrociando altri veicoli',
+                            '29': 'Sorpassava regolarmente',
+                            '30': 'Sorpassava irregolarmente a destra',
+                            '31': 'Sorpassava in curva, su dosso o insufficiente visibilità',
+                            '32': 'Sorpassava un veicolo che ne stava sorpassando un altro',
+                            '33': 'Sorpassava senza osservare il segnale di divieto',
+                            '34': 'Manovrava in retrocessione o conversione',
+                            '35': 'Manovrava per immettersi nel flusso della circolazione',
+                            '36': 'Manovrava per voltare a sinistra',
+                            '37': 'Manovrava regolarmente per fermarsi o sostare',
+                            '38': 'Manovrava irregolarmente per fermarsi o sostare',
+                            '39': 'Si affiancava ad altri veicoli a due ruote irregolarmente'
+                        },
+                        'veicolo_b': {
+                            '20': 'Procedeva regolarmente',
+                            '21': 'Procedeva con guida distratta e andamento indeciso',
+                            '22': 'Procedeva senza mantenere la distanza di sicurezza',
+                            '23': 'Procedeva con eccesso di velocità',
+                            '24': 'Procedeva senza rispettare i limiti di velocità',
+                            '25': 'Procedeva non in prossimità del margine destro della carreggiata',
+                            '26': 'Procedeva contromano',
+                            '27': 'Procedeva senza rispettare i segnali di divieto di transito',
+                            '28': 'Procedeva con le luci abbaglianti incrociando altri veicoli',
+                            '29': 'Sorpassava regolarmente',
+                            '30': 'Sorpassava irregolarmente a destra',
+                            '31': 'Sorpassava in curva, su dosso o insufficiente visibilità',
+                            '32': 'Sorpassava un veicolo che ne stava sorpassando un altro',
+                            '33': 'Sorpassava senza osservare il segnale di divieto',
+                            '34': 'Manovrava in retrocessione o conversione',
+                            '35': 'Manovrava per immettersi nel flusso della circolazione',
+                            '36': 'Manovrava per voltare a sinistra',
+                            '37': 'Manovrava regolarmente per fermarsi o sostare',
+                            '38': 'Manovrava irregolarmente per fermarsi o sostare',
+                            '39': 'Si affiancava ad altri veicoli a due ruote irregolarmente'
+                        }
+                    },
+                    'investimento': {
+                        'veicolo_a': {
+                            '40': 'Procedeva regolarmente',
+                            '41': 'Procedeva con eccesso di velocità',
+                            '42': 'Procedeva senza rispettare i limiti di velocità',
+                            '43': 'Procedeva contromano',
+                            '44': 'Sorpassava veicolo in marcia',
+                            '45': 'Manovrava',
+                            '46': 'Non rispettava le segnalazioni semaforiche o dell\'agente',
+                            '47': 'Usciva senza precauzioni da passo carrabile',
+                            '48': 'Fuoriusciva dalla carreggiata',
+                            '49': 'Non dava la precedenza al pedone sugli appositi attraversamenti',
+                            '50': 'Sorpassava un veicolo fermatosi per l\'attraversamento dei pedoni',
+                            '51': 'Urtava con il carico il pedone',
+                            '52': 'Superava irregolarmente un tram fermo per salita/discesa'
+                        },
+                        'pedone': {
+                            '40': 'Camminava su marciapiede/banchina',
+                            '41': 'Camminava regolarmente sul margine',
+                            '42': 'Camminava contromano',
+                            '43': 'Camminava in mezzo carreggiata',
+                            '44': 'Sostava/indugiava/giocava carreggiata',
+                            '45': 'Lavorava protetto da segnale',
+                            '46': 'Lavorava non protetto da segnale',
+                            '47': 'Saliva su veicolo in marcia',
+                            '48': 'Discendeva con prudenza',
+                            '49': 'Discendeva con imprudenza',
+                            '50': 'Veniva fuori da dietro veicolo',
+                            '51': 'Attraversava rispettando segnali',
+                            '52': 'Attraversava non rispettando segnali',
+                            '53': 'Attraversava passaggio non protetto',
+                            '54': 'Attraversava regolarmente non su passaggio',
+                            '55': 'Attraversava irregolarmente'
+                        }
+                    },
+                    'urto_fermo': {
+                        'veicolo_a': {
+                            '60': 'Procedeva regolarmente',
+                            '61': 'Procedeva con guida distratta',
+                            '62': 'Procedeva senza mantenere distanza sicurezza',
+                            '63': 'Procedeva contromano',
+                            '64': 'Procedeva con eccesso di velocità',
+                            '65': 'Procedeva senza rispettare limiti velocità',
+                            '66': 'Procedeva senza rispettare divieti transito',
+                            '67': 'Sorpassava un altro veicolo',
+                            '68': 'Attraversava imprudentemente passaggio a livello'
+                        },
+                        'ostacolo': {
+                            '60': 'Ostacolo accidentale',
+                            '61': 'Veicolo fermo in posizione regolare',
+                            '62': 'Veicolo fermo in posizione irregolare',
+                            '63': 'Veicolo fermo senza prescritto segnale',
+                            '64': 'Veicolo fermo regolarmente segnalato',
+                            '65': 'Ostacolo fisso nella carreggiata',
+                            '66': 'Treno in passaggio a livello',
+                            '67': 'Animale domestico',
+                            '68': 'Animale selvatico',
+                            '69': 'Buca'
+                        }
+                    },
+                    'senza_urto': {
+                        'veicolo_a': {
+                            '70': 'Sbandamento per evitare urto',
+                            '71': 'Sbandamento per guida distratta',
+                            '72': 'Sbandamento per eccesso velocità',
+                            '73': 'Frenava improvvisamente',
+                            '74': 'Caduta persona per apertura portiera',
+                            '75': 'Caduta persona per discesa da veicolo in moto',
+                            '76': 'Caduta persona aggrappata inadeguatamente'
+                        },
+                        'ostacolo_evitato': {
+                            '70': 'Ostacolo accidentale',
+                            '71': 'Pedone',
+                            '72': 'Animale evitato',
+                            '73': 'Veicolo',
+                            '74': 'Buca evitata',
+                            '75': 'Senza ostacolo né pedone né altro veicolo',
+                            '76': 'Ostacolo fisso'
+                        }
+                    }
                 };
 
-                // Gestione cambio tipo di circostanza (codice esistente)
+                // Gestione cambio tipo di circostanza (CODICE MIGLIORATO)
                 $('#circostanza_tipo').change(function() {
-                    // ... mantieni tutto il codice esistente
+                    var tipo = $(this).val();
+                    var selectVeicoloA = $('#circostanza_veicolo_a');
+                    var selectVeicoloB = $('#circostanza_veicolo_b');
+                    var selectVeicoloC = $('#circostanza_veicolo_c');
+                    
+                    // Salva i valori correnti prima di pulire
+                    var currentA = selectVeicoloA.val();
+                    var currentB = selectVeicoloB.val();
+                    var currentC = selectVeicoloC.val();
+                    
+                    // Pulisci le select
+                    selectVeicoloA.empty().append('<option value="">Seleziona circostanza</option>');
+                    selectVeicoloB.empty().append('<option value="">Seleziona circostanza</option>');
+                    selectVeicoloC.empty().append('<option value="">Seleziona circostanza</option>');
+                    
+                    if (tipo && circostanzeData[tipo]) {
+                        // Popola Veicolo A
+                        if (circostanzeData[tipo]['veicolo_a']) {
+                            $.each(circostanzeData[tipo]['veicolo_a'], function(codice, descrizione) {
+                                var selected = (codice === currentA || codice === selectVeicoloA.attr('data-current-value')) ? ' selected' : '';
+                                selectVeicoloA.append('<option value="' + codice + '"' + selected + '>' + codice + ' - ' + descrizione + '</option>');
+                            });
+                        }
+                        
+                        // Popola Veicolo B/Pedone/Ostacolo
+                        var tipoB = 'veicolo_b';
+                        if (tipo === 'investimento') tipoB = 'pedone';
+                        if (tipo === 'urto_fermo') tipoB = 'ostacolo';
+                        if (tipo === 'senza_urto') tipoB = 'ostacolo_evitato';
+                        
+                        if (circostanzeData[tipo][tipoB]) {
+                            $.each(circostanzeData[tipo][tipoB], function(codice, descrizione) {
+                                var selected = (codice === currentB || codice === selectVeicoloB.attr('data-current-value')) ? ' selected' : '';
+                                selectVeicoloB.append('<option value="' + codice + '"' + selected + '>' + codice + ' - ' + descrizione + '</option>');
+                            });
+                        }
+                        
+                        // Popola Veicolo C (solo per incidenti con 3+ veicoli)
+                        if (circostanzeData[tipo]['veicolo_c']) {
+                            $.each(circostanzeData[tipo]['veicolo_c'], function(codice, descrizione) {
+                                var selected = (codice === currentC || codice === selectVeicoloC.attr('data-current-value')) ? ' selected' : '';
+                                selectVeicoloC.append('<option value="' + codice + '"' + selected + '>' + codice + ' - ' + descrizione + '</option>');
+                            });
+                        }
+                        
+                        // Aggiorna label del Veicolo B
+                        var labelText = 'Circostanza Veicolo B';
+                        if (tipo === 'investimento') labelText = 'Circostanza Pedone';
+                        if (tipo === 'urto_fermo') labelText = 'Circostanza Ostacolo';
+                        if (tipo === 'senza_urto') labelText = 'Ostacolo Evitato';
+                        
+                        $('label[for="circostanza_veicolo_b"]').text(labelText);
+                        
+                        // Ripristina i valori dopo un breve delay
+                        setTimeout(function() {
+                            if (selectVeicoloA.attr('data-current-value') && selectVeicoloA.find('option[value="' + selectVeicoloA.attr('data-current-value') + '"]').length) {
+                                selectVeicoloA.val(selectVeicoloA.attr('data-current-value'));
+                            }
+                            if (selectVeicoloB.attr('data-current-value') && selectVeicoloB.find('option[value="' + selectVeicoloB.attr('data-current-value') + '"]').length) {
+                                selectVeicoloB.val(selectVeicoloB.attr('data-current-value'));
+                            }
+                            if (selectVeicoloC.attr('data-current-value') && selectVeicoloC.find('option[value="' + selectVeicoloC.attr('data-current-value') + '"]').length) {
+                                selectVeicoloC.val(selectVeicoloC.attr('data-current-value'));
+                            }
+                        }, 100);
+                    }
                 });
             });
             </script>

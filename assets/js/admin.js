@@ -1394,41 +1394,51 @@ jQuery(document).ready(function($) {
             var $tipoSelect = $('#circostanza_tipo');
             var currentValue = $tipoSelect.val();
             
-            // Salva il valore corrente prima di pulire
-            var savedValue = $tipoSelect.data('saved-value') || currentValue;
+            // PRESERVA: Salva il valore corrente prima di pulire (funzionalità esistente)
+            var savedValue = $tipoSelect.data('saved-value') || 
+                            $tipoSelect.attr('data-current-value') || 
+                            currentValue;
             
-            // Pulisci le opzioni
+            // PRESERVA: Pulisci le opzioni (funzionalità esistente)
             $tipoSelect.empty().append('<option value="">Seleziona tipo</option>');
             
             if (natura && naturaToTipoMapping[natura]) {
                 var opzioni = naturaToTipoMapping[natura];
                 var keys = Object.keys(opzioni);
                 
+                // PRESERVA: Auto-selezione e disabilitazione per opzione singola
                 if (keys.length === 1) {
-                    // Se c'è una sola opzione, selezionala automaticamente e disabilita il campo
                     var uniqueKey = keys[0];
                     $tipoSelect.append('<option value="' + uniqueKey + '" selected>' + opzioni[uniqueKey] + '</option>');
                     $tipoSelect.prop('disabled', true);
                     $tipoSelect.val(uniqueKey);
                     
-                    // Triggerina il cambio per aggiornare le circostanze
+                    // PRESERVA: Trigger del cambio per aggiornare le circostanze
                     setTimeout(function() {
                         $tipoSelect.trigger('change');
                     }, 100);
+                    
                 } else {
-                    // Se ci sono più opzioni, abilita il campo e popolalo
+                    // PRESERVA: Gestione opzioni multiple
                     $tipoSelect.prop('disabled', false);
                     $.each(opzioni, function(key, value) {
-                        $tipoSelect.append('<option value="' + key + '">' + value + '</option>');
+                        // MIGLIORA: Seleziona l'opzione se corrisponde al valore salvato
+                        var selected = (key === savedValue) ? ' selected' : '';
+                        $tipoSelect.append('<option value="' + key + '"' + selected + '>' + value + '</option>');
                     });
                     
-                    // Ripristina il valore salvato se valido
+                    // MIGLIORA: Ripristina il valore salvato se valido
                     if (savedValue && opzioni[savedValue]) {
                         $tipoSelect.val(savedValue);
+                        
+                        // MIGLIORA: Trigger change anche qui per consistency
+                        setTimeout(function() {
+                            $tipoSelect.trigger('change');
+                        }, 100);
                     }
                 }
             } else {
-                // Se non c'è natura selezionata, ripristina tutte le opzioni
+                // PRESERVA: Ripristino di tutte le opzioni quando natura non è selezionata
                 $tipoSelect.prop('disabled', false);
                 var allOptions = {
                     'intersezione': 'Incidente all\'intersezione stradale',
@@ -1439,9 +1449,12 @@ jQuery(document).ready(function($) {
                 };
                 
                 $.each(allOptions, function(key, value) {
-                    $tipoSelect.append('<option value="' + key + '">' + value + '</option>');
+                    // MIGLIORA: Seleziona l'opzione se corrisponde al valore salvato
+                    var selected = (key === savedValue) ? ' selected' : '';
+                    $tipoSelect.append('<option value="' + key + '"' + selected + '>' + value + '</option>');
                 });
                 
+                // MIGLIORA: Ripristina il valore anche quando non c'è natura
                 if (savedValue) {
                     $tipoSelect.val(savedValue);
                 }

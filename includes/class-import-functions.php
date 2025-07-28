@@ -11,7 +11,37 @@ if (!defined('ABSPATH')) {
 }
 
 class IncidentiImportFunctions {
-    
+        private function get_comune_name($codice) {
+        $comuni = array(
+            '002' => 'Alessano', '003' => 'Alezio', '004' => 'Alliste', '005' => 'Andrano',
+            '006' => 'Aradeo', '007' => 'Arnesano', '008' => 'Bagnolo Del Salento', '009' => 'Botrugno',
+            '010' => 'Calimera', '011' => 'Campi Salentina', '012' => 'Cannole', '013' => 'Caprarica di Lecce',
+            '014' => 'Carmiano', '015' => 'Carpignano Salentino', '016' => 'Casarano', '017' => 'Castri Di Lecce',
+            '018' => 'Castrignano De` Greci', '019' => 'Castrignano Del Capo', '096' => 'Castro',
+            '020' => 'Cavallino', '021' => 'Collepasso', '022' => 'Copertino', '023' => 'Corigliano D`Otranto',
+            '024' => 'Corsano', '025' => 'Cursi', '026' => 'Cutrofiano', '027' => 'Diso',
+            '028' => 'Gagliano Del Capo', '029' => 'Galatina', '030' => 'Galatone', '031' => 'Gallipoli',
+            '032' => 'Giuggianello', '033' => 'Giurdignano', '034' => 'Guagnano', '035' => 'Lecce',
+            '036' => 'Lequile', '037' => 'Leverano', '038' => 'Lizzanello', '039' => 'Maglie',
+            '040' => 'Martano', '041' => 'Martignano', '042' => 'Matino', '043' => 'Melendugno',
+            '044' => 'Melissano', '045' => 'Melpignano', '046' => 'Miggiano', '047' => 'Minervino Di Lecce',
+            '048' => 'Monteroni Di Lecce', '049' => 'Montesano Salentino', '050' => 'Morciano Di Leuca',
+            '051' => 'Muro Leccese', '052' => 'Nardo`', '053' => 'Neviano', '054' => 'Nociglia',
+            '055' => 'Novoli', '056' => 'Ortelle', '057' => 'Otranto', '058' => 'Palmariggi',
+            '059' => 'Parabita', '060' => 'Patu`', '061' => 'Poggiardo', '097' => 'Porto Cesareo',
+            '098' => 'Presicce-Acquarica', '063' => 'Racale', '064' => 'Ruffano', '065' => 'Salice Salentino',
+            '066' => 'Salve', '095' => 'San Cassiano', '068' => 'San Cesario Di Lecce',
+            '069' => 'San Donato Di Lecce', '071' => 'San Pietro In Lama', '067' => 'Sanarica',
+            '070' => 'Sannicola', '072' => 'Santa Cesarea Terme', '073' => 'Scorrano', '074' => 'Secli`',
+            '075' => 'Sogliano Cavour', '076' => 'Soleto', '077' => 'Specchia', '078' => 'Spongano',
+            '079' => 'Squinzano', '080' => 'Sternatia', '081' => 'Supersano', '082' => 'Surano',
+            '083' => 'Surbo', '084' => 'Taurisano', '085' => 'Taviano', '086' => 'Tiggiano',
+            '087' => 'Trepuzzi', '088' => 'Tricase', '089' => 'Tuglie', '090' => 'Ugento',
+            '091' => 'Uggiano La Chiesa', '092' => 'Veglie', '093' => 'Vernole', '094' => 'Zollino'
+        );
+        return isset($comuni[$codice]) ? $comuni[$codice] : $codice;
+    }
+
     public function __construct() {
         add_action('admin_menu', array($this, 'add_import_menu'), 21);
         add_action('admin_post_import_incidenti_csv', array($this, 'handle_txt_import'));
@@ -555,6 +585,7 @@ class IncidentiImportFunctions {
             "veicolo_3_targa_rimorchio" => "",
             "codice_strada_aci" => "",
             // DA CALCOLARE
+            "ente_rilevatore" => "",
             "natura_incidente" => "A",
             "numero_veicoli_coinvolti" => "1",
             "numero_pedoni_feriti" => "0",
@@ -562,18 +593,18 @@ class IncidentiImportFunctions {
             "veicolo_1_numero_trasportati" => "0",
             "veicolo_2_numero_trasportati" => "0",
             "veicolo_3_numero_trasportati" => "0",
-            //veicolo_1_trasportato_1_sedile
-            //veicolo_1_trasportato_2_sedile
-            //veicolo_1_trasportato_3_sedile
-            //veicolo_1_trasportato_4_sedile
-            //veicolo_2_trasportato_1_sedile
-            //veicolo_2_trasportato_2_sedile
-            //veicolo_2_trasportato_3_sedile
-            //veicolo_2_trasportato_4_sedile
-            //veicolo_3_trasportato_1_sedile
-            //veicolo_3_trasportato_2_sedile
-            //veicolo_3_trasportato_3_sedile
-            //veicolo_3_trasportato_4_sedile
+            "veicolo_1_trasportato_1_sedile" => "",
+            "veicolo_1_trasportato_2_sedile" => "",
+            "veicolo_1_trasportato_3_sedile" => "",
+            "veicolo_1_trasportato_4_sedile" => "",
+            "veicolo_2_trasportato_1_sedile" => "",
+            "veicolo_2_trasportato_2_sedile" => "",
+            "veicolo_2_trasportato_3_sedile" => "",
+            "veicolo_2_trasportato_4_sedile" => "",
+            "veicolo_3_trasportato_1_sedile" => "",
+            "veicolo_3_trasportato_2_sedile" => "",
+            "veicolo_3_trasportato_3_sedile" => "",
+            "veicolo_3_trasportato_4_sedile" => "",
         );
         $numero_veicoli_coinvolti = 0;
         $numero_pedoni_feriti = 0;
@@ -589,6 +620,19 @@ class IncidentiImportFunctions {
         $data_incidente_giorno = trim(substr($row, 14, 2));
         //$mapped_data[""] = trim(substr($row, 16, 2));
         $mapped_data["organo_rilevazione"] = trim(substr($row, 18, 1));
+        if($mapped_data["organo_rilevazione"] == "1") {
+            $mapped_data["ente_rilevatore"] = "Agente di Polizia stradale";
+        } elseif($mapped_data["organo_rilevazione"] == "2") {
+            $mapped_data["ente_rilevatore"] = "Carabiniere";
+        } elseif($mapped_data["organo_rilevazione"] == "3") {
+            $mapped_data["ente_rilevatore"] = "Agente di Pubblica sicurezza";
+        } elseif($mapped_data["organo_rilevazione"] == "4") {
+             $mapped_data["ente_rilevatore"] = "POLIZIA MUNICIPALE DI " . strtoupper($this->get_comune_name($mapped_data["comune_incidente"]));
+        } elseif($mapped_data["organo_rilevazione"] == "5") {
+            $mapped_data["ente_rilevatore"] = "Altri";
+        } elseif($mapped_data["organo_rilevazione"] == "6") {
+            $mapped_data["ente_rilevatore"] = "Agente di Polizia provinciale";
+        }
         //$mapped_data[""] = trim(substr($row, 19, 5));
         $mapped_data["organo_coordinatore"] = trim(substr($row, 24, 1));
         $mapped_data["tipo_strada"] = trim(substr($row, 25, 1));
@@ -734,6 +778,13 @@ class IncidentiImportFunctions {
         //$mapped_data[""] = trim(substr($row, 218, 1));
         //$mapped_data[""] = trim(substr($row, 219, 1));
 
+        // Controlla i pedoni morti
+        for ($i = 1; $i <=  $numero_veicoli_coinvolti; $i++) {
+            if (empty($mapped_data["conducente_{$i}_tipologia_incidente"])) {
+                $mapped_data["conducente_{$i}_tipologia_incidente"]="0";
+            }
+        }
+
         // Passeggeri veicolo C
         $mapped_data["veicolo_3_trasportato_1_esito"] = trim(substr($row, 220, 1));
         $mapped_data["veicolo_3_trasportato_1_eta"] = trim(substr($row, 221, 2));
@@ -747,7 +798,7 @@ class IncidentiImportFunctions {
         $mapped_data["veicolo_3_trasportato_4_esito"] = trim(substr($row, 232, 1));
         $mapped_data["veicolo_3_trasportato_4_eta"] = trim(substr($row, 233, 2));
         $mapped_data["veicolo_3_trasportato_4_sesso"] = trim(substr($row, 235, 1));
-
+           
         // Altri passeggeri infortunati sul veicolo C
         $mapped_data["veicolo_3_altri_morti_maschi"] = trim(substr($row, 236, 2));
         $mapped_data["veicolo_3_altri_morti_femmine"] = trim(substr($row, 238, 2));
@@ -793,6 +844,11 @@ class IncidentiImportFunctions {
             for ($i = 1; $i <= 4; $i++) {
                 if (!empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_esito"]) or !empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_sesso"]) or !empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_eta"])) {
                     $veicolo_numero_trasportati++;
+                    if($i == 1){
+                        $mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_sedile"] = "anteriore";
+                    } else {
+                        $mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_sedile"] = "posteriore";
+                    }
                 }
                 $mapped_data["veicolo_{$numveicolo}_numero_trasportati"] =  $veicolo_numero_trasportati;
             }
@@ -876,12 +932,15 @@ class IncidentiImportFunctions {
         //$mapped_data["conducente_1_italiano"] = trim(substr($row, 1780, 1));
         $mapped_data["conducente_1_nazionalita"] = trim(substr($row, 1781, 3));
         $mapped_data["conducente_1_nazionalita_altro"] = trim(substr($row, 1784, 30));
+        $mapped_data["conducente_1_nazionalita"] = $mapped_data["conducente_1_nazionalita"] ."-" . $mapped_data["conducente_1_nazionalita_altro"];
         //$mapped_data["conducente_2_italiano"] = trim(substr($row, 1814, 1));
         $mapped_data["conducente_2_nazionalita"] = trim(substr($row, 1815, 3));
         $mapped_data["conducente_2_nazionalita_altro"] = trim(substr($row, 1818, 30));
+        $mapped_data["conducente_2_nazionalita"] = $mapped_data["conducente_2_nazionalita"] ."-" . $mapped_data["conducente_2_nazionalita_altro"];
         //$mapped_data["conducente_3_italiano"] = trim(substr($row, 1848, 1));
         $mapped_data["conducente_3_nazionalita"] = trim(substr($row, 1849, 3));
         $mapped_data["conducente_3_nazionalita_altro"] = trim(substr($row, 1852, 30));
+        $mapped_data["conducente_3_nazionalita"] = $mapped_data["conducente_3_nazionalita"] ."-" . $mapped_data["conducente_3_nazionalita_altro"];
 
         // Nuove variabili 2020
         $mapped_data["veicolo_1_tipo_rimorchio"] = trim(substr($row, 1882, 4));
@@ -1153,13 +1212,13 @@ class IncidentiImportFunctions {
             'spazio_istat_4',
             'conducente_1_italiano',
             'conducente_1_nazionalita',
-            'conducente_1_nazionalita_altro',
+            //'conducente_1_nazionalita_altro',
             'conducente_2_italiano',
             'conducente_2_nazionalita',
-            'conducente_2_nazionalita_altro',
+            //'conducente_2_nazionalita_altro',
             'conducente_3_italiano',
             'conducente_3_nazionalita',
-            'conducente_3_nazionalita_altro',
+            //'conducente_3_nazionalita_altro',
             'veicolo_1_tipo_rimorchio',
             'veicolo_1_targa_rimorchio',
             'veicolo_2_tipo_rimorchio',
@@ -1168,6 +1227,7 @@ class IncidentiImportFunctions {
             'veicolo_3_targa_rimorchio',
             'codice_strada_aci',
             // CAMPI CALCOLATI
+            'ente_rilevatore',
             'natura_incidente',
             'comune_incidente',
             'numero_veicoli_coinvolti',
@@ -1176,18 +1236,18 @@ class IncidentiImportFunctions {
             'veicolo_1_numero_trasportati',
             'veicolo_2_numero_trasportati',
             'veicolo_3_numero_trasportati',
-            //veicolo_1_trasportato_1_sedile
-            //veicolo_1_trasportato_2_sedile
-            //veicolo_1_trasportato_3_sedile
-            //veicolo_1_trasportato_4_sedile
-            //veicolo_2_trasportato_1_sedile
-            //veicolo_2_trasportato_2_sedile
-            //veicolo_2_trasportato_3_sedile
-            //veicolo_2_trasportato_4_sedile
-            //veicolo_3_trasportato_1_sedile
-            //veicolo_3_trasportato_2_sedile
-            //veicolo_3_trasportato_3_sedile
-            //veicolo_3_trasportato_4_sedile
+            'veicolo_1_trasportato_1_sedile',
+            'veicolo_1_trasportato_2_sedile',
+            'veicolo_1_trasportato_3_sedile',
+            'veicolo_1_trasportato_4_sedile',
+            'veicolo_2_trasportato_1_sedile',
+            'veicolo_2_trasportato_2_sedile',
+            'veicolo_2_trasportato_3_sedile',
+            'veicolo_2_trasportato_4_sedile',
+            'veicolo_3_trasportato_1_sedile',
+            'veicolo_3_trasportato_2_sedile',
+            'veicolo_3_trasportato_3_sedile',
+            'veicolo_3_trasportato_4_sedile',
         );
         
         foreach ($meta_fields as $field) {

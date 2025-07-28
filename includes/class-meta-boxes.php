@@ -4917,7 +4917,11 @@ class IncidentiMetaBoxes {
         }
 
         // Validazione coerenza circostanze
-        $this->validate_circostanze_coherence($post_id);
+        //$this->validate_circostanze_coherence($post_id);
+
+        // Validazione coerenza circostanze
+        $validator = new IncidentiValidation();
+        $validator->validate_circostanze_coherence($post_id);
 
         // Debug per verificare il salvataggio delle circostanze
         if (defined('WP_DEBUG') && WP_DEBUG) {

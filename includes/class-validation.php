@@ -63,8 +63,7 @@ class IncidentiValidation {
             'longitudine' => __('Longitudine', 'incidenti-stradali'),
             'circostanza_tipo' => __('Tipo di circostanza', 'incidenti-stradali'),
             'organo_rilevazione' => __('Organo di rilevazione', 'incidenti-stradali'),
-            'segnaletica_semaforica' => __('Segnaletica semaforica', 'incidenti-stradali'),
-            'pavimentazione' => __('Pavimentazione', 'incidenti-stradali'),
+            'pavimentazione_strada' => __('Pavimentazione', 'incidenti-stradali'),
             'stato_fondo_strada' => __('Stato fondo stradale', 'incidenti-stradali'),
             'illuminazione' => __('Illuminazione', 'incidenti-stradali'),
             'condizioni_meteo' => __('Condizioni meteorologiche', 'incidenti-stradali')
@@ -613,5 +612,131 @@ class IncidentiValidation {
         }
         
         return $count;
+    }
+
+    /**
+     * Valida la coerenza delle circostanze dell'incidente
+     * 
+     * @param int $post_id ID del post dell'incidente
+     * @return bool True se le circostanze sono coerenti, false altrimenti
+     */
+    public function validate_circostanze_coherence($post_id) {
+        // Recupera i dati delle circostanze salvati
+        $circostanza_tipo = get_post_meta($post_id, 'circostanza_tipo', true);
+        $circostanza_veicolo_a = get_post_meta($post_id, 'circostanza_veicolo_a', true);
+        $circostanza_veicolo_b = get_post_meta($post_id, 'circostanza_veicolo_b', true);
+        $circostanza_veicolo_c = get_post_meta($post_id, 'circostanza_veicolo_c', true);
+        $natura_incidente = get_post_meta($post_id, 'natura_incidente', true);
+        $numero_veicoli = get_post_meta($post_id, 'numero_veicoli_coinvolti', true);
+        
+        $errors = array();
+        
+        // 1. Verifica che almeno una circostanza sia stata selezionata
+        $has_circostanza = false;
+        $circostanze_fields = array(
+            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
+            'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c',
+            'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c'
+        );
+        
+        foreach ($circostanze_fields as $field) {
+            $value = get_post_meta($post_id, $field, true);
+            if (!empty($value)) {
+                $has_circostanza = true;
+                break;
+            }
+        }
+        
+        if (!$has_circostanza) {
+            $errors[] = __('È obbligatorio selezionare almeno una circostanza dell\'incidente.', 'incidenti-stradali');
+        }
+        
+        // 2. Verifica coerenza tra natura incidente e tipo di circostanza
+        if (!empty($natura_incidente) && !empty($circostanza_tipo)) {
+            if (!$this->validate_natura_tipo_coerenza($natura_incidente, $circostanza_tipo)) {
+                $errors[] = sprintf(
+                    __('Il tipo di incidente "%s" non è compatibile con la natura dell\'incidente selezionata.', 'incidenti-stradali'),
+                    $circostanza_tipo
+                );
+            }
+        }
+        
+        // 3. Verifica che le circostanze dei veicoli siano coerenti con il numero di veicoli coinvolti
+        if (!empty($numero_veicoli)) {
+            $num_veicoli = intval($numero_veicoli);
+            
+            // Se ci sono meno di 2 veicoli, non dovrebbero esserci circostanze per il veicolo B
+            if ($num_veicoli < 2 && !empty($circostanza_veicolo_b)) {
+                $errors[] = __('Non è possibile specificare circostanze per il Veicolo B se c\'è un solo veicolo coinvolto.', 'incidenti-stradali');
+            }
+            
+            // Se ci sono meno di 3 veicoli, non dovrebbero esserci circostanze per il veicolo C
+            if ($num_veicoli < 3 && !empty($circostanza_veicolo_c)) {
+                $errors[] = __('Non è possibile specificare circostanze per il Veicolo C se ci sono meno di 3 veicoli coinvolti.', 'incidenti-stradali');
+            }
+        }
+        
+        // 4. Verifica che i codici circostanza siano validi per il tipo di incidente
+        if (!empty($circostanza_tipo)) {
+            $codici_validi = $this->get_codici_circostanza_validi($circostanza_tipo);
+            
+            if (!empty($circostanza_veicolo_a) && !in_array($circostanza_veicolo_a, $codici_validi)) {
+                $errors[] = sprintf(__('Il codice circostanza "%s" per il Veicolo A non è valido per il tipo di incidente selezionato.', 'incidenti-stradali'), $circostanza_veicolo_a);
+            }
+            
+            if (!empty($circostanza_veicolo_b) && !in_array($circostanza_veicolo_b, $codici_validi)) {
+                $errors[] = sprintf(__('Il codice circostanza "%s" per il Veicolo B non è valido per il tipo di incidente selezionato.', 'incidenti-stradali'), $circostanza_veicolo_b);
+            }
+            
+            if (!empty($circostanza_veicolo_c) && !in_array($circostanza_veicolo_c, $codici_validi)) {
+                $errors[] = sprintf(__('Il codice circostanza "%s" per il Veicolo C non è valido per il tipo di incidente selezionato.', 'incidenti-stradali'), $circostanza_veicolo_c);
+            }
+        }
+        
+        // Se ci sono errori, salvali come meta per mostrarli all'utente
+        if (!empty($errors)) {
+            update_post_meta($post_id, '_circostanze_validation_errors', $errors);
+            
+            // Log degli errori per debug
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log("Errori validazione circostanze per post $post_id: " . print_r($errors, true));
+            }
+            
+            return false;
+        } else {
+            // Rimuovi eventuali errori precedenti
+            delete_post_meta($post_id, '_circostanze_validation_errors');
+            return true;
+        }
+    }
+
+    /**
+     * Restituisce i codici circostanza validi per un determinato tipo di incidente
+     * 
+     * @param string $tipo_incidente Il tipo di incidente
+     * @return array Array di codici validi
+     */
+    private function get_codici_circostanza_validi($tipo_incidente) {
+        $codici_per_tipo = array(
+            'intersezione' => array(
+                '01', '02', '03', '04', '05', '06', '07', '08', '10', '11', 
+                '12', '13', '14', '15', '16', '17', '18'
+            ),
+            'non_intersezione' => array(
+                '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
+                '31', '32', '33', '34', '35', '36', '37', '38', '39', '40'
+            ),
+            'investimento' => array(
+                '41', '42', '43', '44', '45', '46', '47', '48', '49'
+            ),
+            'urto_fermo' => array(
+                '51', '52', '53', '54', '55', '56', '57', '58', '59'
+            ),
+            'senza_urto' => array(
+                '61', '62', '63', '64', '65', '66', '67', '68', '69'
+            )
+        );
+        
+        return isset($codici_per_tipo[$tipo_incidente]) ? $codici_per_tipo[$tipo_incidente] : array();
     }
 }

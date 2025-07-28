@@ -4008,8 +4008,12 @@ class IncidentiMetaBoxes {
                         <?php checked(get_post_meta($post->ID, $prefix . 'tipologia_incidente', true), '2'); ?>> 
                         <?php _e('Conducente coinvolto in incidente su strada durante il tragitto casa-lavoro o lavoro-casa', 'incidenti-stradali'); ?>
                     </label><br>
-                    <label><input type="radio" name="<?php echo $prefix; ?>tipologia_incidente" value=" " 
-                        <?php checked(get_post_meta($post->ID, $prefix . 'tipologia_incidente', true), ' '); ?>> 
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipologia_incidente" value="0" 
+                        <?php 
+                        $current_value = get_post_meta($post->ID, $prefix . 'tipologia_incidente', true);
+                        // Controlla sia per 'nessuno' che per spazio vuoto
+                        checked(in_array($current_value, ['nessuno', ' ', '']), true); 
+                        ?>> 
                         <?php _e('Nessuno dei due', 'incidenti-stradali'); ?>
                     </label><br><br>
                     <p style="font-weight: bold;"><?php _e('Non indicare le due modalità sopra riportate nel caso si tratti di altro tipo di tragitto e/o di incidente avvenuto al di fuori dell\'attività lavorativa.', 'incidenti-stradali'); ?></p>
@@ -5122,6 +5126,20 @@ class IncidentiMetaBoxes {
             'csv_n_altri_micromobilita', 'csv_n_altri_veicoli', 'csv_trasportanti_merci_pericolose',
             'csv_omissione', 'csv_contromano', 'csv_dettaglio_persone_decedute', 'csv_positivita', 'csv_art_cds',
         );
+
+        // === GESTIONE SPECIFICA PER TIPOLOGIA INCIDENTE LAVORATIVO ===
+        // Normalizza i valori di tipologia_incidente per tutti i conducenti
+        for ($i = 1; $i <= 3; $i++) {
+            $campo_tipologia = 'conducente_' . $i . '_tipologia_incidente';
+            if (isset($_POST[$campo_tipologia])) {
+                $valore = $_POST[$campo_tipologia];
+                
+                // Se il valore è uno spazio vuoto o stringa vuota, convertilo in "nessuno"
+                if (trim($valore) === '' || $valore === ' ') {
+                    $_POST[$campo_tipologia] = 'nessuno';
+                }
+            }
+        }
         
         // Save all meta fields ESCLUDENDO i campi speciali
         $special_fields = ['circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 

@@ -4387,14 +4387,11 @@ class IncidentiMetaBoxes {
     public function render_circostanze_meta_box($post) {
         $circostanza_veicolo_a = get_post_meta($post->ID, 'circostanza_veicolo_a', true);
         $circostanza_veicolo_b = get_post_meta($post->ID, 'circostanza_veicolo_b', true);
-        $circostanza_veicolo_c = get_post_meta($post->ID, 'circostanza_veicolo_c', true);
         $circostanza_tipo = get_post_meta($post->ID, 'circostanza_tipo', true);
         $difetto_veicolo_a = get_post_meta($post->ID, 'difetto_veicolo_a', true);
         $difetto_veicolo_b = get_post_meta($post->ID, 'difetto_veicolo_b', true);
-        $difetto_veicolo_c = get_post_meta($post->ID, 'difetto_veicolo_c', true);
         $stato_psicofisico_a = get_post_meta($post->ID, 'stato_psicofisico_a', true);
         $stato_psicofisico_b = get_post_meta($post->ID, 'stato_psicofisico_b', true);
-        $stato_psicofisico_c = get_post_meta($post->ID, 'stato_psicofisico_c', true);
         ?>
         
         <div class="incidenti-circostanze-container">
@@ -4438,17 +4435,6 @@ class IncidentiMetaBoxes {
                         </select>
                     </td>
                 </tr>
-                <tr id="circostanza_veicolo_c_row" style="display: none;">
-                    <th><label for="circostanza_veicolo_c"><?php _e('Circostanza Veicolo C', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="circostanza_veicolo_c" name="circostanza_veicolo_c"
-                            data-current-value="<?php echo esc_attr($circostanza_veicolo_c); ?>"
-                            data-saved-value="<?php echo esc_attr($circostanza_veicolo_c); ?>">
-                            <option value=""><?php _e('Seleziona circostanza', 'incidenti-stradali'); ?></option>
-                            <!-- Le opzioni saranno popolate dinamicamente via JavaScript -->
-                        </select>
-                    </td>
-                </tr>
             </table>
 
             <!-- SEZIONE 2: Per difetti o avarie del veicolo -->
@@ -4487,24 +4473,6 @@ class IncidentiMetaBoxes {
                             <option value="87" <?php selected($difetto_veicolo_b, '87'); ?>>87 - Mancanza adattamenti per disabili</option>
                             <option value="88" <?php selected($difetto_veicolo_b, '88'); ?>>88 - Distacco di ruota</option>
                             <option value="89" <?php selected($difetto_veicolo_b, '89'); ?>>89 - Mancanza dispositivi visivi dei velocipedi</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr id="difetto_veicolo_c_row" style="display: none;">
-                    <th><label for="difetto_veicolo_c"><?php _e('Veicolo C', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="difetto_veicolo_c" name="difetto_veicolo_c">
-                            <option value=""><?php _e('Nessun difetto', 'incidenti-stradali'); ?></option>
-                            <option value="80" <?php selected($difetto_veicolo_c, '80'); ?>>80 - Rottura o insufficienza dei freni</option>
-                            <option value="81" <?php selected($difetto_veicolo_c, '81'); ?>>81 - Rottura o guasto allo sterzo</option>
-                            <option value="82" <?php selected($difetto_veicolo_c, '82'); ?>>82 - Scoppio o eccessiva usura dei pneumatici</option>
-                            <option value="83" <?php selected($difetto_veicolo_c, '83'); ?>>83 - Mancanza o insufficienza dei fari o delle luci di posizione</option>
-                            <option value="84" <?php selected($difetto_veicolo_c, '84'); ?>>84 - Mancanza o insufficienza dei lampeggiatori</option>
-                            <option value="85" <?php selected($difetto_veicolo_c, '85'); ?>>85 - Rottura degli organi di agganciamento dei rimorchi</option>
-                            <option value="86" <?php selected($difetto_veicolo_c, '86'); ?>>86 - Deficienza delle attrezzature per trasporto merci pericolose</option>
-                            <option value="87" <?php selected($difetto_veicolo_c, '87'); ?>>87 - Mancanza adattamenti per disabili</option>
-                            <option value="88" <?php selected($difetto_veicolo_c, '88'); ?>>88 - Distacco di ruota</option>
-                            <option value="89" <?php selected($difetto_veicolo_c, '89'); ?>>89 - Mancanza dispositivi visivi dei velocipedi</option>
                         </select>
                     </td>
                 </tr>
@@ -4768,17 +4736,14 @@ class IncidentiMetaBoxes {
                     var tipo = $(this).val();
                     var selectVeicoloA = $('#circostanza_veicolo_a');
                     var selectVeicoloB = $('#circostanza_veicolo_b');
-                    var selectVeicoloC = $('#circostanza_veicolo_c');
                     
                     // Salva i valori correnti prima di pulire
                     var currentA = selectVeicoloA.val();
                     var currentB = selectVeicoloB.val();
-                    var currentC = selectVeicoloC.val();
                     
                     // Pulisci le select
                     selectVeicoloA.empty().append('<option value="">Seleziona circostanza</option>');
                     selectVeicoloB.empty().append('<option value="">Seleziona circostanza</option>');
-                    selectVeicoloC.empty().append('<option value="">Seleziona circostanza</option>');
                     
                     if (tipo && circostanzeData[tipo]) {
                         // Popola Veicolo A
@@ -4799,14 +4764,6 @@ class IncidentiMetaBoxes {
                             $.each(circostanzeData[tipo][tipoB], function(codice, descrizione) {
                                 var selected = (codice === currentB || codice === selectVeicoloB.attr('data-current-value')) ? ' selected' : '';
                                 selectVeicoloB.append('<option value="' + codice + '"' + selected + '>' + codice + ' - ' + descrizione + '</option>');
-                            });
-                        }
-                        
-                        // Popola Veicolo C (solo per incidenti con 3+ veicoli)
-                        if (circostanzeData[tipo]['veicolo_c']) {
-                            $.each(circostanzeData[tipo]['veicolo_c'], function(codice, descrizione) {
-                                var selected = (codice === currentC || codice === selectVeicoloC.attr('data-current-value')) ? ' selected' : '';
-                                selectVeicoloC.append('<option value="' + codice + '"' + selected + '>' + codice + ' - ' + descrizione + '</option>');
                             });
                         }
                         
@@ -4870,22 +4827,6 @@ class IncidentiMetaBoxes {
                         </select>
                     </td>
                 </tr>
-                <tr id="stato_psicofisico_c_row" style="display: none;">
-                    <th><label for="stato_psicofisico_c"><?php _e('Conducente Veicolo C', 'incidenti-stradali'); ?></label></th>
-                    <td>
-                        <select id="stato_psicofisico_c" name="stato_psicofisico_c">
-                            <option value=""><?php _e('Normale', 'incidenti-stradali'); ?></option>
-                            <option value="90" <?php selected($stato_psicofisico_c, '90'); ?>>90 - Anormale per ebbrezza da alcool</option>
-                            <option value="91" <?php selected($stato_psicofisico_c, '91'); ?>>91 - Anormale per condizioni morbose in atto</option>
-                            <option value="92" <?php selected($stato_psicofisico_c, '92'); ?>>92 - Anormale per improvviso malore</option>
-                            <option value="93" <?php selected($stato_psicofisico_c, '93'); ?>>93 - Anormale per sonno</option>
-                            <option value="94" <?php selected($stato_psicofisico_c, '94'); ?>>94 - Anormale per ingestione sostanze stupefacenti</option>
-                            <option value="95" <?php selected($stato_psicofisico_c, '95'); ?>>95 - Mancato uso di lenti correttive</option>
-                            <option value="96" <?php selected($stato_psicofisico_c, '96'); ?>>96 - Abbagliato</option>
-                            <option value="97" <?php selected($stato_psicofisico_c, '97'); ?>>97 - Per aver superato i periodi di guida prescritti</option>
-                        </select>
-                    </td>
-                </tr>
             </table>
         </div>
 
@@ -4896,7 +4837,7 @@ class IncidentiMetaBoxes {
                 var hasCircostanza = false;
                 
                 // Verifica se almeno una circostanza è stata selezionata
-                $('#circostanza_veicolo_a, #circostanza_veicolo_b, #circostanza_veicolo_c, #difetto_veicolo_a, #difetto_veicolo_b, #difetto_veicolo_c, #stato_psicofisico_a, #stato_psicofisico_b, #stato_psicofisico_c').each(function() {
+                $('#circostanza_veicolo_a, #circostanza_veicolo_b, #difetto_veicolo_a, #difetto_veicolo_b, #stato_psicofisico_a, #stato_psicofisico_b').each(function() {
                     if ($(this).val() && $(this).val() !== '') {
                         hasCircostanza = true;
                         return false; // esce dal loop
@@ -4909,18 +4850,6 @@ class IncidentiMetaBoxes {
                     return false;
                 }
             });
-
-            // Gestione visibilità campi per 3 veicoli
-            function updateCircostanzeVisibility() {
-                var numeroVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
-                
-                if (numeroVeicoli >= 3) {
-                    $('#circostanza_veicolo_c_row, #difetto_veicolo_c_row, #stato_psicofisico_c_row').show();
-                } else {
-                    $('#circostanza_veicolo_c_row, #difetto_veicolo_c_row, #stato_psicofisico_c_row').hide();
-                    $('#circostanza_veicolo_c, #difetto_veicolo_c, #stato_psicofisico_c').val('');
-                }
-            }
             
             $(document).on('change', '#numero_veicoli_coinvolti', updateCircostanzeVisibility);
             updateCircostanzeVisibility();
@@ -5027,8 +4956,8 @@ class IncidentiMetaBoxes {
             
             'latitudine', 'longitudine', 'tipo_coordinata', 'mostra_in_mappa', 'ente_rilevatore', 'nome_rilevatore', 'identificativo_comando', 'tronco_strada',
             'orientamento_conducente', 'presenza_barriere', 'presenza_banchina',
-            'circostanza_tipo', 'condizioni_aggiuntive', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 'difetto_veicolo_a', 'difetto_veicolo_b',
-            'difetto_veicolo_c', 'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
+            'circostanza_tipo', 'condizioni_aggiuntive', 'circostanza_veicolo_a', 'circostanza_veicolo_b', 'difetto_veicolo_a', 'difetto_veicolo_b',
+            'stato_psicofisico_a', 'stato_psicofisico_b', 'cilindrata_veicolo_a', 'cilindrata_veicolo_b',
             'cilindrata_veicolo_c', 'peso_pieno_carico_a', 'peso_pieno_carico_b', 'peso_pieno_carico_c',
             'caratteristiche_geometriche',
             // Campi nominativi morti
@@ -5058,7 +4987,7 @@ class IncidentiMetaBoxes {
             'conducente_1_anno_patente', 'conducente_2_anno_patente', 'conducente_3_anno_patente',
             'conducente_1_tipologia_incidente', 'conducente_2_tipologia_incidente', 'conducente_3_tipologia_incidente',
             // Circostanze presunte
-            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
+            'circostanza_veicolo_a', 'circostanza_veicolo_b',
             'difetto_veicolo_a', 'difetto_veicolo_b', 
             'stato_psicofisico_a', 'stato_psicofisico_b',
             // Trasportati - sedile e dettaglio
@@ -5177,9 +5106,9 @@ class IncidentiMetaBoxes {
         );
         
         // Save all meta fields ESCLUDENDO i campi speciali
-        $special_fields = ['circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c', 
-                  'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 
-                  'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c'];
+        $special_fields = ['circostanza_veicolo_a', 'circostanza_veicolo_b', 
+                  'difetto_veicolo_a', 'difetto_veicolo_b', 
+                  'stato_psicofisico_a', 'stato_psicofisico_b'];
         
         foreach ($meta_fields as $field) {
             // Salta i campi speciali che vengono gestiti separatamente
@@ -5199,9 +5128,9 @@ class IncidentiMetaBoxes {
         // === GESTIONE SPECIFICA CIRCOSTANZE PRESUNTE ===
         $circostanze_fields = array(
             'circostanza_tipo',
-            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
-            'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c', 
-            'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c'
+            'circostanza_veicolo_a', 'circostanza_veicolo_b',
+            'difetto_veicolo_a', 'difetto_veicolo_b', 
+            'stato_psicofisico_a', 'stato_psicofisico_b'
         );
 
         foreach ($circostanze_fields as $field) {

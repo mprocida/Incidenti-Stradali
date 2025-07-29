@@ -697,9 +697,9 @@ class IncidentiValidation {
         // 1. Verifica che almeno una circostanza sia stata selezionata
         $has_circostanza = false;
         $circostanze_fields = array(
-            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'circostanza_veicolo_c',
-            'difetto_veicolo_a', 'difetto_veicolo_b', 'difetto_veicolo_c',
-            'stato_psicofisico_a', 'stato_psicofisico_b', 'stato_psicofisico_c'
+            'circostanza_veicolo_a', 'circostanza_veicolo_b',
+            'difetto_veicolo_a', 'difetto_veicolo_b',
+            'stato_psicofisico_a', 'stato_psicofisico_b'
         );
         
         foreach ($circostanze_fields as $field) {
@@ -733,10 +733,6 @@ class IncidentiValidation {
                 $errors[] = __('Non è possibile specificare circostanze per il Veicolo B se c\'è un solo veicolo coinvolto.', 'incidenti-stradali');
             }
             
-            // Se ci sono meno di 3 veicoli, non dovrebbero esserci circostanze per il veicolo C
-            if ($num_veicoli < 3 && !empty($circostanza_veicolo_c)) {
-                $errors[] = __('Non è possibile specificare circostanze per il Veicolo C se ci sono meno di 3 veicoli coinvolti.', 'incidenti-stradali');
-            }
         }
         
         // 4. Verifica che i codici circostanza siano validi per il tipo di incidente
@@ -749,10 +745,6 @@ class IncidentiValidation {
             
             if (!empty($circostanza_veicolo_b) && !in_array($circostanza_veicolo_b, $codici_validi)) {
                 $errors[] = sprintf(__('Il codice circostanza "%s" per il Veicolo B non è valido per il tipo di incidente selezionato.', 'incidenti-stradali'), $circostanza_veicolo_b);
-            }
-            
-            if (!empty($circostanza_veicolo_c) && !in_array($circostanza_veicolo_c, $codici_validi)) {
-                $errors[] = sprintf(__('Il codice circostanza "%s" per il Veicolo C non è valido per il tipo di incidente selezionato.', 'incidenti-stradali'), $circostanza_veicolo_c);
             }
         }
         

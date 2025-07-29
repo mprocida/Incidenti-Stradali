@@ -1148,13 +1148,6 @@ jQuery(document).ready(function($) {
                     });
                 }
                 
-                // Popola Veicolo C (solo per incidenti con 3+ veicoli)
-                if (circostanzeData[tipo]['veicolo_c']) {
-                    $.each(circostanzeData[tipo]['veicolo_c'], function(codice, descrizione) {
-                        selectVeicoloC.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
-                    });
-                }
-                
                 // Aggiorna label del Veicolo B
                 var labelText = 'Circostanza Veicolo B';
                 if (tipo === 'investimento') labelText = 'Circostanza Pedone';
@@ -1173,11 +1166,9 @@ jQuery(document).ready(function($) {
             setTimeout(function() {
                 var savedA = $('#circostanza_veicolo_a').data('saved-value') || '';
                 var savedB = $('#circostanza_veicolo_b').data('saved-value') || '';
-                var savedC = $('#circostanza_veicolo_c').data('saved-value') || '';
                 
                 if (savedA) $('#circostanza_veicolo_a').val(savedA);
                 if (savedB) $('#circostanza_veicolo_b').val(savedB);
-                if (savedC) $('#circostanza_veicolo_c').val(savedC);
             }, 100);
         }
 
@@ -1386,13 +1377,10 @@ jQuery(document).ready(function($) {
                 tipo: $('#circostanza_tipo').val(),
                 veicolo_a: $('#circostanza_veicolo_a').val(),
                 veicolo_b: $('#circostanza_veicolo_b').val(),
-                veicolo_c: $('#circostanza_veicolo_c').val(),
                 difetto_a: $('#difetto_veicolo_a').val(),
                 difetto_b: $('#difetto_veicolo_b').val(),
-                difetto_c: $('#difetto_veicolo_c').val(),
                 stato_a: $('#stato_psicofisico_a').val(),
-                stato_b: $('#stato_psicofisico_b').val(),
-                stato_c: $('#stato_psicofisico_c').val()
+                stato_b: $('#stato_psicofisico_b').val()
             };
         };
 
@@ -1401,7 +1389,7 @@ jQuery(document).ready(function($) {
             console.log('Circostanze Incidenti: Sistema inizializzato con', Object.keys(circostanzeData).length, 'tipi di circostanze');
             
             // Log quando vengono selezionate circostanze
-            $('#circostanza_veicolo_a, #circostanza_veicolo_b, #circostanza_veicolo_c').on('change', function() {
+            $('#circostanza_veicolo_a, #circostanza_veicolo_b').on('change', function() {
                 var field = $(this).attr('id');
                 var value = $(this).val();
                 var text = $(this).find('option:selected').text();
@@ -1541,13 +1529,11 @@ jQuery(document).ready(function($) {
             setTimeout(function() {
                 var savedA = jQuery('#circostanza_veicolo_a').attr('data-saved-value');
                 var savedB = jQuery('#circostanza_veicolo_b').attr('data-saved-value'); 
-                var savedC = jQuery('#circostanza_veicolo_c').attr('data-saved-value');
                 
                 if (savedA) jQuery('#circostanza_veicolo_a').val(savedA);
                 if (savedB) jQuery('#circostanza_veicolo_b').val(savedB);
-                if (savedC) jQuery('#circostanza_veicolo_c').val(savedC);
                 
-                console.log('✅ Valori circostanze ripristinati:', savedA, savedB, savedC);
+                console.log('✅ Valori circostanze ripristinati:', savedA, savedB);
             }, 200);
         }
     }

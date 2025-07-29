@@ -23,6 +23,12 @@ class IncidentiMetaBoxes {
 
         add_action('wp_ajax_print_incidente_pdf', array($this, 'generate_pdf'));
         add_action('wp_ajax_nopriv_print_incidente_pdf', array($this, 'generate_pdf')); // Se serve per utenti non loggati
+
+        // NUOVO: Rimuovi "Modifica rapida" e "Azioni di gruppo" per utenti Asset
+        add_filter('post_row_actions', array($this, 'remove_quick_edit_for_asset'), 10, 2);
+        add_filter('bulk_actions-edit-incidente_stradale', array($this, 'remove_bulk_actions_for_asset'));
+        add_action('admin_head', array($this, 'hide_asset_ui_elements'));
+        add_action('admin_init', array($this, 'customize_asset_list_view'));
     }
     
     public function add_meta_boxes() {
@@ -6148,5 +6154,106 @@ class IncidentiMetaBoxes {
         );
         
         wp_send_json_success($data);
+    }
+
+    /**
+     * Rimuove "Modifica rapida" per utenti Asset
+     */
+    public function remove_quick_edit_for_asset($actions, $post) {
+        if ($post->post_type === 'incidente_stradale') {
+            $current_user = wp_get_current_user();
+            if (in_array('asset', $current_user->roles)) {
+                // Rimuovi "Modifica rapida"
+                unset($actions['inline hide-if-no-js']);
+                
+                // OPZIONALE: Rimuovi anche "Modifica" se vuoi
+                // unset($actions['edit']);
+                
+                // OPZIONALE: Rimuovi "Cestina"
+                // unset($actions['trash']);
+                
+                // OPZIONALE: Rimuovi "Visualizza"
+                // unset($actions['view']);
+            }
+        }
+        return $actions;
+    }
+
+    /**
+     * Rimuove le azioni di gruppo per utenti Asset
+     */
+    public function remove_bulk_actions_for_asset($bulk_actions) {
+        $current_user = wp_get_current_user();
+        if (in_array('asset', $current_user->roles)) {
+            // Rimuovi tutte le azioni di gruppo
+            return array();
+            
+            // ALTERNATIVA: Rimuovi solo alcune azioni specifiche
+            // unset($bulk_actions['trash']);
+            // unset($bulk_actions['edit']);
+            // return $bulk_actions;
+        }
+        return $bulk_actions;
+    }
+
+    /**
+     * Nasconde elementi UI aggiuntivi per utenti Asset
+     */
+    public function hide_asset_ui_elements() {
+        $current_user = wp_get_current_user();
+        if (in_array('asset', $current_user->roles)) {
+            $screen = get_current_screen();
+            if ($screen && $screen->post_type === 'incidente_stradale') {
+                ?>
+                <style type="text/css">
+                    /* Nasconde il pulsante "Aggiungi nuovo" */
+                    .page-title-action { display: none !important; }
+                    
+                    /* Nasconde la checkbox "Seleziona tutto" */
+                    #cb-select-all-1, #cb-select-all-2 { display: none !important; }
+                    
+                    /* Nasconde le checkbox individuali */
+                    .check-column input[type="checkbox"] { display: none !important; }
+                    
+                    /* Nasconde il menu a tendina delle azioni di gruppo */
+                    .bulkactions { display: none !important; }
+                    
+                    /* OPZIONALE: Nasconde il pulsante "Sposta nel cestino" se presente */
+                    .submitdelete { display: none !important; }
+                    
+                    /* OPZIONALE: Nasconde filtri di ordinamento se necessario */
+                    /* .tablenav.top .actions { display: none !important; } */
+                </style>
+                <script type="text/javascript">
+                    jQuery(document).ready(function($) {
+                        // Rimuovi eventi click dalle checkbox rimanenti
+                        $('.check-column input[type="checkbox"]').prop('disabled', true);
+                        
+                        // Disabilita completamente la selezione
+                        $('.wp-list-table tbody tr').css('user-select', 'none');
+                        
+                        // Messaggio informativo
+                        $('.wrap h1').after('<div class="notice notice-info"><p><strong>Modalità sola lettura:</strong> Gli utenti Asset possono solo visualizzare gli incidenti.</p></div>');
+                    });
+                </script>
+                <?php
+            }
+        }
+    }
+
+    /**
+     * Personalizza la lista incidenti per utenti Asset
+     */
+    public function customize_asset_list_view() {
+        $current_user = wp_get_current_user();
+        if (in_array('asset', $current_user->roles)) {
+            // Rimuovi la possibilità di modificare lo stato dei post
+            add_filter('user_can_richedit', '__return_false');
+            
+            // Rimuovi metabox non necessarie
+            add_action('add_meta_boxes', function() {
+                remove_meta_box('submitdiv', 'incidente_stradale', 'side');
+            }, 99);
+        }
     }
 }

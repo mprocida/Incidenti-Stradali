@@ -3248,9 +3248,12 @@ class IncidentiMetaBoxes {
         $sesso = get_post_meta($post->ID, $prefix . 'sesso', true);
         $esito = get_post_meta($post->ID, $prefix . 'esito', true);
         $tipo_patente = get_post_meta($post->ID, $prefix . 'tipo_patente', true);
-        // Assicurati che sia un array
-        if (!is_array($tipo_patente)) {
-            $tipo_patente = !empty($tipo_patente) ? (array)$tipo_patente : array();
+        // Per radiobutton, manteniamo come singolo valore
+        // Se esiste come array (da vecchia versione), prendiamo il primo valore
+        if (is_array($tipo_patente) && !empty($tipo_patente)) {
+            $tipo_patente = $tipo_patente[0];
+        } elseif (empty($tipo_patente)) {
+            $tipo_patente = '';
         }
         $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true);
         $anno_patente = get_post_meta($post->ID, $prefix . 'anno_patente', true);
@@ -3290,17 +3293,28 @@ class IncidentiMetaBoxes {
                 <th><label for="<?php echo $prefix; ?>tipo_patente"><?php _e('Tipo Patente', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <div>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="0" <?php checked(in_array('0', (array)$tipo_patente), true); ?>> <?php _e('Patente ciclomotori', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="1" <?php checked(in_array('1', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo A', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="2" <?php checked(in_array('2', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo B', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="3" <?php checked(in_array('3', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo C', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="4" <?php checked(in_array('4', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo D', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="5" <?php checked(in_array('5', (array)$tipo_patente), true); ?>> <?php _e('Patente tipo E', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="6" <?php checked(in_array('6', (array)$tipo_patente), true); ?>> <?php _e('ABC speciale', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="7" <?php checked(in_array('7', (array)$tipo_patente), true); ?>> <?php _e('Non richiesta', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="8" <?php checked(in_array('8', (array)$tipo_patente), true); ?>> <?php _e('Foglio rosa', 'incidenti-stradali'); ?></label><br>
-                    <label><input type="checkbox" name="<?php echo $prefix; ?>tipo_patente[]" value="9" <?php checked(in_array('9', (array)$tipo_patente), true); ?>> <?php _e('Sprovvisto', 'incidenti-stradali'); ?></label>
-                </div>
+                    <?php 
+                    // Converti da array a singolo valore per radiobutton
+                    $tipo_patente_selected = '';
+                    if (is_array($tipo_patente) && !empty($tipo_patente)) {
+                        $tipo_patente_selected = $tipo_patente[0]; // Prendi il primo valore
+                    } elseif (!is_array($tipo_patente) && !empty($tipo_patente)) {
+                        $tipo_patente_selected = $tipo_patente;
+                    }
+                    ?>
+                    
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="" <?php checked($tipo_patente_selected, ''); ?>> <?php _e('Non specificato', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="0" <?php checked($tipo_patente_selected, '0'); ?>> <?php _e('Patente ciclomotori', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="1" <?php checked($tipo_patente_selected, '1'); ?>> <?php _e('Patente tipo A', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="2" <?php checked($tipo_patente_selected, '2'); ?>> <?php _e('Patente tipo B', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="3" <?php checked($tipo_patente_selected, '3'); ?>> <?php _e('Patente tipo C', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="4" <?php checked($tipo_patente_selected, '4'); ?>> <?php _e('Patente tipo D', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="5" <?php checked($tipo_patente_selected, '5'); ?>> <?php _e('Patente tipo E', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="6" <?php checked($tipo_patente_selected, '6'); ?>> <?php _e('ABC speciale', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="7" <?php checked($tipo_patente_selected, '7'); ?>> <?php _e('Non richiesta', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="8" <?php checked($tipo_patente_selected, '8'); ?>> <?php _e('Foglio rosa', 'incidenti-stradali'); ?></label><br>
+                    <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="9" <?php checked($tipo_patente_selected, '9'); ?>> <?php _e('Sprovvisto', 'incidenti-stradali'); ?></label>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -5288,15 +5302,14 @@ class IncidentiMetaBoxes {
         // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI (DOPO LOOP PRINCIPALE) ===
         for ($i = 1; $i <= 3; $i++) {
             $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
-            if (isset($_POST[$tipo_patente_key]) && is_array($_POST[$tipo_patente_key])) {
-                $values = array_map('sanitize_text_field', $_POST[$tipo_patente_key]);
-                // FILTRIAMO solo i valori vuoti, mantenendo il valore "0"
-                $values = array_filter($values, function($value) {
-                    return $value !== '' && $value !== null;
-                });
-                update_post_meta($post_id, $tipo_patente_key, $values);
+            if (isset($_POST[$tipo_patente_key])) {
+                // Per radiobutton, salviamo un singolo valore (non array)
+                $value = sanitize_text_field($_POST[$tipo_patente_key]);
+                // Salva come singolo valore invece che come array
+                update_post_meta($post_id, $tipo_patente_key, $value);
             } else {
-                update_post_meta($post_id, $tipo_patente_key, array());
+                // Se non è selezionato nulla, salva valore vuoto
+                update_post_meta($post_id, $tipo_patente_key, '');
             }
         }
 

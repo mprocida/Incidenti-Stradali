@@ -380,12 +380,39 @@ class IncidentiValidation {
             $errors[] = sprintf(__('Il tipo del veicolo %s è obbligatorio.', 'incidenti-stradali'), chr(64 + $vehicle_num));
         }
         
-        // Validate year if provided
+        // Validate year if provided - AGGIORNATO PER 2 CIFRE
         if (!empty($_POST[$prefix . 'anno_immatricolazione'])) {
-            $anno = intval($_POST[$prefix . 'anno_immatricolazione']);
-            $current_year = intval(date('Y'));
-            if ($anno < 1900 || $anno > $current_year) {
-                $errors[] = sprintf(__('L\'anno di immatricolazione del veicolo %s non è valido.', 'incidenti-stradali'), chr(64 + $vehicle_num));
+            $anno_input = trim($_POST[$prefix . 'anno_immatricolazione']);
+            
+            // Verifica se è un input a 2 cifre (nuovo formato)
+            if (preg_match('/^[0-9]{2}$/', $anno_input)) {
+                $anno_2_cifre = intval($anno_input);
+                
+                // Conversione da 2 cifre a anno completo
+                // 50-99 = 1950-1999, 00-49 = 2000-2049
+                if ($anno_2_cifre >= 50) {
+                    $anno_completo = 1900 + $anno_2_cifre;
+                } else {
+                    $anno_completo = 2000 + $anno_2_cifre;
+                }
+                
+                // Validazione dell'anno convertito
+                $current_year = intval(date('Y'));
+                if ($anno_completo < 1950 || $anno_completo > $current_year) {
+                    $errors[] = sprintf(__('L\'anno di immatricolazione del veicolo %s non è valido.', 'incidenti-stradali'), chr(64 + $vehicle_num));
+                }
+            } 
+            // Supporta anche il formato a 4 cifre per compatibilità con dati esistenti
+            elseif (preg_match('/^[0-9]{4}$/', $anno_input)) {
+                $anno_completo = intval($anno_input);
+                $current_year = intval(date('Y'));
+                if ($anno_completo < 1950 || $anno_completo > $current_year) {
+                    $errors[] = sprintf(__('L\'anno di immatricolazione del veicolo %s non è valido.', 'incidenti-stradali'), chr(64 + $vehicle_num));
+                }
+            }
+            // Formato non valido
+            else {
+                $errors[] = sprintf(__('L\'anno di immatricolazione del veicolo %s deve essere di 2 cifre (es: 95).', 'incidenti-stradali'), chr(64 + $vehicle_num));
             }
         }
         
@@ -442,19 +469,55 @@ class IncidentiValidation {
             }
         }
         
-        // Check if license year is valid
+        // Check if license year is valid - AGGIORNATO PER 2 CIFRE
         if (!empty($_POST[$prefix . 'anno_patente'])) {
-            $anno_patente = intval($_POST[$prefix . 'anno_patente']);
-            $current_year = intval(date('Y'));
-            if ($anno_patente < 1950 || $anno_patente > $current_year) {
-                $errors[] = sprintf(__('L\'anno di rilascio della patente del conducente %s non è valido.', 'incidenti-stradali'), chr(64 + $driver_num));
+            $anno_input = trim($_POST[$prefix . 'anno_patente']);
+            
+            // Verifica se è un input a 2 cifre (nuovo formato)
+            if (preg_match('/^[0-9]{2}$/', $anno_input)) {
+                $anno_2_cifre = intval($anno_input);
+                
+                // Conversione da 2 cifre a anno completo
+                // 50-99 = 1950-1999, 00-49 = 2000-2049
+                if ($anno_2_cifre >= 50) {
+                    $anno_completo = 1900 + $anno_2_cifre;
+                } else {
+                    $anno_completo = 2000 + $anno_2_cifre;
+                }
+                
+                // Validazione dell'anno convertito
+                $current_year = intval(date('Y'));
+                if ($anno_completo < 1950 || $anno_completo > $current_year) {
+                    $errors[] = sprintf(__('L\'anno di rilascio della patente del conducente %s non è valido.', 'incidenti-stradali'), chr(64 + $driver_num));
+                }
+            } 
+            // Supporta anche il formato a 4 cifre per compatibilità
+            elseif (preg_match('/^[0-9]{4}$/', $anno_input)) {
+                $anno_completo = intval($anno_input);
+                $current_year = intval(date('Y'));
+                if ($anno_completo < 1950 || $anno_completo > $current_year) {
+                    $errors[] = sprintf(__('L\'anno di rilascio della patente del conducente %s non è valido.', 'incidenti-stradali'), chr(64 + $driver_num));
+                }
+            }
+            // Formato non valido
+            else {
+                $errors[] = sprintf(__('L\'anno di rilascio della patente del conducente %s deve essere di 2 cifre (es: 95).', 'incidenti-stradali'), chr(64 + $driver_num));
             }
         }
         
         // Check license consistency with age
         if (!empty($_POST[$prefix . 'eta']) && !empty($_POST[$prefix . 'anno_patente'])) {
             $eta = intval($_POST[$prefix . 'eta']);
-            $anno_patente = intval($_POST[$prefix . 'anno_patente']);
+            $anno_input = trim($_POST[$prefix . 'anno_patente']);
+            
+            // Converti l'anno della patente se è a 2 cifre
+            if (preg_match('/^[0-9]{2}$/', $anno_input)) {
+                $anno_2_cifre = intval($anno_input);
+                $anno_patente = ($anno_2_cifre >= 50) ? (1900 + $anno_2_cifre) : (2000 + $anno_2_cifre);
+            } else {
+                $anno_patente = intval($anno_input);
+            }
+            
             $current_year = intval(date('Y'));
             $anno_nascita_approx = $current_year - $eta;
             

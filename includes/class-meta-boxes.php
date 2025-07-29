@@ -2916,7 +2916,14 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="<?php echo $prefix; ?>anno_immatricolazione"><?php _e('Anno Prima Immatricolazione', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="number" id="<?php echo $prefix; ?>anno_immatricolazione" name="<?php echo $prefix; ?>anno_immatricolazione" value="<?php echo esc_attr($anno_immatricolazione); ?>" min="1900" max="<?php echo date('Y'); ?>">
+                    <input type="text" 
+                        id="<?php echo $prefix; ?>anno_immatricolazione" 
+                        name="<?php echo $prefix; ?>anno_immatricolazione" 
+                        value="<?php echo esc_attr($anno_immatricolazione); ?>" 
+                        maxlength="2" 
+                        pattern="[0-9]{2}" 
+                        placeholder="es. 18"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,2)">
                 </td>
             </tr>
             <tr>
@@ -3314,7 +3321,14 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="<?php echo $prefix; ?>anno_patente"><?php _e('Anno Rilascio Patente', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="number" id="<?php echo $prefix; ?>anno_patente" name="<?php echo $prefix; ?>anno_patente" value="<?php echo esc_attr($anno_patente); ?>" min="1950" max="<?php echo date('Y'); ?>">
+                     <input type="text" 
+                        id="<?php echo $prefix; ?>anno_patente" 
+                        name="<?php echo $prefix; ?>anno_patente" 
+                        value="<?php echo esc_attr($anno_patente); ?>" 
+                        maxlength="2" 
+                        pattern="[0-9]{2}" 
+                        placeholder="es. 95"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,2)">
                 </td>
             </tr>
             <tr>

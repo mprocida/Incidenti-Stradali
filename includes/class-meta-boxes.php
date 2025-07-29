@@ -3248,13 +3248,17 @@ class IncidentiMetaBoxes {
         $sesso = get_post_meta($post->ID, $prefix . 'sesso', true);
         $esito = get_post_meta($post->ID, $prefix . 'esito', true);
         $tipo_patente = get_post_meta($post->ID, $prefix . 'tipo_patente', true);
-        // Per radiobutton, manteniamo come singolo valore
-        // Se esiste come array (da vecchia versione), prendiamo il primo valore
-        if (is_array($tipo_patente) && !empty($tipo_patente)) {
-            $tipo_patente = $tipo_patente[0];
-        } elseif (empty($tipo_patente)) {
-            $tipo_patente = '';
+        
+        // Per radiobutton, gestiamo la retrocompatibilità
+        if (is_array($tipo_patente)) {
+            // Dati vecchi (da checkbox), prendiamo il primo valore
+            $tipo_patente_selected = !empty($tipo_patente) ? $tipo_patente[0] : '';
+        } else {
+            // Dati nuovi (da radiobutton), usiamo direttamente il valore
+            // IMPORTANTE: Cast a stringa per gestire correttamente il valore "0"
+            $tipo_patente_selected = (string)$tipo_patente;
         }
+
         $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true);
         $anno_patente = get_post_meta($post->ID, $prefix . 'anno_patente', true);
         $tipologia_incidente = get_post_meta($post->ID, $prefix . 'tipologia_incidente', true);
@@ -3292,17 +3296,7 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="<?php echo $prefix; ?>tipo_patente"><?php _e('Tipo Patente', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <div>
-                    <?php 
-                    // Converti da array a singolo valore per radiobutton
-                    $tipo_patente_selected = '';
-                    if (is_array($tipo_patente) && !empty($tipo_patente)) {
-                        $tipo_patente_selected = $tipo_patente[0]; // Prendi il primo valore
-                    } elseif (!is_array($tipo_patente) && !empty($tipo_patente)) {
-                        $tipo_patente_selected = $tipo_patente;
-                    }
-                    ?>
-                    
+                    <div>                    
                     <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="" <?php checked($tipo_patente_selected, ''); ?>> <?php _e('Non specificato', 'incidenti-stradali'); ?></label><br>
                     <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="0" <?php checked($tipo_patente_selected, '0'); ?>> <?php _e('Patente ciclomotori', 'incidenti-stradali'); ?></label><br>
                     <label><input type="radio" name="<?php echo $prefix; ?>tipo_patente" value="1" <?php checked($tipo_patente_selected, '1'); ?>> <?php _e('Patente tipo A', 'incidenti-stradali'); ?></label><br>
@@ -5299,17 +5293,32 @@ class IncidentiMetaBoxes {
             }
         }
 
-        // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI (DOPO LOOP PRINCIPALE) ===
+        // === GESTIONE SPECIFICA TIPO_PATENTE PER TUTTI I VEICOLI (RADIOBUTTON) ===
         for ($i = 1; $i <= 3; $i++) {
             $tipo_patente_key = 'conducente_' . $i . '_tipo_patente';
+            
+            // Per radiobutton, controlliamo se il campo esiste nel POST
             if (isset($_POST[$tipo_patente_key])) {
-                // Per radiobutton, salviamo un singolo valore (non array)
-                $value = sanitize_text_field($_POST[$tipo_patente_key]);
-                // Salva come singolo valore invece che come array
-                update_post_meta($post_id, $tipo_patente_key, $value);
+                $value = $_POST[$tipo_patente_key];
+                
+                // Sanitizza il valore
+                $sanitized_value = sanitize_text_field($value);
+                
+                // IMPORTANTE: Salviamo anche il valore "0" (non lo consideriamo vuoto)
+                // Solo se è esplicitamente vuoto lo consideriamo non selezionato
+                update_post_meta($post_id, $tipo_patente_key, $sanitized_value);
+                
+                // Debug per verificare il salvataggio
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log("DEBUG - Saving tipo_patente for conducente_{$i}: '{$sanitized_value}' (original: '{$value}')");
+                }
             } else {
-                // Se non è selezionato nulla, salva valore vuoto
+                // Se il campo non esiste nel POST, significa che non è stato selezionato nulla
                 update_post_meta($post_id, $tipo_patente_key, '');
+                
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log("DEBUG - No tipo_patente selected for conducente_{$i}, saving empty value");
+                }
             }
         }
 

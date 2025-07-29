@@ -4362,6 +4362,11 @@ class IncidentiMetaBoxes {
                     echo '<div class="notice notice-warning"><p>' . __('Questo incidente non può essere modificato perché avvenuto prima della data di blocco impostata.', 'incidenti-stradali') . '</p></div>';
                 }
             }
+
+            $current_user = wp_get_current_user();
+            if (in_array('asset', $current_user->roles)) {
+                echo '<div class="notice notice-info"><p>' . __('Stai visualizzando questo incidente in modalità sola lettura. Gli utenti con ruolo Asset non possono apportare modifiche.', 'incidenti-stradali') . '</p></div>';
+            }
         }
     }
 
@@ -4970,6 +4975,18 @@ class IncidentiMetaBoxes {
                     wp_die(__('Non è possibile modificare incidenti avvenuti prima della data di blocco.', 'incidenti-stradali'));
                 }
             }
+        }
+
+        // NUOVO: Controllo per ruolo Asset
+        $current_user = wp_get_current_user();
+        if (in_array('asset', $current_user->roles)) {
+            // Se il ruolo è Asset, blocca qualsiasi modifica
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error is-dismissible">';
+                echo '<p>Gli utenti con ruolo Asset non possono modificare gli incidenti.</p>';
+                echo '</div>';
+            });
+            return; // Interrompe l'esecuzione, non salva nulla
         }
         
         // Array of all meta fields to save
@@ -5729,6 +5746,27 @@ class IncidentiMetaBoxes {
                 'post_id' => $post->ID,
                 'debug' => defined('WP_DEBUG') && WP_DEBUG
             ));
+
+            $current_user = wp_get_current_user();
+            if (in_array('asset', $current_user->roles)) {
+                wp_add_inline_script('jquery', '
+                    jQuery(document).ready(function($) {
+                        // Disabilita tutti i campi del form per utenti Asset
+                        $("input:not([type=hidden]), textarea, select").prop("disabled", true);
+                        $("input, textarea, select").css({
+                            "opacity": "0.6",
+                            "background-color": "#f9f9f9 !important",
+                            "pointer-events": "none"
+                        });
+                        
+                        // Nascondi i pulsanti di salvataggio
+                        $("#publish, #save-post, .button-primary").hide();
+                        
+                        // Mostra messaggio informativo
+                        $("#titlediv").after("<div class=\"notice notice-warning\"><p><strong>Modalità sola lettura:</strong> Gli utenti con ruolo Asset non possono modificare gli incidenti.</p></div>");
+                    });
+                ');
+            }
         }
     }
 

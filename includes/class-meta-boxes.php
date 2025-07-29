@@ -5759,6 +5759,72 @@ class IncidentiMetaBoxes {
                             "pointer-events": "none"
                         });
                         
+                        // NUOVO: Disabilita specificamente i radio button e checkbox
+                        $("input[type=radio], input[type=checkbox]").prop("disabled", true).css({
+                            "pointer-events": "none",
+                            "opacity": "0.6"
+                        });
+                        
+                        // NUOVO: Disabilita i pulsanti "Cancella scelta" (span cliccabili)
+                        $("span[onclick*=\"azzeraRadioSezione\"]").css({
+                            "pointer-events": "none",
+                            "opacity": "0.4",
+                            "background-color": "#e0e0e0 !important",
+                            "color": "#999 !important",
+                            "cursor": "not-allowed"
+                        }).removeAttr("onclick");
+                        
+                        // NUOVO: Disabilita tutti gli altri span/elementi cliccabili
+                        $("span[onclick], button[onclick], div[onclick]").css({
+                            "pointer-events": "none",
+                            "opacity": "0.6",
+                            "cursor": "not-allowed"
+                        }).removeAttr("onclick");
+                        
+                        // NUOVO: Disabilita le mappe
+                        if (typeof L !== "undefined") {
+                            // Disabilita mappa localizzazione
+                            if (window.map && typeof window.map.off === "function") {
+                                window.map.off("click");
+                                window.map.dragging.disable();
+                                window.map.touchZoom.disable();
+                                window.map.doubleClickZoom.disable();
+                                window.map.scrollWheelZoom.disable();
+                                window.map.boxZoom.disable();
+                                window.map.keyboard.disable();
+                                
+                                // Rimuovi controlli zoom se presenti
+                                $(".leaflet-control-zoom").remove();
+                            }
+                            
+                            // Disabilita interazioni sui marker esistenti
+                            $(".leaflet-marker-icon, .leaflet-clickable").css({
+                                "pointer-events": "none",
+                                "opacity": "0.6"
+                            });
+                        }
+                        
+                        // Disabilita contenitori mappa visualmente
+                        $("#localizzazione-map, #coordinate-map").css({
+                            "opacity": "0.6",
+                            "pointer-events": "none",
+                            "position": "relative"
+                        });
+                        
+                        // NUOVO: Previeni submit del form
+                        $("form").on("submit", function(e) {
+                            e.preventDefault();
+                            alert("Gli utenti Asset non possono salvare modifiche.");
+                            return false;
+                        });
+                        
+                        // NUOVO: Disabilita eventi click su tutti gli elementi del form
+                        $("#poststuff").on("click", function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
+                        
                         // Nascondi i pulsanti di salvataggio
                         $("#publish, #save-post, .button-primary").hide();
                         

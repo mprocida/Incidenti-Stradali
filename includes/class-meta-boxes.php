@@ -2788,12 +2788,18 @@ class IncidentiMetaBoxes {
                 }
             });
 
-            // Trigger al caricamento pagina se c'è già un valore
-            if ($('#circostanza_tipo').val() || $('#circostanza_tipo').attr('data-current-value')) {
-                setTimeout(function() {
+            // Trigger al caricamento pagina - gestione migliorata per incidenti importati
+            setTimeout(function() {
+                var tipoCorrente = $('#circostanza_tipo').val() || $('#circostanza_tipo').attr('data-current-value');
+                
+                if (tipoCorrente) {
+                    // Se c'è già un tipo, carica le opzioni
                     $('#circostanza_tipo').trigger('change');
-                }, 200);
-            }
+                } else {
+                    // Se non c'è tipo ma ci sono circostanze, prova a inferirlo
+                    inferTipoIncidenteFromCircostanze();
+                }
+            }, 300);
         });
         </script>
         <?php

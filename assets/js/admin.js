@@ -1217,6 +1217,51 @@ jQuery(document).ready(function($) {
             }
         });
 
+        // AGGIUNTA: Inferenza automatica al caricamento della pagina
+        $(document).ready(function() {
+            // Esegui inferenza dopo un breve delay per permettere il caricamento completo
+            setTimeout(function() {
+                inferTipoIncidenteFromCircostanze();
+            }, 500);
+        });
+
+        // Funzione per inferire il tipo di incidente dalle circostanze esistenti
+        function inferTipoIncidenteFromCircostanze() {
+            var naturaIncidente = $('#natura_incidente').val();
+            var circostanzaA = $('#circostanza_veicolo_a').val() || $('#circostanza_veicolo_a').attr('data-current-value');
+            var circostanzaB = $('#circostanza_veicolo_b').val() || $('#circostanza_veicolo_b').attr('data-current-value');
+            
+            // Se tipo incidente è già impostato, non fare nulla
+            if ($('#circostanza_tipo').val()) {
+                return;
+            }
+            
+            // Mappa dei codici circostanze per tipo
+            var codiciPerTipo = {
+                'intersezione': ['01', '02', '03', '04', '05', '06', '07', '08', '10', '11', '12', '13', '14', '15', '16', '17', '18'],
+                'non_intersezione': ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39'],
+                'investimento': ['40', '41', '42', '43', '44', '45', '46', '47', '48', '49'],
+                'urto_fermo': ['60', '61', '62', '63', '64', '65'],
+                'senza_urto': ['70', '71', '72', '73', '74', '75']
+            };
+            
+            var tipoInferito = '';
+            
+            // Cerca il tipo basandosi sui codici presenti
+            for (var tipo in codiciPerTipo) {
+                if (codiciPerTipo[tipo].includes(circostanzaA) || codiciPerTipo[tipo].includes(circostanzaB)) {
+                    tipoInferito = tipo;
+                    break;
+                }
+            }
+            
+            // Se hai trovato un tipo, impostalo
+            if (tipoInferito) {
+                console.log('🔍 Tipo incidente inferito:', tipoInferito, 'da circostanze:', circostanzaA, circostanzaB);
+                $('#circostanza_tipo').val(tipoInferito).trigger('change');
+            }
+        }
+
         // Validazione coerenza circostanze
         function validateCircostanzeCoherence() {
             var tipo = $('#circostanza_tipo').val();

@@ -613,8 +613,8 @@ class IncidentiExportFunctions {
                 
                 // Anno immatricolazione (2 cifre)
                 $anno_imm = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_anno_immatricolazione");
-                $strAppo =  mb_substr($anno_imm, 2, 2);
-                $strAppo = mb_str_pad($strAppo ?: '  ', 2, ' ', STR_PAD_LEFT);
+                //$strAppo =  mb_substr($anno_imm, 2, 2);
+                $strAppo = mb_str_pad($anno_imm ?: '  ', 2, ' ', STR_PAD_LEFT);
                
                 $indTXT++;
                 $esitoTXT[$indTXT] = $strAppo;
@@ -652,8 +652,8 @@ class IncidentiExportFunctions {
                 // Anno patente conducente (2 cifre)
                 $anno_patente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_anno_patente");
                 
-                $strAppo = substr($anno_patente, 2, 2);
-                $strAppo = mb_str_pad($strAppo ?: '  ', 2, ' ', STR_PAD_LEFT);
+               // $strAppo = substr($anno_patente, 2, 2);
+                $strAppo = mb_str_pad($anno_patente ?: '  ', 2, ' ', STR_PAD_LEFT);
                 $indTXT++;
                 $esitoTXT[$indTXT] = $strAppo;                
 

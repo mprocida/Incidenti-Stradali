@@ -4031,7 +4031,9 @@ class IncidentiMetaBoxes {
                         <?php _e('Conducente coinvolto in incidente su strada durante il tragitto casa-lavoro o lavoro-casa', 'incidenti-stradali'); ?>
                     </label><br>
                     <label><input type="radio" name="<?php echo $prefix; ?>tipologia_incidente" value="0" 
-                        <?php checked(get_post_meta($post->ID, $prefix . 'tipologia_incidente', true), '0'); ?>> 
+                        <?php $checked = get_post_meta($post->ID, $prefix . 'tipologia_incidente', true);
+                        if (trim($checked)=='') {$checked='0';}
+                        checked($checked, '0');  ?>>
                         <?php _e('Nessuno dei due', 'incidenti-stradali'); ?>
                     </label><br><br>
                     <p style="font-weight: bold;"><?php _e('Non indicare le due modalità sopra riportate nel caso si tratti di altro tipo di tragitto e/o di incidente avvenuto al di fuori dell\'attività lavorativa.', 'incidenti-stradali'); ?></p>

@@ -347,13 +347,14 @@ class IncidentiExportFunctions {
         $output = $this->generate_istat_txt_complete($incidenti);
         
         // Validazione lunghezza record
-        $lines = explode("\r\n", trim($output));
+        //$lines = explode("\r\n", trim($output));
+        $lines = explode("\r\n", $output);
         $errori_lunghezza = array();
         
         foreach ($lines as $line_num => $line) {
-            if (strlen($line) !== 1939) {
-                $errori_lunghezza[] = "Record " . ($line_num + 1) . " ha lunghezza " . strlen($line) . " invece di 1939 caratteri";
-                error_log("ATTENZIONE ISTAT: Record " . ($line_num + 1) . " ha lunghezza " . strlen($line) . " invece di 1939 caratteri");
+            if ((mb_strlen($line) > 0) and (mb_strlen($line) !== 1939)) {
+                $errori_lunghezza[] = "Record " . ($line_num + 1) . " ha lunghezza " . mb_strlen($line) . " invece di 1939 caratteri";
+                error_log("ATTENZIONE ISTAT: Record " . ($line_num + 1) . " ha lunghezza " . mb_strlen($line) . " invece di 1939 caratteri");
             }
         }
         
@@ -366,7 +367,7 @@ class IncidentiExportFunctions {
         // Download del file
         header('Content-Type: text/plain; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($output));
+        header('Content-Length: ' . mb_strlen($output));
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');
         
@@ -452,7 +453,7 @@ class IncidentiExportFunctions {
             
             // Campo 17-18: Spazi
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 2, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 2, '  ', STR_PAD_RIGHT);
             
             // Campo 19: Organo di rilevazione
             $organo_rilevazione = $this->safe_meta_string($post_id, 'organo_rilevazione');
@@ -461,7 +462,7 @@ class IncidentiExportFunctions {
             
             // Campo 20-24: Spazi
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 5, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 5, '  ', STR_PAD_RIGHT);
             
             //da controllare
             // Campo 25: Organo coordinatore
@@ -488,7 +489,7 @@ class IncidentiExportFunctions {
             
             // Campo 31-32: Spazi
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 2, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 2, '  ', STR_PAD_RIGHT);
 
               /*Campo 33-34: tronco di strada statale o di autostrada */
             $tronco_strada = $this->safe_meta_string($post_id, 'tronco_strada');
@@ -539,15 +540,21 @@ class IncidentiExportFunctions {
             // ===== VEICOLI COINVOLTI - TIPO (Posizioni 44-49) =====        
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 $tipo_veicolo = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_tipo");
+                $tipo_veicolo = mb_str_pad($tipo_veicolo ?: '  ', 2, '0', STR_PAD_LEFT);
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($tipo_veicolo ?: '  ', 2, '0', STR_PAD_LEFT);
-                if (trim($esitoTXT[$indTXT]) == '') $esitoTXT[$indTXT] = '~~';
-                $esitoTXT[$indTXT] = mb_str_pad($esitoTXT[$indTXT], 2, '~', STR_PAD_LEFT);
+                $esitoTXT[$indTXT] = $tipo_veicolo;
+                
+                /*if (trim($esitoTXT[$indTXT]) == '') $esitoTXT[$indTXT] = '   ';
+                $esitoTXT[$indTXT] = mb_str_pad($esitoTXT[$indTXT], 2, '  ', STR_PAD_LEFT);*/
             }
 
             // Campo 50-61: Spazi
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 12, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 4, '  ', STR_PAD_RIGHT);
+            $indTXT++;
+            $esitoTXT[$indTXT] = mb_str_pad('', 4, '  ', STR_PAD_RIGHT);
+            $indTXT++;
+            $esitoTXT[$indTXT] = mb_str_pad('', 4, '  ', STR_PAD_RIGHT);
             
             // ===== VEICOLI - PESO TOTALE (Posizioni 62-73) =====
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
@@ -556,7 +563,7 @@ class IncidentiExportFunctions {
                 $peso = is_numeric($peso) ? round(floatval($peso)) : 0;
                 $indTXT++;
                 $esitoTXT[$indTXT] = mb_str_pad($peso ?: '    ', 4, ' ', STR_PAD_LEFT);
-                if (trim($esitoTXT[$indTXT]) == '0000') $esitoTXT[$indTXT] = '~~~~';
+                if (trim($esitoTXT[$indTXT]) == '0000') $esitoTXT[$indTXT] = '     ';
             }
 
             // ===== CIRCOSTANZE VEICOLI A e B (Posizioni 74-85) =====         
@@ -594,25 +601,29 @@ class IncidentiExportFunctions {
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 // Targa (8 caratteri)
                 $targa = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_targa");
+                $targa = mb_str_pad($targa ?: '        ', 8, ' ', STR_PAD_RIGHT);
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($targa ?: '        ', 8, ' ', STR_PAD_RIGHT);
-                
+                $esitoTXT[$indTXT] = $targa;
+
                 // Sigla se estero (3 caratteri)
                 $sigla = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_sigla_estero");
+                $sigla = mb_str_pad($sigla ?: '   ', 3, ' ', STR_PAD_LEFT);
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($sigla ?: '   ', 3, ' ', STR_PAD_LEFT);
+                $esitoTXT[$indTXT] =  $sigla;
                 
                 // Anno immatricolazione (2 cifre)
                 $anno_imm = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_anno_immatricolazione");
-                $strAppo = mb_str_pad($anno_imm ?: '  ', 2, ' ', STR_PAD_LEFT);
-                $strAppo = substr($strAppo, 2, 2);
+                $strAppo =  mb_substr($anno_imm, 2, 2);
+                $strAppo = mb_str_pad($strAppo ?: '  ', 2, ' ', STR_PAD_LEFT);
+               
                 $indTXT++;
                 $esitoTXT[$indTXT] = $strAppo;
 
                 // Spazi n.5
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad('', 5, '~', STR_PAD_RIGHT);
-
+                $esitoTXT[$indTXT] = mb_str_pad('', 2, '  ', STR_PAD_RIGHT);
+                $indTXT++;
+                $esitoTXT[$indTXT] = mb_str_pad('', 3, '  ', STR_PAD_RIGHT);
             }
             //7. Conseguenze dell'incidente alle persone 140-244
             // ===== DATI CONDUCENTI E PASSEGGERI =====
@@ -641,8 +652,8 @@ class IncidentiExportFunctions {
                 // Anno patente conducente (2 cifre)
                 $anno_patente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_anno_patente");
                 
-                $strAppo = mb_str_pad($anno_patente ?: '  ', 2, ' ', STR_PAD_LEFT);
-                $strAppo = substr($strAppo, 2, 2);
+                $strAppo = substr($anno_patente, 2, 2);
+                $strAppo = mb_str_pad($strAppo ?: '  ', 2, ' ', STR_PAD_LEFT);
                 $indTXT++;
                 $esitoTXT[$indTXT] = $strAppo;                
 
@@ -654,7 +665,11 @@ class IncidentiExportFunctions {
 
                 // Spazi n.3
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad('', 3, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad('', 1, ' ', STR_PAD_RIGHT);
+                $indTXT++;
+                $esitoTXT[$indTXT] = mb_str_pad('', 1, ' ', STR_PAD_RIGHT);
+                $indTXT++;
+                $esitoTXT[$indTXT] = mb_str_pad('', 1, ' ', STR_PAD_RIGHT);
 
                 // PASSEGGERI - Gestione dinamica in base alla selezione del sedile
                 $numPassAnt = 1; // Previsto da ISTAT (max 1 passeggero anteriore)
@@ -725,11 +740,11 @@ class IncidentiExportFunctions {
                     } else {
                         // Campi vuoti se non c'è passeggero anteriore
                         $indTXT++;
-                        $esitoTXT[$indTXT] = '~';  // Esito non specificato
+                        $esitoTXT[$indTXT] = ' ';  // Esito non specificato
                         $indTXT++;
-                        $esitoTXT[$indTXT] = '~~'; // Età non specificata
+                        $esitoTXT[$indTXT] = '  '; // Età non specificata
                         $indTXT++;
-                        $esitoTXT[$indTXT] = '~';  // Sesso non specificato
+                        $esitoTXT[$indTXT] = ' ';  // Sesso non specificato
                     }
                 }
 
@@ -750,22 +765,18 @@ class IncidentiExportFunctions {
                     } else {
                         // Campi vuoti se non c'è passeggero posteriore
                         $indTXT++;
-                        $esitoTXT[$indTXT] = '~';  // Esito non specificato
+                        $esitoTXT[$indTXT] = ' ';  // Esito non specificato
                         $indTXT++;
-                        $esitoTXT[$indTXT] = '~~'; // Età non specificata
+                        $esitoTXT[$indTXT] = '  '; // Età non specificata
                         $indTXT++;
-                        $esitoTXT[$indTXT] = '~';  // Sesso non specificato
+                        $esitoTXT[$indTXT] = ' ';  // Sesso non specificato
 
                     }
                 }
-
-                // Log per debug (rimuovi in produzione)
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log("Veicolo {$numVeicolo}: Anteriori=" . count($trasportati_anteriori) . ", Posteriori=" . count($trasportati_posteriori));
-                }         
+  
                 // Altri passeggeri infortunati sul veicolo
                 //Numero dei morti di sesso maschile (2 cifre)
-                 $altri_morti_maschi = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_altri_morti_maschi");
+                $altri_morti_maschi = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_altri_morti_maschi");
                 $indTXT++;
                 $esitoTXT[$indTXT] = mb_str_pad($altri_morti_maschi ?: '  ', 2, ' ', STR_PAD_LEFT);
                 //Numero dei morti di sesso femminile (2 cifre)
@@ -848,28 +859,28 @@ class IncidentiExportFunctions {
 
             // Spazi n.9 285-293
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 9, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 9, '  ', STR_PAD_RIGHT);
 
             //Specifiche sulla denominazione della strada 294-450
             // ===== DENOMINAZIONE STRADA COMPLETA 294-350 (57 caratteri) =====
             $strada_completa = $this->safe_meta_string($post_id, 'denominazione_strada');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad(substr($strada_completa ?: '', 0, 57), 57, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad(substr($strada_completa ?: '', 0, 57), 57, '  ', STR_PAD_RIGHT);
 
             // Spazi n.100 351-450
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 100, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 100, '  ', STR_PAD_RIGHT);
 
             // ===== NOMINATIVI MORTI (4 morti massimo - 60 caratteri ciascuno) 451-690 =====
             for ($numMorto = 1; $numMorto <= 4; $numMorto++) {
                 // Nome morto (30 caratteri)
                 $nome_morto = $this->safe_meta_string($post_id, "morto_{$numMorto}_nome");
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad(substr($nome_morto ?: '', 0, 30), 30, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad(substr($nome_morto ?: '', 0, 30), 30, '  ', STR_PAD_RIGHT);
                 // Cognome morto (30 caratteri)
                 $cognome_morto = $this->safe_meta_string($post_id, "morto_{$numMorto}_cognome");
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad(substr($cognome_morto ?: '', 0, 30), 30, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad(substr($cognome_morto ?: '', 0, 30), 30, '  ', STR_PAD_RIGHT);
             }
 
             // ===== NOMINATIVI FERITI (8 feriti massimo - 90 caratteri ciascuno) 691-1410 =====
@@ -877,23 +888,23 @@ class IncidentiExportFunctions {
                 // Nome ferito (30 caratteri)
                 $nome_ferito = $this->safe_meta_string($post_id, "ferito_{$numFerito}_nome");
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad(substr($nome_ferito ?: '', 0, 30), 30, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad(substr($nome_ferito ?: '', 0, 30), 30, '  ', STR_PAD_RIGHT);
                 
                 // Cognome ferito (30 caratteri)
                 $cognome_ferito = $this->safe_meta_string($post_id, "ferito_{$numFerito}_cognome");
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad(substr($cognome_ferito ?: '', 0, 30), 30, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad(substr($cognome_ferito ?: '', 0, 30), 30, '  ', STR_PAD_RIGHT);
                 
                 // Istituto ricovero (30 caratteri)
                 $istituto = $this->safe_meta_string($post_id, "ferito_{$numFerito}_istituto");
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad(substr($istituto ?: '', 0, 30), 30, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad(substr($istituto ?: '', 0, 30), 30, '  ', STR_PAD_RIGHT);
             }
 
             //Spazio riservato ISTAT per elaborazione 1411-1420
             //Spazi n.10
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 10, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 10, '  ', STR_PAD_RIGHT);
             
             //Specifiche per la georeferenziazione 1421-1730
             // 1422- 1522 (campi facoltativi)
@@ -901,25 +912,25 @@ class IncidentiExportFunctions {
             $tipo_coordinata = $this->safe_meta_string($post_id, 'tipo_coordinata');
             $indTXT++;
             $esitoTXT[$indTXT] = '1';
-            //mb_str_pad($tipo_coordinata ?: '', 1, '~', STR_PAD_RIGHT);
+            //mb_str_pad($tipo_coordinata ?: '', 1, '  ', STR_PAD_RIGHT);
             // Sistema di proiezione (1 caratteri) 1422
             $sistema_di_proiezione = $this->safe_meta_string($post_id, 'sistema_di_proiezione');
             $indTXT++;
-            $esitoTXT[$indTXT] = '2';//mb_str_pad($sistema_di_proiezione ?: '', 1, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = '2';//mb_str_pad($sistema_di_proiezione ?: '', 1, '  ', STR_PAD_RIGHT);
             // Longitudine (10 caratteri) 1423-1472
             $longitudine = $this->safe_meta_string($post_id, 'longitudine');
             $longitudine = str_replace(".", ",",$longitudine);
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($longitudine ?: '', 50, '~', STR_PAD_LEFT);            
+            $esitoTXT[$indTXT] = mb_str_pad($longitudine ?: '', 50, '  ', STR_PAD_LEFT);            
             // Latitudine (10 caratteri) 1473-1522
             $latitudine = $this->safe_meta_string($post_id, 'latitudine');
             $latitudine = str_replace(".", ",",$latitudine);
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($latitudine ?: '', 50, '~', STR_PAD_LEFT);
+            $esitoTXT[$indTXT] = mb_str_pad($latitudine ?: '', 50, '  ', STR_PAD_LEFT);
             //Spazio riservato ISTAT per elaborazione 1523-1530
             //Spazi n.8
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 8, '~', STR_PAD_RIGHT);          
+            $esitoTXT[$indTXT] = mb_str_pad('', 8, '  ', STR_PAD_RIGHT);          
 
             // Campo 1531-1532: ora
             $ora = $this->safe_meta_string($post_id, 'ora_incidente');
@@ -934,7 +945,7 @@ class IncidentiExportFunctions {
             //Campo 1535-1564: Codice identificativo Carabinieri
             $codice_carabinieri = $this->safe_meta_string($post_id, 'identificativo_comando');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($codice_carabinieri ?: '', 30, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($codice_carabinieri ?: '', 30, '  ', STR_PAD_RIGHT);
 
             //Campo 1565-1568: Progressiva chilometrica
             $progressiva_km = $this->safe_meta_string($post_id, 'progressiva_km');
@@ -957,54 +968,59 @@ class IncidentiExportFunctions {
             //Spazio riservato ISTAT per elaborazione 1587-1590
             //Spazi n.4
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 4, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 4, '  ', STR_PAD_RIGHT);
 
             //Campo 1591-1690: Altra strada
             $altra_strada = $this->safe_meta_string($post_id, 'localizzazione_extra_ab');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($altra_strada ?: '', 100, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($altra_strada ?: '', 100, '  ', STR_PAD_RIGHT);
             
             //Campo 1691-1730: Località
             $localita_incidente = $this->safe_meta_string($post_id, 'localita_incidente');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($localita_incidente ?: '', 40, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($localita_incidente ?: '', 40, '  ', STR_PAD_RIGHT);
             
             //1731-1780: Riservato agli Enti in convenzione con Istat
             //Campo 1731-1770: Codice Identificativo Ente  
             $codice__ente = $this->safe_meta_string($post_id, 'codice__ente');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($codice__ente ?: '', 40, '~', STR_PAD_LEFT);
+            $esitoTXT[$indTXT] = mb_str_pad($codice__ente ?: '', 40, '  ', STR_PAD_LEFT);
             
             //Spazio riservato ISTAT per elaborazione 1771-1780
             //Spazi n.10
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad('', 10, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad('', 10, '  ', STR_PAD_RIGHT);
 
             // ===== Specifiche per la registrazione delle informazioni sulla Cittadinanza dei conducenti dei veicoli A, B e C  (Posizioni 1781-1882) =====
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 //Codice cittadinanza del conducente veicolo
                 $nazionalita_conducente = $this->safe_meta_string($post_id, "conducente_{$numVeicolo}_nazionalita");
+                if (!empty($nazionalita_conducente)) {            
+                    $parti_nazionalita = explode('-', $nazionalita_conducente);
+                    // Assegna le parti alla variabili separate
+                    $nazionalita_conducente = $parti_nazionalita[0];
+                    $nazionalita_altro_conducente = $parti_nazionalita[1];
 
-                $parti_nazionalita = explode('-', $nazionalita_conducente);
-                // Assegna le parti alla variabili separate
-                $nazionalita_conducente = $parti_nazionalita[0];
-                $nazionalita_altro_conducente = $parti_nazionalita[1];
-
-                if($nazionalita_conducente==='000') {
-                   $tipo_cittadinanza_conducente = '1'; // Default se non specificato
+                    if($nazionalita_conducente==='000') {
+                    $tipo_cittadinanza_conducente = '1'; // Default se non specificato
+                    } else {
+                    $tipo_cittadinanza_conducente = '2';
+                    }
                 } else {
-                   $tipo_cittadinanza_conducente = '2';
+                    $tipo_cittadinanza_conducente = '';
+                    $nazionalita_conducente = '';
+                    $nazionalita_altro_conducente = '';
                 }
                  //Cittadinanza italiana o straniera del conducente veicolo
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($tipo_cittadinanza_conducente ?: ' ', 1, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad($tipo_cittadinanza_conducente ?: ' ', 1, '  ', STR_PAD_RIGHT);
 
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($nazionalita_conducente ?: '', 3, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad($nazionalita_conducente ?: '', 3, '  ', STR_PAD_RIGHT);
 
                 //Descrizione cittadinanza conducente veicolo
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($nazionalita_altro_conducente ?: '', 30, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = mb_str_pad($nazionalita_altro_conducente ?: '', 30, '  ', STR_PAD_RIGHT);
 
             }
 
@@ -1013,43 +1029,45 @@ class IncidentiExportFunctions {
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {
                 // Tipo rimorchio (4 caratteri)
                 $tipo_rimorchio = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_tipo_rimorchio");
+                $tipo_rimorchio =  mb_str_pad($tipo_rimorchio ?: '', 4, '  ', STR_PAD_RIGHT);
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($tipo_rimorchio ?: '', 4, '~', STR_PAD_RIGHT);
+                $esitoTXT[$indTXT] = $tipo_rimorchio;
                 
                 // Targa rimorchio (10 caratteri)
                 $targa_rimorchio = $this->safe_meta_string($post_id, "veicolo_{$numVeicolo}_targa_rimorchio");
+                $targa_rimorchio = mb_str_pad($targa_rimorchio ?: '', 10, '  ', STR_PAD_RIGHT);
                 $indTXT++;
-                $esitoTXT[$indTXT] = mb_str_pad($targa_rimorchio ?: '', 10, '~', STR_PAD_RIGHT);
-            }
+                $esitoTXT[$indTXT] = $targa_rimorchio;
 
+            }
+            
             // ===== CODICE STRADA ACI (15 caratteri) - Posizioni 1925-1939 =====
             $codice_aci = $this->safe_meta_string($post_id, 'codice_strada_aci');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($codice_aci ?: '', 15, '~', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($codice_aci ?: '', 15, '  ', STR_PAD_LEFT);
             
             // ===== VALIDAZIONE E COMPLETAMENTO RECORD =====
-            
+             // Conversione finale: sostituisce ~ con spazi e unisce tutti i campi
+            // $esitoTXTstr = str_replace('~', ' ', implode('', $esitoTXT));
+            $esitoTXTstr = implode('', $esitoTXT);
+
             // Validazione lunghezze usando l'array di controllo
             $cfgistat_lunghezze = $this->get_istat_field_lengths();
             $numErrori = 0;
             $strErrori = '';
-            
+
             for ($indChk = 0; $indChk < count($esitoTXT); $indChk++) {
-                $lungReale = strlen($esitoTXT[$indChk]);
+                $lungReale = mb_strlen($esitoTXT[$indChk]);
                 $lungAttesa = isset($cfgistat_lunghezze[$indChk]) ? $cfgistat_lunghezze[$indChk] : 0;
                 
                 if ($lungReale != $lungAttesa && $lungAttesa > 0) {
                     $numErrori++;
                     $strErrori .= "Incidente ID {$post_id} - Campo " . ($indChk + 1) . ": Trovati {$lungReale} caratteri ({$esitoTXT[$indChk]}) invece di {$lungAttesa}\n";
                 }
-            }
-            
+            }       
             if ($numErrori > 0) {
                 error_log("Errori validazione ISTAT per incidente {$post_id}:\n" . $strErrori);
             }
-            
-            // Conversione finale: sostituisce ~ con spazi e unisce tutti i campi
-            $esitoTXTstr = str_replace('~', ' ', implode('', $esitoTXT));
             
             // Assicura che il record sia esattamente 1939 caratteri
             $esitoTXTstr = mb_str_pad($esitoTXTstr, 1939, ' ', STR_PAD_RIGHT);
@@ -1224,97 +1242,227 @@ class IncidentiExportFunctions {
     private function get_istat_field_lengths() {
         return array(
             // Dati base identificativi
-            2,  // anno
-            2,  // mese
-            3,  // provincia
-            3,  // comune
-            4,  // numero ordine
-            2,  // giorno
-            2,  // spazi
-            1,  // organo rilevazione
-            5,  // spazi
-            1,  // organo coordinatore
-            1,  // localizzazione
-            3,  // denominazione strada
-            1,  // illuminazione
-            2,  // ora
-            2,  // minuti
-            1,  // tipo strada
-            1,  // pavimentazione
-            1,  // intersezione
-            1,  // fondo stradale
-            1,  // segnaletica
-            1,  // meteo
-            1,  // natura incidente
-            2,  // dettaglio natura
-            
-            // Tipi veicoli (2x3)
-            2, 2, 2,
-            // Cilindrate (4x3)
-            4, 4, 4,
-            // Pesi (4x3)
-            4, 4, 4,
-            
-            // Circostanze (2x3x2 veicoli A,B)
-            2, 2, 2, 2, 2, 2,
-            
-            // Targhe e dati veicoli (8+3+2+2+3 = 18 caratteri x3)
-            8, 3, 2, 2, 3,  // Veicolo A
-            8, 3, 2, 2, 3,  // Veicolo B
-            8, 3, 2, 2, 3,  // Veicolo C
-            
-            // Conducenti (2+1+1 = 4 caratteri x3)
-            2, 1, 1,  // Conducente A
-            2, 1, 1,  // Conducente B
-            2, 1, 1,  // Conducente C
-            
-            // Passeggeri (2+1+1 = 4 caratteri x4 passeggeri x3 veicoli)
-            2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1,  // Veicolo A
-            2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1,  // Veicolo B
-            2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1,  // Veicolo C
-            
-            // Dispositivi sicurezza (1+1 = 2 caratteri x3 veicoli)
-            1, 1, 1, 1, 1, 1,
-            
-            // Altri dati persone
-            2,  // altri veicoli
-            2,  // persone altri veicoli
-            2,  // conducenti incolumi maschi
-            2,  // conducenti incolumi femmine
-            2,  // altri feriti maschi
-            2,  // altri feriti femmine
-            2,  // morti 24h
-            2,  // morti 30gg
-            2,  // feriti totali
-            
-            // Spazi riservati
-            9,  // spazi riservati
-            
-            // Denominazione strada completa
-            57,
-            
-            // Spazi 100
-            100,
-            
-            // Nominativi morti (30+30 = 60 caratteri x4)
-            30, 30, 30, 30, 30, 30, 30, 30,
-            
-            // Nominativi feriti (30+30+30 = 90 caratteri x8)
-            30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-            30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-            
-            // Coordinate geografiche
-            10, // latitudine
-            10, // longitudine
-            
-            // Cittadinanza conducenti (1+3+30 = 34 caratteri x3)
-            1, 3, 30, 1, 3, 30, 1, 3, 30,
-            
-            // Rimorchi 2020 (4+10 = 14 caratteri x3)
-            4, 10, 4, 10, 4, 10,
-            
-            // Codice ACI
-            15
+            2, // Data dell'incidente:anno
+            2, // Data dell'incidente:mese
+            3, // Provincia 
+            3, // Comune
+            4, // Numero d'ordine
+            2, // Data dell'incidente: giorno
+            2, // Spazi
+            1, // Organo di rilevazione
+            5, // Spazi
+            1, // Organo coordinatore
+            1, // Localizzazione dell'incidente
+            3, // Denominazione strada
+            1, // Illuminazione
+            2, // spazi
+            2, // Tronco di strada statale o di autostrada
+            1, // Tipo di strada
+            1, // Pavimentazione
+            2, // Intersezione o non intersezione
+            1, // Fondo stradale
+            1, // Segnaletica
+            1, // Condizioni meteorologiche
+            2, // Natura dell'incidente
+            2, // Tipo di veicolo coinvolto: A
+            2, // Tipo di veicolo coinvolto: B
+            2, // Tipo di veicolo coinvolto: C
+            4, // Spazi
+            4, // Spazi
+            4, // Spazi
+            4, // Peso totale a pieno carico del veicolo A
+            4, // Peso totale a pieno carico del veicolo B
+            4, // Peso totale a pieno carico del veicolo C
+            2, // Circostanza relativa al veicolo A:                           per inconvenienti di circolazione
+            2, // Circostanza relativa al veicolo A:                           per difetti o avarie del veicolo
+            2, // Circostanza relativa al conducente del veicolo A: per anormale stato psicofisico 
+            2, // Circostanza relativa al veicolo B oppure al pedone od all'ostacolo:                                                           per inconvenienti di circolazione
+            2, // Circostanza relativa al veicolo B:                             per difetti o avarie del veicolo
+            2, // Circostanza relativa al conducente del veicolo B oppure al pedone:                                                 per anormale stato psicofisico
+            8, // Identificazione: targa del veicolo A
+            3, // Identificazione: sigla del veicolo A
+            2, // Anno di immatricolazione del veicolo A
+            2, // Spazi
+            3, // Spazi
+            8, // Identificazione: targa del veicolo B
+            3, // Identificazione: sigla del veicolo B
+            2, // Anno di immatricolazione del veicolo B
+            2, // Spazi
+            3, // Spazi
+            8, // Identificazione: targa del veicolo C
+            3, // Identificazione: sigla del veicolo C
+            2, // Anno di immatricolazione del veicolo C
+            2, // Spazi
+            3, // Spazi
+            2, // Età
+            1, // Sesso
+            1, // Esito
+            1, // Tipo di patente
+            2, // Anno di primo rilascio della patente
+            1, // Conducente durante lo svolgimento di attività lavorativa o in itinere
+            1, // Spazi
+            1, // Spazi
+            1, // Spazi
+            1, // Esito del passeggero infortunato sul sedile anteriore 
+            2, // Età del passeggero infortunato sul sedile anteriore 
+            1, // Sesso del passeggero infortunato sul sedile anteriore 
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore
+            1, // Sesso del passeggero infortunato sul sedile posteriore 
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore
+            1, // Sesso del passeggero infortunato sul sedile posteriore 
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore
+            1, // Sesso del passeggero infortunato sul sedile posteriore 
+            2, // Maschi morti
+            2, // Femmine morte
+            2, // Maschi feriti
+            2, // Femmine ferite
+            2, // Età
+            1, // Sesso
+            1, // Esito
+            1, // Tipo di patente
+            2, // Anno di primo rilascio della patente
+            1, // Conducente durante lo svolgimento di attività lavorativa o in itinere
+            1, // Spazi
+            1, // Spazi
+            1, // Spazi
+            1, // Esito del passeggero infortunato sul sedile anteriore 
+            2, // Età del passeggero infortunato sul sedile anteriore 
+            1, // Sesso del passeggero infortunato sul sedile anteriore 
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore 
+            1, // Sesso del passeggero infortunato sul sedile posteriore 
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore 
+            1, // Sesso del passeggero infortunato sul sedile posteriore 
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore 
+            1, // Sesso del passeggero infortunato sul sedile posteriore 
+            2, // Maschi morti
+            2, // Femmine morte
+            2, // Maschi feriti
+            2, // Femmine ferite
+            2, // Età
+            1, // Sesso
+            1, // Esito
+            1, // Tipo di patente
+            2, // Anno di primo rilascio della patente
+            1, // Conducente durante lo svolgimento di attività lavorativa o in itinere
+            1, // Spazi
+            1, // Spazi
+            1, // Spazi
+            1, // Esito del passeggero infortunato sul sedile anteriore 
+            2, // Età del passeggero infortunato sul sedile anteriore 
+            1, // Sesso del passeggero infortunato sul sedile anteriore 
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore 
+            1, // Sesso del passeggero infortunato sul sedile posteriore
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore 
+            1, // Sesso del passeggero infortunato sul sedile posteriore
+            1, // Esito del passeggero infortunato sul sedile posteriore 
+            2, // Età del passeggero infortunato sul sedile posteriore 
+            1, // Sesso del passeggero infortunato sul sedile posteriore
+            2, // Maschi morti
+            2, // Femmine morte
+            2, // Maschi feriti
+            2, // Femmine ferite
+            1, // Sesso del 1° pedone morto
+            2, // Età del 1° pedone morto
+            1, // Sesso del 1° pedone ferito
+            2, // Età del 1° pedone ferito
+            1, // Sesso del 2° pedone morto
+            2, // Età del 2° pedone morto
+            1, // Sesso del 2° pedone ferito
+            2, // Età del 2° pedone ferito
+            1, // Sesso del 3° pedone morto
+            2, // Età del 3° pedone morto
+            1, // Sesso del 3° pedone ferito
+            2, // Età del 3° pedone ferito
+            1, // Sesso del 4° pedone morto
+            2, // Età del 4° pedone morto
+            1, // Sesso del 4° pedone ferito
+            2, // Età del 4° pedone ferito
+            2, // Numero degli eventuali altri veicoli coinvolti nell'incidente oltre ai primi tre veicoli
+            2, // Numero di morti di sesso maschile su eventuali altri veicoli
+            2, // Numero di morti di sesso femminile su eventuali altri veicoli
+            2, // Numero di feriti di sesso maschile su eventuali altri veicoli
+            2, // Numero di feriti di sesso femminile su eventuali altri veicoli
+            2, // Totale morti entro le prime 24 ore dall'incidente
+            2, // Totale morti dal 2° al 30° giorno dall'incidente
+            2, // Totale feriti
+            9, // Spazi
+            57, // Nome della strada
+            100, // Spazi 
+            30, // Nome del 1° morto
+            30, // Cognome del 1° morto
+            30, // Nome del 2° morto
+            30, // Cognome del 2° morto
+            30, // Nome del 3° morto
+            30, // Cognome del 3° morto
+            30, // Nome del 4° morto
+            30, // Cognome del 4° morto
+            30, // Nome del 1° ferito
+            30, // Cognome del 1° ferito
+            30, // Ospedale dove è stato ricoverato o medicato il 1° ferito
+            30, // Nome del 2° ferito
+            30, // Cognome del 2° ferito
+            30, // Ospedale dove è stato ricoverato o medicato il 2° ferito
+            30, // Nome del 3° ferito
+            30, // Cognome del 3° ferito
+            30, // Ospedale dove è stato ricoverato o medicato il 3° ferito
+            30, // Nome del 4° ferito
+            30, // Cognome del 4° ferito
+            30, // Ospedale dove è stato ricoverato o medicato il 4° ferito
+            30, // Nome del 5° ferito
+            30, // Cognome del 5° ferito
+            30, // Ospedale dove è stato ricoverato o medicato il 5° ferito
+            30, // Nome del 6° ferito
+            30, // Cognome del 6° ferito
+            30, // Ospedale dove è stato ricoverato o medicato il 6° ferito
+            30, // Nome del 7° ferito
+            30, // Cognome del 7° ferito
+            30, // Ospedale dove è stato ricoverato o medicato il 7° ferito
+            30, // Nome dell' 8° ferito
+            30, // Cognome dell' 8° ferito
+            30, // Ospedale dove è stato ricoverato o medicato l' 8° ferito
+            10, // Spazio riservato ISTAT per elaborazione 
+            1, // Tipo di coordinata
+            1, // Sistema di proiezione
+            50, // X o Longitudine
+            50, // Y o Latitudine
+            8, // Spazio riservato ISTAT per elaborazione 
+            2, // Ora
+            2, // Minuti
+            30, // Codice identificativo Carabinieri
+            4, // Progressiva chilometrica
+            3, // Ettometrica
+            5, // Cilindrata del veicolo A
+            5, // Cilindrata del veicolo B
+            5, // Cilindrata del veicolo C
+            4, // Spazio riservato ISTAT per elaborazione 
+            100, // Altra strada
+            40, // Località
+            40, // Codice Identificativo Ente  
+            10, // Spazio riservato ISTAT per elaborazione 
+            1, // Cittadinanza italiana o straniera del conducente veicolo A
+            3, // Codice cittadinanza del conducente veicolo A
+            30, // Descrizione cittadinanza conducente veicolo A
+            1, // Cittadinanza italiana o straniera del conducente veicolo B
+            3, // Codice Cittadinanza del conducente veicolo B
+            30, // Descrizione cittadinanza conducente veicolo B
+            1, // Cittadinanza italiana o straniera del conducente veicolo C
+            3, // Codice Cittadinanza del conducente veicolo C
+            30, // Descrizione cittadinanza conducente veicolo C
+            4, // Tipo rimorchio A
+            10, // Targa rimorchio A
+            4, // Tipo rimorchio B
+            10, // Targa rimorchio B
+            4, // Tipo rimorchio C
+            10, // Targa rimorchio C
+            15, // Codice strada ACI
         );
     }
     

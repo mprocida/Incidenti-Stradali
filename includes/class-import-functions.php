@@ -263,10 +263,7 @@ class IncidentiImportFunctions {
     /**
      * Process full CSV file
      */
-    private function process_txt_file($file_path) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log("process_txt_file");
-                }       
+    private function process_txt_file($file_path) {      
         $handle = fopen($file_path, 'r');
         if (!$handle) {
             return array('success' => false, 'message' => __('Impossibile leggere il file.', 'incidenti-stradali'));
@@ -281,10 +278,6 @@ class IncidentiImportFunctions {
         $line_number = 1;
         
         while (($row = fgets($handle)) !== false) {
-            // Log per debug (rimuovi in produzione)
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("riga {$line_number}: {$row}");//["multi"]["dimensional"]["array"]);
-            }   
             // Pulisci la riga
             $row = trim($row);
             // Salta le righe vuote
@@ -292,22 +285,14 @@ class IncidentiImportFunctions {
                 continue;
             }
             
-            $mapped_data = $this->map_row_data($row);
-
-            // Log per debug (rimuovi in produzione)
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("mapped_data riga {$line_number}: ");
-                error_log( print_r($mapped_data, true) );
-            }       
+            $mapped_data = $this->map_row_data($row);   
             /*
             $validation_result = $this->validate_row_data($mapped_data);
             */
             /* *
             if ($validation_result['valid']) {
-           */ /***/    $post_id = $this->create_incidente_from_data($mapped_data);
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("post_id: {$post_id}");
-            }     
+           */ /***/    
+           $post_id = $this->create_incidente_from_data($mapped_data);
                 if ($post_id) {
                     $imported++;
                 } else {
@@ -504,7 +489,7 @@ class IncidentiImportFunctions {
             "riepilogo_morti_24h" => "  ",
             "riepilogo_morti_2_30gg" => "  ",
             "riepilogo_feriti" => "  ",
-            //$mapped_data[""] = trim(substr($row, 284, 9));
+            //$mapped_data[""] = trim(mb_substr($row, 284, 9));
 
             // Specifiche sulla denominazione della strada
             "denominazione_strada" => "",
@@ -609,17 +594,19 @@ class IncidentiImportFunctions {
         $numero_veicoli_coinvolti = 0;
         $numero_pedoni_feriti = 0;
         $numero_pedoni_morti = 0;
+
+        mb_internal_encoding("UTF-8");
         
 
         // Estrai i campi dal tracciato (esempio con campi fissi)
-        $data_incidente_anno = trim(substr($row, 0, 2));
-        $data_incidente_mese = trim(substr($row, 2, 2));
-        $mapped_data["provincia_incidente"] = trim(substr($row, 4, 3));
-        $mapped_data["comune_incidente"] = trim(substr($row, 7, 3));
-        //$mapped_data["post_id"] = trim(substr($row, 10, 4));
-        $data_incidente_giorno = trim(substr($row, 14, 2));
-        //$mapped_data[""] = trim(substr($row, 16, 2));
-        $mapped_data["organo_rilevazione"] = trim(substr($row, 18, 1));
+        $data_incidente_anno = trim(mb_substr($row, 0, 2));
+        $data_incidente_mese = trim(mb_substr($row, 2, 2));
+        $mapped_data["provincia_incidente"] = trim(mb_substr($row, 4, 3));
+        $mapped_data["comune_incidente"] = trim(mb_substr($row, 7, 3));
+        //$mapped_data["post_id"] = trim(mb_substr($row, 10, 4));
+        $data_incidente_giorno = trim(mb_substr($row, 14, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 16, 2));
+        $mapped_data["organo_rilevazione"] = trim(mb_substr($row, 18, 1));
         if($mapped_data["organo_rilevazione"] == "1") {
             $mapped_data["ente_rilevatore"] = "Agente di Polizia stradale";
         } elseif($mapped_data["organo_rilevazione"] == "2") {
@@ -633,20 +620,20 @@ class IncidentiImportFunctions {
         } elseif($mapped_data["organo_rilevazione"] == "6") {
             $mapped_data["ente_rilevatore"] = "Agente di Polizia provinciale";
         }
-        //$mapped_data[""] = trim(substr($row, 19, 5));
-        $mapped_data["organo_coordinatore"] = trim(substr($row, 24, 1));
-        $mapped_data["tipo_strada"] = trim(substr($row, 25, 1));
-        $mapped_data["numero_strada"] = trim(substr($row, 26, 3));
-        $mapped_data["illuminazione"] = trim(substr($row, 29, 1));
-        //$mapped_data[""] = trim(substr($row, 30, 2));
-        $mapped_data["tronco_strada"] =  str_replace("0","",trim(substr($row, 32, 2)));    
-        $mapped_data["geometria_strada"] = trim(substr($row, 34, 1));
-        $mapped_data["pavimentazione_strada"] = trim(substr($row, 35, 1));
-        $mapped_data["intersezione_tronco"] = str_replace("0","",trim(substr($row, 36, 2)));
-        $mapped_data["stato_fondo_strada"] = trim(substr($row, 38, 1));
-        $mapped_data["segnaletica_strada"] = trim(substr($row, 39, 1));
-        $mapped_data["condizioni_meteo"] = trim(substr($row, 40, 1));
-        $mapped_data["dettaglio_natura"] = trim(substr($row, 41, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 19, 5));
+        $mapped_data["organo_coordinatore"] = trim(mb_substr($row, 24, 1));
+        $mapped_data["tipo_strada"] = trim(mb_substr($row, 25, 1));
+        $mapped_data["numero_strada"] = trim(mb_substr($row, 26, 3));
+        $mapped_data["illuminazione"] = trim(mb_substr($row, 29, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 30, 2));
+        $mapped_data["tronco_strada"] =  str_replace("0","",trim(mb_substr($row, 32, 2)));    
+        $mapped_data["geometria_strada"] = trim(mb_substr($row, 34, 1));
+        $mapped_data["pavimentazione_strada"] = trim(mb_substr($row, 35, 1));
+        $mapped_data["intersezione_tronco"] = str_replace("0","",trim(mb_substr($row, 36, 2)));
+        $mapped_data["stato_fondo_strada"] = trim(mb_substr($row, 38, 1));
+        $mapped_data["segnaletica_strada"] = trim(mb_substr($row, 39, 1));
+        $mapped_data["condizioni_meteo"] = trim(mb_substr($row, 40, 1));
+        $mapped_data["dettaglio_natura"] = trim(mb_substr($row, 41, 2));
         if (preg_match('/^(01|02|03|04)$/', $mapped_data["dettaglio_natura"])) {
             $mapped_data["natura_incidente"] = 'A';
             $mapped_data["dettaglio_natura"] = str_replace("0","",$mapped_data["dettaglio_natura"]);
@@ -660,123 +647,123 @@ class IncidentiImportFunctions {
             $mapped_data["natura_incidente"] = 'D';
         }
         //4. Tipo di veicoli coinvolti
-        $mapped_data["veicolo_1_tipo"] = ltrim(trim(substr($row, 43, 2)), '0');
+        $mapped_data["veicolo_1_tipo"] = ltrim(trim(mb_substr($row, 43, 2)), '0');
         if ($mapped_data["veicolo_1_tipo"] !== '  ') {
             $numero_veicoli_coinvolti++;
         }
-        $mapped_data["veicolo_2_tipo"] = ltrim(trim(substr($row, 45, 2)), '0');
+        $mapped_data["veicolo_2_tipo"] = ltrim(trim(mb_substr($row, 45, 2)), '0');
         if ($mapped_data["veicolo_2_tipo"] !== '  ') {
             $numero_veicoli_coinvolti++;
         }
-        $mapped_data["veicolo_3_tipo"] = ltrim(trim(substr($row, 47, 2)), '0');
+        $mapped_data["veicolo_3_tipo"] = ltrim(trim(mb_substr($row, 47, 2)), '0');
         if ($mapped_data["veicolo_3_tipo"] !== '  ') {
             $numero_veicoli_coinvolti++;
         }
-        //$mapped_data[""] = trim(substr($row, 49, 4));
-        //$mapped_data[""] = trim(substr($row, 53, 4));
-        //$mapped_data[""] = trim(substr($row, 57, 4));
-        $mapped_data["veicolo_1_peso_totale"] = trim(substr($row, 61, 4));
-        $mapped_data["veicolo_2_peso_totale"] = trim(substr($row, 65, 4));
-        $mapped_data["veicolo_3_peso_totale"] = trim(substr($row, 69, 4));
+        //$mapped_data[""] = trim(mb_substr($row, 49, 4));
+        //$mapped_data[""] = trim(mb_substr($row, 53, 4));
+        //$mapped_data[""] = trim(mb_substr($row, 57, 4));
+        $mapped_data["veicolo_1_peso_totale"] = trim(mb_substr($row, 61, 4));
+        $mapped_data["veicolo_2_peso_totale"] = trim(mb_substr($row, 65, 4));
+        $mapped_data["veicolo_3_peso_totale"] = trim(mb_substr($row, 69, 4));
         // calcola il numero di veicoli coinvolti
         $mapped_data["numero_veicoli_coinvolti"] =  $numero_veicoli_coinvolti;
 
         //5. Circostanze accertate o presunte dell'incidente
-        $mapped_data["circostanza_veicolo_a"] = trim(substr($row, 73, 2));
-        $mapped_data["difetto_veicolo_a"] = trim(substr($row, 75, 2));
-        $mapped_data["stato_psicofisico_a"] = trim(substr($row, 77, 2));
-        $mapped_data["circostanza_veicolo_b"] = trim(substr($row, 79, 2));
-        $mapped_data["difetto_veicolo_b"] = trim(substr($row, 81, 2));
-        $mapped_data["stato_psicofisico_b"] = trim(substr($row, 83, 2));
+        $mapped_data["circostanza_veicolo_a"] = trim(mb_substr($row, 73, 2));
+        $mapped_data["difetto_veicolo_a"] = trim(mb_substr($row, 75, 2));
+        $mapped_data["stato_psicofisico_a"] = trim(mb_substr($row, 77, 2));
+        $mapped_data["circostanza_veicolo_b"] = trim(mb_substr($row, 79, 2));
+        $mapped_data["difetto_veicolo_b"] = trim(mb_substr($row, 81, 2));
+        $mapped_data["stato_psicofisico_b"] = trim(mb_substr($row, 83, 2));
 
         //6. Veicoli coinvolti
-        $mapped_data["veicolo_1_targa"] = trim(substr($row, 85, 8));
-        $mapped_data["veicolo_1_sigla_estero"] = trim(substr($row, 93, 3));
-        $mapped_data["veicolo_1_anno_immatricolazione"] = trim(substr($row, 96, 2));
-        //$mapped_data[""] = trim(substr($row, 98, 2));
-        //$mapped_data[""] = trim(substr($row, 100, 3));
-        $mapped_data["veicolo_2_targa"] = trim(substr($row, 103, 8));
-        $mapped_data["veicolo_2_sigla_estero"] = trim(substr($row, 111, 3));
-        $mapped_data["veicolo_2_anno_immatricolazione"] = trim(substr($row, 114, 2));
-        //$mapped_data[""] = trim(substr($row, 116, 2));
-        //$mapped_data[""] = trim(substr($row, 118, 3));
-        $mapped_data["veicolo_3_targa"] = trim(substr($row, 121, 8));
-        $mapped_data["veicolo_3_sigla_estero"] = trim(substr($row, 129, 3));
-        $mapped_data["veicolo_3_anno_immatricolazione"] = trim(substr($row, 132, 2));
-        //$mapped_data[""] = trim(substr($row, 134, 2));
-        //$mapped_data[""] = trim(substr($row, 136, 3));
+        $mapped_data["veicolo_1_targa"] = trim(mb_substr($row, 85, 8));
+        $mapped_data["veicolo_1_sigla_estero"] = trim(mb_substr($row, 93, 3));
+        $mapped_data["veicolo_1_anno_immatricolazione"] = trim(mb_substr($row, 96, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 98, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 100, 3));
+        $mapped_data["veicolo_2_targa"] = trim(mb_substr($row, 103, 8));
+        $mapped_data["veicolo_2_sigla_estero"] = trim(mb_substr($row, 111, 3));
+        $mapped_data["veicolo_2_anno_immatricolazione"] = trim(mb_substr($row, 114, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 116, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 118, 3));
+        $mapped_data["veicolo_3_targa"] = trim(mb_substr($row, 121, 8));
+        $mapped_data["veicolo_3_sigla_estero"] = trim(mb_substr($row, 129, 3));
+        $mapped_data["veicolo_3_anno_immatricolazione"] = trim(mb_substr($row, 132, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 134, 2));
+        //$mapped_data[""] = trim(mb_substr($row, 136, 3));
 
         // 7. Conseguenze dell'incidente alle persone
         // Veicolo A: conducente
-        $mapped_data["conducente_1_eta"] = trim(substr($row, 139, 2));
-        $mapped_data["conducente_1_sesso"] = trim(substr($row, 141, 1));
-        $mapped_data["conducente_1_esito"] = trim(substr($row, 142, 1));
-        $mapped_data["conducente_1_tipo_patente"] = trim(substr($row, 143, 1));
-        $mapped_data["conducente_1_anno_patente"] = trim(substr($row, 144, 2));
-        $mapped_data["conducente_1_tipologia_incidente"] = trim(substr($row, 146, 1));
-        //$mapped_data[""] = trim(substr($row, 147, 1));
-        //$mapped_data[""] = trim(substr($row, 148, 1));
-        //$mapped_data[""] = trim(substr($row, 149, 1));
+        $mapped_data["conducente_1_eta"] = trim(mb_substr($row, 139, 2));
+        $mapped_data["conducente_1_sesso"] = trim(mb_substr($row, 141, 1));
+        $mapped_data["conducente_1_esito"] = trim(mb_substr($row, 142, 1));
+        $mapped_data["conducente_1_tipo_patente"] = trim(mb_substr($row, 143, 1));
+        $mapped_data["conducente_1_anno_patente"] = trim(mb_substr($row, 144, 2));
+        $mapped_data["conducente_1_tipologia_incidente"] = trim(mb_substr($row, 146, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 147, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 148, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 149, 1));
         // Passeggeri veicolo A
-        $mapped_data["veicolo_1_trasportato_1_esito"] = trim(substr($row, 150, 1));
-        $mapped_data["veicolo_1_trasportato_1_eta"] = trim(substr($row, 151, 2));
-        $mapped_data["veicolo_1_trasportato_1_sesso"] = trim(substr($row, 153, 1));
-        $mapped_data["veicolo_1_trasportato_2_esito"] = trim(substr($row, 154, 1));
-        $mapped_data["veicolo_1_trasportato_2_eta"] = trim(substr($row, 155, 2));
-        $mapped_data["veicolo_1_trasportato_2_sesso"] = trim(substr($row, 157, 1));
-        $mapped_data["veicolo_1_trasportato_3_esito"] = trim(substr($row, 158, 1));
-        $mapped_data["veicolo_1_trasportato_3_eta"] = trim(substr($row, 159, 2));
-        $mapped_data["veicolo_1_trasportato_3_sesso"] = trim(substr($row, 161, 1));
-        $mapped_data["veicolo_1_trasportato_4_esito"] = trim(substr($row, 162, 1));
-        $mapped_data["veicolo_1_trasportato_4_eta"] = trim(substr($row, 163, 2));
-        $mapped_data["veicolo_1_trasportato_4_sesso"] = trim(substr($row, 165, 1));
+        $mapped_data["veicolo_1_trasportato_1_esito"] = trim(mb_substr($row, 150, 1));
+        $mapped_data["veicolo_1_trasportato_1_eta"] = trim(mb_substr($row, 151, 2));
+        $mapped_data["veicolo_1_trasportato_1_sesso"] = trim(mb_substr($row, 153, 1));
+        $mapped_data["veicolo_1_trasportato_2_esito"] = trim(mb_substr($row, 154, 1));
+        $mapped_data["veicolo_1_trasportato_2_eta"] = trim(mb_substr($row, 155, 2));
+        $mapped_data["veicolo_1_trasportato_2_sesso"] = trim(mb_substr($row, 157, 1));
+        $mapped_data["veicolo_1_trasportato_3_esito"] = trim(mb_substr($row, 158, 1));
+        $mapped_data["veicolo_1_trasportato_3_eta"] = trim(mb_substr($row, 159, 2));
+        $mapped_data["veicolo_1_trasportato_3_sesso"] = trim(mb_substr($row, 161, 1));
+        $mapped_data["veicolo_1_trasportato_4_esito"] = trim(mb_substr($row, 162, 1));
+        $mapped_data["veicolo_1_trasportato_4_eta"] = trim(mb_substr($row, 163, 2));
+        $mapped_data["veicolo_1_trasportato_4_sesso"] = trim(mb_substr($row, 165, 1));
 
         // Altri passeggeri infortunati sul veicolo A
-        $mapped_data["veicolo_1_altri_morti_maschi"] = trim(substr($row, 166, 2));
-        $mapped_data["veicolo_1_altri_morti_femmine"] = trim(substr($row, 168, 2));
-        $mapped_data["veicolo_1_altri_feriti_maschi"] = trim(substr($row, 170, 2));
-        $mapped_data["veicolo_1_altri_feriti_femmine"] = trim(substr($row, 172, 2));
+        $mapped_data["veicolo_1_altri_morti_maschi"] = trim(mb_substr($row, 166, 2));
+        $mapped_data["veicolo_1_altri_morti_femmine"] = trim(mb_substr($row, 168, 2));
+        $mapped_data["veicolo_1_altri_feriti_maschi"] = trim(mb_substr($row, 170, 2));
+        $mapped_data["veicolo_1_altri_feriti_femmine"] = trim(mb_substr($row, 172, 2));
 
         // Veicolo B: conducente
-        $mapped_data["conducente_2_eta"] = trim(substr($row, 174, 2));
-        $mapped_data["conducente_2_sesso"] = trim(substr($row, 176, 1));
-        $mapped_data["conducente_2_esito"] = trim(substr($row, 177, 1));
-        $mapped_data["conducente_2_tipo_patente"] = trim(substr($row, 178, 1));
-        $mapped_data["conducente_2_anno_patente"] = trim(substr($row, 179, 2));
-        $mapped_data["conducente_2_tipologia_incidente"] = trim(substr($row, 181, 1));
-        //$mapped_data[""] = trim(substr($row, 182, 1));
-        //$mapped_data[""] = trim(substr($row, 183, 1));
-        //$mapped_data[""] = trim(substr($row, 184, 1));
+        $mapped_data["conducente_2_eta"] = trim(mb_substr($row, 174, 2));
+        $mapped_data["conducente_2_sesso"] = trim(mb_substr($row, 176, 1));
+        $mapped_data["conducente_2_esito"] = trim(mb_substr($row, 177, 1));
+        $mapped_data["conducente_2_tipo_patente"] = trim(mb_substr($row, 178, 1));
+        $mapped_data["conducente_2_anno_patente"] = trim(mb_substr($row, 179, 2));
+        $mapped_data["conducente_2_tipologia_incidente"] = trim(mb_substr($row, 181, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 182, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 183, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 184, 1));
         // Passeggeri veicolo B
-        $mapped_data["veicolo_2_trasportato_1_esito"] = trim(substr($row, 185, 1));
-        $mapped_data["veicolo_2_trasportato_1_eta"] = trim(substr($row, 186, 2));
-        $mapped_data["veicolo_2_trasportato_1_sesso"] = trim(substr($row, 188, 1));
-        $mapped_data["veicolo_2_trasportato_2_esito"] = trim(substr($row, 189, 1));
-        $mapped_data["veicolo_2_trasportato_2_eta"] = trim(substr($row, 190, 2));
-        $mapped_data["veicolo_2_trasportato_2_sesso"] = trim(substr($row, 192, 1));
-        $mapped_data["veicolo_2_trasportato_3_esito"] = trim(substr($row, 193, 1));
-        $mapped_data["veicolo_2_trasportato_3_eta"] = trim(substr($row, 194, 2));
-        $mapped_data["veicolo_2_trasportato_3_sesso"] = trim(substr($row, 196, 1));
-        $mapped_data["veicolo_2_trasportato_4_esito"] = trim(substr($row, 197, 1));
-        $mapped_data["veicolo_2_trasportato_4_eta"] = trim(substr($row, 198, 2));
-        $mapped_data["veicolo_2_trasportato_4_sesso"] = trim(substr($row, 200, 1));
+        $mapped_data["veicolo_2_trasportato_1_esito"] = trim(mb_substr($row, 185, 1));
+        $mapped_data["veicolo_2_trasportato_1_eta"] = trim(mb_substr($row, 186, 2));
+        $mapped_data["veicolo_2_trasportato_1_sesso"] = trim(mb_substr($row, 188, 1));
+        $mapped_data["veicolo_2_trasportato_2_esito"] = trim(mb_substr($row, 189, 1));
+        $mapped_data["veicolo_2_trasportato_2_eta"] = trim(mb_substr($row, 190, 2));
+        $mapped_data["veicolo_2_trasportato_2_sesso"] = trim(mb_substr($row, 192, 1));
+        $mapped_data["veicolo_2_trasportato_3_esito"] = trim(mb_substr($row, 193, 1));
+        $mapped_data["veicolo_2_trasportato_3_eta"] = trim(mb_substr($row, 194, 2));
+        $mapped_data["veicolo_2_trasportato_3_sesso"] = trim(mb_substr($row, 196, 1));
+        $mapped_data["veicolo_2_trasportato_4_esito"] = trim(mb_substr($row, 197, 1));
+        $mapped_data["veicolo_2_trasportato_4_eta"] = trim(mb_substr($row, 198, 2));
+        $mapped_data["veicolo_2_trasportato_4_sesso"] = trim(mb_substr($row, 200, 1));
 
         // Altri passeggeri infortunati sul veicolo B
-        $mapped_data["veicolo_2_altri_morti_maschi"] = trim(substr($row, 201, 2));
-        $mapped_data["veicolo_2_altri_morti_femmine"] = trim(substr($row, 203, 2));
-        $mapped_data["veicolo_2_altri_feriti_maschi"] = trim(substr($row, 205, 2));
-        $mapped_data["veicolo_2_altri_feriti_femmine"] = trim(substr($row, 207, 2));
+        $mapped_data["veicolo_2_altri_morti_maschi"] = trim(mb_substr($row, 201, 2));
+        $mapped_data["veicolo_2_altri_morti_femmine"] = trim(mb_substr($row, 203, 2));
+        $mapped_data["veicolo_2_altri_feriti_maschi"] = trim(mb_substr($row, 205, 2));
+        $mapped_data["veicolo_2_altri_feriti_femmine"] = trim(mb_substr($row, 207, 2));
 
         // Veicolo C: conducente
-        $mapped_data["conducente_3_eta"] = trim(substr($row, 209, 2));
-        $mapped_data["conducente_3_sesso"] = trim(substr($row, 211, 1));
-        $mapped_data["conducente_3_esito"] = trim(substr($row, 212, 1));
-        $mapped_data["conducente_3_tipo_patente"] = trim(substr($row, 213, 1));
-        $mapped_data["conducente_3_anno_patente"] = trim(substr($row, 214, 2));
-        $mapped_data["conducente_3_tipologia_incidente"] = trim(substr($row, 216, 1));
-        //$mapped_data[""] = trim(substr($row, 217, 1));
-        //$mapped_data[""] = trim(substr($row, 218, 1));
-        //$mapped_data[""] = trim(substr($row, 219, 1));
+        $mapped_data["conducente_3_eta"] = trim(mb_substr($row, 209, 2));
+        $mapped_data["conducente_3_sesso"] = trim(mb_substr($row, 211, 1));
+        $mapped_data["conducente_3_esito"] = trim(mb_substr($row, 212, 1));
+        $mapped_data["conducente_3_tipo_patente"] = trim(mb_substr($row, 213, 1));
+        $mapped_data["conducente_3_anno_patente"] = trim(mb_substr($row, 214, 2));
+        $mapped_data["conducente_3_tipologia_incidente"] = trim(mb_substr($row, 216, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 217, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 218, 1));
+        //$mapped_data[""] = trim(mb_substr($row, 219, 1));
 
         // Controlla i pedoni morti
         for ($i = 1; $i <=  $numero_veicoli_coinvolti; $i++) {
@@ -786,42 +773,42 @@ class IncidentiImportFunctions {
         }
 
         // Passeggeri veicolo C
-        $mapped_data["veicolo_3_trasportato_1_esito"] = trim(substr($row, 220, 1));
-        $mapped_data["veicolo_3_trasportato_1_eta"] = trim(substr($row, 221, 2));
-        $mapped_data["veicolo_3_trasportato_1_sesso"] = trim(substr($row, 223, 1));
-        $mapped_data["veicolo_3_trasportato_2_esito"] = trim(substr($row, 224, 1));
-        $mapped_data["veicolo_3_trasportato_2_eta"] = trim(substr($row, 225, 2));
-        $mapped_data["veicolo_3_trasportato_2_sesso"] = trim(substr($row, 227, 1));
-        $mapped_data["veicolo_3_trasportato_3_esito"] = trim(substr($row, 228, 1));
-        $mapped_data["veicolo_3_trasportato_3_eta"] = trim(substr($row, 229, 2));
-        $mapped_data["veicolo_3_trasportato_3_sesso"] = trim(substr($row, 231, 1));
-        $mapped_data["veicolo_3_trasportato_4_esito"] = trim(substr($row, 232, 1));
-        $mapped_data["veicolo_3_trasportato_4_eta"] = trim(substr($row, 233, 2));
-        $mapped_data["veicolo_3_trasportato_4_sesso"] = trim(substr($row, 235, 1));
+        $mapped_data["veicolo_3_trasportato_1_esito"] = trim(mb_substr($row, 220, 1));
+        $mapped_data["veicolo_3_trasportato_1_eta"] = trim(mb_substr($row, 221, 2));
+        $mapped_data["veicolo_3_trasportato_1_sesso"] = trim(mb_substr($row, 223, 1));
+        $mapped_data["veicolo_3_trasportato_2_esito"] = trim(mb_substr($row, 224, 1));
+        $mapped_data["veicolo_3_trasportato_2_eta"] = trim(mb_substr($row, 225, 2));
+        $mapped_data["veicolo_3_trasportato_2_sesso"] = trim(mb_substr($row, 227, 1));
+        $mapped_data["veicolo_3_trasportato_3_esito"] = trim(mb_substr($row, 228, 1));
+        $mapped_data["veicolo_3_trasportato_3_eta"] = trim(mb_substr($row, 229, 2));
+        $mapped_data["veicolo_3_trasportato_3_sesso"] = trim(mb_substr($row, 231, 1));
+        $mapped_data["veicolo_3_trasportato_4_esito"] = trim(mb_substr($row, 232, 1));
+        $mapped_data["veicolo_3_trasportato_4_eta"] = trim(mb_substr($row, 233, 2));
+        $mapped_data["veicolo_3_trasportato_4_sesso"] = trim(mb_substr($row, 235, 1));
            
         // Altri passeggeri infortunati sul veicolo C
-        $mapped_data["veicolo_3_altri_morti_maschi"] = trim(substr($row, 236, 2));
-        $mapped_data["veicolo_3_altri_morti_femmine"] = trim(substr($row, 238, 2));
-        $mapped_data["veicolo_3_altri_feriti_maschi"] = trim(substr($row, 240, 2));
-        $mapped_data["veicolo_3_altri_feriti_femmine"] = trim(substr($row, 242, 2));
+        $mapped_data["veicolo_3_altri_morti_maschi"] = trim(mb_substr($row, 236, 2));
+        $mapped_data["veicolo_3_altri_morti_femmine"] = trim(mb_substr($row, 238, 2));
+        $mapped_data["veicolo_3_altri_feriti_maschi"] = trim(mb_substr($row, 240, 2));
+        $mapped_data["veicolo_3_altri_feriti_femmine"] = trim(mb_substr($row, 242, 2));
 
         // Pedoni coinvolti
-        $mapped_data["pedone_morto_1_sesso"] = trim(substr($row, 244, 1));
-        $mapped_data["pedone_morto_1_eta"] = trim(substr($row, 245, 2));
-        $mapped_data["pedone_ferito_1_sesso"] = trim(substr($row, 247, 1));
-        $mapped_data["pedone_ferito_1_eta"] = trim(substr($row, 248, 2));
-        $mapped_data["pedone_morto_2_sesso"] = trim(substr($row, 250, 1));
-        $mapped_data["pedone_morto_2_eta"] = trim(substr($row, 251, 2));
-        $mapped_data["pedone_ferito_2_sesso"] = trim(substr($row, 253, 1));
-        $mapped_data["pedone_ferito_2_eta"] = trim(substr($row, 254, 2));
-        $mapped_data["pedone_morto_3_sesso"] = trim(substr($row, 256, 1));
-        $mapped_data["pedone_morto_3_eta"] = trim(substr($row, 257, 2));
-        $mapped_data["pedone_ferito_3_sesso"] = trim(substr($row, 259, 1));
-        $mapped_data["pedone_ferito_3_eta"] = trim(substr($row, 260, 2));
-        $mapped_data["pedone_morto_4_sesso"] = trim(substr($row, 262, 1));
-        $mapped_data["pedone_morto_4_eta"] = trim(substr($row, 263, 2));
-        $mapped_data["pedone_ferito_4_sesso"] = trim(substr($row, 265, 1));
-        $mapped_data["pedone_ferito_4_eta"] = trim(substr($row, 266, 2));
+        $mapped_data["pedone_morto_1_sesso"] = trim(mb_substr($row, 244, 1));
+        $mapped_data["pedone_morto_1_eta"] = trim(mb_substr($row, 245, 2));
+        $mapped_data["pedone_ferito_1_sesso"] = trim(mb_substr($row, 247, 1));
+        $mapped_data["pedone_ferito_1_eta"] = trim(mb_substr($row, 248, 2));
+        $mapped_data["pedone_morto_2_sesso"] = trim(mb_substr($row, 250, 1));
+        $mapped_data["pedone_morto_2_eta"] = trim(mb_substr($row, 251, 2));
+        $mapped_data["pedone_ferito_2_sesso"] = trim(mb_substr($row, 253, 1));
+        $mapped_data["pedone_ferito_2_eta"] = trim(mb_substr($row, 254, 2));
+        $mapped_data["pedone_morto_3_sesso"] = trim(mb_substr($row, 256, 1));
+        $mapped_data["pedone_morto_3_eta"] = trim(mb_substr($row, 257, 2));
+        $mapped_data["pedone_ferito_3_sesso"] = trim(mb_substr($row, 259, 1));
+        $mapped_data["pedone_ferito_3_eta"] = trim(mb_substr($row, 260, 2));
+        $mapped_data["pedone_morto_4_sesso"] = trim(mb_substr($row, 262, 1));
+        $mapped_data["pedone_morto_4_eta"] = trim(mb_substr($row, 263, 2));
+        $mapped_data["pedone_ferito_4_sesso"] = trim(mb_substr($row, 265, 1));
+        $mapped_data["pedone_ferito_4_eta"] = trim(mb_substr($row, 266, 2));
         // Controlla i pedoni morti
         for ($i = 1; $i <= 4; $i++) {
             if (!empty($mapped_data["pedone_morto_{$i}_sesso"]) or !empty($mapped_data["pedone_morto_{$i}_eta"])) {
@@ -854,102 +841,102 @@ class IncidentiImportFunctions {
             }
         }
         // Altri veicoli coinvolti altre ai veicoli A, B e C, e persone infortunate Da 01 a 99
-        $mapped_data["numero_altri_veicoli"] = trim(substr($row, 268, 2));
-        $mapped_data["altri_morti_maschi"] = trim(substr($row, 270, 2));
-        $mapped_data["altri_morti_femmine"] = trim(substr($row, 272, 2));
-        $mapped_data["altri_feriti_maschi"] = trim(substr($row, 274, 2));
-        $mapped_data["altri_feriti_femmine"] = trim(substr($row, 276, 2));
+        $mapped_data["numero_altri_veicoli"] = trim(mb_substr($row, 268, 2));
+        $mapped_data["altri_morti_maschi"] = trim(mb_substr($row, 270, 2));
+        $mapped_data["altri_morti_femmine"] = trim(mb_substr($row, 272, 2));
+        $mapped_data["altri_feriti_maschi"] = trim(mb_substr($row, 274, 2));
+        $mapped_data["altri_feriti_femmine"] = trim(mb_substr($row, 276, 2));
 
         // Riepilogo infortunati 00
-        $mapped_data["riepilogo_morti_24h"] = trim(substr($row, 278, 2));
-        $mapped_data["riepilogo_morti_2_30gg"] = trim(substr($row, 280, 2));
-        $mapped_data["riepilogo_feriti"] = trim(substr($row, 282, 2));
+        $mapped_data["riepilogo_morti_24h"] = trim(mb_substr($row, 278, 2));
+        $mapped_data["riepilogo_morti_2_30gg"] = trim(mb_substr($row, 280, 2));
+        $mapped_data["riepilogo_feriti"] = trim(mb_substr($row, 282, 2));
 
         // Specifiche sulla denominazione della strada
-        $mapped_data["denominazione_strada"] = trim(substr($row, 293, 57));
-        //$mapped_data[""] = trim(substr($row, 350, 100));
+        $mapped_data["denominazione_strada"] = trim(mb_substr($row, 293, 57));
+        //$mapped_data[""] = trim(mb_substr($row, 350, 100));
 
         // Specifiche per l'inserimento del nome e cognome dei morti
-        $mapped_data["morto_1_nome"] = trim(substr($row, 450, 30));
-        $mapped_data["morto_1_cognome"] = trim(substr($row, 480, 30));
-        $mapped_data["morto_2_nome"] = trim(substr($row, 510, 30));
-        $mapped_data["morto_2_cognome"] = trim(substr($row, 540, 30));
-        $mapped_data["morto_3_nome"] = trim(substr($row, 570, 30));
-        $mapped_data["morto_3_cognome"] = trim(substr($row, 600, 30));
-        $mapped_data["morto_4_nome"] = trim(substr($row, 630, 30));
-        $mapped_data["morto_4_cognome"] = trim(substr($row, 660, 30));
+        $mapped_data["morto_1_nome"] = trim(mb_substr($row, 450, 30));
+        $mapped_data["morto_1_cognome"] = trim(mb_substr($row, 480, 30));
+        $mapped_data["morto_2_nome"] = trim(mb_substr($row, 510, 30));
+        $mapped_data["morto_2_cognome"] = trim(mb_substr($row, 540, 30));
+        $mapped_data["morto_3_nome"] = trim(mb_substr($row, 570, 30));
+        $mapped_data["morto_3_cognome"] = trim(mb_substr($row, 600, 30));
+        $mapped_data["morto_4_nome"] = trim(mb_substr($row, 630, 30));
+        $mapped_data["morto_4_cognome"] = trim(mb_substr($row, 660, 30));
 
         // Specifiche per l'inserimento del nome, cognome e luogo di ricovero dei feriti
-        $mapped_data["ferito_1_nome"] = trim(substr($row, 690, 30));
-        $mapped_data["ferito_1_cognome"] = trim(substr($row, 720, 30));
-        $mapped_data["ferito_1_istituto"] = trim(substr($row, 750, 30));
-        $mapped_data["ferito_2_nome"] = trim(substr($row, 780, 30));
-        $mapped_data["ferito_2_cognome"] = trim(substr($row, 810, 30));
-        $mapped_data["ferito_2_istituto"] = trim(substr($row, 840, 30));
-        $mapped_data["ferito_3_nome"] = trim(substr($row, 870, 30));
-        $mapped_data["ferito_3_cognome"] = trim(substr($row, 900, 30));
-        $mapped_data["ferito_3_istituto"] = trim(substr($row, 930, 30));
-        $mapped_data["ferito_4_nome"] = trim(substr($row, 960, 30));
-        $mapped_data["ferito_4_cognome"] = trim(substr($row, 990, 30));
-        $mapped_data["ferito_4_istituto"] = trim(substr($row, 1020, 30));
-        $mapped_data["ferito_5_nome"] = trim(substr($row, 1050, 30));
-        $mapped_data["ferito_5_cognome"] = trim(substr($row, 1080, 30));
-        $mapped_data["ferito_5_istituto"] = trim(substr($row, 1110, 30));
-        $mapped_data["ferito_6_nome"] = trim(substr($row, 1140, 30));
-        $mapped_data["ferito_6_cognome"] = trim(substr($row, 1170, 30));
-        $mapped_data["ferito_6_istituto"] = trim(substr($row, 1200, 30));
-        $mapped_data["ferito_7_nome"] = trim(substr($row, 1230, 30));
-        $mapped_data["ferito_7_cognome"] = trim(substr($row, 1260, 30));
-        $mapped_data["ferito_7_istituto"] = trim(substr($row, 1290, 30));
-        $mapped_data["ferito_8_nome"] = trim(substr($row, 1320, 30));
-        $mapped_data["ferito_8_cognome"] = trim(substr($row, 1350, 30));
-        $mapped_data["ferito_8_istituto"] = trim(substr($row, 1380, 30));
-        //$mapped_data["spazio_istat_1"] = trim(substr($row, 1410, 10));
+        $mapped_data["ferito_1_nome"] = trim(mb_substr($row, 690, 30));
+        $mapped_data["ferito_1_cognome"] = trim(mb_substr($row, 720, 30));
+        $mapped_data["ferito_1_istituto"] = trim(mb_substr($row, 750, 30));
+        $mapped_data["ferito_2_nome"] = trim(mb_substr($row, 780, 30));
+        $mapped_data["ferito_2_cognome"] = trim(mb_substr($row, 810, 30));
+        $mapped_data["ferito_2_istituto"] = trim(mb_substr($row, 840, 30));
+        $mapped_data["ferito_3_nome"] = trim(mb_substr($row, 870, 30));
+        $mapped_data["ferito_3_cognome"] = trim(mb_substr($row, 900, 30));
+        $mapped_data["ferito_3_istituto"] = trim(mb_substr($row, 930, 30));
+        $mapped_data["ferito_4_nome"] = trim(mb_substr($row, 960, 30));
+        $mapped_data["ferito_4_cognome"] = trim(mb_substr($row, 990, 30));
+        $mapped_data["ferito_4_istituto"] = trim(mb_substr($row, 1020, 30));
+        $mapped_data["ferito_5_nome"] = trim(mb_substr($row, 1050, 30));
+        $mapped_data["ferito_5_cognome"] = trim(mb_substr($row, 1080, 30));
+        $mapped_data["ferito_5_istituto"] = trim(mb_substr($row, 1110, 30));
+        $mapped_data["ferito_6_nome"] = trim(mb_substr($row, 1140, 30));
+        $mapped_data["ferito_6_cognome"] = trim(mb_substr($row, 1170, 30));
+        $mapped_data["ferito_6_istituto"] = trim(mb_substr($row, 1200, 30));
+        $mapped_data["ferito_7_nome"] = trim(mb_substr($row, 1230, 30));
+        $mapped_data["ferito_7_cognome"] = trim(mb_substr($row, 1260, 30));
+        $mapped_data["ferito_7_istituto"] = trim(mb_substr($row, 1290, 30));
+        $mapped_data["ferito_8_nome"] = trim(mb_substr($row, 1320, 30));
+        $mapped_data["ferito_8_cognome"] = trim(mb_substr($row, 1350, 30));
+        $mapped_data["ferito_8_istituto"] = trim(mb_substr($row, 1380, 30));
+        //$mapped_data["spazio_istat_1"] = trim(mb_substr($row, 1410, 10));
 
         // Specifiche per la georeferenziazione 
-        $mapped_data["tipo_coordinata"] = trim(substr($row, 1420, 1));
-        $mapped_data["sistema_di_proiezione"] = trim(substr($row, 1421, 1));
-        $mapped_data["longitudine"] = str_replace(",", ".", trim(substr($row, 1422, 50)));
-        $mapped_data["latitudine"] = str_replace(",", ".", trim(substr($row, 1472, 50)));
-        //$mapped_data["spazio_istat_2"] = trim(substr($row, 1522, 8));
-        $mapped_data["ora_incidente"] = trim(substr($row, 1530, 2));
-        $mapped_data["minuti_incidente"] = trim(substr($row, 1532, 2));
-        $mapped_data["codice_carabinieri"] = trim(substr($row, 1534, 30));
-        $mapped_data["progressiva_km"] = trim(substr($row, 1564, 4));
-        $mapped_data["progressiva_m"] = trim(substr($row, 1568, 3));
-        $mapped_data["veicolo_1_cilindrata"] = trim(substr($row, 1571, 5));
-        $mapped_data["veicolo_2_cilindrata"] = trim(substr($row, 1576, 5));
-        $mapped_data["veicolo_3_cilindrata"] = trim(substr($row, 1581, 5));
-        //$mapped_data["spazio_istat_3"] = trim(substr($row, 1586, 4));
-        $mapped_data["localizzazione_extra_ab"] = trim(substr($row, 1590, 100));
-        $mapped_data["localita_incidente"] = trim(substr($row, 1690, 40));
+        $mapped_data["tipo_coordinata"] = trim(mb_substr($row, 1420, 1));
+        $mapped_data["sistema_di_proiezione"] = trim(mb_substr($row, 1421, 1));
+        $mapped_data["longitudine"] = str_replace(",", ".", trim(mb_substr($row, 1422, 50)));
+        $mapped_data["latitudine"] = str_replace(",", ".", trim(mb_substr($row, 1472, 50)));
+        //$mapped_data["spazio_istat_2"] = trim(mb_substr($row, 1522, 8));
+        $mapped_data["ora_incidente"] = trim(mb_substr($row, 1530, 2));
+        $mapped_data["minuti_incidente"] = trim(mb_substr($row, 1532, 2));
+        $mapped_data["codice_carabinieri"] = trim(mb_substr($row, 1534, 30));
+        $mapped_data["progressiva_km"] = trim(mb_substr($row, 1564, 4));
+        $mapped_data["progressiva_m"] = trim(mb_substr($row, 1568, 3));
+        $mapped_data["veicolo_1_cilindrata"] = trim(mb_substr($row, 1571, 5));
+        $mapped_data["veicolo_2_cilindrata"] = trim(mb_substr($row, 1576, 5));
+        $mapped_data["veicolo_3_cilindrata"] = trim(mb_substr($row, 1581, 5));
+        //$mapped_data["spazio_istat_3"] = trim(mb_substr($row, 1586, 4));
+        $mapped_data["localizzazione_extra_ab"] = trim(mb_substr($row, 1590, 100));
+        $mapped_data["localita_incidente"] = trim(mb_substr($row, 1690, 40));
 
         // Riservato agli Enti in convenzione con Istat
-        $mapped_data["codice__ente"] = trim(substr($row, 1730, 40));
-        //$mapped_data["spazio_istat_4"] = trim(substr($row, 1770, 10));
+        $mapped_data["codice__ente"] = trim(mb_substr($row, 1730, 40));
+        //$mapped_data["spazio_istat_4"] = trim(mb_substr($row, 1770, 10));
 
         // Specifiche per la registrazione delle informazioni sulla Cittadinanza dei conducenti dei veicoli A, B e C 1781-1882 
-        //$mapped_data["conducente_1_italiano"] = trim(substr($row, 1780, 1));
-        $mapped_data["conducente_1_nazionalita"] = trim(substr($row, 1781, 3));
-        $mapped_data["conducente_1_nazionalita_altro"] = trim(substr($row, 1784, 30));
+        //$mapped_data["conducente_1_italiano"] = trim(mb_substr($row, 1780, 1));
+        $mapped_data["conducente_1_nazionalita"] = trim(mb_substr($row, 1781, 3));
+        $mapped_data["conducente_1_nazionalita_altro"] = trim(mb_substr($row, 1784, 30));
         $mapped_data["conducente_1_nazionalita"] = $mapped_data["conducente_1_nazionalita"] ."-" . $mapped_data["conducente_1_nazionalita_altro"];
-        //$mapped_data["conducente_2_italiano"] = trim(substr($row, 1814, 1));
-        $mapped_data["conducente_2_nazionalita"] = trim(substr($row, 1815, 3));
-        $mapped_data["conducente_2_nazionalita_altro"] = trim(substr($row, 1818, 30));
+        //$mapped_data["conducente_2_italiano"] = trim(mb_substr($row, 1814, 1));
+        $mapped_data["conducente_2_nazionalita"] = trim(mb_substr($row, 1815, 3));
+        $mapped_data["conducente_2_nazionalita_altro"] = trim(mb_substr($row, 1818, 30));
         $mapped_data["conducente_2_nazionalita"] = $mapped_data["conducente_2_nazionalita"] ."-" . $mapped_data["conducente_2_nazionalita_altro"];
-        //$mapped_data["conducente_3_italiano"] = trim(substr($row, 1848, 1));
-        $mapped_data["conducente_3_nazionalita"] = trim(substr($row, 1849, 3));
-        $mapped_data["conducente_3_nazionalita_altro"] = trim(substr($row, 1852, 30));
+        //$mapped_data["conducente_3_italiano"] = trim(mb_substr($row, 1848, 1));
+        $mapped_data["conducente_3_nazionalita"] = trim(mb_substr($row, 1849, 3));
+        $mapped_data["conducente_3_nazionalita_altro"] = trim(mb_substr($row, 1852, 30));
         $mapped_data["conducente_3_nazionalita"] = $mapped_data["conducente_3_nazionalita"] ."-" . $mapped_data["conducente_3_nazionalita_altro"];
 
         // Nuove variabili 2020
-        $mapped_data["veicolo_1_tipo_rimorchio"] = trim(substr($row, 1882, 4));
-        $mapped_data["veicolo_1_targa_rimorchio"] = trim(substr($row, 1886, 10));
-        $mapped_data["veicolo_2_tipo_rimorchio"] = trim(substr($row, 1896, 4));
-        $mapped_data["veicolo_2_targa_rimorchio"] = trim(substr($row, 1900, 10));
-        $mapped_data["veicolo_3_tipo_rimorchio"] = trim(substr($row, 1910, 4));
-        $mapped_data["veicolo_3_targa_rimorchio"] = trim(substr($row, 1914, 10));
-        $mapped_data["codice_strada_aci"] = trim(substr($row, 1924, 15));
+        $mapped_data["veicolo_1_tipo_rimorchio"] = trim(mb_substr($row, 1882, 4));
+        $mapped_data["veicolo_1_targa_rimorchio"] = trim(mb_substr($row, 1886, 10));
+        $mapped_data["veicolo_2_tipo_rimorchio"] = trim(mb_substr($row, 1896, 4));
+        $mapped_data["veicolo_2_targa_rimorchio"] = trim(mb_substr($row, 1900, 10));
+        $mapped_data["veicolo_3_tipo_rimorchio"] = trim(mb_substr($row, 1910, 4));
+        $mapped_data["veicolo_3_targa_rimorchio"] = trim(mb_substr($row, 1914, 10));
+        $mapped_data["codice_strada_aci"] = trim(mb_substr($row, 1924, 15));
 
         $mapped_data["data_incidente"] = "20" . $data_incidente_anno . "-" . $data_incidente_mese . "-" . $data_incidente_giorno;                
 

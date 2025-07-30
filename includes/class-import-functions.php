@@ -44,8 +44,7 @@ class IncidentiImportFunctions {
 
     public function __construct() {
         add_action('admin_menu', array($this, 'add_import_menu'), 21);
-        add_action('admin_post_import_incidenti_csv', array($this, 'handle_txt_import'));
-        add_action('wp_ajax_preview_csv_import', array($this, 'preview_csv_import'));
+        add_action('admin_post_import_incidenti_txt', array($this, 'handle_txt_import'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts')); 
     }
     
@@ -90,27 +89,6 @@ class IncidentiImportFunctions {
     }
     
     /**
-     * Preview CSV import
-     */
-    public function preview_csv_import() {
-        check_ajax_referer('import_incidenti_nonce', 'nonce');
-        
-        if (!current_user_can('edit_posts')) {
-            wp_die();
-        }
-        
-        $uploaded_file = $this->handle_file_upload_ajax();
-        if (is_wp_error($uploaded_file)) {
-            wp_send_json_error($uploaded_file->get_error_message());
-        }
-        
-        $separator = sanitize_text_field($_POST['separator']);
-        $preview_data = $this->parse_csv_preview($uploaded_file, $separator);
-        
-        wp_send_json_success($preview_data);
-    }
-    
-    /**
      * Gestisce l'importazione TXT
      */
     public function handle_txt_import() {
@@ -149,18 +127,18 @@ class IncidentiImportFunctions {
      * Handle file upload
      */
     private function handle_file_upload() {
-        if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {
+        if (!isset($_FILES['txt_file']) || $_FILES['txt_file']['error'] !== UPLOAD_ERR_OK) {
             return new WP_Error('upload_error', __('Errore durante l\'upload del file.', 'incidenti-stradali'));
         }
         
-        $file = $_FILES['csv_file'];
+        $file = $_FILES['txt_file'];
         
         // Validazione tipo file
-        $allowed_types = array('text/csv', 'application/csv', 'text/plain');
+        $allowed_types = array('text/plain');
         $file_type = wp_check_filetype($file['name']);
         
-        if (!in_array($file['type'], $allowed_types) && $file_type['ext'] !== 'csv') {
-            return new WP_Error('invalid_file', __('Il file deve essere in formato CSV.', 'incidenti-stradali'));
+        if (!in_array($file['type'], $allowed_types) && $file_type['ext'] !== 'txt') {
+            return new WP_Error('invalid_file', __('Il file deve essere in formato TXT.', 'incidenti-stradali'));
         }
         
         // Validazione dimensione (max 10MB)
@@ -170,7 +148,7 @@ class IncidentiImportFunctions {
         
         // Sposta file nella directory temporanea
         $upload_dir = wp_upload_dir();
-        $temp_file = $upload_dir['path'] . '/temp_import_' . uniqid() . '.csv';
+        $temp_file = $upload_dir['path'] . '/temp_import_' . uniqid() . '.txt';
         
         if (!move_uploaded_file($file['tmp_name'], $temp_file)) {
             return new WP_Error('move_error', __('Impossibile salvare il file temporaneo.', 'incidenti-stradali'));
@@ -183,7 +161,7 @@ class IncidentiImportFunctions {
      * Handle AJAX file upload
      */
     private function handle_file_upload_ajax() {
-        if (!isset($_FILES['csv_file'])) {
+        if (!isset($_FILES['txt_file'])) {
             return new WP_Error('no_file', __('Nessun file selezionato.', 'incidenti-stradali'));
         }
         
@@ -191,77 +169,7 @@ class IncidentiImportFunctions {
     }
     
     /**
-     * Parse CSV for preview
-     */
-    private function parse_csv_preview($file_path, $separator = ',') {
-        if (!file_exists($file_path)) {
-            return array('error' => __('File non trovato.', 'incidenti-stradali'));
-        }
-        
-        $handle = fopen($file_path, 'r');
-        if (!$handle) {
-            return array('error' => __('Impossibile leggere il file.', 'incidenti-stradali'));
-        }
-        
-        // Leggi header
-        $header = fgetcsv($handle, 0, $separator);
-        if (!$header) {
-            fclose($handle);
-            return array('error' => __('Header del CSV non valido.', 'incidenti-stradali'));
-        }
-        
-        // Mappa campi richiesti
-        $required_fields = array(
-            'data_incidente',
-            'ora_incidente', 
-            'comune_incidente',
-            'denominazione_strada',
-            'numero_veicoli_coinvolti'
-        );
-        
-        $field_mapping = $this->map_txt_fields($header, $required_fields);
-        
-        $preview_data = array();
-        $total_rows = 0;
-        $valid_rows = 0;
-        $error_rows = 0;
-        $errors = array();
-        /*
-        // Leggi prime 10 righe per preview
-        while (($row = fgetcsv($handle, 0, $separator)) !== FALSE && $total_rows < 10) {
-            $total_rows++;
-            
-            $mapped_data = $this->map_row_data($row, $field_mapping, $header);
-            $validation_result = $this->validate_row_data($mapped_data);
-            
-            if ($validation_result['valid']) {
-                $valid_rows++;
-            } else {
-                $error_rows++;
-                $errors = array_merge($errors, $validation_result['errors']);
-            }
-            
-            $preview_data[] = array(
-                'data' => $mapped_data,
-                'valid' => $validation_result['valid'],
-                'errors' => $validation_result['errors']
-            );
-        }
-        
-        fclose($handle);
-        */
-        return array(
-            'total_rows' => $total_rows,
-            'valid_rows' => $valid_rows,
-            'error_rows' => $error_rows,
-            'preview' => $preview_data,
-            'errors' => array_unique($errors),
-            'field_mapping' => $field_mapping
-        );
-    }
-    
-    /**
-     * Process full CSV file
+     * Process full TXT file
      */
     private function process_txt_file($file_path) {      
         $handle = fopen($file_path, 'r');
@@ -318,25 +226,7 @@ class IncidentiImportFunctions {
             'errors' => $errors
         );
     }
-    
-    /**
-     * Map CSV fields to internal fields
-     */
-    private function map_txt_fields($header, $required_fields) {
-        $mapping = array();
-        
-        foreach ($header as $index => $field_name) {
-            $clean_field = strtolower(trim($field_name));
-            $clean_field = str_replace(array(' ', '-'), '_', $clean_field);
-            
-            if (in_array($clean_field, $required_fields)) {
-                $mapping[$clean_field] = $index;
-            }
-        }
-        
-        return $mapping;
-    }
-    
+     
     /**
      * Map row data using field mapping
      */
@@ -995,7 +885,7 @@ class IncidentiImportFunctions {
     }
     
     /**
-     * Create incidente from CSV data
+     * Create incidente from TXT data
      */
     private function create_incidente_from_data($data) {
         // Crea il post

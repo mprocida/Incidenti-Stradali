@@ -1603,7 +1603,6 @@ jQuery(document).ready(function($) {
             console.log('Reset cliccato');
             
             $('#import-form')[0].reset();
-            $('#csv-preview-section').hide();
             $('#import-submit-btn').prop('disabled', true);
             $('#import-preview-btn').prop('disabled', true);
         });

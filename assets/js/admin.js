@@ -1555,6 +1555,61 @@ jQuery(document).ready(function($) {
 });
 
 /**
+ * Import functionality - VERSIONE CORRETTA STANDALONE
+ */
+jQuery(document).ready(function($) {
+    'use strict';
+    
+    // Controlla se siamo nella pagina di import
+    if ($('.incidenti-import-page').length) {
+        console.log('Pagina import caricata');
+        
+        // Gestione cambio file
+        $('#txt_file').on('change', function() {
+            console.log('File cambiato');
+            
+            var file = this.files[0];
+            
+            if (file) {
+                console.log('File selezionato:', file.name);
+                
+                // Validazione tipo file
+                if (!file.name.toLowerCase().endsWith('.txt')) {
+                    alert('Seleziona un file TXT valido.');
+                    $('#import-submit-btn').prop('disabled', true);
+                    return;
+                }
+                
+                // Abilita direttamente il bottone importa
+                $('#import-submit-btn').prop('disabled', false);
+            } else {
+                console.log('Nessun file selezionato');
+                $('#import-submit-btn').prop('disabled', true);
+            }
+        });
+        
+        // Submit importazione
+        $('#import-submit-btn').on('click', function() {
+            if (!confirm('Sei sicuro di voler importare questi dati? L\'operazione non può essere annullata.')) {
+                return;
+            }
+            
+            $(this).prop('disabled', true).text('Importazione in corso...');
+            $('#import-form').submit();
+        });
+        
+        // Reset form
+        $('#import-reset-btn').on('click', function() {
+            console.log('Reset cliccato');
+            
+            $('#import-form')[0].reset();
+            $('#import-submit-btn').prop('disabled', true);
+            $('#import-preview-btn').prop('disabled', true);
+        });
+    }
+});
+
+/**
  * Additional admin utilities
  */
 (function($) {

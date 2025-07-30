@@ -897,7 +897,8 @@ class IncidentiImportFunctions {
                 $data['data_incidente'],
                 $data['denominazione_strada']
             ),
-            'post_author' => get_current_user_id()
+            //'post_author' => get_current_user_id()
+            'post_author' => $this->get_or_create_import_user()
         );
         
         $post_id = wp_insert_post($post_data);
@@ -1143,6 +1144,36 @@ class IncidentiImportFunctions {
         }
         
         return $post_id;
+    }
+
+    /**
+     * Ottieni o crea l'utente per le importazioni
+     */
+    private function get_or_create_import_user() {
+        // Cerca l'utente esistente
+        $user = get_user_by('login', 'importuser');
+        
+        if ($user) {
+            return $user->ID;
+        }
+        
+        // Se non esiste, crealo
+        $user_id = wp_create_user(
+            'importuser',                    // username
+            wp_generate_password(),          // password casuale
+            'import@' . get_bloginfo('url')  // email
+        );
+        
+        if (is_wp_error($user_id)) {
+            // Se fallisce la creazione, usa l'utente corrente
+            return get_current_user_id();
+        }
+        
+        // Assegna il ruolo "Import" (se esiste)
+        $user = new WP_User($user_id);
+        $user->set_role('import');
+        
+        return $user_id;
     }
     
     /**

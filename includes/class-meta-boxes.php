@@ -29,6 +29,10 @@ class IncidentiMetaBoxes {
         add_filter('bulk_actions-edit-incidente_stradale', array($this, 'remove_bulk_actions_for_asset'));
         add_action('admin_head', array($this, 'hide_asset_ui_elements'));
         add_action('admin_init', array($this, 'customize_asset_list_view'));
+
+        // NUOVO: Azioni per pubblicazione in massa
+        add_filter('bulk_actions-edit-incidente_stradale', array($this, 'add_publish_bulk_actions'));
+        add_filter('handle_bulk_actions-edit-incidente_stradale', array($this, 'handle_publish_bulk_actions'), 10, 3);
     }
     
     public function add_meta_boxes() {
@@ -6115,6 +6119,64 @@ class IncidentiMetaBoxes {
     }
 
     /**
+     * Aggiunge azioni di pubblicazione alle bulk actions
+     */
+    public function add_publish_bulk_actions($bulk_actions) {
+        $bulk_actions['publish_incidenti'] = __('Pubblica', 'incidenti-stradali');
+        return $bulk_actions;
+    }
+
+    /**
+     * Gestisce l'azione di pubblicazione in massa
+     */
+    public function handle_publish_bulk_actions($redirect_to, $doaction, $post_ids) {
+        if ($doaction !== 'publish_incidenti') {
+            return $redirect_to;
+        }
+        
+        $processed = 0;
+        $errors = array();
+        
+        foreach ($post_ids as $post_id) {
+            if (get_post_type($post_id) !== 'incidente_stradale') {
+                continue;
+            }
+            
+            // Verifica permessi
+            if (!current_user_can('publish_posts') || !current_user_can('edit_post', $post_id)) {
+                $errors[] = sprintf(__('Non hai i permessi per pubblicare l\'incidente #%d', 'incidenti-stradali'), $post_id);
+                continue;
+            }
+            
+            // Pubblica il post
+            $result = wp_update_post(array(
+                'ID' => $post_id,
+                'post_status' => 'publish'
+            ));
+            
+            if ($result && !is_wp_error($result)) {
+                $processed++;
+            } else {
+                $errors[] = sprintf(__('Errore nella pubblicazione dell\'incidente #%d', 'incidenti-stradali'), $post_id);
+            }
+        }
+        
+        // Aggiungi risultati alla URL di redirect
+        $redirect_to = add_query_arg(array(
+            'incidenti_published' => $processed,
+            'incidenti_errors' => count($errors),
+            'incidenti_action' => 'publish'
+        ), $redirect_to);
+        
+        // Salva errori in transient se presenti
+        if (!empty($errors)) {
+            set_transient('incidenti_publish_errors_' . get_current_user_id(), $errors, 45);
+        }
+        
+        return $redirect_to;
+    }
+
+    /**
      * Rimuove le azioni di gruppo per utenti Asset
      */
     public function remove_bulk_actions_for_asset($bulk_actions) {
@@ -6126,6 +6188,7 @@ class IncidentiMetaBoxes {
             // ALTERNATIVA: Rimuovi solo alcune azioni specifiche
             // unset($bulk_actions['trash']);
             // unset($bulk_actions['edit']);
+            // unset($bulk_actions['publish_incidenti']); // Rimuovi anche la pubblicazione
             // return $bulk_actions;
         }
         return $bulk_actions;

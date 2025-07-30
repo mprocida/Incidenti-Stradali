@@ -1159,7 +1159,7 @@ class IncidentiImportFunctions {
      */
     public function enqueue_admin_scripts($hook) {
         // Carica solo nella pagina di import
-        if ($hook !== 'incidente_stradale_page_incidenti-import') {
+        /* if ($hook !== 'incidente_stradale_page_incidenti-import') {
             return;
         }
         
@@ -1169,7 +1169,7 @@ class IncidentiImportFunctions {
             array('jquery'),
             '1.0.0',
             true
-        );
+        ); */
         
         // Passa variabili JavaScript
         wp_localize_script('incidenti-admin-js', 'incidenti_ajax', array(

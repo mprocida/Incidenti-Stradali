@@ -20,7 +20,7 @@
                         <label for="txt_file"><?php _e('File TXT', 'incidenti-stradali'); ?></label>
                     </th>
                     <td>
-                        <input type="file" id="txt_file" name="txt_file" accept=".txt" required>
+                        <input type="file" id="txt_file" name="txt_file" accept=".txt">
                         <p class="description"><?php _e('Seleziona il file TXT da importare (max 10MB).', 'incidenti-stradali'); ?></p>
                     </td>
                 </tr>

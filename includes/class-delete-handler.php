@@ -203,6 +203,42 @@ class IncidentiDeleteHandler {
                 }
             }
         }
+
+        if (isset($_GET['incidenti_published']) || isset($_GET['incidenti_action']) && $_GET['incidenti_action'] === 'publish') {
+            $published = isset($_GET['incidenti_published']) ? intval($_GET['incidenti_published']) : 0;
+            $errors_count = isset($_GET['incidenti_errors']) ? intval($_GET['incidenti_errors']) : 0;
+            
+            if ($published > 0) {
+                $message = sprintf(
+                    _n(
+                        '%d incidente pubblicato con successo.',
+                        '%d incidenti pubblicati con successo.',
+                        $published,
+                        'incidenti-stradali'
+                    ),
+                    $published
+                );
+                echo '<div class="notice notice-success is-dismissible">';
+                echo '<p>' . esc_html($message) . '</p>';
+                echo '</div>';
+            }
+            
+            if ($errors_count > 0) {
+                $errors = get_transient('incidenti_publish_errors_' . get_current_user_id());
+                if ($errors) {
+                    echo '<div class="notice notice-error is-dismissible">';
+                    echo '<p><strong>Errori durante la pubblicazione:</strong></p>';
+                    echo '<ul>';
+                    foreach ($errors as $error) {
+                        echo '<li>' . esc_html($error) . '</li>';
+                    }
+                    echo '</ul>';
+                    echo '</div>';
+                    
+                    delete_transient('incidenti_publish_errors_' . get_current_user_id());
+                }
+            }
+        }
     }
     
     /**

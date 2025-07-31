@@ -1197,11 +1197,11 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'geometria_strada');
             
             // Circostanze
-            $row[] = $this->safe_meta_string($post_id, 'csv_omissione');
-            $row[] = $this->safe_meta_string($post_id, 'csv_contromano');
-            $row[] = $this->safe_meta_string($post_id, 'csv_dettaglio_persone_decedute');
-            $row[] = $this->safe_meta_string($post_id, 'csv_positivita');
-            $row[] = $this->safe_meta_string($post_id, 'csv_art_cds');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_contromano');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_dettaglio_persone_decedute');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_positivita');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_art_cds');
             
             // Coordinate
             $row[] = $this->safe_meta_string($post_id, 'latitudine');

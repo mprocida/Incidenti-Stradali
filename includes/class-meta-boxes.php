@@ -163,7 +163,7 @@ class IncidentiMetaBoxes {
         /* add_meta_box(
             'incidente_dati_csv',
             __('Dati per esportazione CSV', 'incidenti-stradali'),
-            array($this, 'render_dati_csv_meta_box'),
+            array($this, 'render_dati_xlsx_meta_box'),
             'incidente_stradale',
             'normal',
             'low'
@@ -469,82 +469,82 @@ class IncidentiMetaBoxes {
         <?php
     }
 
-    public function render_dati_csv_meta_box($post) {
+    public function render_dati_xlsx_meta_box($post) {
         ?>
         <div class="incidenti-dati-csv-container">
             <table class="form-table">
                 <!-- Tipo Strada -->
                 <tr>
-                    <th><label for="csv_tipo_strada"><?php _e('Tipo Strada', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_tipo_strada"><?php _e('Tipo Strada', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_tipo_strada" name="csv_tipo_strada">
+                        <select id="xlsx_tipo_strada" name="xlsx_tipo_strada">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="1" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '1'); ?>><?php _e('Fuoriuscita/Sbandamento', 'incidenti-stradali'); ?></option>
-                            <option value="2" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '2'); ?>><?php _e('Investimento animale', 'incidenti-stradali'); ?></option>
-                            <option value="3" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '3'); ?>><?php _e('Investimento pedone', 'incidenti-stradali'); ?></option>
-                            <option value="4" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '4'); ?>><?php _e('Scontro frontale', 'incidenti-stradali'); ?></option>
-                            <option value="5" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '5'); ?>><?php _e('Scontro laterale', 'incidenti-stradali'); ?></option>
-                            <option value="6" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '6'); ?>><?php _e('Tamponamento', 'incidenti-stradali'); ?></option>
-                            <option value="7" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '7'); ?>><?php _e('Urto con ostacolo fisso', 'incidenti-stradali'); ?></option>
-                            <option value="8" <?php selected(get_post_meta($post->ID, 'csv_tipo_strada', true), '8'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
+                            <option value="1" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '1'); ?>><?php _e('Fuoriuscita/Sbandamento', 'incidenti-stradali'); ?></option>
+                            <option value="2" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '2'); ?>><?php _e('Investimento animale', 'incidenti-stradali'); ?></option>
+                            <option value="3" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '3'); ?>><?php _e('Investimento pedone', 'incidenti-stradali'); ?></option>
+                            <option value="4" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '4'); ?>><?php _e('Scontro frontale', 'incidenti-stradali'); ?></option>
+                            <option value="5" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '5'); ?>><?php _e('Scontro laterale', 'incidenti-stradali'); ?></option>
+                            <option value="6" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '6'); ?>><?php _e('Tamponamento', 'incidenti-stradali'); ?></option>
+                            <option value="7" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '7'); ?>><?php _e('Urto con ostacolo fisso', 'incidenti-stradali'); ?></option>
+                            <option value="8" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '8'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
 
                 <!-- Centro Abitato -->
                 <tr>
-                    <th><label for="csv_centro_abitato"><?php _e('Centro Abitato', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_centro_abitato"><?php _e('Centro Abitato', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_centro_abitato" name="csv_centro_abitato">
+                        <select id="xlsx_centro_abitato" name="xlsx_centro_abitato">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="S" <?php selected(get_post_meta($post->ID, 'csv_centro_abitato', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
-                            <option value="N" <?php selected(get_post_meta($post->ID, 'csv_centro_abitato', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
+                            <option value="S" <?php selected(get_post_meta($post->ID, 'xlsx_centro_abitato', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
+                            <option value="N" <?php selected(get_post_meta($post->ID, 'xlsx_centro_abitato', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
 
                 <!-- Caratteristiche -->
                 <tr>
-                    <th><label for="csv_caratteristiche"><?php _e('Caratteristiche', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_caratteristiche"><?php _e('Caratteristiche', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_caratteristiche" name="csv_caratteristiche">
+                        <select id="xlsx_caratteristiche" name="xlsx_caratteristiche">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="1" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '1'); ?>><?php _e('Non specificato', 'incidenti-stradali'); ?></option>
-                            <option value="2" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '2'); ?>><?php _e('Incrocio', 'incidenti-stradali'); ?></option>
-                            <option value="3" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '3'); ?>><?php _e('Rotatoria', 'incidenti-stradali'); ?></option>
-                            <option value="4" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '4'); ?>><?php _e('Intersezione segnalata', 'incidenti-stradali'); ?></option>
-                            <option value="5" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '5'); ?>><?php _e('Intersezione con semaforo o vigile', 'incidenti-stradali'); ?></option>
-                            <option value="6" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '6'); ?>><?php _e('Intersezione non segnalata', 'incidenti-stradali'); ?></option>
-                            <option value="7" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '7'); ?>><?php _e('Passaggio a livello', 'incidenti-stradali'); ?></option>
-                            <option value="8" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '8'); ?>><?php _e('Rettilineo', 'incidenti-stradali'); ?></option>
-                            <option value="9" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '9'); ?>><?php _e('Curva', 'incidenti-stradali'); ?></option>
-                            <option value="10" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '10'); ?>><?php _e('Raccordo convesso (dosso)', 'incidenti-stradali'); ?></option>
-                            <option value="11" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '11'); ?>><?php _e('Pendenza pericolosa', 'incidenti-stradali'); ?></option>
-                            <option value="12" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '12'); ?>><?php _e('Galleria illuminata', 'incidenti-stradali'); ?></option>
-                            <option value="13" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '13'); ?>><?php _e('Galleria non illuminata', 'incidenti-stradali'); ?></option>
-                            <option value="14" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '14'); ?>><?php _e('Intersezione con semaf. giallo. lampegg.', 'incidenti-stradali'); ?></option>
-                            <option value="15" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '15'); ?>><?php _e('Passaggio a livello custodito', 'incidenti-stradali'); ?></option>
-                            <option value="16" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '16'); ?>><?php _e('Passaggio a livello non custodito', 'incidenti-stradali'); ?></option>
-                            <option value="17" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '17'); ?>><?php _e('Raccordo concavo (cunetta)', 'incidenti-stradali'); ?></option>
-                            <option value="18" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '18'); ?>><?php _e('Strettoia', 'incidenti-stradali'); ?></option>
-                            <option value="19" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '19'); ?>><?php _e('Pianeggiante', 'incidenti-stradali'); ?></option>
-                            <option value="20" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '20'); ?>><?php _e('Curva a destra', 'incidenti-stradali'); ?></option>
-                            <option value="21" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '21'); ?>><?php _e('Curva a sinistra', 'incidenti-stradali'); ?></option>
-                            <option value="22" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '22'); ?>><?php _e('Salita', 'incidenti-stradali'); ?></option>
-                            <option value="23" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '23'); ?>><?php _e('Discesa', 'incidenti-stradali'); ?></option>
-                            <option value="24" <?php selected(get_post_meta($post->ID, 'csv_caratteristiche', true), '24'); ?>><?php _e('Viadotto', 'incidenti-stradali'); ?></option>
+                            <option value="1" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '1'); ?>><?php _e('Non specificato', 'incidenti-stradali'); ?></option>
+                            <option value="2" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '2'); ?>><?php _e('Incrocio', 'incidenti-stradali'); ?></option>
+                            <option value="3" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '3'); ?>><?php _e('Rotatoria', 'incidenti-stradali'); ?></option>
+                            <option value="4" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '4'); ?>><?php _e('Intersezione segnalata', 'incidenti-stradali'); ?></option>
+                            <option value="5" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '5'); ?>><?php _e('Intersezione con semaforo o vigile', 'incidenti-stradali'); ?></option>
+                            <option value="6" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '6'); ?>><?php _e('Intersezione non segnalata', 'incidenti-stradali'); ?></option>
+                            <option value="7" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '7'); ?>><?php _e('Passaggio a livello', 'incidenti-stradali'); ?></option>
+                            <option value="8" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '8'); ?>><?php _e('Rettilineo', 'incidenti-stradali'); ?></option>
+                            <option value="9" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '9'); ?>><?php _e('Curva', 'incidenti-stradali'); ?></option>
+                            <option value="10" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '10'); ?>><?php _e('Raccordo convesso (dosso)', 'incidenti-stradali'); ?></option>
+                            <option value="11" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '11'); ?>><?php _e('Pendenza pericolosa', 'incidenti-stradali'); ?></option>
+                            <option value="12" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '12'); ?>><?php _e('Galleria illuminata', 'incidenti-stradali'); ?></option>
+                            <option value="13" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '13'); ?>><?php _e('Galleria non illuminata', 'incidenti-stradali'); ?></option>
+                            <option value="14" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '14'); ?>><?php _e('Intersezione con semaf. giallo. lampegg.', 'incidenti-stradali'); ?></option>
+                            <option value="15" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '15'); ?>><?php _e('Passaggio a livello custodito', 'incidenti-stradali'); ?></option>
+                            <option value="16" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '16'); ?>><?php _e('Passaggio a livello non custodito', 'incidenti-stradali'); ?></option>
+                            <option value="17" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '17'); ?>><?php _e('Raccordo concavo (cunetta)', 'incidenti-stradali'); ?></option>
+                            <option value="18" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '18'); ?>><?php _e('Strettoia', 'incidenti-stradali'); ?></option>
+                            <option value="19" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '19'); ?>><?php _e('Pianeggiante', 'incidenti-stradali'); ?></option>
+                            <option value="20" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '20'); ?>><?php _e('Curva a destra', 'incidenti-stradali'); ?></option>
+                            <option value="21" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '21'); ?>><?php _e('Curva a sinistra', 'incidenti-stradali'); ?></option>
+                            <option value="22" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '22'); ?>><?php _e('Salita', 'incidenti-stradali'); ?></option>
+                            <option value="23" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '23'); ?>><?php _e('Discesa', 'incidenti-stradali'); ?></option>
+                            <option value="24" <?php selected(get_post_meta($post->ID, 'xlsx_caratteristiche', true), '24'); ?>><?php _e('Viadotto', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
 
                 <!-- Cantiere Stradale -->
                 <tr>
-                    <th><label for="csv_cantiere_stradale"><?php _e('Cantiere Stradale', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_cantiere_stradale"><?php _e('Cantiere Stradale', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_cantiere_stradale" name="csv_cantiere_stradale">
+                        <select id="xlsx_cantiere_stradale" name="xlsx_cantiere_stradale">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="S" <?php selected(get_post_meta($post->ID, 'csv_cantiere_stradale', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
-                            <option value="N" <?php selected(get_post_meta($post->ID, 'csv_cantiere_stradale', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
+                            <option value="S" <?php selected(get_post_meta($post->ID, 'xlsx_cantiere_stradale', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
+                            <option value="N" <?php selected(get_post_meta($post->ID, 'xlsx_cantiere_stradale', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
@@ -554,121 +554,121 @@ class IncidentiMetaBoxes {
                     <th colspan="2"><h4><?php _e('Numero Veicoli Coinvolti', 'incidenti-stradali'); ?></h4></th>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_autovettura"><?php _e('N.Autovettura', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_autovettura" name="csv_n_autovettura" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_autovettura', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_autovettura"><?php _e('N.Autovettura', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_autovettura" name="xlsx_n_autovettura" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autovettura', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_autocarro_35t"><?php _e('N.Autocarro fino 3,5t', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_autocarro_35t" name="csv_n_autocarro_35t" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_autocarro_35t', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_autocarro_35t"><?php _e('N.Autocarro fino 3,5t', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_autocarro_35t" name="xlsx_n_autocarro_35t" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autocarro_35t', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_autocarro_oltre_35t"><?php _e('N_Autocarro > 3,5t', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_autocarro_oltre_35t" name="csv_n_autocarro_oltre_35t" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_autocarro_oltre_35t', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_autocarro_oltre_35t"><?php _e('N_Autocarro > 3,5t', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_autocarro_oltre_35t" name="xlsx_n_autocarro_oltre_35t" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autocarro_oltre_35t', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_autotreno"><?php _e('N_Autotreno', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_autotreno" name="csv_n_autotreno" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_autotreno', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_autotreno"><?php _e('N_Autotreno', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_autotreno" name="xlsx_n_autotreno" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autotreno', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_autoarticolato"><?php _e('N_Autoarticolato', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_autoarticolato" name="csv_n_autoarticolato" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_autoarticolato', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_autoarticolato"><?php _e('N_Autoarticolato', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_autoarticolato" name="xlsx_n_autoarticolato" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autoarticolato', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_autobus"><?php _e('N_Autobus', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_autobus" name="csv_n_autobus" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_autobus', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_autobus"><?php _e('N_Autobus', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_autobus" name="xlsx_n_autobus" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autobus', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_tram"><?php _e('N_Tram', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_tram" name="csv_n_tram" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_tram', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_tram"><?php _e('N_Tram', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_tram" name="xlsx_n_tram" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_tram', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_treno"><?php _e('N_Treno', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_treno" name="csv_n_treno" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_treno', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_treno"><?php _e('N_Treno', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_treno" name="xlsx_n_treno" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_treno', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_motociclo"><?php _e('N_Motociclo', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_motociclo" name="csv_n_motociclo" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_motociclo', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_motociclo"><?php _e('N_Motociclo', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_motociclo" name="xlsx_n_motociclo" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_motociclo', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_ciclomotore"><?php _e('N_Ciclomotore', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_ciclomotore" name="csv_n_ciclomotore" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_ciclomotore', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_ciclomotore"><?php _e('N_Ciclomotore', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_ciclomotore" name="xlsx_n_ciclomotore" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_ciclomotore', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_velocipede"><?php _e('N_Velocipede', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_velocipede" name="csv_n_velocipede" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_velocipede', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_velocipede"><?php _e('N_Velocipede', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_velocipede" name="xlsx_n_velocipede" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_velocipede', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_bicicletta_assistita"><?php _e('N_Bicicletta a pedali assistita', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_bicicletta_assistita" name="csv_n_bicicletta_assistita" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_bicicletta_assistita', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_bicicletta_assistita"><?php _e('N_Bicicletta a pedali assistita', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_bicicletta_assistita" name="xlsx_n_bicicletta_assistita" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_bicicletta_assistita', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_monopattini"><?php _e('N_Monopattini elettrici', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_monopattini" name="csv_n_monopattini" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_monopattini', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_monopattini"><?php _e('N_Monopattini elettrici', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_monopattini" name="xlsx_n_monopattini" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_monopattini', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_altri_micromobilita"><?php _e('N_Altri dispositivi micromobilità', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_altri_micromobilita" name="csv_n_altri_micromobilita" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_altri_micromobilita', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_altri_micromobilita"><?php _e('N_Altri dispositivi micromobilità', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_altri_micromobilita" name="xlsx_n_altri_micromobilita" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_altri_micromobilita', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
-                    <th><label for="csv_n_altri_veicoli"><?php _e('N_Altri Veicoli', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="csv_n_altri_veicoli" name="csv_n_altri_veicoli" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_n_altri_veicoli', true)); ?>" min="0" max="999"></td>
+                    <th><label for="xlsx_n_altri_veicoli"><?php _e('N_Altri Veicoli', 'incidenti-stradali'); ?></label></th>
+                    <td><input type="number" id="xlsx_n_altri_veicoli" name="xlsx_n_altri_veicoli" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_altri_veicoli', true)); ?>" min="0" max="999"></td>
                 </tr>
 
                 <!-- Altri campi -->
                 <tr>
-                    <th><label for="csv_trasportanti_merci_pericolose"><?php _e('Trasportanti merci pericolose', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_trasportanti_merci_pericolose"><?php _e('Trasportanti merci pericolose', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_trasportanti_merci_pericolose" name="csv_trasportanti_merci_pericolose">
+                        <select id="xlsx_trasportanti_merci_pericolose" name="xlsx_trasportanti_merci_pericolose">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="S" <?php selected(get_post_meta($post->ID, 'csv_trasportanti_merci_pericolose', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
-                            <option value="N" <?php selected(get_post_meta($post->ID, 'csv_trasportanti_merci_pericolose', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
+                            <option value="S" <?php selected(get_post_meta($post->ID, 'xlsx_trasportanti_merci_pericolose', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
+                            <option value="N" <?php selected(get_post_meta($post->ID, 'xlsx_trasportanti_merci_pericolose', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="csv_omissione"><?php _e('Omissione', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_omissione"><?php _e('Omissione', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_omissione" name="csv_omissione">
+                        <select id="xlsx_omissione" name="xlsx_omissione">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="S" <?php selected(get_post_meta($post->ID, 'csv_omissione', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
-                            <option value="N" <?php selected(get_post_meta($post->ID, 'csv_omissione', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
+                            <option value="S" <?php selected(get_post_meta($post->ID, 'xlsx_omissione', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
+                            <option value="N" <?php selected(get_post_meta($post->ID, 'xlsx_omissione', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="csv_contromano"><?php _e('Contromano', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_contromano"><?php _e('Contromano', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_contromano" name="csv_contromano">
+                        <select id="xlsx_contromano" name="xlsx_contromano">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="S" <?php selected(get_post_meta($post->ID, 'csv_contromano', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
-                            <option value="N" <?php selected(get_post_meta($post->ID, 'csv_contromano', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
+                            <option value="S" <?php selected(get_post_meta($post->ID, 'xlsx_contromano', true), 'S'); ?>><?php _e('Sì', 'incidenti-stradali'); ?></option>
+                            <option value="N" <?php selected(get_post_meta($post->ID, 'xlsx_contromano', true), 'N'); ?>><?php _e('No', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="csv_dettaglio_persone_decedute"><?php _e('Dettaglio Persone Decedute', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_dettaglio_persone_decedute"><?php _e('Dettaglio Persone Decedute', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <textarea id="csv_dettaglio_persone_decedute" name="csv_dettaglio_persone_decedute" rows="3" class="regular-text"><?php echo esc_textarea(get_post_meta($post->ID, 'csv_dettaglio_persone_decedute', true)); ?></textarea>
+                        <textarea id="xlsx_dettaglio_persone_decedute" name="xlsx_dettaglio_persone_decedute" rows="3" class="regular-text"><?php echo esc_textarea(get_post_meta($post->ID, 'xlsx_dettaglio_persone_decedute', true)); ?></textarea>
                         <p class="description"><?php _e('Formato: tipo_veicolo_ruolo_età_sesso. Separare dati con "_" e persone con ";"<br>Esempio: Motociclo_Conducente_15_M;Pedone_Pedone_25_F;', 'incidenti-stradali'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="csv_positivita"><?php _e('Positività', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_positivita"><?php _e('Positività', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="csv_positivita" name="csv_positivita">
+                        <select id="xlsx_positivita" name="xlsx_positivita">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="Entrambi" <?php selected(get_post_meta($post->ID, 'csv_positivita', true), 'Entrambi'); ?>><?php _e('Entrambi', 'incidenti-stradali'); ?></option>
-                            <option value="Alcol" <?php selected(get_post_meta($post->ID, 'csv_positivita', true), 'Alcol'); ?>><?php _e('Alcol', 'incidenti-stradali'); ?></option>
-                            <option value="Droga" <?php selected(get_post_meta($post->ID, 'csv_positivita', true), 'Droga'); ?>><?php _e('Droga', 'incidenti-stradali'); ?></option>
-                            <option value="Negativo" <?php selected(get_post_meta($post->ID, 'csv_positivita', true), 'Negativo'); ?>><?php _e('Negativo', 'incidenti-stradali'); ?></option>
+                            <option value="Entrambi" <?php selected(get_post_meta($post->ID, 'xlsx_positivita', true), 'Entrambi'); ?>><?php _e('Entrambi', 'incidenti-stradali'); ?></option>
+                            <option value="Alcol" <?php selected(get_post_meta($post->ID, 'xlsx_positivita', true), 'Alcol'); ?>><?php _e('Alcol', 'incidenti-stradali'); ?></option>
+                            <option value="Droga" <?php selected(get_post_meta($post->ID, 'xlsx_positivita', true), 'Droga'); ?>><?php _e('Droga', 'incidenti-stradali'); ?></option>
+                            <option value="Negativo" <?php selected(get_post_meta($post->ID, 'xlsx_positivita', true), 'Negativo'); ?>><?php _e('Negativo', 'incidenti-stradali'); ?></option>
                         </select>
                         <p class="description"><?php _e('"Entrambi": uno o più conducenti positivi ad alcol e droga; "Alcol": solo ad alcol; "Droga": solo a droga; "Negativo": nessun conducente positivo', 'incidenti-stradali'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="csv_art_cds"><?php _e('Art Cds', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_art_cds"><?php _e('Art Cds', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <input type="text" id="csv_art_cds" name="csv_art_cds" value="<?php echo esc_attr(get_post_meta($post->ID, 'csv_art_cds', true)); ?>" class="regular-text">
+                        <input type="text" id="xlsx_art_cds" name="xlsx_art_cds" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_art_cds', true)); ?>" class="regular-text">
                         <p class="description"><?php _e('Formato: articolo/comma. Separare violazioni con ";"<br>Esempio: 189/9;186/3', 'incidenti-stradali'); ?></p>
                     </td>
                 </tr>
@@ -5097,12 +5097,12 @@ class IncidentiMetaBoxes {
             'conducente_1_tipo_cittadinanza', 'conducente_2_tipo_cittadinanza', 'conducente_3_tipo_cittadinanza',
 
             // Dati CSV
-            'csv_tipo_strada', 'csv_centro_abitato', 'csv_caratteristiche', 'csv_cantiere_stradale',
-            'csv_n_autovettura', 'csv_n_autocarro_35t', 'csv_n_autocarro_oltre_35t', 'csv_n_autotreno',
-            'csv_n_autoarticolato', 'csv_n_autobus', 'csv_n_tram', 'csv_n_treno', 'csv_n_motociclo',
-            'csv_n_ciclomotore', 'csv_n_velocipede', 'csv_n_bicicletta_assistita', 'csv_n_monopattini',
-            'csv_n_altri_micromobilita', 'csv_n_altri_veicoli', 'csv_trasportanti_merci_pericolose',
-            'csv_omissione', 'csv_contromano', 'csv_dettaglio_persone_decedute', 'csv_positivita', 'csv_art_cds',
+            'xlsx_tipo_strada', 'xlsx_centro_abitato', 'xlsx_caratteristiche', 'xlsx_cantiere_stradale',
+            'xlsx_n_autovettura', 'xlsx_n_autocarro_35t', 'xlsx_n_autocarro_oltre_35t', 'xlsx_n_autotreno',
+            'xlsx_n_autoarticolato', 'xlsx_n_autobus', 'xlsx_n_tram', 'xlsx_n_treno', 'xlsx_n_motociclo',
+            'xlsx_n_ciclomotore', 'xlsx_n_velocipede', 'xlsx_n_bicicletta_assistita', 'xlsx_n_monopattini',
+            'xlsx_n_altri_micromobilita', 'xlsx_n_altri_veicoli', 'xlsx_trasportanti_merci_pericolose',
+            'xlsx_omissione', 'xlsx_contromano', 'xlsx_dettaglio_persone_decedute', 'xlsx_positivita', 'xlsx_art_cds',
         );
         
         // Save all meta fields ESCLUDENDO i campi speciali

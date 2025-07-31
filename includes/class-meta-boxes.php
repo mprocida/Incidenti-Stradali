@@ -6092,14 +6092,20 @@ class IncidentiMetaBoxes {
     }
 
     /**
-     * Rimuove "Modifica rapida" per utenti Asset
+     * Rimuove "Modifica rapida" per tutti tranne gli amministratori
      */
     public function remove_quick_edit_for_asset($actions, $post) {
         if ($post->post_type === 'incidente_stradale') {
             $current_user = wp_get_current_user();
-            if (in_array('asset', $current_user->roles)) {
+            //if (in_array('asset', $current_user->roles)) {
                 // Rimuovi "Modifica rapida"
-                unset($actions['inline hide-if-no-js']);
+            //    unset($actions['inline hide-if-no-js']);
+
+            if ($post->post_type === 'incidente_stradale') {
+                // Rimuovi "Modifica rapida" per tutti tranne gli amministratori
+                if (!current_user_can('administrator')) {
+                    unset($actions['inline hide-if-no-js']);
+                }
                 
                 // OPZIONALE: Rimuovi anche "Modifica" se vuoi
                 // unset($actions['edit']);

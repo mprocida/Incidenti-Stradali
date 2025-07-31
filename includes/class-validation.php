@@ -16,6 +16,14 @@ class IncidentiValidation {
         if ($data['post_type'] !== 'incidente_stradale') {
             return $data;
         }
+
+        // Skip validation se l'autore è importuser
+        if (isset($postarr['post_author'])) {
+            $author = get_user_by('ID', $postarr['post_author']);
+            if ($author && $author->user_login === 'importuser') {
+                return $data;
+            }
+        }
         
         // Skip validation for auto-drafts
         if ($data['post_status'] === 'auto-draft') {

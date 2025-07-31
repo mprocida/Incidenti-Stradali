@@ -7,9 +7,14 @@
  * @author Plugin Development Team
  */
 
+// Prevent direct access
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit;
 }
+
+// Include SimpleXLSXGen library
+require_once plugin_dir_path(__FILE__) . 'libs/SimpleXLSXGen.php';
+use Shuchkin\SimpleXLSXGen;
 
 class IncidentiExportFunctions {
     
@@ -168,13 +173,13 @@ class IncidentiExportFunctions {
     </div>
 
     <!-- TEMPORANEAMENTE NASCOSTO - Esportazione CSV -->
-    <?php if (false): // Cambia a true per riattivare ?>
+    <?php if (true): // Cambia a true per riattivare ?>
     <div class="card">
         <h2>
-            <?php _e('Esportazione Formato Excel (CSV)', 'incidenti-stradali'); ?>
+            <?php _e('Esportazione Formato Excel (XLSX)', 'incidenti-stradali'); ?>
         </h2>
         <p>
-            <?php _e('Esporta i dati nel formato Excel per la Polizia Stradale.', 'incidenti-stradali'); ?>
+            <?php _e('Esporta i dati nel formato Excel nativo (.xlsx) per la Polizia Stradale.', 'incidenti-stradali'); ?>
         </p>
         <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
             <input type="hidden" name="action" value="export_incidenti_excel">
@@ -211,7 +216,7 @@ class IncidentiExportFunctions {
                     </td>
                 </tr>
             </table>
-            <?php submit_button(__('Esporta CSV Excel', 'incidenti-stradali'), 'secondary'); ?>
+            <?php submit_button(__('Esporta File Excel', 'incidenti-stradali'), 'secondary'); ?>
         </form>
     </div>
     <?php endif; ?>
@@ -380,25 +385,34 @@ class IncidentiExportFunctions {
      * Download Excel export
      */
     private function download_excel_export($incidenti) {
-        $filename = 'export_incidenti_excel_' . date('YmdHis') . '.csv';
-        $output = $this->generate_excel_csv($incidenti);
+        $filename = 'export_incidenti_excel_' . date('YmdHis') . '.xlsx';
+        $filepath = wp_upload_dir()['basedir'] . '/incidenti-exports/' . $filename;
+        
+        // Genera il file Excel
+        $this->generate_excel_xlsx($incidenti, $filepath);
         
         // Log dell'esportazione
-        $this->log_export('EXCEL_CSV', count($incidenti), $filename);
+        $this->log_export('EXCEL_XLSX', count($incidenti), $filename);
         
         // Trigger notification
-        do_action('incidenti_after_export', 'EXCEL_CSV', $filename, count($incidenti), get_current_user_id());
+        do_action('incidenti_after_export', 'EXCEL_XLSX', $filename, count($incidenti), get_current_user_id());
         
         // Download del file
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($output));
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        
-        echo "\xEF\xBB\xBF"; // UTF-8 BOM per Excel
-        echo $output;
-        exit;
+        if (file_exists($filepath)) {
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Content-Length: ' . filesize($filepath));
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            
+            readfile($filepath);
+            
+            // Elimina il file temporaneo dopo il download
+            unlink($filepath);
+            exit;
+        } else {
+            wp_die(__('Errore nella generazione del file Excel', 'incidenti-stradali'));
+        }
     }
     
     /**
@@ -1081,10 +1095,10 @@ class IncidentiExportFunctions {
     }
     
     /**
-     * Genera CSV per Excel (formato Polizia Stradale)
+     * Genera XLSX per Excel (formato Polizia Stradale)
      */
-    public function generate_excel_csv($incidenti) {
-        // Header CSV secondo la tua lista specifica
+    public function generate_excel_xlsx($incidenti, $filepath) {
+        // Header Excel secondo la tua lista specifica
         $headers = array(
             'IDIncidenti',
             'Data',
@@ -1129,69 +1143,44 @@ class IncidentiExportFunctions {
             'Coordinata Y'
         );
         
-        // Inizia il CSV con gli header
-        $output = '"' . implode('","', $headers) . '"' . "\n";
+        // Prepara i dati per Excel
+        $data = array($headers); // Prima riga con intestazioni
         
-        // Processa ogni incidente
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
+            
             $row = array();
             
-            // IDIncidenti
+            // Popola ogni campo (stesso ordine degli header)
             $row[] = $post_id;
-            
-            // Data
-            $data_incidente = $this->safe_meta_string($post_id, 'data_incidente');
-            $row[] = $data_incidente;
-            
-            // Ora
-            $ora_incidente = $this->safe_meta_string($post_id, 'ora_incidente');
-            $row[] = $ora_incidente;
-            
-            // IDProv
+            $row[] = $this->safe_meta_string($post_id, 'data_incidente');
+            $row[] = $this->safe_meta_string($post_id, 'ora_incidente');
             $row[] = $this->safe_meta_string($post_id, 'provincia_incidente');
-            
-            // IDCom
             $row[] = $this->safe_meta_string($post_id, 'comune_incidente');
-            
-            // IDTipoIncidente
             $row[] = $this->safe_meta_string($post_id, 'natura_incidente');
-            
-            // IDTipoStrada
-            $row[] = $this->safe_meta_string($post_id, 'csv_tipo_strada');
-            
-            // CentroAbitato
-            $row[] = $this->safe_meta_string($post_id, 'csv_centro_abitato');
-            
-            // IDPolizia
+            $row[] = $this->safe_meta_string($post_id, 'tipo_strada');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato');
             $row[] = $this->safe_meta_string($post_id, 'organo_rilevazione');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_caratteristiche');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale');
             
-            // IDCaratteristiche
-            $row[] = $this->safe_meta_string($post_id, 'csv_caratteristiche');
-            
-            // CantiereStradale
-            $row[] = $this->safe_meta_string($post_id, 'csv_cantiere_stradale');
-            
-            // Conteggi veicoli - NUOVO: usa i campi CSV
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_autovettura');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_autocarro_35t');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_autocarro_oltre_35t');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_autotreno');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_autoarticolato');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_autobus');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_tram');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_treno');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_motociclo');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_ciclomotore');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_velocipede');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_bicicletta_assistita');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_monopattini');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_altri_micromobilita');
-            $row[] = $this->safe_meta_string($post_id, 'csv_n_altri_veicoli');
-
-            // Trasportanti merci pericolose - NUOVO: usa i campi CSV
-            $row[] = $this->safe_meta_string($post_id, 'csv_trasportanti_merci_pericolose');
-            
+            // Veicoli coinvolti
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autovettura');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_35t');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_oltre_35t');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autotreno');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autoarticolato');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autobus');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_tram');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_treno');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_motociclo');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_ciclomotore');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_velocipede');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_bicicletta_assistita');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_monopattini');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_altri_micromobilita');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_altri_veicoli');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_trasportanti_merci_pericolose');
             // Conteggi persone
             $val1_pedoni_feriti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_feriti');
             $val2_pedoni_morti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_morti');
@@ -1209,30 +1198,36 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'progressiva_m');
             $row[] = $this->safe_meta_string($post_id, 'geometria_strada');
             
-            // Circostanze - NUOVO: usa i campi CSV
-            $row[] = $this->safe_meta_string($post_id, 'csv_omissione');
-
-            // Contromano - NUOVO: usa i campi CSV (più semplice)
-            $row[] = $this->safe_meta_string($post_id, 'csv_contromano');
-
-            // Dettaglio persone - NUOVO: usa i campi CSV
-            $row[] = $this->safe_meta_string($post_id, 'csv_dettaglio_persone_decedute');
-
-            // idPositivita - NUOVO: usa i campi CSV
-            $row[] = $this->safe_meta_string($post_id, 'csv_positivita');
-
-            // ArtCds - NUOVO: usa i campi CSV
-            $row[] = $this->safe_meta_string($post_id, 'csv_art_cds');
+            // Circostanze
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_contromano');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_dettaglio_persone_decedute');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_positivita');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_art_cds');
             
             // Coordinate
             $row[] = $this->safe_meta_string($post_id, 'latitudine');
             $row[] = $this->safe_meta_string($post_id, 'longitudine');
             
-            // Aggiungi la riga al CSV
-            $output .= '"' . implode('","', array_map('str_replace', array_fill(0, count($row), '"'), array_fill(0, count($row), '""'), $row)) . '"' . "\n";
+            $data[] = $row;
         }
         
-        return $output;
+        // Crea directory se non esistente
+        $upload_dir = wp_upload_dir();
+        $export_dir = $upload_dir['basedir'] . '/incidenti-exports';
+        if (!is_dir($export_dir)) {
+            wp_mkdir_p($export_dir);
+        }
+        
+        // Genera il file Excel
+        try {
+            $xlsx = SimpleXLSXGen::fromArray($data);
+            $xlsx->saveAs($filepath);
+            return true;
+        } catch (Exception $e) {
+            error_log('Errore generazione Excel: ' . $e->getMessage());
+            return false;
+        }
     }
     
     /**

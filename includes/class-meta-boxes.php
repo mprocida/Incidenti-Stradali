@@ -6097,25 +6097,35 @@ class IncidentiMetaBoxes {
     public function remove_quick_edit_for_asset($actions, $post) {
         if ($post->post_type === 'incidente_stradale') {
             $current_user = wp_get_current_user();
-            //if (in_array('asset', $current_user->roles)) {
-                // Rimuovi "Modifica rapida"
-            //    unset($actions['inline hide-if-no-js']);
+                
+            // Rimuovi "Modifica rapida" per tutti tranne gli amministratori
+            if (!current_user_can('administrator')) {
+                unset($actions['inline hide-if-no-js']);
+            }
 
-            if ($post->post_type === 'incidente_stradale') {
-                // Rimuovi "Modifica rapida" per tutti tranne gli amministratori
-                if (!current_user_can('administrator')) {
-                    unset($actions['inline hide-if-no-js']);
+            // Per utenti Asset: cambia "Modifica" in "Visualizza"
+            if (in_array('asset', $current_user->roles)) {
+                if (isset($actions['edit'])) {
+                    // Salva il link originale ma cambia il testo
+                    $edit_link = $actions['edit'];
+                    // Sostituisci il testo "Modifica" con "Visualizza" nel link HTML
+                    $actions['edit'] = str_replace('>Modifica<', '>Visualizza<', $edit_link);
+                    // Opzionale: aggiungi attributo title
+                    $actions['edit'] = str_replace('title="Modifica', 'title="Visualizza', $actions['edit']);
                 }
                 
-                // OPZIONALE: Rimuovi anche "Modifica" se vuoi
-                // unset($actions['edit']);
-                
-                // OPZIONALE: Rimuovi "Cestina"
+                // OPZIONALE: Rimuovi "Cestina" per Asset
                 // unset($actions['trash']);
-                
-                // OPZIONALE: Rimuovi "Visualizza"
-                // unset($actions['view']);
             }
+            
+            // OPZIONALE: Rimuovi anche "Modifica" se vuoi
+            // unset($actions['edit']);
+            
+            // OPZIONALE: Rimuovi "Cestina"
+            // unset($actions['trash']);
+            
+            // OPZIONALE: Rimuovi "Visualizza"
+            // unset($actions['view']);
         }
         return $actions;
     }

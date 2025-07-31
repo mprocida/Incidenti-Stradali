@@ -173,7 +173,7 @@ class IncidentiExportFunctions {
     </div>
 
     <!-- TEMPORANEAMENTE NASCOSTO - Esportazione CSV -->
-    <?php if (false): // Cambia a true per riattivare ?>
+    <?php if (true): // Cambia a true per riattivare ?>
     <div class="card">
         <h2>
             <?php _e('Esportazione Formato Excel (XLSX)', 'incidenti-stradali'); ?>
@@ -1155,35 +1155,37 @@ class IncidentiExportFunctions {
             $row[] = $post_id;
             $row[] = $this->safe_meta_string($post_id, 'data_incidente');
             $row[] = $this->safe_meta_string($post_id, 'ora_incidente');
-            $row[] = $this->safe_meta_string($post_id, 'provincia');
-            $row[] = $this->safe_meta_string($post_id, 'comune');
-            $row[] = $this->safe_meta_string($post_id, 'tipo_incidente');
+            $row[] = $this->safe_meta_string($post_id, 'provincia_incidente');
+            $row[] = $this->safe_meta_string($post_id, 'comune_incidente');
+            $row[] = $this->safe_meta_string($post_id, 'natura_incidente');
             $row[] = $this->safe_meta_string($post_id, 'tipo_strada');
-            $row[] = $this->safe_meta_string($post_id, 'centro_abitato');
-            $row[] = $this->safe_meta_string($post_id, 'ufficio_rilevatore');
-            $row[] = $this->safe_meta_string($post_id, 'caratteristiche_strada');
-            $row[] = $this->safe_meta_string($post_id, 'cantiere_stradale');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato');
+            $row[] = $this->safe_meta_string($post_id, 'organo_rilevazione');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_caratteristiche');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale');
             
             // Veicoli coinvolti
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_autovettura');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_autocarro_leggero');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_autocarro_pesante');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_autotreno');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_autoarticolato');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_autobus');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_tram');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_treno');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_motociclo');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_ciclomotore');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_velocipede');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_bicicletta_elettrica');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_monopattino');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_altri_micromobilita');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_altri_veicoli');
-            $row[] = $this->safe_meta_string($post_id, 'merci_pericolose');
-            $row[] = $this->safe_meta_string($post_id, 'riepilogo_pedoni');
-            
-            // Persone coinvolte
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autovettura');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_35t');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_oltre_35t');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autotreno');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autoarticolato');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autobus');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_tram');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_treno');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_motociclo');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_ciclomotore');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_velocipede');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_bicicletta_assistita');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_monopattini');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_altri_micromobilita');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_altri_veicoli');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_trasportanti_merci_pericolose');
+            // Conteggi persone
+            $val1_pedoni_feriti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_feriti');
+            $val2_pedoni_morti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_morti');
+            $somma_pedoni = $val1_pedoni_feriti + $val2_pedoni_morti;
+            $row[] = $somma_pedoni;
             $val1 = (int) $this->safe_meta_string($post_id, 'riepilogo_morti_2_30gg');
             $val2 = (int) $this->safe_meta_string($post_id, 'riepilogo_morti_24h');
             $somma_morti = $val1 + $val2;

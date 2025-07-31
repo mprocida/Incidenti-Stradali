@@ -160,14 +160,14 @@ class IncidentiMetaBoxes {
         );
 
         //BLOCCO PER DATI CSV IN FORM
-        /* add_meta_box(
-            'incidente_dati_csv',
-            __('Dati per esportazione CSV', 'incidenti-stradali'),
+        add_meta_box(
+            'incidente_dati_xlsx',
+            __('Dati per esportazione XLSX', 'incidenti-stradali'),
             array($this, 'render_dati_xlsx_meta_box'),
             'incidente_stradale',
             'normal',
             'low'
-        ); */
+        );
     }
 
     public function render_nominativi_meta_box($post) {

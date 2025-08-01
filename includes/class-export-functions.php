@@ -172,6 +172,20 @@ class IncidentiExportFunctions {
             <?php submit_button(__('Esporta TXT ISTAT (1939 caratteri)', 'incidenti-stradali'), 'primary'); ?>
         </form>
     </div>
+
+    <div class="card">
+        <h2>
+            <?php _e('Informazioni Tracciato ISTAT', 'incidenti-stradali'); ?>
+        </h2>
+        <p><strong>
+                <?php _e('Lunghezza record:', 'incidenti-stradali'); ?></strong> 1939 caratteri</p>
+        <p><strong>
+                <?php _e('Encoding:', 'incidenti-stradali'); ?></strong> UTF-8 senza BOM</p>
+        <p><strong>
+                <?php _e('Terminatore riga:', 'incidenti-stradali'); ?></strong> \\r\\n</p>
+        <p><strong>
+                <?php _e('Conforme a:', 'incidenti-stradali'); ?></strong> Tracciato record 2 ISTAT 2025</p>
+    </div>
     <?php endif; ?>
 
     <!-- TEMPORANEAMENTE NASCOSTO - Esportazione CSV -->
@@ -239,19 +253,6 @@ class IncidentiExportFunctions {
         <?php $this->show_export_logs(); ?>
     </div>
     <?php endif; ?>
-    <div class="card">
-        <h2>
-            <?php _e('Informazioni Tracciato ISTAT', 'incidenti-stradali'); ?>
-        </h2>
-        <p><strong>
-                <?php _e('Lunghezza record:', 'incidenti-stradali'); ?></strong> 1939 caratteri</p>
-        <p><strong>
-                <?php _e('Encoding:', 'incidenti-stradali'); ?></strong> UTF-8 senza BOM</p>
-        <p><strong>
-                <?php _e('Terminatore riga:', 'incidenti-stradali'); ?></strong> \\r\\n</p>
-        <p><strong>
-                <?php _e('Conforme a:', 'incidenti-stradali'); ?></strong> Tracciato record 2 ISTAT 2025</p>
-    </div>
 </div>
 <?php
     }

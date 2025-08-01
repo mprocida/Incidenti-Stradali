@@ -473,20 +473,20 @@ class IncidentiMetaBoxes {
         ?>
         <div class="incidenti-dati-csv-container">
             <table class="form-table">
-                <!-- Tipo Strada -->
+                <!-- Tipologia Incidente -->
                 <tr>
-                    <th><label for="xlsx_tipo_strada"><?php _e('Tipo Strada', 'incidenti-stradali'); ?></label></th>
+                    <th><label for="xlsx_tipo_incidente"><?php _e('Tipologia Incidente', 'incidenti-stradali'); ?></label></th>
                     <td>
-                        <select id="xlsx_tipo_strada" name="xlsx_tipo_strada">
+                        <select id="xlsx_tipo_incidente" name="xlsx_tipo_incidente">
                             <option value=""><?php _e('Seleziona...', 'incidenti-stradali'); ?></option>
-                            <option value="1" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '1'); ?>><?php _e('Fuoriuscita/Sbandamento', 'incidenti-stradali'); ?></option>
-                            <option value="2" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '2'); ?>><?php _e('Investimento animale', 'incidenti-stradali'); ?></option>
-                            <option value="3" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '3'); ?>><?php _e('Investimento pedone', 'incidenti-stradali'); ?></option>
-                            <option value="4" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '4'); ?>><?php _e('Scontro frontale', 'incidenti-stradali'); ?></option>
-                            <option value="5" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '5'); ?>><?php _e('Scontro laterale', 'incidenti-stradali'); ?></option>
-                            <option value="6" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '6'); ?>><?php _e('Tamponamento', 'incidenti-stradali'); ?></option>
-                            <option value="7" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '7'); ?>><?php _e('Urto con ostacolo fisso', 'incidenti-stradali'); ?></option>
-                            <option value="8" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_strada', true), '8'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
+                            <option value="Fuoriuscita/Sbandamento" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Fuoriuscita/Sbandamento'); ?>><?php _e('Fuoriuscita/Sbandamento', 'incidenti-stradali'); ?></option>
+                            <option value="Investimento animale" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Investimento animale'); ?>><?php _e('Investimento animale', 'incidenti-stradali'); ?></option>
+                            <option value="Investimento pedone" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Investimento pedone'); ?>><?php _e('Investimento pedone', 'incidenti-stradali'); ?></option>
+                            <option value="Scontro frontale" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Scontro frontale'); ?>><?php _e('Scontro frontale', 'incidenti-stradali'); ?></option>
+                            <option value="Scontro laterale" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Scontro laterale'); ?>><?php _e('Scontro laterale', 'incidenti-stradali'); ?></option>
+                            <option value="Tamponamento" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Tamponamento'); ?>><?php _e('Tamponamento', 'incidenti-stradali'); ?></option>
+                            <option value="Urto con ostacolo fisso" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Urto con ostacolo fisso'); ?>><?php _e('Urto con ostacolo fisso', 'incidenti-stradali'); ?></option>
+                            <option value="Altro" <?php selected(get_post_meta($post->ID, 'xlsx_tipo_incidente', true), 'Altro'); ?>><?php _e('Altro', 'incidenti-stradali'); ?></option>
                         </select>
                     </td>
                 </tr>
@@ -5097,7 +5097,7 @@ class IncidentiMetaBoxes {
             'conducente_1_tipo_cittadinanza', 'conducente_2_tipo_cittadinanza', 'conducente_3_tipo_cittadinanza',
 
             // Dati CSV
-            'xlsx_tipo_strada', 'xlsx_centro_abitato', 'xlsx_caratteristiche', 'xlsx_cantiere_stradale',
+            'xlsx_tipo_incidente', 'xlsx_centro_abitato', 'xlsx_caratteristiche', 'xlsx_cantiere_stradale',
             'xlsx_n_autovettura', 'xlsx_n_autocarro_35t', 'xlsx_n_autocarro_oltre_35t', 'xlsx_n_autotreno',
             'xlsx_n_autoarticolato', 'xlsx_n_autobus', 'xlsx_n_tram', 'xlsx_n_treno', 'xlsx_n_motociclo',
             'xlsx_n_ciclomotore', 'xlsx_n_velocipede', 'xlsx_n_bicicletta_assistita', 'xlsx_n_monopattini',

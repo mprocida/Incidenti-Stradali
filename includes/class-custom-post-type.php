@@ -295,18 +295,9 @@ class IncidentiCustomPostType {
             return;
         }
         
-        // Se è operatore comunale può vedere solo i suoi incidenti
+        // Se è operatore comunale può vedere SOLO i propri incidenti (di cui è autore)
         if (current_user_can('edit_incidenti')) {
-            $user_comune = get_user_meta($current_user->ID, 'comune_assegnato', true);
-            if ($user_comune) {
-                $query->set('meta_query', array(
-                    array(
-                        'key'     => 'comune_incidente',
-                        'value'   => $user_comune,
-                        'compare' => '='
-                    )
-                ));
-            }
+            $query->set('author', $current_user->ID);
         }
     }
     

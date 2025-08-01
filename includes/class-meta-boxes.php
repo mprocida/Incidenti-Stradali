@@ -5692,43 +5692,161 @@ class IncidentiMetaBoxes {
 
             $current_user = wp_get_current_user();
             if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
-                wp_add_inline_script('jquery', '
-                    jQuery(document).ready(function($) {
-                        // Disabilita tutti i campi del form per utenti Asset
-                        $("input:not([type=hidden]), textarea, select").prop("disabled", true);
-                        $("input, textarea, select").css({
+                $asset_script = <<<'ASSET_SCRIPT'
+            jQuery(document).ready(function($) {
+                // Variabile per tracciare se l'inizializzazione è completata
+                var initializationComplete = false;
+                var initializationChecks = {
+                    comune: false,
+                    ente: false,
+                    natura: false,
+                    tipo_strada: false
+                };
+                
+                // Funzione per verificare se tutti i campi sono stati inizializzati
+                function checkInitializationComplete() {
+                    var allComplete = Object.values(initializationChecks).every(check => check === true);
+                    
+                    if (allComplete && !initializationComplete) {
+                        initializationComplete = true;
+                        console.log("Tutti i campi inizializzati, procedo con la disabilitazione");
+                        disableFieldsForAsset();
+                    }
+                }
+                
+                // Event listener per i campi chiave
+                $("#comune_incidente").on("change", function() {
+                    if ($(this).val() !== "") {
+                        initializationChecks.comune = true;
+                        checkInitializationComplete();
+                    }
+                });
+                
+                $("#ente_rilevatore").on("change", function() {
+                    if ($(this).val() !== "") {
+                        initializationChecks.ente = true;
+                        checkInitializationComplete();
+                    }
+                });
+                
+                $("#natura_incidente").on("change", function() {
+                    initializationChecks.natura = true;
+                    checkInitializationComplete();
+                });
+                
+                $("#tipo_strada").on("change", function() {
+                    initializationChecks.tipo_strada = true;
+                    checkInitializationComplete();
+                });
+                
+                // Timeout di sicurezza
+                setTimeout(function() {
+                    if (!initializationComplete) {
+                        console.log("Timeout raggiunto, procedo comunque con la disabilitazione");
+                        disableFieldsForAsset();
+                    }
+                }, 3000);
+                
+                // Controlla immediatamente se i campi hanno già valori
+                setTimeout(function() {
+                    if ($("#comune_incidente").val() !== "") initializationChecks.comune = true;
+                    if ($("#ente_rilevatore").val() !== "") initializationChecks.ente = true;
+                    if ($("#natura_incidente").val() !== "") initializationChecks.natura = true;
+                    if ($("#tipo_strada").val() !== "") initializationChecks.tipo_strada = true;
+                    
+                    checkInitializationComplete();
+                }, 500);
+                
+                function disableFieldsForAsset() {
+                    console.log("Inizializzazione Asset UI - Disabilitazione campi");
+
+                    // === DISABILITAZIONE CAMPI INPUT E SELECT ===
+                    
+                    // Disabilita tutti i campi del form eccetto i campi nascosti
+                    $("input:not([type=hidden]), textarea, select").each(function() {
+                        $(this).prop("disabled", true);
+                        $(this).css({
                             "opacity": "0.6",
                             "background-color": "#f9f9f9 !important",
-                            "pointer-events": "none"
-                        });
-                        
-                        // NUOVO: Disabilita specificamente i radio button e checkbox
-                        $("input[type=radio], input[type=checkbox]").prop("disabled", true).css({
                             "pointer-events": "none",
-                            "opacity": "0.6"
+                            "cursor": "not-allowed"
+                        });
+                    });
+                    
+                    // Disabilitazione specifica per radio button e checkbox
+                    $("input[type=radio], input[type=checkbox]").each(function() {
+                        $(this).prop("disabled", true);
+                        $(this).css({
+                            "pointer-events": "none",
+                            "opacity": "0.6",
+                            "cursor": "not-allowed"
                         });
                         
-                        // NUOVO: Disabilita i pulsanti "Cancella scelta" (span cliccabili)
-                        $("span[onclick*=\"azzeraRadioSezione\"]").css({
+                        // Disabilita anche il label associato
+                        var labelFor = $(this).attr('id');
+                        if (labelFor) {
+                            $('label[for="' + labelFor + '"]').css({
+                                "pointer-events": "none",
+                                "opacity": "0.6",
+                                "cursor": "not-allowed"
+                            });
+                        }
+                        
+                        // Disabilita anche i label che contengono questo input
+                        $(this).closest('label').css({
+                            "pointer-events": "none",
+                            "opacity": "0.6",
+                            "cursor": "not-allowed"
+                        });
+                    });
+                    
+                    // === DISABILITAZIONE ELEMENTI INTERATTIVI ===
+                    
+                    // Disabilita i pulsanti "Cancella scelta"
+                    $("span[onclick*='azzeraRadioSezione']").each(function() {
+                        $(this).css({
                             "pointer-events": "none",
                             "opacity": "0.4",
                             "background-color": "#e0e0e0 !important",
                             "color": "#999 !important",
-                            "cursor": "not-allowed"
-                        }).removeAttr("onclick");
-                        
-                        // NUOVO: Disabilita tutti gli altri span/elementi cliccabili
-                        $("span[onclick], button[onclick], div[onclick]").css({
+                            "cursor": "not-allowed",
+                            "border-color": "#ccc !important"
+                        });
+                        $(this).removeAttr("onclick");
+                        $(this).off('click');
+                    });
+                    
+                    // Disabilita tutti gli altri elementi cliccabili
+                    $("span[onclick], button[onclick], div[onclick], a[onclick]").each(function() {
+                        $(this).css({
                             "pointer-events": "none",
                             "opacity": "0.6",
                             "cursor": "not-allowed"
-                        }).removeAttr("onclick");
-                        
-                        // NUOVO: Disabilita le mappe
-                        if (typeof L !== "undefined") {
-                            // Disabilita mappa localizzazione
-                            if (window.map && typeof window.map.off === "function") {
-                                window.map.off("click");
+                        });
+                        $(this).removeAttr("onclick");
+                        $(this).off('click');
+                    });
+                    
+                    // Disabilita tutti i button non nascosti
+                    $("button:not([type=hidden])").each(function() {
+                        // Conserva solo il pulsante di stampa PDF se presente
+                        if (!$(this).attr('id') || $(this).attr('id') !== 'stampa-incidente-pdf') {
+                            $(this).prop("disabled", true);
+                            $(this).css({
+                                "opacity": "0.6",
+                                "pointer-events": "none",
+                                "cursor": "not-allowed"
+                            });
+                        }
+                    });
+                    
+                    // === DISABILITAZIONE MAPPE LEAFLET ===
+                    
+                    if (typeof L !== "undefined") {
+                        // Disabilita mappa principale
+                        if (window.map && typeof window.map.off === "function") {
+                            try {
+                                window.map.off('click');
                                 window.map.dragging.disable();
                                 window.map.touchZoom.disable();
                                 window.map.doubleClickZoom.disable();
@@ -5736,45 +5854,205 @@ class IncidentiMetaBoxes {
                                 window.map.boxZoom.disable();
                                 window.map.keyboard.disable();
                                 
-                                // Rimuovi controlli zoom se presenti
+                                // Rimuovi controlli zoom
                                 $(".leaflet-control-zoom").remove();
+                                $(".leaflet-control").css({
+                                    "pointer-events": "none",
+                                    "opacity": "0.4"
+                                });
+                            } catch (e) {
+                                console.log("Errore nella disabilitazione mappa principale:", e);
                             }
-                            
-                            // Disabilita interazioni sui marker esistenti
-                            $(".leaflet-marker-icon, .leaflet-clickable").css({
-                                "pointer-events": "none",
-                                "opacity": "0.6"
-                            });
                         }
                         
-                        // Disabilita contenitori mappa visualmente
-                        $("#localizzazione-map, #coordinate-map").css({
-                            "opacity": "0.6",
+                        // Disabilita tutte le altre mappe se presenti
+                        $('.leaflet-container').each(function() {
+                            var mapContainer = this;
+                            if (mapContainer._leaflet_id) {
+                                try {
+                                    var map = window[mapContainer._leaflet_id] || L.map(mapContainer);
+                                    if (map && typeof map.off === "function") {
+                                        map.off('click');
+                                        map.dragging.disable();
+                                        map.touchZoom.disable();
+                                        map.doubleClickZoom.disable();
+                                        map.scrollWheelZoom.disable();
+                                        map.boxZoom.disable();
+                                        map.keyboard.disable();
+                                    }
+                                } catch (e) {
+                                    console.log("Errore nella disabilitazione mappa secondaria:", e);
+                                }
+                            }
+                        });
+                        
+                        // Disabilita marker e elementi interattivi della mappa
+                        $(".leaflet-marker-icon, .leaflet-clickable, .leaflet-interactive").css({
                             "pointer-events": "none",
-                            "position": "relative"
+                            "opacity": "0.6"
                         });
-                        
-                        // NUOVO: Previeni submit del form
-                        $("form").on("submit", function(e) {
-                            e.preventDefault();
-                            alert("Non puoi salvare modifiche.");
-                            return false;
-                        });
-                        
-                        // NUOVO: Disabilita eventi click su tutti gli elementi del form
-                        $("#poststuff").on("click", function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            return false;
-                        });
-                        
-                        // Nascondi i pulsanti di salvataggio
-                        $("#publish, #save-post, .button-primary").hide();
-                        
-                        // Mostra messaggio informativo
-                        $("#titlediv").after("<div class=\"notice notice-warning\"><p><strong>Modalità sola lettura:</strong> Non puoi modificare gli incidenti.</p></div>");
+                    }
+                    
+                    // Disabilita contenitori mappa visivamente
+                    $("#localizzazione-map, #coordinate-map, .leaflet-container").css({
+                        "opacity": "0.6",
+                        "pointer-events": "none",
+                        "position": "relative",
+                        "cursor": "not-allowed"
                     });
-                ');
+                    
+                    // Aggiungi overlay trasparente sulle mappe
+                    $("#localizzazione-map, #coordinate-map").each(function() {
+                        if (!$(this).find('.disabled-overlay').length) {
+                            $(this).append('<div class="disabled-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.3); z-index: 10000; cursor: not-allowed;"></div>');
+                        }
+                    });
+                    
+                    // === DISABILITAZIONE FORM E SUBMIT ===
+                    
+                    // Previeni submit del form
+                    $("form").off('submit.asset-disable').on("submit.asset-disable", function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        alert("Non puoi salvare modifiche in modalità sola lettura.");
+                        return false;
+                    });
+                    
+                    // Disabilita eventi click su tutto il form
+                    $("#poststuff").off('click.asset-disable').on("click.asset-disable", function(e) {
+                        // Permetti solo il click sul pulsante PDF se presente
+                        if ($(e.target).attr('id') === 'stampa-incidente-pdf' || $(e.target).closest('#stampa-incidente-pdf').length) {
+                            return true;
+                        }
+                        
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // === NASCONDERE PULSANTI DI AZIONE ===
+                    
+                    // Nascondi i pulsanti di salvataggio e pubblicazione
+                    $("#publish, #save-post, .button-primary:not(#stampa-incidente-pdf)").hide();
+                    
+                    // Nascondi altri pulsanti di azione
+                    $(".button-secondary:not(#stampa-incidente-pdf)").hide();
+                    
+                    // Nascondi il pulsante "Anteprima"
+                    $("#post-preview").hide();
+                    
+                    // === DISABILITAZIONE MEDIA UPLOADER ===
+                    
+                    // Disabilita media uploader se presente
+                    $(".upload-button, .media-button, .insert-media").css({
+                        "pointer-events": "none",
+                        "opacity": "0.4"
+                    }).prop("disabled", true);
+                    
+                    // === DISABILITAZIONE EDITOR VISUALE ===
+                    
+                    // Disabilita TinyMCE editor se presente
+                    if (typeof tinymce !== 'undefined') {
+                        tinymce.editors.forEach(function(editor) {
+                            if (editor && editor.getBody) {
+                                editor.getBody().setAttribute('contenteditable', false);
+                                $(editor.getBody()).css({
+                                    'opacity': '0.6',
+                                    'background-color': '#f9f9f9',
+                                    'cursor': 'not-allowed'
+                                });
+                            }
+                        });
+                    }
+                    
+                    // === DISABILITAZIONE ELEMENTI CUSTOM ===
+                    
+                    // Disabilita elementi con classi personalizzate
+                    $(".incidenti-coordinate-input, .incidenti-coordinate-input-inline").prop("disabled", true).css({
+                        "opacity": "0.6",
+                        "background-color": "#f9f9f9 !important",
+                        "pointer-events": "none"
+                    });
+                    
+                    // Disabilita campi numerici specifici
+                    $("input[type=number]").prop("disabled", true).css({
+                        "opacity": "0.6",
+                        "background-color": "#f9f9f9 !important"
+                    });
+                    
+                    // === DISABILITAZIONE DRAG & DROP ===
+                    
+                    // Disabilita drag and drop
+                    $(document).off('dragstart.asset-disable').on('dragstart.asset-disable', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                    
+                    $(document).off('drop.asset-disable').on('drop.asset-disable', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                    
+                    // === MESSAGGIO INFORMATIVO ===
+                    
+                    // Rimuovi messaggi precedenti per evitare duplicati
+                    $(".asset-readonly-notice").remove();
+                    
+                    // Mostra messaggio informativo
+                    $("#titlediv").after('<div class="notice notice-warning asset-readonly-notice"><p><strong>📖 Modalità sola lettura:</strong> Non puoi modificare gli incidenti. Puoi solo visualizzare i dati e generare il PDF.</p></div>');
+                    
+                    // === DISABILITAZIONE TASTIERA ===
+                    
+                    // Disabilita shortcuts da tastiera che potrebbero salvare
+                    $(document).off('keydown.asset-disable').on('keydown.asset-disable', function(e) {
+                        // Ctrl+S (Save)
+                        if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) {
+                            e.preventDefault();
+                            alert("Salvataggio disabilitato in modalità sola lettura.");
+                            return false;
+                        }
+                        
+                        // Ctrl+Enter (Quick save)
+                        if ((e.ctrlKey || e.metaKey) && e.keyCode === 13) {
+                            e.preventDefault();
+                            return false;
+                        }
+                    });
+                    
+                    // === DISABILITAZIONE CONTEXT MENU ===
+                    
+                    // Disabilita il menu contestuale sui campi (opzionale)
+                    $("#poststuff").off('contextmenu.asset-disable').on('contextmenu.asset-disable', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                    
+                    // === STILE FINALE ===
+                    
+                    // Aggiungi una classe CSS per identificare lo stato
+                    $("body").addClass("asset-readonly-mode");
+                    
+                    // Stile generale per tutto il form
+                    $("#poststuff").css({
+                        "position": "relative"
+                    });
+                    
+                    // === LOG COMPLETAMENTO ===
+                    
+                    console.log("✅ Disabilitazione campi Asset completata");
+                    console.log("- Campi input/select disabilitati:", $("input:disabled, select:disabled, textarea:disabled").length);
+                    console.log("- Mappe disabilitate:", $(".leaflet-container").length);
+                    console.log("- Pulsanti nascosti:", $("#publish:hidden, #save-post:hidden").length);
+                    
+                    // Callback opzionale per custom logic
+                    if (typeof window.onAssetFieldsDisabled === 'function') {
+                        window.onAssetFieldsDisabled();
+                    }
+                }
+            });
+            ASSET_SCRIPT;
+
+                wp_add_inline_script('jquery', $asset_script);
             }
         }
     }

@@ -163,6 +163,9 @@ class PDF_Generator {
         
         // NOMINATIVI (se presenti)
         $this->render_nominativi_section($meta);
+
+        // WARNING PER NOMINATIVI MORTI
+        $this->render_messaggio_nominativi_morti();
         ?>
         
         <?php
@@ -866,15 +869,20 @@ class PDF_Generator {
                     </table>
                 </div>
             <?php endif; ?>
-            <div class="warning" style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
-                <strong>SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI</strong><br>
-                <span style="font-size: 8pt;">
-                    Decreto legislativo 6 settembre 1989, n. 322 - Norme sul Sistema statistico nazionale e sulla riorganizzazione dell\'Istituto nazionale di statistica<br/>
-                    Decreto legislativo 30 giugno 2003, n. 196 - Codice in materia di protezione dei dati personali<br/>
-                    Regolamento UE 2016/679 - Regolamento generale sulla protezione dei dati<br/>
-                    I dati raccolti sono tutelati dal segreto statistico e sottoposti alla normativa in materia di protezione dei dati personali e potranno essere utilizzati, anche per successivi trattamenti, esclusivamente per fini statistici dai soggetti del Sistema statistico nazionale ed essere comunicati per finalità di ricerca scientifica alle condizioni e secondo le modalità previste dall\'art 7 del Codice di deontologia e di buona condotta per i trattamenti di dati personali a scopi statistici.<br/>
-                    Titolare del trattamento dei dati è l\'ISTAT – Istituto nazionale di statistica - Via Cesare Balbo, 16 – 00184 Roma. Responsabili del trattamento dei dati sono, per le fasi di rispettiva competenza, il Direttore centrale per le statistiche e le indagini sulle istituzioni sociali dell\'Istat e il preposto all\'Ufficio di statistica della Regione o Provincia autonoma<br/>
-                    L\'inserimento dei nominativi è OBBLIGATORIO ai sensi dell\'art. 7 del d.lgs. n. 322/1989 e fatto obbligo alle amministrazioni, enti ed organismi pubblici, di fornire tutti i dati e le notizie richieste nel modello di rilevazione.
+        </div>
+        <?php
+    }
+
+
+    private function render_messaggio_nominativi_morti(){
+        ?>
+        <div class="section page-break">
+            <div class="warning" style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin-bottom: 15px;"><strong>SEGRETO STATISTICO, OBBLIGO DI RISPOSTA, TUTELA DELLA RISERVATEZZA E DIRITTI DEGLI INTERESSATI</strong><br><span style="font-size: 8pt;">Decreto legislativo 6 settembre 1989, n. 322 - Norme sul Sistema statistico nazionale e sulla riorganizzazione dell'Istituto nazionale di statistica<br/>
+                Decreto legislativo 30 giugno 2003, n. 196 - Codice in materia di protezione dei dati personali<br/>
+                Regolamento UE 2016/679 - Regolamento generale sulla protezione dei dati<br/>
+                I dati raccolti sono tutelati dal segreto statistico e sottoposti alla normativa in materia di protezione dei dati personali e potranno essere utilizzati, anche per successivi trattamenti, esclusivamente per fini statistici dai soggetti del Sistema statistico nazionale ed essere comunicati per finalità di ricerca scientifica alle condizioni e secondo le modalità previste dall\'art 7 del Codice di deontologia e di buona condotta per i trattamenti di dati personali a scopi statistici.<br/>
+                Titolare del trattamento dei dati è l'ISTAT – Istituto nazionale di statistica - Via Cesare Balbo, 16 – 00184 Roma. Responsabili del trattamento dei dati sono, per le fasi di rispettiva competenza, il Direttore centrale per le statistiche e le indagini sulle istituzioni sociali dell\'Istat e il preposto all\'Ufficio di statistica della Regione o Provincia autonoma<br/>
+                L'inserimento dei nominativi è OBBLIGATORIO ai sensi dell'art. 7 del d.lgs. n. 322/1989 e fatto obbligo alle amministrazioni, enti ed organismi pubblici, di fornire tutti i dati e le notizie richieste nel modello di rilevazione.
                 </span>
             </div>
         </div>

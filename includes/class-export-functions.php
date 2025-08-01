@@ -121,6 +121,7 @@ class IncidentiExportFunctions {
         <?php _e('Esporta Dati Incidenti', 'incidenti-stradali'); ?>
     </h1>
     <?php echo $message; ?>
+    <?php if ($this->user_can_access_istat_export()): ?>
     <div class="card">
         <h2>
             <?php _e('Esportazione Formato ISTAT (TXT)', 'incidenti-stradali'); ?>
@@ -172,61 +173,6 @@ class IncidentiExportFunctions {
         </form>
     </div>
 
-    <!-- TEMPORANEAMENTE NASCOSTO - Esportazione CSV -->
-    <?php if (true): // Cambia a true per riattivare ?>
-    <div class="card">
-        <h2>
-            <?php _e('Esportazione Formato Excel (XLSX)', 'incidenti-stradali'); ?>
-        </h2>
-        <p>
-            <?php _e('Esporta i dati nel formato Excel nativo (.xlsx) per la Polizia Stradale.', 'incidenti-stradali'); ?>
-        </p>
-        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
-            <input type="hidden" name="action" value="export_incidenti_excel">
-            <?php wp_nonce_field('export_incidenti_nonce', 'export_nonce'); ?>
-            <table class="form-table">
-                <tr>
-                    <th scope="row">
-                        <?php _e('Periodo', 'incidenti-stradali'); ?>
-                    </th>
-                    <td>
-                        <label for="data_inizio_excel">
-                            <?php _e('Da:', 'incidenti-stradali'); ?></label>
-                        <input type="date" id="data_inizio_excel" name="data_inizio" value="<?php echo date('Y-m-01'); ?>">
-                        <label for="data_fine_excel">
-                            <?php _e('A:', 'incidenti-stradali'); ?></label>
-                        <input type="date" id="data_fine_excel" name="data_fine" value="<?php echo date('Y-m-t'); ?>">
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <?php _e('Comune', 'incidenti-stradali'); ?>
-                    </th>
-                    <td>
-                        <select name="comune_filtro" class="regular-text">
-                            <option value="">
-                                <?php _e('Tutti i comuni', 'incidenti-stradali'); ?>
-                            </option>
-                            <?php foreach($comuni as $codice => $nome): ?>
-                            <option value="<?php echo esc_attr($codice); ?>">
-                                <?php echo esc_html($nome); ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-            <?php submit_button(__('Esporta File Excel', 'incidenti-stradali'), 'secondary'); ?>
-        </form>
-    </div>
-    <?php endif; ?>
-<!-- FINE BLOCCO TEMPORANEAMENTE NASCOSTO -->
-    <div class="card">
-        <h2>
-            <?php _e('Log Esportazioni', 'incidenti-stradali'); ?>
-        </h2>
-        <?php $this->show_export_logs(); ?>
-    </div>
     <div class="card">
         <h2>
             <?php _e('Informazioni Tracciato ISTAT', 'incidenti-stradali'); ?>
@@ -240,6 +186,75 @@ class IncidentiExportFunctions {
         <p><strong>
                 <?php _e('Conforme a:', 'incidenti-stradali'); ?></strong> Tracciato record 2 ISTAT 2025</p>
     </div>
+    <?php endif; ?>
+
+    <!-- TEMPORANEAMENTE NASCOSTO - Esportazione CSV -->
+    <?php
+    if ($this->user_can_access_excel_export()):
+        if (true): // Cambia a true per riattivare ?>
+        <div class="card">
+            <h2>
+                <?php _e('Esportazione Formato Excel (XLSX)', 'incidenti-stradali'); ?>
+            </h2>
+            <p>
+                <?php _e('Esporta i dati nel formato Excel nativo (.xlsx) per la Polizia Stradale.', 'incidenti-stradali'); ?>
+            </p>
+            <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+                <input type="hidden" name="action" value="export_incidenti_excel">
+                <?php wp_nonce_field('export_incidenti_nonce', 'export_nonce'); ?>
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <?php _e('Periodo', 'incidenti-stradali'); ?>
+                        </th>
+                        <td>
+                            <label for="data_inizio_excel">
+                                <?php _e('Da:', 'incidenti-stradali'); ?></label>
+                            <input type="date" id="data_inizio_excel" name="data_inizio" value="<?php echo date('Y-m-01'); ?>">
+                            <label for="data_fine_excel">
+                                <?php _e('A:', 'incidenti-stradali'); ?></label>
+                            <input type="date" id="data_fine_excel" name="data_fine" value="<?php echo date('Y-m-t'); ?>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <?php _e('Comune', 'incidenti-stradali'); ?>
+                        </th>
+                        <td>
+                            <select name="comune_filtro" class="regular-text">
+                                <option value="">
+                                    <?php _e('Tutti i comuni', 'incidenti-stradali'); ?>
+                                </option>
+                                <?php
+                                $comuni_xlsx = $this->get_comuni_disponibili();
+                                foreach($comuni_xlsx as $codice => $nome): ?>
+                                <option value="<?php echo esc_attr($codice); ?>">
+                                    <?php echo esc_html($nome); ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <?php submit_button(__('Esporta File Excel', 'incidenti-stradali'), 'secondary'); ?>
+            </form>
+        </div>
+        <?php endif; ?>
+    <?php endif; ?>
+    <!-- FINE BLOCCO TEMPORANEAMENTE NASCOSTO -->
+    
+    <?php
+    // Controlla se l'utente ha il ruolo di amministratore
+    $current_user = wp_get_current_user();
+    if (in_array('administrator', $current_user->roles)) : 
+    ?>
+    <div class="card">
+        <h2>
+            <?php _e('Log Esportazioni', 'incidenti-stradali'); ?>
+        </h2>
+        <?php $this->show_export_logs(); ?>
+    </div>
+    <?php endif; ?>
 </div>
 <?php
     }
@@ -2047,5 +2062,41 @@ private function get_province_data() {
         );
         
         return isset($geometrie[$codice_geometria]) ? $geometrie[$codice_geometria] : $codice_geometria;
+    }
+
+    /**
+     * Verifica se l'utente può accedere all'esportazione ISTAT
+     */
+    private function user_can_access_istat_export() {
+        $current_user = wp_get_current_user();
+        
+        // Ruoli autorizzati per ISTAT
+        $allowed_roles = array('asset', 'supervisor', 'administrator');
+        
+        foreach ($allowed_roles as $role) {
+            if (in_array($role, $current_user->roles)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Verifica se l'utente può accedere all'esportazione Excel
+     */
+    private function user_can_access_excel_export() {
+        $current_user = wp_get_current_user();
+        
+        // Ruoli autorizzati per Excel (include ruolo Prefettura se esiste)
+        $allowed_roles = array('prefettura', 'supervisor', 'administrator');
+        
+        foreach ($allowed_roles as $role) {
+            if (in_array($role, $current_user->roles)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

@@ -4379,7 +4379,7 @@ class IncidentiMetaBoxes {
 
             $current_user = wp_get_current_user();
             if (in_array('asset', $current_user->roles)) {
-                echo '<div class="notice notice-info"><p>' . __('Stai visualizzando questo incidente in modalità sola lettura. Gli utenti con ruolo Asset non possono apportare modifiche.', 'incidenti-stradali') . '</p></div>';
+                echo '<div class="notice notice-info"><p>' . __('Stai visualizzando questo incidente in modalità sola lettura. Non puoi apportare modifiche.', 'incidenti-stradali') . '</p></div>';
             }
         }
     }

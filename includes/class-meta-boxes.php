@@ -4922,11 +4922,11 @@ class IncidentiMetaBoxes {
 
         // NUOVO: Controllo per ruolo Asset
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles)) {
+        if (in_array('asset', $current_user->roles) || in_array('clone_di_asset', $current_user->roles)) {
             // Se il ruolo è Asset, blocca qualsiasi modifica
             add_action('admin_notices', function() {
                 echo '<div class="notice notice-error is-dismissible">';
-                echo '<p>Gli utenti con ruolo Asset non possono modificare gli incidenti.</p>';
+                echo '<p>Non puoi modificare gli incidenti.</p>';
                 echo '</div>';
             });
             return; // Interrompe l'esecuzione, non salva nulla
@@ -5691,7 +5691,7 @@ class IncidentiMetaBoxes {
             ));
 
             $current_user = wp_get_current_user();
-            if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles)) {
+            if (in_array('asset', $current_user->roles) || in_array('clone_di_asset', $current_user->roles)) {
                 wp_add_inline_script('jquery', '
                     jQuery(document).ready(function($) {
                         // Disabilita tutti i campi del form per utenti Asset
@@ -5772,7 +5772,7 @@ class IncidentiMetaBoxes {
                         $("#publish, #save-post, .button-primary").hide();
                         
                         // Mostra messaggio informativo
-                        $("#titlediv").after("<div class=\"notice notice-warning\"><p><strong>Modalità sola lettura:</strong> Gli utenti con ruolo Asset non possono modificare gli incidenti.</p></div>");
+                        $("#titlediv").after("<div class=\"notice notice-warning\"><p><strong>Modalità sola lettura:</strong> Non puoi modificare gli incidenti.</p></div>");
                     });
                 ');
             }
@@ -6104,7 +6104,7 @@ class IncidentiMetaBoxes {
             }
 
             // Per utenti Asset: cambia "Modifica" in "Visualizza"
-            if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles)) {
+            if (in_array('asset', $current_user->roles) || in_array('clone_di_asset', $current_user->roles)) {
                 if (isset($actions['edit'])) {
                     // Salva il link originale ma cambia il testo
                     $edit_link = $actions['edit'];
@@ -6135,7 +6135,7 @@ class IncidentiMetaBoxes {
      */
     public function remove_bulk_actions_for_asset($bulk_actions) {
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles)) {
+        if (in_array('asset', $current_user->roles) || in_array('clone_di_asset', $current_user->roles)) {
             // Rimuovi tutte le azioni di gruppo
             return array();
             
@@ -6152,7 +6152,7 @@ class IncidentiMetaBoxes {
      */
     public function hide_asset_ui_elements() {
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles)) {
+        if (in_array('asset', $current_user->roles) || in_array('clone_di_asset', $current_user->roles)) {
             $screen = get_current_screen();
             if ($screen && $screen->post_type === 'incidente_stradale') {
                 ?>
@@ -6184,7 +6184,7 @@ class IncidentiMetaBoxes {
                         $('.wp-list-table tbody tr').css('user-select', 'none');
                         
                         // Messaggio informativo
-                        $('.wrap h1').after('<div class="notice notice-info"><p><strong>Modalità sola lettura:</strong> Gli utenti Asset possono solo visualizzare gli incidenti.</p></div>');
+                        //$('.wrap h1').after('<div class="notice notice-info"><p><strong>Modalità sola lettura:</strong> Gli utenti Asset possono solo visualizzare gli incidenti.</p></div>');
                     });
                 </script>
                 <?php
@@ -6197,7 +6197,7 @@ class IncidentiMetaBoxes {
      */
     public function customize_asset_list_view() {
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles)) {
+        if (in_array('asset', $current_user->roles) || in_array('clone_di_asset', $current_user->roles)) {
             // Rimuovi la possibilità di modificare lo stato dei post
             add_filter('user_can_richedit', '__return_false');
             

@@ -225,7 +225,9 @@ class IncidentiExportFunctions {
                                 <option value="">
                                     <?php _e('Tutti i comuni', 'incidenti-stradali'); ?>
                                 </option>
-                                <?php foreach($comuni as $codice => $nome): ?>
+                                <?php
+                                $comuni_xlsx = $this->get_comuni_disponibili();
+                                foreach($comuni_xlsx as $codice => $nome): ?>
                                 <option value="<?php echo esc_attr($codice); ?>">
                                     <?php echo esc_html($nome); ?>
                                 </option>

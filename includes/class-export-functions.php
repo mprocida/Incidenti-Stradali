@@ -1154,14 +1154,19 @@ class IncidentiExportFunctions {
             // Popola ogni campo (stesso ordine degli header)
             $row[] = $post_id;
             $row[] = $this->safe_meta_string($post_id, 'data_incidente');
-            $row[] = $this->safe_meta_string($post_id, 'ora_incidente');
-            $row[] = $this->safe_meta_string($post_id, 'provincia_incidente');
-            $row[] = $this->safe_meta_string($post_id, 'comune_incidente');
-            $row[] = $this->safe_meta_string($post_id, 'natura_incidente');
-            $row[] = $this->safe_meta_string($post_id, 'tipo_strada');
+            //$row[] = $this->safe_meta_string($post_id, 'ora_incidente');
+            $row[] = $this->format_time(
+                $this->safe_meta_string($post_id, 'ora_incidente'),
+                $this->safe_meta_string($post_id, 'minuti_incidente')
+            );
+            $row[] = "Lecce";
+            $row[] = $this->get_comune_name($this->safe_meta_string($post_id, 'comune_incidente'));
+            $row[] = $this->get_natura_incidente_name($this->safe_meta_string($post_id, 'xlsx_tipo_incidente'));
+            $row[] = $this->get_tipo_strada_name($this->safe_meta_string($post_id, 'tipo_strada'));
             $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato');
-            $row[] = $this->safe_meta_string($post_id, 'organo_rilevazione');
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_caratteristiche');
+            //$row[] = $this->get_organo_rilevazione_name($this->safe_meta_string($post_id, 'organo_rilevazione'));
+            $row[] = "Polizia locale";
+            $row[] = $this->get_caratteristiche_name($this->safe_meta_string($post_id, 'xlsx_caratteristiche'));
             $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale');
             
             // Veicoli coinvolti
@@ -1196,7 +1201,7 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'denominazione_strada');
             $row[] = $this->safe_meta_string($post_id, 'progressiva_km');
             $row[] = $this->safe_meta_string($post_id, 'progressiva_m');
-            $row[] = $this->safe_meta_string($post_id, 'geometria_strada');
+            $row[] = $this->get_geometria_strada_name($this->safe_meta_string($post_id, 'geometria_strada'));
             
             // Circostanze
             $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione');
@@ -1228,6 +1233,28 @@ class IncidentiExportFunctions {
             error_log('Errore generazione Excel: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Converte ora e minuti in formato HH:MM
+     */
+    private function format_time($ora, $minuti = '') {
+        if (empty($ora)) {
+            return '';
+        }
+        
+        // Assicura che l'ora sia di 2 cifre
+        $ora_formatted = str_pad($ora, 2, '0', STR_PAD_LEFT);
+        
+        // Se i minuti sono vuoti, usa 00
+        if (empty($minuti)) {
+            $minuti = '00';
+        } else {
+            // Assicura che i minuti siano di 2 cifre
+            $minuti = str_pad($minuti, 2, '0', STR_PAD_LEFT);
+        }
+        
+        return $ora_formatted . ':' . $minuti;
     }
     
     /**
@@ -1869,5 +1896,156 @@ class IncidentiExportFunctions {
         }
         
         return $deleted;
+    }
+
+    /**
+ * Carica dati province da JSON
+ */
+private function get_province_data() {
+    static $province_data = null;
+    
+    if ($province_data === null) {
+        $province_file = plugin_dir_path(__FILE__) . '../data/codici-istat-province.json';
+        if (file_exists($province_file)) {
+            $province_data = json_decode(file_get_contents($province_file), true);
+        } else {
+            $province_data = array();
+        }
+    }
+    
+    return $province_data;
+}
+
+    /**
+     * Converte codice comune in nome esteso
+     */
+    private function get_comune_name($codice_comune) {
+        if (empty($codice_comune)) {
+            return $codice_comune;
+        }
+        
+        $comuni_file = plugin_dir_path(__FILE__) . '../data/codici-istat-comuni.json';
+        
+        if (!file_exists($comuni_file)) {
+            return $codice_comune;
+        }
+        
+        $comuni_data = json_decode(file_get_contents($comuni_file), true);
+        
+        if (!$comuni_data || !isset($comuni_data['comuni'])) {
+            return $codice_comune;
+        }
+        
+        // Cerca il comune nelle varie province
+        foreach ($comuni_data['comuni'] as $provincia_codice => $comuni_provincia) {
+            if (isset($comuni_provincia[$codice_comune])) {
+                return $comuni_provincia[$codice_comune];
+            }
+        }
+        
+        return $codice_comune;
+    }
+
+    /**
+     * Converte codice tipo strada in descrizione
+     */
+    private function get_tipo_strada_name($codice_tipo) {
+        $tipi = array(
+            '0' => 'Regionale entro l\'abitato',
+            '1' => 'Strada urbana',
+            '2' => 'Provinciale entro l\'abitato',
+            '3' => 'Statale entro l\'abitato',
+            '4' => 'Strada comunale extraurbana',
+            '5' => 'Strada provinciale fuori dell\'abitato',
+            '6' => 'Strada statale fuori dell\'abitato',
+            '7' => 'Autostrada',
+            '8' => 'Altra strada',
+            '9' => 'Strada regionale fuori l\'abitato'
+        );
+        
+        return isset($tipi[$codice_tipo]) ? $tipi[$codice_tipo] : $codice_tipo;
+    }
+
+    /**
+     * Converte codice organo rilevazione in descrizione
+     */
+    private function get_organo_rilevazione_name($codice_organo) {
+        $organi = array(
+            '1' => 'Polizia Stradale',
+            '2' => 'Carabinieri',
+            '3' => 'Polizia di Stato',
+            '4' => 'Polizia Municipale/Locale',
+            '5' => 'Altri',
+            '6' => 'Polizia Provinciale'
+        );
+        
+        return isset($organi[$codice_organo]) ? $organi[$codice_organo] : $codice_organo;
+    }
+
+    /**
+     * Converte codice natura incidente in descrizione
+     */
+    private function get_natura_incidente_name($codice_natura) {
+        $nature = array(
+            'A' => 'Tra veicoli in marcia',
+            'B' => 'Tra veicolo e pedoni',
+            'C' => 'Veicolo in marcia che urta veicolo fermo o altro',
+            'D' => 'Veicolo in marcia senza urto',
+            'E' => 'Altro'
+        );
+        
+        return isset($nature[$codice_natura]) ? $nature[$codice_natura] : $codice_natura;
+    }
+
+    /**
+     * Converte codice caratteristiche in descrizione
+     */
+    private function get_caratteristiche_name($codice_caratteristiche) {
+        // [Non verificato] - devi verificare se hai un file JSON per questo o usare mappature hardcoded
+        $caratteristiche = array(
+            '1' => 'Non specificato',
+            '2' => 'Incrocio',
+            '3' => 'Rotatoria',
+            '4' => 'Intersezione segnalata',
+            '5' => 'Intersezione con semaforo o vigile',
+            '6' => 'Intersezione non segnalata',
+            '7' => 'Passaggio a livello',
+            '8' => 'Rettilineo',
+            '9' => 'Curva',
+            '10' => 'Raccordo convesso (dosso)',
+            '11' => 'Pendenza pericolosa',
+            '12' => 'Galleria illuminata',
+            '13' => 'Galleria non illuminata',
+            '14' => 'Intersezione con semaf. giallo. lampegg.',
+            '15' => 'Passaggio a livello custodito',
+            '16' => 'Passaggio a livello non custodito',
+            '17' => 'Raccordo concavo (cunetta)',
+            '18' => 'Strettoia',
+            '19' => 'Pianeggiante',
+            '20' => 'Curva a destra',
+            '21' => 'Curva a sinistra',
+            '22' => 'Salita',
+            '23' => 'Discesa',
+            '24' => 'Viadotto'
+        );
+        
+        return isset($caratteristiche[$codice_caratteristiche]) ? $caratteristiche[$codice_caratteristiche] : $codice_caratteristiche;
+    }
+
+    /**
+     * Converte codice carreggiata/geometria in descrizione
+     */
+    private function get_geometria_strada_name($codice_geometria) {
+        $geometrie = array(
+            '1' => 'Rettilineo',
+            '2' => 'Curva',
+            '3' => 'Pendenza - salita',
+            '4' => 'Pendenza - discesa', 
+            '5' => 'Dosso',
+            '6' => 'Strettoia',
+            '7' => 'Altre caratteristiche particolari'
+        );
+        
+        return isset($geometrie[$codice_geometria]) ? $geometrie[$codice_geometria] : $codice_geometria;
     }
 }

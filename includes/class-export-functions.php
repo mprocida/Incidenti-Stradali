@@ -220,13 +220,20 @@ class IncidentiExportFunctions {
         </form>
     </div>
     <?php endif; ?>
-<!-- FINE BLOCCO TEMPORANEAMENTE NASCOSTO -->
+    <!-- FINE BLOCCO TEMPORANEAMENTE NASCOSTO -->
+    
+    <?php
+    // Controlla se l'utente ha il ruolo di amministratore
+    $current_user = wp_get_current_user();
+    if (in_array('administrator', $current_user->roles)) : 
+    ?>
     <div class="card">
         <h2>
             <?php _e('Log Esportazioni', 'incidenti-stradali'); ?>
         </h2>
         <?php $this->show_export_logs(); ?>
     </div>
+    <?php endif; ?>
     <div class="card">
         <h2>
             <?php _e('Informazioni Tracciato ISTAT', 'incidenti-stradali'); ?>

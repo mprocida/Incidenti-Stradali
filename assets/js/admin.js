@@ -1158,6 +1158,60 @@ jQuery(document).ready(function($) {
             }
         });
 
+        /* $('#circostanza_tipo').on('change', function() {
+            var tipo = $(this).val();
+            var selectVeicoloA = $('#circostanza_veicolo_a');
+            var selectVeicoloB = $('#circostanza_veicolo_b');
+            var selectVeicoloC = $('#circostanza_veicolo_c');
+
+            // Pulisci le select
+            selectVeicoloA.empty().append('<option value="">Seleziona circostanza</option>');
+            selectVeicoloB.empty().append('<option value="">Seleziona circostanza</option>');
+            selectVeicoloC.empty().append('<option value="">Seleziona circostanza</option>');
+
+            if (tipo && circostanzeData[tipo]) {
+                // Popola Veicolo A ordinato per codice numerico
+                if (circostanzeData[tipo]['veicolo_a']) {
+                    // Ottieni le chiavi e ordinali numericamente
+                    var keysA = Object.keys(circostanzeData[tipo]['veicolo_a']);
+                    keysA.sort(function(a, b){ return Number(a) - Number(b); });
+                    keysA.forEach(function(codice) {
+                        var descrizione = circostanzeData[tipo]['veicolo_a'][codice];
+                        selectVeicoloA.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
+                    });
+                }
+
+                // Popola Veicolo B ordinato per codice numerico
+                if (circostanzeData[tipo]['veicolo_b']) {
+                    var keysB = Object.keys(circostanzeData[tipo]['veicolo_b']);
+                    keysB.sort(function(a, b){ return Number(a) - Number(b); });
+                    keysB.forEach(function(codice) {
+                        var descrizione = circostanzeData[tipo]['veicolo_b'][codice];
+                        selectVeicoloB.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
+                    });
+                }
+
+                // Popola Veicolo C ordinato per codice numerico
+                if (circostanzeData[tipo]['veicolo_c']) {
+                    var keysC = Object.keys(circostanzeData[tipo]['veicolo_c']);
+                    keysC.sort(function(a, b){ return Number(a) - Number(b); });
+                    keysC.forEach(function(codice) {
+                        var descrizione = circostanzeData[tipo]['veicolo_c'][codice];
+                        selectVeicoloC.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
+                    });
+                }
+
+                // Aggiorna label del Veicolo B
+                var labelText = 'Circostanza Veicolo B';
+                if (tipo === 'investimento') labelText = 'Circostanza Pedone';
+                if (tipo === 'urto_fermo') labelText = 'Circostanza Ostacolo';
+                if (tipo === 'senza_urto') labelText = 'Ostacolo Evitato';
+                
+                $('label[for="circostanza_veicolo_b"]').text(labelText);
+            }
+        }); */
+
+
         // Trigger al caricamento pagina se c'è già un valore
         if ($('#circostanza_tipo').val()) {
             $('#circostanza_tipo').trigger('change');

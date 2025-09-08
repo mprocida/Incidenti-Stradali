@@ -2220,9 +2220,9 @@ class IncidentiMetaBoxes {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Elementi Aggiuntivi', 'incidenti-stradali'); ?></th>
+                        <th><i><?php _e('Elementi Aggiuntivi', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="checkbox" name="accessi_laterali" value="1" <?php checked($accessi_laterali, '1'); ?>> <?php _e('Accessi laterali', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="checkbox" name="accessi_laterali" value="1" <?php checked($accessi_laterali, '1'); ?>> <?php _e('Accessi laterali', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                 </table>
@@ -2281,17 +2281,17 @@ class IncidentiMetaBoxes {
                     </tr>
                     <!-- -->
                     <tr>
-                        <th><?php _e('Elementi Aggiuntivi 1', 'incidenti-stradali'); ?></th>
+                        <th><i><?php _e('Elementi Aggiuntivi 1', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="radio" name="elementi_aggiuntivi_1" value="1" <?php checked($elementi_aggiuntivi_1, '1'); ?>> <?php _e('Semaforizzazioni', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="elementi_aggiuntivi_1" value="2" <?php checked($elementi_aggiuntivi_1, '2'); ?>> <?php _e('Cartelli pubblicitari', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="radio" name="elementi_aggiuntivi_1" value="1" <?php checked($elementi_aggiuntivi_1, '1'); ?>> <?php _e('Semaforizzazioni', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="elementi_aggiuntivi_1" value="2" <?php checked($elementi_aggiuntivi_1, '2'); ?>> <?php _e('Cartelli pubblicitari', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Elementi Aggiuntivi 2', 'incidenti-stradali'); ?></th>
+                        <th><i><?php _e('Elementi Aggiuntivi 2', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="radio" name="elementi_aggiuntivi_2" value="1" <?php checked($elementi_aggiuntivi_2, '1'); ?>> <?php _e('Leggibilità alta', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="elementi_aggiuntivi_2" value="2" <?php checked($elementi_aggiuntivi_2, '2'); ?>> <?php _e('Leggibilità bassa', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="radio" name="elementi_aggiuntivi_2" value="1" <?php checked($elementi_aggiuntivi_2, '1'); ?>> <?php _e('Leggibilità alta', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="elementi_aggiuntivi_2" value="2" <?php checked($elementi_aggiuntivi_2, '2'); ?>> <?php _e('Leggibilità bassa', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>    
                     <!-- -->
@@ -2349,26 +2349,26 @@ class IncidentiMetaBoxes {
                 <h4><?php _e('Altre Caratteristiche', 'incidenti-stradali'); ?></h4>
                 <table class="form-table">
                     <tr>
-                        <th><?php _e('Orientamento del conducente', 'incidenti-stradali'); ?></th>
+                        <th><i><?php _e('Orientamento del conducente', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="radio" name="orientamento_conducente" value="sole_frontale" <?php checked($orientamento_conducente, 'sole_frontale'); ?>> <?php _e('Sole frontale', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="orientamento_conducente" value="sole_laterale" <?php checked($orientamento_conducente, 'sole_laterale'); ?>> <?php _e('Sole laterale', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="orientamento_conducente" value="sole_dietro" <?php checked($orientamento_conducente, 'sole_dietro'); ?>> <?php _e('Sole da dietro', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="orientamento_conducente" value="non_rilevabile" <?php checked($orientamento_conducente, 'non_rilevabile'); ?>> <?php _e('Non rilevabile', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="radio" name="orientamento_conducente" value="sole_frontale" <?php checked($orientamento_conducente, 'sole_frontale'); ?>> <?php _e('Sole frontale', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="orientamento_conducente" value="sole_laterale" <?php checked($orientamento_conducente, 'sole_laterale'); ?>> <?php _e('Sole laterale', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="orientamento_conducente" value="sole_dietro" <?php checked($orientamento_conducente, 'sole_dietro'); ?>> <?php _e('Sole da dietro', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="orientamento_conducente" value="non_rilevabile" <?php checked($orientamento_conducente, 'non_rilevabile'); ?>> <?php _e('Non rilevabile', 'incidenti-stradali'); ?></i></label>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Presenza banchina', 'incidenti-stradali'); ?></th>
+                        <th><i><?php _e('Presenza banchina', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="checkbox" name="presenza_banchina" value="1" <?php checked($presenza_banchina, '1'); ?>> <?php _e('Presente', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="checkbox" name="presenza_banchina" value="1" <?php checked($presenza_banchina, '1'); ?>> <?php _e('Presente', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Presenza barriere', 'incidenti-stradali'); ?></th>
+                        <th><i><?php _e('Presenza barriere', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <label><input type="radio" name="presenza_barriere" value="si" <?php checked($presenza_barriere, 'si'); ?>> <?php _e('Sì', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="presenza_barriere" value="no" <?php checked($presenza_barriere, 'no'); ?>> <?php _e('No', 'incidenti-stradali'); ?></label><br>
-                            <label><input type="radio" name="presenza_barriere" value="danneggiate" <?php checked($presenza_barriere, 'danneggiate'); ?>> <?php _e('Danneggiate', 'incidenti-stradali'); ?></label>
+                            <i><label><input type="radio" name="presenza_barriere" value="si" <?php checked($presenza_barriere, 'si'); ?>> <?php _e('Sì', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="presenza_barriere" value="no" <?php checked($presenza_barriere, 'no'); ?>> <?php _e('No', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="presenza_barriere" value="danneggiate" <?php checked($presenza_barriere, 'danneggiate'); ?>> <?php _e('Danneggiate', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                 </table>
@@ -2465,13 +2465,13 @@ class IncidentiMetaBoxes {
             </tr>
 
             <tr id="altro_natura_row">
-                <th><label for="altro_natura_testo"><?php _e('Altro (specificare)', 'incidenti-stradali'); ?></label></th>
+                <th><i><label for="altro_natura_testo"><?php _e('Altro (specificare)', 'incidenti-stradali'); ?></label></i></th>
                 <td>
-                    <input type="text" id="altro_natura_testo" name="altro_natura_testo" 
+                    <i><input type="text" id="altro_natura_testo" name="altro_natura_testo" 
                         value="<?php echo esc_attr(get_post_meta($post->ID, 'altro_natura_testo', true)); ?>" 
                         class="regular-text" maxlength="100" 
-                        placeholder="<?php _e('Specifica se diverso dalle opzioni standard', 'incidenti-stradali'); ?>">
-                    <p class="description"><?php _e('Campo opzionale per specificare natura diversa dalle opzioni standard (max 100 caratteri)', 'incidenti-stradali'); ?></p>
+                        placeholder="<?php _e('Specifica se diverso dalle opzioni standard', 'incidenti-stradali'); ?>"></i>
+                    <i><p class="description"><?php _e('Campo opzionale per specificare natura diversa dalle opzioni standard (max 100 caratteri)', 'incidenti-stradali'); ?></p></i>
                 </td>
             </tr>
             <tr id="numero_veicoli_row">
@@ -2952,9 +2952,9 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
             <tr>
-                <th><label for="<?php echo $prefix; ?>danni_riportati"><?php _e('Danni Riportati', 'incidenti-stradali'); ?></label></th>
+                <th><i><label for="<?php echo $prefix; ?>danni_riportati"><?php _e('Danni Riportati', 'incidenti-stradali'); ?></label></i></th>
                 <td>
-                    <textarea id="<?php echo $prefix; ?>danni_riportati" name="<?php echo $prefix; ?>danni_riportati" 
+                    <textarea id="<?php echo $prefix; ?>danni_riportati" class="textarea_danni_riportati" name="<?php echo $prefix; ?>danni_riportati" 
                             rows="3" cols="50" placeholder="<?php _e('Descrivi i danni riportati dal veicolo', 'incidenti-stradali'); ?>"><?php echo esc_textarea(get_post_meta($post->ID, $prefix . 'danni_riportati', true)); ?></textarea>
                 </td>
             </tr>

@@ -2913,7 +2913,7 @@ class IncidentiMetaBoxes {
             <tr>
                 <th><label for="<?php echo $prefix; ?>targa"><?php _e('Targa', 'incidenti-stradali'); ?></label></th>
                 <td>
-                    <input type="text" id="<?php echo $prefix; ?>targa" name="<?php echo $prefix; ?>targa" value="<?php echo esc_attr($targa); ?>">
+                    <input type="text" id="<?php echo $prefix; ?>targa" name="<?php echo $prefix; ?>targa" value="<?php echo esc_attr($targa); ?>" maxlength="8" pattern="[0-9][a-z][A-Z]{1,8}">
                 </td>
             </tr>
             <tr>

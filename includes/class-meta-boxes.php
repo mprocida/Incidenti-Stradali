@@ -4346,12 +4346,12 @@ class IncidentiMetaBoxes {
     }
     
     public function render_mappa_meta_box($post) {
-        $mostra_in_mappa = get_post_meta($post->ID, 'mostra_in_mappa', true);
+        //$mostra_in_mappa = get_post_meta($post->ID, 'mostra_in_mappa', true);
         
         ?>
-        <table class="form-table">
+        <!-- <table class="form-table">
             <tr>
-                <!-- <th><label for="mostra_in_mappa"><?php _e('Mostra nella Mappa Pubblica', 'incidenti-stradali'); ?></label></th> -->
+                 <th><label for="mostra_in_mappa"><?php _e('Mostra nella Mappa Pubblica', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <label>
                         <input type="checkbox" id="mostra_in_mappa" name="mostra_in_mappa" value="1" <?php checked($mostra_in_mappa, '1'); ?>>
@@ -4359,7 +4359,8 @@ class IncidentiMetaBoxes {
                     </label>
                 </td>
             </tr>
-        </table>
+        </table> -->
+            <p><?php _e('Questo incidente sarà automaticamente incluso nella mappa pubblica se ha coordinate valide.', 'incidenti-stradali'); ?></p>
         <?php
     }
     
@@ -5119,8 +5120,12 @@ class IncidentiMetaBoxes {
             if (isset($_POST[$field])) {
                 update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
             } else {
-                if ($field === 'mostra_in_mappa') {
+                /* if ($field === 'mostra_in_mappa') {
                     delete_post_meta($post_id, $field);
+                } */
+                if ($field === 'mostra_in_mappa') {
+                    // SEMPRE impostato a 1 (mostra sempre in mappa)
+                    update_post_meta($post_id, $field, '1');
                 }
             }
         }

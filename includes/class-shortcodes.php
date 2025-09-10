@@ -143,8 +143,8 @@ class IncidentiShortcodes {
             'width' => '100%',
             'height' => '400px',
             'zoom' => '10',
-            'center_lat' => '40.35139323809136',
-            'center_lng' => '18.174879597290456',
+            'center_lat' => '41.9028',
+            'center_lng' => '12.4964',
             'comune' => '',
             'periodo' => '',
             'data_inizio' => '',
@@ -1136,7 +1136,7 @@ class IncidentiShortcodes {
         error_log('FILTRI RICEVUTI: ' . print_r($filters, true));
         
         // Build query
-        $args = array(
+        /* $args = array(
             'post_type' => 'incidente_stradale',
             'post_status' => 'publish',
             'posts_per_page' => -1,
@@ -1146,6 +1146,22 @@ class IncidentiShortcodes {
                     'value' => '1',
                     'compare' => '='
                 ),
+                array(
+                    'key' => 'latitudine',
+                    'compare' => 'EXISTS'
+                ),
+                array(
+                    'key' => 'longitudine',
+                    'compare' => 'EXISTS'
+                )
+            )
+        ); */
+        $args = array(
+            'post_type' => 'incidente_stradale',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                // RIMOSSO: controllo mostra_in_mappa
                 array(
                     'key' => 'latitudine',
                     'compare' => 'EXISTS'

@@ -303,7 +303,9 @@ if ($incidenti_query->have_posts()) {
         $longitudine = get_post_meta($post_id, 'longitudine', true);
         $mostra_in_mappa = get_post_meta($post_id, 'mostra_in_mappa', true);
         
-        if ($mostra_in_mappa && $latitudine && $longitudine) {
+        //if ($mostra_in_mappa && $latitudine && $longitudine) {
+        // SEMPRE mostra in mappa se ha coordinate
+        if ($latitudine && $longitudine) {
             // Count casualties
             $morti_incidente = 0;
             $feriti_incidente = 0;

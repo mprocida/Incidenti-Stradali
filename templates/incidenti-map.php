@@ -40,12 +40,20 @@ $args = array(
     'post_type' => 'incidente_stradale',
     'post_status' => 'publish',
     'posts_per_page' => -1,
-    'meta_query' => array(
+    /* 'meta_query' => array(
         'relation' => 'AND',
         array(
             'key' => 'mostra_in_mappa',
             'value' => '1',
             'compare' => '='
+        ), */
+        'meta_query' => array(
+        'relation' => 'AND',
+        // RIMOSSO: controllo mostra_in_mappa
+        array(
+            'key' => 'latitudine',
+            'value' => '',
+            'compare' => '!='
         ),
         array(
             'key' => 'latitudine',

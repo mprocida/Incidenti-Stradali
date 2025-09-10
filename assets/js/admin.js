@@ -1156,6 +1156,26 @@ jQuery(document).ready(function($) {
                 
                 $('label[for="circostanza_veicolo_b"]').text(labelText);
             }
+
+            /**/
+            function sortSelectOptionsByValue(selectId) {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                const selectedValue = select.value;
+                const options = Array.from(select.options);
+                const placeholder = options.shift(); // Preserva la prima opzione come placeholder
+                options.sort((a, b) => Number(a.value) - Number(b.value));
+                select.innerHTML = '';
+                select.appendChild(placeholder);
+                options.forEach(opt => select.appendChild(opt));
+                select.value = selectedValue; // Ripristina la selezione precedentemente salvata
+            }
+
+            // Applica l'ordinamento alle due select
+            sortSelectOptionsByValue('circostanza_veicolo_a');
+            sortSelectOptionsByValue('circostanza_veicolo_b');
+
+            /**/
         });
 
         /* $('#circostanza_tipo').on('change', function() {

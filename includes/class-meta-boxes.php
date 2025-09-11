@@ -2045,28 +2045,45 @@ class IncidentiMetaBoxes {
                     var lat = e.latlng.lat;
                     var lng = e.latlng.lng;
                     
-                    $('#latitudine_inline').val(lat.toFixed(6));
-                    $('#longitudine_inline').val(lng.toFixed(6));
-                    // Sincronizza con i campi nella sidebar se esistono
-                    $('#latitudine').val(lat.toFixed(6));
-                    $('#longitudine').val(lng.toFixed(6));
+                    // Alert di conferma coordinate
+                    var confirmMessage = 'Vuoi confermare queste coordinate?\n\n' +
+                        'Latitudine: ' + lat.toFixed(6) + '\n' +
+                        'Longitudine: ' + lng.toFixed(6);
                     
-                    if (marker) {
-                        map.removeLayer(marker);
+                    if (confirm(confirmMessage)) {
+                        $('#latitudine_inline').val(lat.toFixed(6));
+                        $('#longitudine_inline').val(lng.toFixed(6));
+                        // Sincronizza con i campi nella sidebar se esistono
+                        $('#latitudine').val(lat.toFixed(6));
+                        $('#longitudine').val(lng.toFixed(6));
+                        
+                        if (marker) {
+                            map.removeLayer(marker);
+                        }
+                        
+                        marker = L.marker([lat, lng], {
+                            draggable: true,
+                            title: 'Posizione incidente (trascinabile)'
+                        }).addTo(map);
+                        
+                        marker.on('dragend', function(e) {
+                            var position = e.target.getLatLng();
+                            var dragConfirmMessage = 'Vuoi confermare la nuova posizione?\n\n' +
+                                'Latitudine: ' + position.lat.toFixed(6) + '\n' +
+                                'Longitudine: ' + position.lng.toFixed(6);
+                            
+                            if (confirm(dragConfirmMessage)) {
+                                $('#latitudine_inline').val(position.lat.toFixed(6));
+                                $('#longitudine_inline').val(position.lng.toFixed(6));
+                                $('#latitudine').val(position.lat.toFixed(6));
+                                $('#longitudine').val(position.lng.toFixed(6));
+                            } else {
+                                // Ripristina posizione precedente se l'utente cancella
+                                marker.setLatLng([lat, lng]);
+                            }
+                        });
                     }
-                    
-                    marker = L.marker([lat, lng], {
-                        draggable: true,
-                        title: 'Posizione incidente (trascinabile)'
-                    }).addTo(map);
-                    
-                    marker.on('dragend', function(e) {
-                        var position = e.target.getLatLng();
-                        $('#latitudine_inline').val(position.lat.toFixed(6));
-                        $('#longitudine_inline').val(position.lng.toFixed(6));
-                        $('#latitudine').val(position.lat.toFixed(6));
-                        $('#longitudine').val(position.lng.toFixed(6));
-                    });
+                    // Se l'utente cancella, non fare nulla
                 });
                 
                 // Aggiorna mappa quando coordinate cambiano

@@ -399,14 +399,45 @@ jQuery(document).ready(function($) {
      * Initialize date pickers
      */
     function initializeDatePickers() {
+        // Imposta la data massima selezionabile (oggi)
+        var today = new Date().toISOString().split('T')[0];
+        
+        // Per i campi di tipo date HTML5
+        $('#data_incidente').attr('max', today);
+        
+        // Per i date picker jQuery UI (se presenti)
         if ($.datepicker) {
             $('.incidenti-datepicker').datepicker({
                 dateFormat: 'yy-mm-dd',
                 changeMonth: true,
                 changeYear: true,
-                yearRange: '1950:' + new Date().getFullYear()
+                yearRange: '1950:' + new Date().getFullYear(),
+                maxDate: 0 // 0 = oggi
             });
         }
+        
+        // Validazione aggiuntiva per il campo data incidente
+        $('#data_incidente').on('change input', function() {
+            var selectedDate = new Date($(this).val());
+            var currentDate = new Date();
+            currentDate.setHours(23, 59, 59, 999); // Fine giornata corrente
+            
+            if ($(this).val() && selectedDate > currentDate) {
+                // Rimuovi la data non valida
+                $(this).val('');
+                $(this).addClass('incidenti-validation-error');
+                
+                // Mostra messaggio di errore
+                $(this).siblings('.incidenti-field-error').remove();
+                $(this).after('<span class="incidenti-field-error">Non è possibile selezionare una data futura per l\'incidente.</span>');
+                
+                // Alert opzionale per l'utente
+                alert('Non è possibile selezionare una data futura per l\'incidente.');
+            } else {
+                $(this).removeClass('incidenti-validation-error');
+                $(this).siblings('.incidenti-field-error').remove();
+            }
+        });
     }
     
     /**
@@ -719,7 +750,19 @@ jQuery(document).ready(function($) {
         var value = $field.val();
         var isValid = !value || isValidDate(value);
         
-        updateFieldValidation($field, isValid, 'Formato data non valido (YYYY-MM-DD)');
+        // Controllo aggiuntivo per date future
+        if (isValid && value) {
+            var selectedDate = new Date(value);
+            var currentDate = new Date();
+            currentDate.setHours(23, 59, 59, 999);
+            
+            if (selectedDate > currentDate) {
+                isValid = false;
+            }
+        }
+        
+        var message = isValid ? '' : 'Data non valida o futura';
+        updateFieldValidation($field, isValid, message);
         return isValid;
     }
     

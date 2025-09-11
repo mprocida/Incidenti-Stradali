@@ -6452,7 +6452,10 @@ class IncidentiMetaBoxes {
      */
     public function hide_asset_ui_elements() {
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+        if (in_array('asset', $current_user->roles) || 
+            in_array('supervisor', $current_user->roles) || 
+            in_array('prefettura', $current_user->roles) ||
+            !current_user_can('manage_options')) { // Aggiunta questa riga
             $screen = get_current_screen();
             if ($screen && $screen->post_type === 'incidente_stradale') {
                 ?>
@@ -6495,7 +6498,7 @@ class IncidentiMetaBoxes {
     /**
      * Personalizza la lista incidenti per utenti Asset e Supervisor
      */
-    public function customize_asset_list_view() {
+    /* public function customize_asset_list_view() {
         $current_user = wp_get_current_user();
         if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
             // Rimuovi la possibilità di modificare lo stato dei post
@@ -6506,5 +6509,88 @@ class IncidentiMetaBoxes {
                 remove_meta_box('submitdiv', 'incidente_stradale', 'side');
             }, 99);
         }
-    }
+    } */
+
+        public function customize_asset_list_view() {
+            $current_user = wp_get_current_user();
+            // Aggiunto controllo per utenti non admin
+            if (in_array('asset', $current_user->roles) || 
+                in_array('supervisor', $current_user->roles) || 
+                in_array('prefettura', $current_user->roles) ||
+                !current_user_can('manage_options')) { // Questa è la riga aggiunta
+                
+                // Rimuovi la possibilità di modificare lo stato dei post
+                add_filter('user_can_richedit', '__return_false');
+                
+                // Per utenti non admin, personalizza il submitdiv invece di rimuoverlo completamente
+                if (!current_user_can('manage_options')) {
+                    add_action('add_meta_boxes', array($this, 'customize_submitdiv_for_non_admin'), 99);
+                } else {
+                    // Rimuovi metabox completamente per altri ruoli
+                    add_action('add_meta_boxes', function() {
+                        remove_meta_box('submitdiv', 'incidente_stradale', 'side');
+                    }, 99);
+                }
+            }
+        }
+
+        /**
+         * Personalizza il submitdiv per utenti non admin
+         */
+        public function customize_submitdiv_for_non_admin() {
+            // Aggiungi JavaScript per nascondere elementi specifici del submitdiv
+            add_action('admin_footer', array($this, 'hide_submitdiv_elements_for_non_admin'));
+        }
+
+        /**
+         * JavaScript per nascondere elementi del submitdiv per utenti non admin
+         */
+        public function hide_submitdiv_elements_for_non_admin() {
+            $screen = get_current_screen();
+            if ($screen && $screen->post_type === 'incidente_stradale') {
+                ?>
+                <script type="text/javascript">
+                jQuery(document).ready(function($) {
+                    // Aggiungi classe al body per gli stili CSS
+                    $('body').addClass('non-admin-publish');
+                    
+                    // Nascondi elementi non necessari
+                    $('#save-post').hide();
+                    $('#misc-publishing-actions .misc-pub-section').hide();
+                    $('#post-status-select').hide();
+                    $('#post-visibility-select').hide();
+                    $('#timestampdiv').hide();
+                    $('.misc-pub-post-status').hide();
+                    $('.misc-pub-visibility').hide();
+                    $('.misc-pub-curtime').hide();
+                    
+                    // Trasforma il submitdiv in uno stile simile al box stampa PDF
+                    $('#submitdiv .inside').html('<div class="incidenti-publish-container">' +
+                        '<div class="incidenti-publish-info">' +
+                        'Solo il pulsante "Pubblica" è disponibile per il tuo ruolo utente.' +
+                        '</div>' +
+                        '<p class="description">Assicurati che tutti i dati siano corretti prima di pubblicare l\'incidente.</p>' +
+                        '<button type="submit" name="publish" id="publish" class="button button-primary button-large">' +
+                        '<span class="dashicons dashicons-yes-alt"></span>' +
+                        'Pubblica Incidente' +
+                        '</button>' +
+                        '</div>');
+                    
+                    // Mantieni la funzionalità del form
+                    $('#publish').on('click', function(e) {
+                        $(this).prop('disabled', true).text('Pubblicazione...');
+                        $('#post').submit();
+                    });
+                });
+                </script>
+                <style type="text/css">
+                /* CSS inline per assicurarsi che venga applicato */
+                #submitdiv.postbox {
+                    border-radius: 4px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+                </style>
+                <?php
+            }
+        }
 }

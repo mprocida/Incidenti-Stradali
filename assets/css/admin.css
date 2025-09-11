@@ -1130,3 +1130,228 @@ body.non-admin-publish #submitdiv {
         padding: 12px !important;
     }
 }
+
+/* ================================================
+   SCROLL TO TOP BUTTON STYLES
+   Da aggiungere al file assets/css/admin.css
+   ================================================ */
+
+/* Pulsante scroll to top per form incidenti */
+#incidenti-scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 115, 170, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    line-height: 1;
+}
+
+/* Mostra il pulsante quando ha la classe 'show' */
+#incidenti-scroll-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Effetti hover */
+#incidenti-scroll-to-top:hover {
+    background: #005a87;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 115, 170, 0.4);
+    text-decoration: none;
+}
+
+/* Focus per accessibilità */
+#incidenti-scroll-to-top:focus {
+    outline: 2px solid #005a87;
+    outline-offset: 2px;
+    color: white;
+}
+
+/* Effetto click */
+#incidenti-scroll-to-top:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 115, 170, 0.3);
+}
+
+/* Icona dashicons dentro il pulsante */
+#incidenti-scroll-to-top .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+    color: inherit;
+}
+
+/* Fallback se dashicons non sono disponibili */
+#incidenti-scroll-to-top:not(:has(.dashicons))::before {
+    content: "↑";
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Aggiustamenti per admin bar WordPress */
+body.admin-bar #incidenti-scroll-to-top {
+    bottom: 50px;
+}
+
+/* ================================================
+   RESPONSIVE DESIGN
+   ================================================ */
+
+/* Tablet */
+@media screen and (max-width: 782px) {
+    #incidenti-scroll-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+    }
+    
+    #incidenti-scroll-to-top .dashicons {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+    
+    #incidenti-scroll-to-top:not(:has(.dashicons))::before {
+        font-size: 18px;
+    }
+    
+    /* Admin bar su tablet */
+    body.admin-bar #incidenti-scroll-to-top {
+        bottom: 66px;
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 600px) {
+    #incidenti-scroll-to-top {
+        bottom: 15px;
+        right: 15px;
+        width: 42px;
+        height: 42px;
+        font-size: 15px;
+    }
+    
+    #incidenti-scroll-to-top .dashicons {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+    }
+    
+    #incidenti-scroll-to-top:not(:has(.dashicons))::before {
+        font-size: 16px;
+    }
+    
+    /* Admin bar su mobile */
+    body.admin-bar #incidenti-scroll-to-top {
+        bottom: 86px;
+    }
+}
+
+/* ================================================
+   VARIANTI DI STILE (OPZIONALI)
+   ================================================ */
+
+/* Variante con colore diverso per distinguersi */
+#incidenti-scroll-to-top.variant-green {
+    background: #46b450;
+    box-shadow: 0 4px 12px rgba(70, 180, 80, 0.3);
+}
+
+#incidenti-scroll-to-top.variant-green:hover {
+    background: #3a9940;
+    box-shadow: 0 6px 16px rgba(70, 180, 80, 0.4);
+}
+
+/* Variante con icona personalizzata */
+#incidenti-scroll-to-top.custom-icon::before {
+    content: "⇧";
+    font-weight: normal;
+    font-size: 22px;
+}
+
+/* Variante quadrata invece che rotonda */
+#incidenti-scroll-to-top.square {
+    border-radius: 8px;
+}
+
+/* ================================================
+   INTEGRAZIONE CON TEMI ADMIN PERSONALIZZATI
+   ================================================ */
+
+/* Per temi admin con colori personalizzati */
+.admin-color-blue #incidenti-scroll-to-top {
+    background: #096484;
+}
+
+.admin-color-blue #incidenti-scroll-to-top:hover {
+    background: #073d4f;
+}
+
+.admin-color-coffee #incidenti-scroll-to-top {
+    background: #46403c;
+}
+
+.admin-color-coffee #incidenti-scroll-to-top:hover {
+    background: #32302d;
+}
+
+.admin-color-ectoplasm #incidenti-scroll-to-top {
+    background: #523f6d;
+}
+
+.admin-color-ectoplasm #incidenti-scroll-to-top:hover {
+    background: #3c2e4b;
+}
+
+.admin-color-midnight #incidenti-scroll-to-top {
+    background: #e14d43;
+}
+
+.admin-color-midnight #incidenti-scroll-to-top:hover {
+    background: #c7312a;
+}
+
+.admin-color-ocean #incidenti-scroll-to-top {
+    background: #9ebaa0;
+}
+
+.admin-color-ocean #incidenti-scroll-to-top:hover {
+    background: #7e967f;
+}
+
+.admin-color-sunrise #incidenti-scroll-to-top {
+    background: #dd823b;
+}
+
+.admin-color-sunrise #incidenti-scroll-to-top:hover {
+    background: #c4692f;
+}
+
+/* ================================================
+   PRINT STYLES
+   ================================================ */
+
+@media print {
+    #incidenti-scroll-to-top {
+        display: none !important;
+    }
+}

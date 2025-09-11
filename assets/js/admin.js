@@ -24,6 +24,7 @@ jQuery(document).ready(function($) {
         initializeTransportatiSections();
         initializeCircostanzeFields();
         initializeConditionalFields();
+        initializeScrollToTopButton();
     }
     
     /**
@@ -883,6 +884,241 @@ jQuery(document).ready(function($) {
             });
         });
     }
+
+    
+    /**
+     * Initialize scroll to top button for incident forms
+     */
+    function initializeScrollToTopButton() {
+        // Controlla se siamo nelle pagine di creazione/modifica incidenti
+        var $body = $('body');
+        if (!$body.hasClass('post-type-incidente_stradale') || 
+            (!$body.hasClass('post-new-php') && !$body.hasClass('post-php'))) {
+            return;
+        }
+        
+        // Crea il pulsante se non esiste già
+        if ($('#incidenti-scroll-to-top').length === 0) {
+            createScrollToTopButton();
+        }
+        
+        // Gestisce la visibilità
+        handleScrollToTopVisibility();
+    }
+
+    /**
+     * Create scroll to top button with styling
+     */
+    function createScrollToTopButton() {
+        // Aggiungi CSS al head
+        var scrollToTopCSS = `
+            <style id="incidenti-scroll-to-top-styles">
+            #incidenti-scroll-to-top {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 50px;
+                height: 50px;
+                background: #0073aa;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0, 115, 170, 0.3);
+                z-index: 9999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease-in-out;
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+            }
+            
+            #incidenti-scroll-to-top.show {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            #incidenti-scroll-to-top:hover {
+                background: #005a87;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 115, 170, 0.4);
+            }
+            
+            #incidenti-scroll-to-top:focus {
+                outline: 2px solid #005a87;
+                outline-offset: 2px;
+            }
+            
+            #incidenti-scroll-to-top:active {
+                transform: translateY(0);
+            }
+            
+            /* Icona freccia con dashicons */
+            #incidenti-scroll-to-top .dashicons {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+                line-height: 1;
+            }
+            
+            /* Fallback se dashicons non disponibili */
+            #incidenti-scroll-to-top:not(:has(.dashicons))::before {
+                content: "↑";
+                font-weight: bold;
+            }
+            
+            /* Mobile */
+            @media (max-width: 782px) {
+                #incidenti-scroll-to-top {
+                    bottom: 20px;
+                    right: 20px;
+                    width: 45px;
+                    height: 45px;
+                }
+                
+                #incidenti-scroll-to-top .dashicons {
+                    font-size: 18px;
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+            
+            /* Admin bar adjustment */
+            body.admin-bar #incidenti-scroll-to-top {
+                bottom: 50px;
+            }
+            
+            @media screen and (max-width: 782px) {
+                body.admin-bar #incidenti-scroll-to-top {
+                    bottom: 66px;
+                }
+            }
+            
+            @media screen and (max-width: 600px) {
+                body.admin-bar #incidenti-scroll-to-top {
+                    bottom: 86px;
+                }
+            }
+            </style>
+        `;
+        
+        // Rimuovi CSS esistente se presente
+        $('#incidenti-scroll-to-top-styles').remove();
+        
+        // Aggiungi nuovo CSS
+        $('head').append(scrollToTopCSS);
+        
+        // Crea il pulsante
+        var $button = $('<button/>', {
+            id: 'incidenti-scroll-to-top',
+            type: 'button',
+            'aria-label': 'Torna all\'inizio della pagina',
+            title: 'Torna all\'inizio',
+            class: 'button-secondary'
+        });
+        
+        // Aggiungi icona (usa dashicons se disponibile)
+        if ($('body').hasClass('wp-admin')) {
+            $button.html('<span class="dashicons dashicons-arrow-up-alt"></span>');
+        } else {
+            $button.html('↑');
+        }
+        
+        // Event handler per il click
+        $button.on('click', function(e) {
+            e.preventDefault();
+            scrollToTopAnimated();
+        });
+        
+        // Aggiungi al body
+        $('body').append($button);
+    }
+
+    /**
+     * Handle scroll to top button visibility
+     */
+    function handleScrollToTopVisibility() {
+        var $button = $('#incidenti-scroll-to-top');
+        if ($button.length === 0) return;
+        
+        var scrollThreshold = 300;
+        var $window = $(window);
+        
+        // Funzione throttled per performance
+        var throttledScroll = throttle(function() {
+            var scrollTop = $window.scrollTop();
+            
+            if (scrollTop > scrollThreshold) {
+                $button.addClass('show');
+            } else {
+                $button.removeClass('show');
+            }
+        }, 100);
+        
+        // Bind scroll event
+        $window.on('scroll.scrollToTop', throttledScroll);
+        
+        // Controllo iniziale
+        throttledScroll();
+    }
+
+    /**
+     * Animated scroll to top
+     */
+    function scrollToTopAnimated() {
+        $('html, body').animate({
+            scrollTop: 0
+        }, {
+            duration: 800,
+            easing: 'swing',
+            complete: function() {
+                // Focus sul primo elemento della pagina per accessibilità
+                var $firstFocusable = $('.wrap h1, #title, .page-title-action').first();
+                if ($firstFocusable.length) {
+                    $firstFocusable.focus();
+                }
+            }
+        });
+    }
+
+    /**
+     * Utility function per throttling (se non già presente)
+     */
+    function throttle(func, limit) {
+        var inThrottle;
+        return function() {
+            var args = arguments;
+            var context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(function() {
+                    inThrottle = false;
+                }, limit);
+            }
+        }
+    }
+
+    // Aggiungi alla chiamata di inizializzazione principale nel file admin.js esistente
+    // Sostituire la funzione $(document).ready esistente o aggiungere questa chiamata
+
+    $(document).ready(function() {
+        // ... codice esistente ...
+        
+        // Inizializza scroll to top button
+        initializeScrollToTopButton();
+        
+        // ... resto del codice esistente ...
+    });
+
+    // Per cleanup quando si cambia pagina (se necessario)
+    $(window).on('beforeunload', function() {
+        $(window).off('scroll.scrollToTop');
+    });
     
     // Initialize everything
     initializeAdmin();

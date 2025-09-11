@@ -113,8 +113,8 @@ class IncidentiValidation {
         // Validate ora incidente
         if (!empty($_POST['ora_incidente'])) {
             $ora = intval($_POST['ora_incidente']);
-            if ($ora < 0 || $ora > 24) {
-                $errors[] = __('L\'ora dell\'incidente deve essere compresa tra 0 e 24.', 'incidenti-stradali');
+            if ($ora < 0 || $ora > 25) {
+                $errors[] = __('L\'ora dell\'incidente deve essere compresa tra 0 e 25.', 'incidenti-stradali');
             }
         }
         

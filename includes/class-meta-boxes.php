@@ -945,7 +945,7 @@ class IncidentiMetaBoxes {
                 <td>
                     <select id="ora_incidente" name="ora_incidente" required>
                         <option value=""><?php _e('Seleziona ora', 'incidenti-stradali'); ?></option>
-                        <?php for($i = 0; $i <= 24; $i++): ?>
+                        <?php for($i = 0; $i <= 25; $i++): ?>
                             <option value="<?php echo sprintf('%02d', $i); ?>" <?php selected($ora_incidente, sprintf('%02d', $i)); ?>>
                                 <?php echo sprintf('%02d', $i); ?>
                             </option>

@@ -101,9 +101,9 @@ jQuery(document).ready(function($) {
                 
             case 'ora_incidente':
                 var hour = parseInt(value);
-                if (value && (hour < 0 || hour > 24)) {
+                if (value && (hour < 0 || hour > 25)) {
                     isValid = false;
-                    message = 'L\'ora deve essere compresa tra 0 e 24.';
+                    message = 'L\'ora deve essere compresa tra 0 e 25.';
                 }
                 break;
                 
@@ -768,9 +768,9 @@ jQuery(document).ready(function($) {
     
     function validateHour($field) {
         var value = parseInt($field.val());
-        var isValid = !$field.val() || (value >= 0 && value <= 24);
+        var isValid = !$field.val() || (value >= 0 && value <= 25);
         
-        updateFieldValidation($field, isValid, 'L\'ora deve essere compresa tra 0 e 24');
+        updateFieldValidation($field, isValid, 'L\'ora deve essere compresa tra 0 e 25');
         return isValid;
     }
     

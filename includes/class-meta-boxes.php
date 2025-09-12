@@ -1471,12 +1471,12 @@ class IncidentiMetaBoxes {
                 <th><label><?php _e('Progressiva Chilometrica', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <label for="progressiva_km"><?php _e('Km', 'incidenti-stradali'); ?></label>
-                    <input type="number" id="progressiva_km" name="progressiva_km" value="<?php echo esc_attr($progressiva_km); ?>" min="0" max="9999" style="width: 100px;">
+                    <input type="number" id="progressiva_km" name="progressiva_km" value="<?php echo esc_attr($progressiva_km); ?>" min="0" max="9999" style="width: 100px;" required>
                     
                     <label for="progressiva_m"><?php _e('Mt', 'incidenti-stradali'); ?></label>
                     <input type="number" id="progressiva_m" name="progressiva_m" value="<?php echo esc_attr($progressiva_m); ?>" min="0" max="999" style="width: 80px;">
                     
-                    <p class="description"><?php _e('Specificare km e metri separatamente', 'incidenti-stradali'); ?></p>
+                    <!-- <p class="description"><?php _e('Specificare km e metri separatamente', 'incidenti-stradali'); ?></p> -->
                 </td>
             </tr>
         </table>

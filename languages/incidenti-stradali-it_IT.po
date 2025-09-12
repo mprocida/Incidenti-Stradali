@@ -831,11 +831,11 @@ msgid "https://example.com"
 msgstr ""
 
 
-msgid "Obbligatorio per strade extraurbane"
-msgstr "Obbligatorio per strade extraurbane"
+msgid "Obbligatorio per tutti i tipi di strada"
+msgstr "Obbligatorio per tutti i tipi di strada"
 
-msgid "La progressiva chilometrica è obbligatoria per le strade extraurbane."
-msgstr "La progressiva chilometrica è obbligatoria per le strade extraurbane."
+msgid "La progressiva chilometrica è obbligatoria per tutti i tipi di strada."
+msgstr "La progressiva chilometrica è obbligatoria per tutti i tipi di strada."
 
 msgid "Luce diurna"
 msgstr "Luce diurna"

@@ -214,13 +214,18 @@ class IncidentiValidation {
         }
 
         // Validate progressiva chilometrica for extraurbane
-        if (!empty($_POST['tipo_strada'])) {
+        /* if (!empty($_POST['tipo_strada'])) {
             $tipo_strada = $_POST['tipo_strada'];
             $is_extraurbana = in_array($tipo_strada, ['4', '5', '6', '7', '8', '9']);
             
             if ($is_extraurbana && empty($_POST['progressiva_km'])) {
                 $errors[] = __('La progressiva chilometrica è obbligatoria per le strade extraurbane.', 'incidenti-stradali');
             }
+        } */
+
+        // Validate progressiva chilometrica for ALL road types
+        if (!empty($_POST['tipo_strada']) && empty($_POST['progressiva_km'])) {
+            $errors[] = __('La progressiva chilometrica è obbligatoria per tutti i tipi di strada.', 'incidenti-stradali');
         }
         
         // Check date restrictions

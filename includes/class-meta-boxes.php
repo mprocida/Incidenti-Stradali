@@ -1107,7 +1107,7 @@ class IncidentiMetaBoxes {
                     </select>
                 </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th><label for="organo_coordinatore"><?php _e('Organo Coordinatore (ISTAT)', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <select id="organo_coordinatore" name="organo_coordinatore">
@@ -1117,6 +1117,12 @@ class IncidentiMetaBoxes {
                         <option value="3" <?php selected($organo_coordinatore, '3'); ?>><?php _e('Ufficio comunale di statistica: Comune con oltre 250.000 abitanti', 'incidenti-stradali'); ?></option>
                         <option value="4" <?php selected($organo_coordinatore, '4'); ?>><?php _e('Altro capoluogo di provincia', 'incidenti-stradali'); ?></option>
                     </select>
+                </td>
+            </tr> -->
+
+            <tr style="display: none;">
+                <td>
+                    <input type="hidden" id="organo_coordinatore" name="organo_coordinatore" value="4">
                 </td>
             </tr>
         </table>

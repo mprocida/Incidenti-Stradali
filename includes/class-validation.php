@@ -66,6 +66,7 @@ class IncidentiValidation {
             'provincia_incidente' => __('Provincia', 'incidenti-stradali'),
             'comune_incidente' => __('Comune', 'incidenti-stradali'),
             'tipo_strada' => __('Tipo di strada', 'incidenti-stradali'),
+            'denominazione_strada' => __('Denominazione della Strada', 'incidenti-stradali'),
             'natura_incidente' => __('Natura dell\'incidente', 'incidenti-stradali'),
             'latitudine' => __('Latitudine', 'incidenti-stradali'),
             'longitudine' => __('Longitudine', 'incidenti-stradali'),

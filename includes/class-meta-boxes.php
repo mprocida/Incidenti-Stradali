@@ -1408,9 +1408,12 @@ class IncidentiMetaBoxes {
                 </td>
             </tr>
             <tr>
-                <th><label for="denominazione_strada"><?php _e('Denominazione della Strada', 'incidenti-stradali'); ?></label></th>
+                <th class="required-field"><label for="denominazione_strada"><?php _e('Denominazione della Strada', 'incidenti-stradali'); ?> *</label></th>
                 <td>
-                    <input type="text" id="denominazione_strada" name="denominazione_strada" value="<?php echo esc_attr($denominazione_strada); ?>" style="width: 100%;">
+                    <input type="text" id="denominazione_strada" name="denominazione_strada" 
+                        value="<?php echo esc_attr($denominazione_strada); ?>" 
+                        style="width: 100%;" 
+                        required>
                 </td>
             </tr>
             <tr>

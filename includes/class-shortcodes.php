@@ -1000,7 +1000,7 @@ class IncidentiShortcodes {
                     
                     <div class="form-row">
                         <label for="denominazione_strada">Via/Strada</label>
-                        <input type="text" name="denominazione_strada" id="denominazione_strada" placeholder="es. Via Roma">
+                        <input type="text" name="denominazione_strada" id="denominazione_strada" placeholder="es. Via Roma" require>
                     </div>
                     
                     <div class="form-row">

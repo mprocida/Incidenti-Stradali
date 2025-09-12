@@ -17,6 +17,12 @@
         "incidente_intersezione": {
           "description": "Incidente sull'intersezione stradale (incrocio)",
           "codici": {
+            "00": {
+              "descrizione": "Circostanza imprevista",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
             "01": {
               "descrizione": "Procedeva regolarmente senza svoltare",
               "articolo_cds": null,
@@ -125,6 +131,12 @@
         "incidente_non_intersezione": {
           "description": "Incidente non all'intersezione stradale",
           "codici": {
+            "00": {
+              "descrizione": "Circostanza imprevista",
+              "articolo_cds": null,
+              "gravita": "normale",
+              "tipo_violazione": null
+            },
             "20": {
               "descrizione": "Procedeva regolarmente",
               "articolo_cds": null,

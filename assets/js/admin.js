@@ -1428,7 +1428,17 @@ jQuery(document).ready(function($) {
             
             if (tipo && circostanzeData[tipo]) {
                 // Popola Veicolo A
+                /* if (circostanzeData[tipo]['veicolo_a']) {
+                    $.each(circostanzeData[tipo]['veicolo_a'], function(codice, descrizione) {
+                        selectVeicoloA.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
+                    });
+                } */
+
+                // Popola Veicolo A
                 if (circostanzeData[tipo]['veicolo_a']) {
+                    // Aggiungi sempre l'opzione "00 - Circostanza imprecisata" per tutti i tipi
+                    selectVeicoloA.append('<option value="00">00 - Circostanza imprecisata</option>');
+                    
                     $.each(circostanzeData[tipo]['veicolo_a'], function(codice, descrizione) {
                         selectVeicoloA.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
                     });
@@ -1440,7 +1450,16 @@ jQuery(document).ready(function($) {
                 if (tipo === 'urto_fermo') tipoB = 'ostacolo';
                 if (tipo === 'senza_urto') tipoB = 'ostacolo_evitato';
                 
+                /* if (circostanzeData[tipo][tipoB]) {
+                    $.each(circostanzeData[tipo][tipoB], function(codice, descrizione) {
+                        selectVeicoloB.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
+                    });
+                } */
+
                 if (circostanzeData[tipo][tipoB]) {
+                    // Aggiungi sempre l'opzione "00 - Circostanza imprecisata" per tutti i tipi
+                    selectVeicoloB.append('<option value="00">00 - Circostanza imprecisata</option>');
+                    
                     $.each(circostanzeData[tipo][tipoB], function(codice, descrizione) {
                         selectVeicoloB.append('<option value="' + codice + '">' + codice + ' - ' + descrizione + '</option>');
                     });

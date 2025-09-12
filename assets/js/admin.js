@@ -583,7 +583,7 @@ jQuery(document).ready(function($) {
             // La progressiva chilometrica è sempre visibile
             $progressivaRow.show();
             // Rendi la progressiva sempre obbligatoria quando c'è un tipo strada selezionato
-            if (tipoStrada) {
+            if (tipoStrada && tipoStrada !== '4') {
                 $('#progressiva_km').prop('required', true);
                 $('#progressiva_m').prop('required', false); // Solo i km sono obbligatori secondo le specifiche ISTAT
                 
@@ -595,6 +595,11 @@ jQuery(document).ready(function($) {
             } else {
                 $('#progressiva_km').prop('required', false);
                 $('#progressiva_m').prop('required', false);
+
+                var $helpText = $('#progressiva_km').siblings('.description');
+                if ($helpText.length && tipoStrada === '4') {
+                    $helpText.text('Facoltativo per le strade comunali extraurbane');
+                }
             }
 
         }).trigger('change');

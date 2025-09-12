@@ -834,8 +834,8 @@ msgstr ""
 msgid "Obbligatorio per tutti i tipi di strada"
 msgstr "Required for all roads"
 
-msgid "La progressiva chilometrica è obbligatoria per tutti i tipi di strada."
-msgstr "The kilometric progressive is mandatory for all roads."
+msgid "La progressiva chilometrica è obbligatoria per tutti i tipi di strada eccetto le strade comunali extraurbane."
+msgstr "The kilometric progressive is mandatory for all types of roads except extra-urban municipal roads."
 
 msgid "Luce diurna"
 msgstr "Daylight"

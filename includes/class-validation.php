@@ -224,8 +224,8 @@ class IncidentiValidation {
             }
         } */
 
-        // Validate progressiva chilometrica for ALL road types
-        if (!empty($_POST['tipo_strada']) && empty($_POST['progressiva_km'])) {
+        // Validate the progressive mileage for ALL types of road except for extra-urban municipal roads
+        if (!empty($_POST['tipo_strada']) && empty($_POST['progressiva_km']) && ($_POST['tipo_strada'] != '4')) {
             $errors[] = __('La progressiva chilometrica è obbligatoria per tutti i tipi di strada.', 'incidenti-stradali');
         }
         

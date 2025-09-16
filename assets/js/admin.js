@@ -297,6 +297,35 @@ jQuery(document).ready(function($) {
             $numeroVeicoli.hide();
             $('#numero_veicoli_coinvolti').val('1');
         }
+
+        // Gestisci le opzioni del numero veicoli coinvolti per "Tra veicoli in marcia"
+        var $selectNumeroVeicoli = $('#numero_veicoli_coinvolti');
+        var currentValue = $selectNumeroVeicoli.val();
+
+        if (natura === 'A') { // "Tra veicoli in marcia"
+            // Salva le opzioni originali se non già fatto
+            if (!$selectNumeroVeicoli.data('original-options')) {
+                $selectNumeroVeicoli.data('original-options', $selectNumeroVeicoli.html());
+            }
+            
+            // Ricostruisci le opzioni con solo 2 e 3
+            $selectNumeroVeicoli.empty();
+            $selectNumeroVeicoli.append('<option value="">Seleziona numero</option>');
+            $selectNumeroVeicoli.append('<option value="2"' + (currentValue === '2' ? ' selected' : '') + '>2</option>');
+            $selectNumeroVeicoli.append('<option value="3"' + (currentValue === '3' ? ' selected' : '') + '>3</option>');
+            
+            // Se il valore corrente è 1, resetta la selezione
+            if (currentValue === '1') {
+                $selectNumeroVeicoli.val('');
+            }
+        } else {
+            // Ripristina le opzioni originali per altre nature
+            var originalOptions = $selectNumeroVeicoli.data('original-options');
+            if (originalOptions) {
+                $selectNumeroVeicoli.html(originalOptions);
+                $selectNumeroVeicoli.val(currentValue);
+            }
+        }
     }
     
     /**

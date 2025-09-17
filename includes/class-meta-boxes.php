@@ -551,67 +551,12 @@ class IncidentiMetaBoxes {
 
                 <!-- Numero Veicoli -->
                 <tr>
-                    <th colspan="2"><h4><?php _e('Numero Veicoli Coinvolti', 'incidenti-stradali'); ?></h4></th>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_autovettura"><?php _e('N.Autovettura', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_autovettura" name="xlsx_n_autovettura" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autovettura', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
                     <th><label for="xlsx_n_autocarro_35t"><?php _e('N.Autocarro fino 3,5t', 'incidenti-stradali'); ?></label></th>
                     <td><input type="number" id="xlsx_n_autocarro_35t" name="xlsx_n_autocarro_35t" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autocarro_35t', true)); ?>" min="0" max="999"></td>
                 </tr>
                 <tr>
                     <th><label for="xlsx_n_autocarro_oltre_35t"><?php _e('N_Autocarro > 3,5t', 'incidenti-stradali'); ?></label></th>
                     <td><input type="number" id="xlsx_n_autocarro_oltre_35t" name="xlsx_n_autocarro_oltre_35t" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autocarro_oltre_35t', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_autotreno"><?php _e('N_Autotreno', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_autotreno" name="xlsx_n_autotreno" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autotreno', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_autoarticolato"><?php _e('N_Autoarticolato', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_autoarticolato" name="xlsx_n_autoarticolato" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autoarticolato', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_autobus"><?php _e('N_Autobus', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_autobus" name="xlsx_n_autobus" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_autobus', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_tram"><?php _e('N_Tram', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_tram" name="xlsx_n_tram" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_tram', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_treno"><?php _e('N_Treno', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_treno" name="xlsx_n_treno" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_treno', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_motociclo"><?php _e('N_Motociclo', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_motociclo" name="xlsx_n_motociclo" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_motociclo', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_ciclomotore"><?php _e('N_Ciclomotore', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_ciclomotore" name="xlsx_n_ciclomotore" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_ciclomotore', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_velocipede"><?php _e('N_Velocipede', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_velocipede" name="xlsx_n_velocipede" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_velocipede', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_bicicletta_assistita"><?php _e('N_Bicicletta a pedali assistita', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_bicicletta_assistita" name="xlsx_n_bicicletta_assistita" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_bicicletta_assistita', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_monopattini"><?php _e('N_Monopattini elettrici', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_monopattini" name="xlsx_n_monopattini" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_monopattini', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_altri_micromobilita"><?php _e('N_Altri dispositivi micromobilità', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_altri_micromobilita" name="xlsx_n_altri_micromobilita" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_altri_micromobilita', true)); ?>" min="0" max="999"></td>
-                </tr>
-                <tr>
-                    <th><label for="xlsx_n_altri_veicoli"><?php _e('N_Altri Veicoli', 'incidenti-stradali'); ?></label></th>
-                    <td><input type="number" id="xlsx_n_altri_veicoli" name="xlsx_n_altri_veicoli" value="<?php echo esc_attr(get_post_meta($post->ID, 'xlsx_n_altri_veicoli', true)); ?>" min="0" max="999"></td>
                 </tr>
 
                 <!-- Altri campi -->
@@ -5125,10 +5070,7 @@ class IncidentiMetaBoxes {
 
             // Dati CSV
             'xlsx_tipo_incidente', 'xlsx_centro_abitato', 'xlsx_caratteristiche', 'xlsx_cantiere_stradale',
-            'xlsx_n_autovettura', 'xlsx_n_autocarro_35t', 'xlsx_n_autocarro_oltre_35t', 'xlsx_n_autotreno',
-            'xlsx_n_autoarticolato', 'xlsx_n_autobus', 'xlsx_n_tram', 'xlsx_n_treno', 'xlsx_n_motociclo',
-            'xlsx_n_ciclomotore', 'xlsx_n_velocipede', 'xlsx_n_bicicletta_assistita', 'xlsx_n_monopattini',
-            'xlsx_n_altri_micromobilita', 'xlsx_n_altri_veicoli', 'xlsx_trasportanti_merci_pericolose',
+            'xlsx_n_autocarro_35t', 'xlsx_n_autocarro_oltre_35t', 'xlsx_trasportanti_merci_pericolose',
             'xlsx_omissione', 'xlsx_contromano', 'xlsx_dettaglio_persone_decedute', 'xlsx_positivita', 'xlsx_art_cds',
         );
         

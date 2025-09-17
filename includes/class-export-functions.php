@@ -1185,7 +1185,7 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale');
             
             // Veicoli coinvolti
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autovettura');
+            /* $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autovettura');
             $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_35t');
             $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_oltre_35t');
             $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autotreno');
@@ -1199,7 +1199,24 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'xlsx_n_bicicletta_assistita');
             $row[] = $this->safe_meta_string($post_id, 'xlsx_n_monopattini');
             $row[] = $this->safe_meta_string($post_id, 'xlsx_n_altri_micromobilita');
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_altri_veicoli');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_altri_veicoli'); */
+            // Conta automaticamente i veicoli per tipo dai dati dei veicoli A/B/C
+            $conteggi_veicoli = $this->conta_veicoli_per_tipo($post_id);
+            $row[] = $conteggi_veicoli['autovetture'];
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_35t'); // Questo rimane manuale
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_oltre_35t'); // Questo rimane manuale  
+            $row[] = $conteggi_veicoli['autotreni'];
+            $row[] = $conteggi_veicoli['autoarticolati'];
+            $row[] = $conteggi_veicoli['autobus'];
+            $row[] = $conteggi_veicoli['tram'];
+            $row[] = $conteggi_veicoli['treni'];
+            $row[] = $conteggi_veicoli['motocicli'];
+            $row[] = $conteggi_veicoli['ciclomotori'];
+            $row[] = $conteggi_veicoli['velocipedi'];
+            $row[] = $conteggi_veicoli['biciclette_assistite'];
+            $row[] = $conteggi_veicoli['monopattini'];
+            $row[] = $conteggi_veicoli['altri_micromobilita'];
+            $row[] = $conteggi_veicoli['altri_veicoli'];
             $row[] = $this->safe_meta_string($post_id, 'xlsx_trasportanti_merci_pericolose');
             // Conteggi persone
             $val1_pedoni_feriti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_feriti');
@@ -2062,6 +2079,71 @@ private function get_province_data() {
         );
         
         return isset($geometrie[$codice_geometria]) ? $geometrie[$codice_geometria] : $codice_geometria;
+    }
+
+    /**
+     * Conta automaticamente i veicoli per tipo dai dati veicoli A/B/C
+     */
+    private function conta_veicoli_per_tipo($post_id) {
+        $conteggi = array(
+            'autovetture' => 0,
+            'autotreni' => 0, 
+            'autoarticolati' => 0,
+            'autobus' => 0,
+            'tram' => 0,
+            'treni' => 0,
+            'motocicli' => 0,
+            'ciclomotori' => 0,
+            'velocipedi' => 0,
+            'biciclette_assistite' => 0,
+            'monopattini' => 0,
+            'altri_micromobilita' => 0,
+            'altri_veicoli' => 0
+        );
+        
+        // Mappa codici tipo veicolo ai contatori
+        $mappa_tipi = array(
+            '1' => 'autovetture',
+            '2' => 'autovetture', 
+            '3' => 'autovetture',
+            '4' => 'autovetture',
+            '5' => 'autovetture',
+            '6' => 'autovetture',
+            '11' => 'autobus',
+            '12' => 'autobus', 
+            '13' => 'autotreni',
+            '14' => 'autoarticolati',
+            '19' => 'tram',
+            '20' => 'treni',
+            '15' => 'motocicli',
+            '16' => 'motocicli',
+            '17' => 'ciclomotori',
+            '18' => 'ciclomotori',
+            '21' => 'velocipedi',
+            '22' => 'biciclette_assistite',
+            '23' => 'monopattini',
+            '24' => 'altri_micromobilita'
+            // Altri codici mappare a 'altri_veicoli'
+        );
+        
+        // Controlla veicoli A, B, C
+        for ($i = 1; $i <= 3; $i++) {
+            $tipo_veicolo = get_post_meta($post_id, "veicolo_{$i}_tipo", true);
+            
+            if (!empty($tipo_veicolo)) {
+                if (isset($mappa_tipi[$tipo_veicolo])) {
+                    $conteggi[$mappa_tipi[$tipo_veicolo]]++;
+                } else {
+                    $conteggi['altri_veicoli']++;
+                }
+            }
+        }
+        
+        // Aggiungi il valore dal campo "Numero altri veicoli coinvolti" della sezione ISTAT
+        $altri_veicoli_istat = (int) get_post_meta($post_id, 'numero_altri_veicoli', true);
+        $conteggi['altri_veicoli'] += $altri_veicoli_istat;
+        
+        return $conteggi;
     }
 
     /**

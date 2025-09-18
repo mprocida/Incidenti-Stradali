@@ -978,11 +978,12 @@ class IncidentiImportFunctions {
         $post_data = array(
             'post_type' => 'incidente_stradale',
             'post_status' => 'publish',
-            'post_title' => sprintf(
+            /* 'post_title' => sprintf(
                 __('Incidente del %s in %s', 'incidenti-stradali'),
                 $data['data_incidente'],
                 $data['denominazione_strada']
-            ),
+            ), */
+            'post_title' => 'Incidente in elaborazione...',
             //'post_author' => get_current_user_id()
             'post_author' => $this->get_or_create_import_user()
         );
@@ -1227,6 +1228,47 @@ class IncidentiImportFunctions {
         
         if (empty($data['numero_veicoli_coinvolti'])) {
             update_post_meta($post_id, 'numero_veicoli_coinvolti', '1');
+        }
+
+        // Genera automaticamente il codice__ente e aggiorna il titolo
+        if (!empty($data['data_incidente']) && !empty($data['provincia_incidente']) && !empty($data['comune_incidente'])) {
+            
+            // Genera il progressivo (5 cifre) basato sull'ID del post
+            $progressivo = str_pad($post_id, 5, '0', STR_PAD_LEFT);
+            
+            // Anno (2 cifre)
+            $anno = substr($data['data_incidente'], 2, 2); // YYMMDD -> YY
+            
+            // ID Ente (2 cifre) - mappa l'organo di rilevazione
+            $id_ente = '01'; // Default
+            if (!empty($data['organo_rilevazione'])) {
+                switch ($data['organo_rilevazione']) {
+                    case '1': $id_ente = '01'; break; // Polizia Stradale
+                    case '2': $id_ente = '02'; break; // Carabinieri
+                    case '4': $id_ente = '04'; break; // Polizia Municipale
+                    case '6': $id_ente = '06'; break; // Polizia Provinciale
+                    default: $id_ente = '99'; break; // Altri
+                }
+            }
+            
+            // ID Comune (3 cifre) - dai dati ISTAT
+            $id_comune = str_pad($data['comune_incidente'], 3, '0', STR_PAD_LEFT);
+            
+            // Componi il codice finale
+            $codice_ente = $progressivo . $anno . $id_ente . $id_comune;
+            
+            // Salva il codice__ente
+            update_post_meta($post_id, 'codice__ente', $codice_ente);
+            
+            // Aggiorna il titolo del post con il codice generato
+            global $wpdb;
+            $wpdb->update(
+                $wpdb->posts,
+                array('post_title' => $codice_ente),
+                array('ID' => $post_id),
+                array('%s'),
+                array('%d')
+            );
         }
         
         return $post_id;

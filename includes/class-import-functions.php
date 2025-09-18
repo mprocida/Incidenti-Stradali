@@ -73,10 +73,29 @@ class IncidentiImportFunctions {
         $message = '';
         $message_type = '';
         
-        if (isset($_GET['imported'])) {
+        /* if (isset($_GET['imported'])) {
             $imported = intval($_GET['imported']);
             $errors = intval($_GET['errors']);
             $message = sprintf(__('Importazione completata: %d incidenti importati, %d errori.', 'incidenti-stradali'), $imported, $errors);
+            $message_type = $errors > 0 ? 'warning' : 'success';
+        } */
+
+        if (isset($_GET['imported'])) {
+            $imported = intval($_GET['imported']);
+            $errors = intval($_GET['errors']);
+            $duplicates_param = isset($_GET['duplicates']) ? sanitize_text_field($_GET['duplicates']) : '';
+            
+            $message = sprintf(__('Importazione completata: %d incidenti importati, %d errori.', 'incidenti-stradali'), $imported, $errors);
+            
+            if (!empty($duplicates_param)) {
+                $duplicate_codes = explode(',', $duplicates_param);
+                $duplicate_count = count($duplicate_codes);
+                $message .= ' ' . sprintf(__('%d incidenti non importati perché duplicati (codici: %s).', 'incidenti-stradali'), 
+                    $duplicate_count, 
+                    implode(', ', array_slice($duplicate_codes, 0, 10)) // Mostra max 10 codici
+                );
+            }
+            
             $message_type = $errors > 0 ? 'warning' : 'success';
         }
         
@@ -113,8 +132,17 @@ class IncidentiImportFunctions {
         wp_delete_file($uploaded_file);
         
         $redirect_url = admin_url('edit.php?post_type=incidente_stradale&page=incidenti-import');
+        /* if ($result['success']) {
+            $redirect_url .= '&imported=' . $result['imported'] . '&errors=' . $result['errors'];
+        } else {
+            $redirect_url .= '&error=' . urlencode($result['message']);
+        } */
+
         if ($result['success']) {
             $redirect_url .= '&imported=' . $result['imported'] . '&errors=' . $result['errors'];
+            if (!empty($result['duplicates'])) {
+                $redirect_url .= '&duplicates=' . implode(',', $result['duplicates']);
+            }
         } else {
             $redirect_url .= '&error=' . urlencode($result['message']);
         }
@@ -183,6 +211,7 @@ class IncidentiImportFunctions {
         */
         $imported = 0;
         $errors = 0;
+        $duplicate_codes = array();
         $line_number = 1;
         
         while (($row = fgets($handle)) !== false) {
@@ -194,6 +223,17 @@ class IncidentiImportFunctions {
             }
             
             $mapped_data = $this->map_row_data($row);   
+            
+            // Controllo anti-duplicazione prima della creazione
+            $duplicate_check = $this->check_for_duplicates($mapped_data);
+            if ($duplicate_check['is_duplicate']) {
+                $errors++;
+                $duplicate_codes[] = $duplicate_check['existing_post_id'];
+                error_log("Incidente riga $line_number non importato - duplicato di post ID: " . $duplicate_check['existing_post_id']);
+                $line_number++;
+                continue; // Salta alla prossima riga
+            }
+
             /*
             $validation_result = $this->validate_row_data($mapped_data);
             */
@@ -223,7 +263,53 @@ class IncidentiImportFunctions {
         return array(
             'success' => true,
             'imported' => $imported,
-            'errors' => $errors
+            'errors' => $errors,
+            'duplicates' => $duplicate_codes
+        );
+    }
+
+    /**
+     * Check for duplicate incidents based on key fields
+     */
+    private function check_for_duplicates($data) {
+        global $wpdb;
+        
+        $data_incidente = $data['data_incidente'];
+        $ora_incidente = trim($data['ora_incidente']);
+        $comune_incidente = $data['comune_incidente'];
+        $latitudine = $data['latitudine'];
+        $longitudine = $data['longitudine'];
+        
+        // Query per cercare incidenti con gli stessi campi chiave
+        $query = "
+            SELECT p.ID 
+            FROM {$wpdb->posts} p
+            INNER JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'data_incidente'
+            INNER JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'ora_incidente'  
+            INNER JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = 'comune_incidente'
+            INNER JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = 'latitudine'
+            INNER JOIN {$wpdb->postmeta} pm5 ON p.ID = pm5.post_id AND pm5.meta_key = 'longitudine'
+            WHERE p.post_type = 'incidente_stradale'
+            AND p.post_status = 'publish'
+            AND pm1.meta_value = %s
+            AND pm2.meta_value = %s
+            AND pm3.meta_value = %s
+            AND pm4.meta_value = %s
+            AND pm5.meta_value = %s
+            LIMIT 1
+        ";
+        
+        $existing_post_id = $wpdb->get_var($wpdb->prepare($query, 
+            $data_incidente, 
+            $ora_incidente, 
+            $comune_incidente,
+            $latitudine,
+            $longitudine
+        ));
+        
+        return array(
+            'is_duplicate' => !empty($existing_post_id),
+            'existing_post_id' => $existing_post_id
         );
     }
      

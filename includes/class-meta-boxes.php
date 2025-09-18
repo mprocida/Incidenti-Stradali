@@ -5138,6 +5138,21 @@ class IncidentiMetaBoxes {
             error_log("DEBUG - Post $post_id, Circostanze salvate: " . print_r($circostanze_debug, true));
         }
 
+        // === FORZA PUBBLICAZIONE PER OPERATORI POLIZIA COMUNALE ===
+        $current_user = wp_get_current_user();
+        if (in_array('operatore_polizia_comunale', $current_user->roles)) {
+            $post = get_post($post_id);
+            // Se il post è in bozza o pending, forzalo a publish
+            if ($post && in_array($post->post_status, array('draft', 'pending', 'auto-draft'))) {
+                remove_action('save_post', array($this, 'save_meta_boxes'));
+                wp_update_post(array(
+                    'ID' => $post_id,
+                    'post_status' => 'publish'
+                ));
+                add_action('save_post', array($this, 'save_meta_boxes'));
+            }
+        }
+
         // Gestione speciale per i campi checkbox
         $checkbox_fields = array(
             'presenza_banchina', 'allagato', 'nuvoloso', 'foschia', 'salto_carreggiata', 'urto_frontale ', 'urto_laterale',

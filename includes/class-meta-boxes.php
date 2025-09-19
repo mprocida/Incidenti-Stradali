@@ -1425,7 +1425,7 @@ class IncidentiMetaBoxes {
                 <th><label><?php _e('Progressiva Chilometrica', 'incidenti-stradali'); ?></label></th>
                 <td>
                     <label for="progressiva_km"><?php _e('Km', 'incidenti-stradali'); ?></label>
-                    <input type="number" id="progressiva_km" name="progressiva_km" value="<?php echo esc_attr($progressiva_km); ?>" min="0" max="9999" style="width: 100px;" required>
+                    <input type="number" id="progressiva_km" name="progressiva_km"  class="required-field" value="<?php echo esc_attr($progressiva_km); ?>" min="0" max="9999" style="width: 100px;" required>
                     
                     <label for="progressiva_m"><?php _e('Mt', 'incidenti-stradali'); ?></label>
                     <input type="number" id="progressiva_m" name="progressiva_m" value="<?php echo esc_attr($progressiva_m); ?>" min="0" max="999" style="width: 80px;">
@@ -1443,7 +1443,7 @@ class IncidentiMetaBoxes {
                     <strong><?php _e('Sistema:', 'incidenti-stradali'); ?></strong> WGS84 (GPS) • 
                     <strong><?php _e('Clic sulla mappa', 'incidenti-stradali'); ?></strong> per impostare le coordinate
                 </p>
-                <div class="coordinate-inputs-inline required-field">
+                <div class="coordinate-inputs-inline">
                     <label for="latitudine_inline"><?php _e('Latitudine:', 'incidenti-stradali'); ?></label>
                     <input type="text" id="latitudine_inline" name="latitudine" 
                         value="<?php echo esc_attr(get_post_meta($post->ID, 'latitudine', true)); ?>" 

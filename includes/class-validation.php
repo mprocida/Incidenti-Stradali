@@ -75,7 +75,8 @@ class IncidentiValidation {
             'pavimentazione_strada' => __('Pavimentazione', 'incidenti-stradali'),
             'stato_fondo_strada' => __('Stato fondo stradale', 'incidenti-stradali'),
             'illuminazione' => __('Illuminazione', 'incidenti-stradali'),
-            'condizioni_meteo' => __('Condizioni meteorologiche', 'incidenti-stradali')
+            'condizioni_meteo' => __('Condizioni meteorologiche', 'incidenti-stradali'),
+            'progressiva_km' => __('Progressiva Chilometrica', 'incidenti-stradali')
         );
         
         foreach ($required_fields as $field => $label) {

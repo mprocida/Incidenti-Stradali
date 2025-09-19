@@ -24,6 +24,7 @@ jQuery(document).ready(function($) {
         initializeTransportatiSections();
         initializeCircostanzeFields();
         initializeConditionalFields();
+        initializePublishButtonHandling();
         initializeScrollToTopButton();
     }
     
@@ -422,6 +423,140 @@ jQuery(document).ready(function($) {
                 coordinateMap.setView([newLat, newLng], 15);
             }
         });
+    }
+
+    /**
+     * Initialize publish button handling for validation errors
+     */
+    function initializePublishButtonHandling() {
+        var originalPublishHtml = '<span class="dashicons dashicons-yes-alt"></span>Pubblica Incidente';
+        var originalPublishText = 'Pubblica Incidente';
+        
+        // Salva il contenuto originale all'inizializzazione
+        $(document).ready(function() {
+            var $publishBtn = $('#publish');
+            if ($publishBtn.length) {
+                var currentHtml = $publishBtn.html();
+                var currentText = $publishBtn.text().trim();
+                
+                if (currentHtml && !currentText.includes('...')) {
+                    originalPublishHtml = currentHtml;
+                    originalPublishText = currentText;
+                }
+            }
+        });
+        
+        // Observer per monitorare i cambiamenti al bottone
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                var $target = $(mutation.target);
+                
+                if ($target.attr('id') === 'publish' || $target.closest('#publish').length) {
+                    setTimeout(function() {
+                        restorePublishButtonIfNeeded();
+                    }, 100);
+                }
+            });
+        });
+        
+        // Intercetta l'alert di validazione
+        var originalAlert = window.alert;
+        window.alert = function(message) {
+            var result = originalAlert(message);
+            
+            if (message && (
+                message.indexOf('campi obbligatori') !== -1 || 
+                message.indexOf('required') !== -1 ||
+                message.indexOf('obbligatorio') !== -1
+            )) {
+                setTimeout(function() {
+                    restorePublishButtonIfNeeded();
+                }, 50);
+            }
+            
+            return result;
+        };
+        
+        // Funzione per ripristinare il bottone
+        function restorePublishButtonIfNeeded() {
+            var $publishBtn = $('#publish');
+            
+            if (!$publishBtn.length) return;
+            
+            // Controlla se ci sono errori di validazione
+            var hasValidationErrors = $('.incidenti-field-error').length > 0 || 
+                                    $('.incidenti-validation-error').length > 0;
+            
+            // Ottieni il testo corrente
+            var currentText = $publishBtn.text().trim();
+            var isDisabled = $publishBtn.prop('disabled');
+            
+            // Controlla se ha testo di caricamento
+            var hasLoadingText = currentText && (
+                currentText.includes('Pubblicazione') ||
+                currentText.includes('...') ||
+                currentText === 'Pubblicazione in corso'
+            );
+            
+            // Ripristina se ci sono errori di validazione
+            if (hasValidationErrors && (isDisabled || hasLoadingText)) {
+                // Riabilita il bottone
+                $publishBtn.prop('disabled', false);
+                
+                // Ripristina il contenuto HTML completo (icona + testo)
+                $publishBtn.html(originalPublishHtml);
+                
+                // Nascondi gli spinner
+                $('#ajax-loading').hide();
+                $('.spinner').removeClass('is-active');
+                $('#publishing-action .spinner').removeClass('is-active');
+                
+                console.log('Bottone ripristinato con HTML: "' + originalPublishHtml + '"');
+            }
+        }
+        
+        // Intercetta anche il click per salvare lo stato
+        $(document).on('click', '#publish', function() {
+            var $btn = $(this);
+            var currentHtml = $btn.html();
+            var currentText = $btn.text().trim();
+            
+            // Salva solo se non ha già testo di loading
+            if (!currentText.includes('...') && !currentText.includes('Pubblicazione')) {
+                originalPublishHtml = currentHtml;
+                originalPublishText = currentText;
+            }
+            
+            // Controlla dopo il submit
+            setTimeout(function() {
+                restorePublishButtonIfNeeded();
+            }, 200);
+            
+            // Controllo aggiuntivo con delay più lungo
+            setTimeout(function() {
+                restorePublishButtonIfNeeded();
+            }, 500);
+        });
+        
+        // Avvia l'observer
+        var publishBtn = document.getElementById('publish');
+        if (publishBtn) {
+            observer.observe(publishBtn, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+            
+            // Observer anche per il container padre
+            var publishingAction = document.getElementById('publishing-action');
+            if (publishingAction) {
+                observer.observe(publishingAction, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
     }
     
     /**
@@ -894,7 +1029,7 @@ jQuery(document).ready(function($) {
     /**
      * Show validation summary
      */
-    function showValidationSummary() {
+    /* function showValidationSummary() {
         var errors = [];
         
         $('.incidenti-field-error').each(function() {
@@ -904,6 +1039,43 @@ jQuery(document).ready(function($) {
         if (errors.length > 0) {
             var message = 'Correggere i seguenti errori:\n\n' + errors.join('\n');
             alert(message);
+        }
+    } */
+
+    /**
+     * Show validation summary
+     */
+    function showValidationSummary() {
+        // Conta solo i campi obbligatori non popolati
+        var requiredFieldsError = $('.incidenti-field-error').filter(function() {
+            return $(this).text() === 'Questo campo è obbligatorio.';
+        }).length;
+        
+        if (requiredFieldsError > 0) {
+            var message = 'Non hai popolato dei campi obbligatori';
+            alert(message);
+            
+            // Evidenzia in rosso solo i campi obbligatori vuoti
+            $('input[required], select[required]').each(function() {
+                var $field = $(this);
+                if (!$field.val() || !$field.val().trim()) {
+                    $field.addClass('incidenti-validation-error');
+                }
+            });
+        } else {
+            // Se ci sono altri tipi di errori, mostra quelli specifici
+            var errors = [];
+            $('.incidenti-field-error').each(function() {
+                var errorText = $(this).text();
+                if (errorText !== 'Questo campo è obbligatorio.') {
+                    errors.push(errorText);
+                }
+            });
+            
+            if (errors.length > 0) {
+                var message = 'Correggere i seguenti errori:\n\n' + errors.join('\n');
+                alert(message);
+            }
         }
     }
     
@@ -2200,7 +2372,7 @@ jQuery(document).ready(function($) {
 
     // Intercetta il click sul pulsante Pubblica
     $(document).ready(function() {
-        $('#publish').on('click', function(e) {
+        /* $('#publish').on('click', function(e) {
             e.preventDefault();
             
             if (mostraConfermaPubblicazione()) {
@@ -2208,18 +2380,94 @@ jQuery(document).ready(function($) {
                 $(this).off('click');
                 $(this).click();
             }
+        }); */
+
+        $('#publish').on('click', function(e) {
+            e.preventDefault();
+            
+            // NUOVO: Controlla direttamente i campi obbligatori vuoti
+            var campiObbligatoriVuoti = [];
+            
+            // Trova tutti i campi required che sono vuoti
+            $('input[required], select[required]').each(function() {
+                var $field = $(this);
+                var valore = $field.val();
+                
+                // Controllo speciale per nell_abitato che può essere 0
+                if ($field.attr('name') === 'nell_abitato') {
+                    if (valore === '' || valore === null || valore === undefined) {
+                        campiObbligatoriVuoti.push($field);
+                    }
+                } else {
+                    // Controllo normale per altri campi
+                    if (!valore || valore.trim() === '') {
+                        campiObbligatoriVuoti.push($field);
+                    }
+                }
+            });
+            
+            if (campiObbligatoriVuoti.length > 0) {
+                // Se ci sono campi obbligatori vuoti, NON chiedere conferma
+                // Evidenzia i campi vuoti per l'utente
+                campiObbligatoriVuoti.forEach(function($field) {
+                    $field.addClass('incidenti-validation-error');
+                });
+                
+                // Procedi direttamente con l'invio per mostrare gli errori server-side
+                $(this).off('click');
+                $(this).click();
+                return;
+            }
+            
+            // Solo se tutti i campi obbligatori sono compilati, chiedi conferma
+            if (mostraConfermaPubblicazione()) {
+                $(this).off('click');
+                $(this).click();
+            }
         });
         
         // Intercetta anche "Salva bozza" se necessario
-        $('#save-post').on('click', function(e) {
-            /* var riepilogo = calcolaRiepilogoInfortunati();
-            $('#riepilogo_feriti').val(riepilogo.feriti);
-            $('#riepilogo_morti_24h').val(riepilogo.morti24h);
-            $('#riepilogo_morti_2_30gg').val(riepilogo.morti2_30gg); */
+        /* $('#save-post').on('click', function(e) {
             e.preventDefault();
             
             if (mostraConfermaPubblicazione()) {
                 // Rimuovi l'event listener per evitare loop infiniti
+                $(this).off('click');
+                $(this).click();
+            }
+        }); */
+        $('#save-post').on('click', function(e) {
+            e.preventDefault();
+            
+            // NUOVO: Controlla direttamente i campi obbligatori vuoti
+            var campiObbligatoriVuoti = [];
+            
+            $('input[required], select[required]').each(function() {
+                var $field = $(this);
+                var valore = $field.val();
+                
+                if ($field.attr('name') === 'nell_abitato') {
+                    if (valore === '' || valore === null || valore === undefined) {
+                        campiObbligatoriVuoti.push($field);
+                    }
+                } else {
+                    if (!valore || valore.trim() === '') {
+                        campiObbligatoriVuoti.push($field);
+                    }
+                }
+            });
+            
+            if (campiObbligatoriVuoti.length > 0) {
+                campiObbligatoriVuoti.forEach(function($field) {
+                    $field.addClass('incidenti-validation-error');
+                });
+                
+                $(this).off('click');
+                $(this).click();
+                return;
+            }
+            
+            if (mostraConfermaPubblicazione()) {
                 $(this).off('click');
                 $(this).click();
             }

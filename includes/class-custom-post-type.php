@@ -287,6 +287,19 @@ class IncidentiCustomPostType {
         if (current_user_can('manage_all_incidenti') && !empty($_GET['author'])) {
             $query->set('author', intval($_GET['author']));
         }
+
+        // Filtro Ente (solo per amministratori)
+        if (current_user_can('manage_all_incidenti') && !empty($_GET['ente_filter'])) {
+            $ente_filter = sanitize_text_field($_GET['ente_filter']);
+            
+            $meta_query = $query->get('meta_query') ?: array();
+            $meta_query[] = array(
+                'key' => 'ente_rilevatore',
+                'value' => $ente_filter,
+                'compare' => '='
+            );
+            $query->set('meta_query', $meta_query);
+        }
         
         $current_user = wp_get_current_user();
         
@@ -365,6 +378,35 @@ class IncidentiCustomPostType {
                     $user->ID,
                     selected($selected_author, $user->ID, false),
                     esc_html($user->display_name)
+                );
+            }
+            
+            echo '</select>';
+        }
+
+        // Filtro Ente
+        $selected_ente = isset($_GET['ente_filter']) ? sanitize_text_field($_GET['ente_filter']) : '';
+        
+        // Ottieni tutti gli enti rilevatori presenti negli incidenti
+        global $wpdb;
+        $enti = $wpdb->get_col("
+            SELECT DISTINCT meta_value 
+            FROM {$wpdb->postmeta} 
+            WHERE meta_key = 'ente_rilevatore' 
+            AND meta_value != ''
+            ORDER BY meta_value ASC
+        ");
+        
+        if (!empty($enti)) {
+            echo '<select name="ente_filter" id="filter-by-ente">';
+            echo '<option value="">' . __('Tutti gli enti', 'incidenti-stradali') . '</option>';
+            
+            foreach ($enti as $ente) {
+                printf(
+                    '<option value="%s"%s>%s</option>',
+                    esc_attr($ente),
+                    selected($selected_ente, $ente, false),
+                    esc_html($ente)
                 );
             }
             

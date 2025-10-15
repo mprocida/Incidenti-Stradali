@@ -669,8 +669,8 @@ class IncidentiDashboardWidget {
                 $new_columns['incidente_data_rilevazione'] = __('Data rilevazione', 'incidenti-stradali');
                 $new_columns['incidente_ente'] = __('Ente', 'incidenti-stradali');
                 //$new_columns['incidente_data'] = __('Data', 'incidenti-stradali');
-                $new_columns['incidente_comune'] = __('Comune', 'incidenti-stradali');
-                $new_columns['incidente_gravita'] = __('Gravità', 'incidenti-stradali');
+                //$new_columns['incidente_comune'] = __('Comune', 'incidenti-stradali');
+                //$new_columns['incidente_gravita'] = __('Gravità', 'incidenti-stradali');
             }
         }
         
@@ -704,7 +704,7 @@ class IncidentiDashboardWidget {
                 }
                 break;
                 
-            case 'incidente_comune':
+            /* case 'incidente_comune':
                 $comune_codice = get_post_meta($post_id, 'comune_incidente', true);
                 if ($comune_codice) {
                     $comuni_lecce = $this->get_comuni_lecce();
@@ -726,7 +726,7 @@ class IncidentiDashboardWidget {
                 if ($morti == 0 && $feriti == 0) {
                     echo '<span class="incidente-gravita-badge danni">Solo danni</span>';
                 }
-                break;
+                break; */
         }
     }
     
@@ -739,8 +739,8 @@ class IncidentiDashboardWidget {
     public function make_columns_sortable($columns) {
         $columns['incidente_data_rilevazione'] = 'incidente_data_rilevazione';
         $columns['incidente_ente'] = 'incidente_ente';
-        $columns['incidente_data'] = 'incidente_data';
-        $columns['incidente_comune'] = 'incidente_comune';
+        //$columns['incidente_data'] = 'incidente_data';
+        //$columns['incidente_comune'] = 'incidente_comune';
         return $columns;
     }
     
@@ -751,15 +751,15 @@ class IncidentiDashboardWidget {
         
         $orderby = $query->get('orderby');
         
-        if ($orderby === 'incidente_data') {
+        /* if ($orderby === 'incidente_data') {
             $query->set('meta_key', 'data_incidente');
             $query->set('orderby', 'meta_value');
             $query->set('meta_type', 'DATE');
         } elseif ($orderby === 'incidente_comune') {
             $query->set('meta_key', 'comune_incidente');
             $query->set('orderby', 'meta_value');
-        }
-        elseif ($orderby === 'incidente_data_rilevazione') {
+        } */
+        if ($orderby === 'incidente_data_rilevazione') {
             $query->set('meta_key', 'data_incidente');
             $query->set('orderby', 'meta_value');
             $query->set('meta_type', 'DATE');

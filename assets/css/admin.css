@@ -459,6 +459,14 @@ input[type="checkbox"]#visualizza_mappa:focus {
     width: 120px
 }
 
+/* .wp-list-table .column-incidente_data_rilevazione {
+    width: 110px
+} */
+
+.wp-list-table .column-incidente_ente {
+    width: 180px
+}
+
 .wp-list-table .incidente-gravita-badge {
     display: inline-block;
     padding: 2px 6px;

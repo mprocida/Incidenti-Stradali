@@ -643,7 +643,7 @@ class IncidentiDashboardWidget {
     }
     
     // Custom columns for post list
-    public function add_custom_columns($columns) {
+    /* public function add_custom_columns($columns) {
         $new_columns = array();
         
         foreach ($columns as $key => $title) {
@@ -651,6 +651,24 @@ class IncidentiDashboardWidget {
             
             if ($key === 'title') {
                 $new_columns['incidente_data'] = __('Data', 'incidenti-stradali');
+                $new_columns['incidente_comune'] = __('Comune', 'incidenti-stradali');
+                $new_columns['incidente_gravita'] = __('Gravità', 'incidenti-stradali');
+            }
+        }
+        
+        return $new_columns;
+    } */
+
+    public function add_custom_columns($columns) {
+        $new_columns = array();
+        
+        foreach ($columns as $key => $title) {
+            $new_columns[$key] = $title;
+            
+            if ($key === 'title') {
+                $new_columns['incidente_data_rilevazione'] = __('Data rilevazione', 'incidenti-stradali');
+                $new_columns['incidente_ente'] = __('Ente', 'incidenti-stradali');
+                //$new_columns['incidente_data'] = __('Data', 'incidenti-stradali');
                 $new_columns['incidente_comune'] = __('Comune', 'incidenti-stradali');
                 $new_columns['incidente_gravita'] = __('Gravità', 'incidenti-stradali');
             }
@@ -669,6 +687,20 @@ class IncidentiDashboardWidget {
                     if ($ora) {
                         echo '<br><small>' . $ora . ':00</small>';
                     }
+                }
+                break;
+
+            case 'incidente_data_rilevazione':
+                $data = get_post_meta($post_id, 'data_incidente', true);
+                if ($data) {
+                    echo date('d/m/Y', strtotime($data));
+                }
+                break;
+
+            case 'incidente_ente':
+                $ente = get_post_meta($post_id, 'ente_rilevatore', true);
+                if ($ente) {
+                    echo esc_html($ente);
                 }
                 break;
                 
@@ -698,7 +730,15 @@ class IncidentiDashboardWidget {
         }
     }
     
+    /* public function make_columns_sortable($columns) {
+        $columns['incidente_data'] = 'incidente_data';
+        $columns['incidente_comune'] = 'incidente_comune';
+        return $columns;
+    } */
+
     public function make_columns_sortable($columns) {
+        $columns['incidente_data_rilevazione'] = 'incidente_data_rilevazione';
+        $columns['incidente_ente'] = 'incidente_ente';
         $columns['incidente_data'] = 'incidente_data';
         $columns['incidente_comune'] = 'incidente_comune';
         return $columns;
@@ -717,6 +757,14 @@ class IncidentiDashboardWidget {
             $query->set('meta_type', 'DATE');
         } elseif ($orderby === 'incidente_comune') {
             $query->set('meta_key', 'comune_incidente');
+            $query->set('orderby', 'meta_value');
+        }
+        elseif ($orderby === 'incidente_data_rilevazione') {
+            $query->set('meta_key', 'data_incidente');
+            $query->set('orderby', 'meta_value');
+            $query->set('meta_type', 'DATE');
+        } elseif ($orderby === 'incidente_ente') {
+            $query->set('meta_key', 'ente_rilevatore');
             $query->set('orderby', 'meta_value');
         }
     }

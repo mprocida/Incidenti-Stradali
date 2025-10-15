@@ -1176,13 +1176,13 @@ class IncidentiExportFunctions {
             );
             $row[] = "Lecce";
             $row[] = $this->get_comune_name($this->safe_meta_string($post_id, 'comune_incidente'));
-            $row[] = $this->get_natura_incidente_name($this->safe_meta_string($post_id, 'xlsx_tipo_incidente'));
-            $row[] = $this->get_tipo_strada_name($this->safe_meta_string($post_id, 'tipo_strada'));
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato');
+            $row[] = $this->get_natura_incidente_name($this->safe_meta_string($post_id, 'xlsx_tipo_incidente') ?: 0);
+            $row[] = $this->get_tipo_strada_name($this->safe_meta_string($post_id, 'tipo_strada') ?: 0);
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato') ?: 0;
             //$row[] = $this->get_organo_rilevazione_name($this->safe_meta_string($post_id, 'organo_rilevazione'));
             $row[] = "Polizia locale";
-            $row[] = $this->get_caratteristiche_name($this->safe_meta_string($post_id, 'xlsx_caratteristiche'));
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale');
+            $row[] = $this->get_caratteristiche_name($this->safe_meta_string($post_id, 'xlsx_caratteristiche') ?: 0);
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale') ?: 0;
             
             // Veicoli coinvolti
             /* $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autovettura');
@@ -1203,8 +1203,8 @@ class IncidentiExportFunctions {
             // Conta automaticamente i veicoli per tipo dai dati dei veicoli A/B/C
             $conteggi_veicoli = $this->conta_veicoli_per_tipo($post_id);
             $row[] = $conteggi_veicoli['autovetture'];
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_35t'); // Questo rimane manuale
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_oltre_35t'); // Questo rimane manuale  
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_35t') ?: 0; // Questo rimane manuale
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autocarro_oltre_35t') ?: 0; // Questo rimane manuale  
             $row[] = $conteggi_veicoli['autotreni'];
             $row[] = $conteggi_veicoli['autoarticolati'];
             $row[] = $conteggi_veicoli['autobus'];
@@ -1217,7 +1217,7 @@ class IncidentiExportFunctions {
             $row[] = $conteggi_veicoli['monopattini'];
             $row[] = $conteggi_veicoli['altri_micromobilita'];
             $row[] = $conteggi_veicoli['altri_veicoli'];
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_trasportanti_merci_pericolose');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_trasportanti_merci_pericolose') ?: 0;
             // Conteggi persone
             $val1_pedoni_feriti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_feriti');
             $val2_pedoni_morti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_morti');
@@ -1230,17 +1230,17 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'riepilogo_feriti');
             
             // Informazioni strada
-            $row[] = $this->safe_meta_string($post_id, 'denominazione_strada');
+            $row[] = $this->safe_meta_string($post_id, 'denominazione_strada') ?: 0;
             $row[] = $this->safe_meta_string($post_id, 'progressiva_km');
-            $row[] = $this->safe_meta_string($post_id, 'progressiva_m');
-            $row[] = $this->get_geometria_strada_name($this->safe_meta_string($post_id, 'geometria_strada'));
+            $row[] = $this->safe_meta_string($post_id, 'progressiva_m') ?: 0;
+            $row[] = $this->get_geometria_strada_name($this->safe_meta_string($post_id, 'geometria_strada') ?: "Non specificato");
             
             // Circostanze
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione');
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_contromano');
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_dettaglio_persone_decedute');
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_positivita');
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_art_cds');
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione') ?: 0;
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_contromano') ?: 0;
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_dettaglio_persone_decedute') ?: 0;
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_positivita') ?: 0;
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_art_cds') ?: 0;
             
             // Coordinate
             $row[] = $this->safe_meta_string($post_id, 'latitudine');
@@ -2069,13 +2069,10 @@ private function get_province_data() {
      */
     private function get_geometria_strada_name($codice_geometria) {
         $geometrie = array(
-            '1' => 'Rettilineo',
-            '2' => 'Curva',
-            '3' => 'Pendenza - salita',
-            '4' => 'Pendenza - discesa', 
-            '5' => 'Dosso',
-            '6' => 'Strettoia',
-            '7' => 'Altre caratteristiche particolari'
+            '1' => 'Una carreggiata senso unico',
+            '2' => 'Una carreggiata doppio senso',
+            '3' => 'Due carreggiate',
+            '4' => 'Più di 2 carreggiate'
         );
         
         return isset($geometrie[$codice_geometria]) ? $geometrie[$codice_geometria] : $codice_geometria;

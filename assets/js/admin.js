@@ -2472,6 +2472,19 @@ jQuery(document).ready(function($) {
                 $(this).click();
             }
         });
+
+        // === DISABILITA RIORDINO METABOX ===
+        // Disabilita i bottoni handle-order-lower e handle-order-higher
+        $('.handle-order-lower, .handle-order-higher').hide().prop('disabled', true);
+
+        // Disabilita drag and drop delle metabox
+        if (typeof postboxes !== 'undefined') {
+            $('.postbox .hndle, .postbox .handlediv').off('mousedown');
+            $('.meta-box-sortables').sortable('destroy');
+        }
+
+        // Nasconde gli handle visivi per il drag
+        $('.postbox .hndle').css('cursor', 'default');
     });
 
 })(jQuery);

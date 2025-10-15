@@ -1415,10 +1415,6 @@ class IncidentiMetaBoxes {
                             data-saved-value="<?php echo esc_attr($numero_strada); ?>">
                         <option value=""><?php _e('Seleziona strada statale', 'incidenti-stradali'); ?></option>
                     </select>
-                    
-                    <p class="description" id="numero_strada_description">
-                        <?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?>
-                    </p>
                 </td>
             </tr>
             <tr id="progressiva_row">
@@ -3249,7 +3245,12 @@ class IncidentiMetaBoxes {
             $tipo_patente_selected = (string)$tipo_patente;
         }
 
+        /* $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true); */
         $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true);
+        // Set default to "Italia" if empty
+        if (empty($nazionalita)) {
+            $nazionalita = '000-Italia';
+        }
         $anno_patente = get_post_meta($post->ID, $prefix . 'anno_patente', true);
         $tipologia_incidente = get_post_meta($post->ID, $prefix . 'tipologia_incidente', true);
         
@@ -6439,7 +6440,7 @@ class IncidentiMetaBoxes {
                     .bulkactions { display: none !important; }
                     
                     /* OPZIONALE: Nasconde il pulsante "Sposta nel cestino" se presente */
-                    .submitdelete { display: none !important; }
+                    /* .submitdelete { display: none !important; } */
                     
                     /* OPZIONALE: Nasconde filtri di ordinamento se necessario */
                     /* .tablenav.top .actions { display: none !important; } */

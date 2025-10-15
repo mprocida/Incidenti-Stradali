@@ -6435,7 +6435,7 @@ class IncidentiMetaBoxes {
                     .bulkactions { display: none !important; }
                     
                     /* OPZIONALE: Nasconde il pulsante "Sposta nel cestino" se presente */
-                    .submitdelete { display: none !important; }
+                    /* .submitdelete { display: none !important; } */
                     
                     /* OPZIONALE: Nasconde filtri di ordinamento se necessario */
                     /* .tablenav.top .actions { display: none !important; } */

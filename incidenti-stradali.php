@@ -107,7 +107,8 @@ class IncidentiStradaliPlugin {
             'includes/class-admin-settings.php',
             'includes/class-email-notifications.php',
             'includes/class-delete-handler.php',
-            'includes/class-pdf-generator.php'
+            'includes/class-pdf-generator.php',
+            'includes/class-dashboard-widget.php'
         );
         
         foreach ($files_to_include as $file) {

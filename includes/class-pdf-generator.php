@@ -517,6 +517,13 @@ class PDF_Generator {
         
         // Verifica se ci sono altri passeggeri
         for ($i = 1; $i <= $numero_veicoli; $i++) {
+
+            // Controlla se il numero di trasportati è 0
+            $num_trasportati = intval($meta["veicolo_{$i}_numero_trasportati"][0] ?? 0);
+            if ($num_trasportati === 0) {
+                continue; // Salta questo veicolo se non ci sono trasportati
+            }
+            
             if (!empty($meta["veicolo_{$i}_altri_morti_maschi"][0]) || 
                 !empty($meta["veicolo_{$i}_altri_morti_femmine"][0]) ||
                 !empty($meta["veicolo_{$i}_altri_feriti_maschi"][0]) || 
@@ -544,7 +551,14 @@ class PDF_Generator {
                     </thead>
                     <tbody>
                         <?php for ($i = 1; $i <= $numero_veicoli; $i++): ?>
-                            <?php 
+                            <?php
+                            
+                            // Salta se numero trasportati è 0
+                            $num_trasportati_veicolo = intval($meta["veicolo_{$i}_numero_trasportati"][0] ?? 0);
+                            if ($num_trasportati_veicolo === 0) {
+                                continue;
+                            }
+                            
                             $morti_m = $meta["veicolo_{$i}_altri_morti_maschi"][0] ?? '';
                             $morti_f = $meta["veicolo_{$i}_altri_morti_femmine"][0] ?? '';
                             $feriti_m = $meta["veicolo_{$i}_altri_feriti_maschi"][0] ?? '';

@@ -3049,7 +3049,7 @@ class IncidentiMetaBoxes {
             }
 
             // Gestione visibilità altri passeggeri
-            function updateAltriPasseggeriSections() {
+            /* function updateAltriPasseggeriSections() {
                 var numeroVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
                 
                 for (var i = 1; i <= 3; i++) {
@@ -3059,7 +3059,32 @@ class IncidentiMetaBoxes {
                         $('#altri-passeggeri-veicolo-' + i).hide();
                     }
                 }
+            } */
+
+            // Gestione visibilità altri passeggeri
+            function updateAltriPasseggeriSections() {
+                var numeroVeicoli = parseInt($('#numero_veicoli_coinvolti').val()) || 1;
+                
+                for (var i = 1; i <= 3; i++) {
+                    if (i <= numeroVeicoli) {
+                        // Controlla il numero di trasportati per questo veicolo
+                        var numTrasportati = parseInt($('#veicolo_' + i + '_numero_trasportati').val()) || 0;
+                        
+                        if (numTrasportati === 0) {
+                            $('#altri-passeggeri-veicolo-' + i).hide();
+                        } else {
+                            $('#altri-passeggeri-veicolo-' + i).show();
+                        }
+                    } else {
+                        $('#altri-passeggeri-veicolo-' + i).hide();
+                    }
+                }
             }
+
+            // Ascolta i cambiamenti sul numero di trasportati per ogni veicolo
+            $(document).on('change', '[id^="veicolo_"][id$="_numero_trasportati"]', function() {
+                updateAltriPasseggeriSections();
+            });
             
             // Ascolta i cambiamenti sul numero di veicoli
             $(document).on('change', '#numero_veicoli_coinvolti', function() {

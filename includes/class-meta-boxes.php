@@ -5140,9 +5140,9 @@ class IncidentiMetaBoxes {
             error_log("DEBUG - Post $post_id, Circostanze salvate: " . print_r($circostanze_debug, true));
         }
 
-        // === FORZA PUBBLICAZIONE PER OPERATORI POLIZIA COMUNALE ===
+        // === FORZA PUBBLICAZIONE PER OPERATORI POLIZIA COMUNALE E SUPERVISOR ===
         $current_user = wp_get_current_user();
-        if (in_array('operatore_polizia_comunale', $current_user->roles)) {
+        if (in_array('operatore_polizia_comunale', $current_user->roles) || in_array('supervisor', $current_user->roles)) {
             $post = get_post($post_id);
             // Se il post è in bozza o pending, forzalo a publish
             if ($post && in_array($post->post_status, array('draft', 'pending', 'auto-draft'))) {

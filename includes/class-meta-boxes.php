@@ -3245,7 +3245,12 @@ class IncidentiMetaBoxes {
             $tipo_patente_selected = (string)$tipo_patente;
         }
 
+        /* $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true); */
         $nazionalita = get_post_meta($post->ID, $prefix . 'nazionalita', true);
+        // Set default to "Italia" if empty
+        if (empty($nazionalita)) {
+            $nazionalita = '000-Italia';
+        }
         $anno_patente = get_post_meta($post->ID, $prefix . 'anno_patente', true);
         $tipologia_incidente = get_post_meta($post->ID, $prefix . 'tipologia_incidente', true);
         

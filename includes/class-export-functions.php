@@ -2171,7 +2171,7 @@ private function get_province_data() {
         $current_user = wp_get_current_user();
         
         // Ruoli autorizzati per Excel (include ruolo Prefettura se esiste)
-        $allowed_roles = array('prefettura', 'supervisor', 'administrator');
+        $allowed_roles = array('prefettura', 'supervisor', 'administrator', 'operatore_polizia_comunale');
         
         foreach ($allowed_roles as $role) {
             if (in_array($role, $current_user->roles)) {

@@ -4895,7 +4895,8 @@ class IncidentiMetaBoxes {
 
         // NUOVO: Controllo per ruolo Asset
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+        //if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+        if (in_array('asset', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
             // Se il ruolo è Asset, blocca qualsiasi modifica
             add_action('admin_notices', function() {
                 echo '<div class="notice notice-error is-dismissible">';
@@ -5680,7 +5681,8 @@ class IncidentiMetaBoxes {
             ));
 
             $current_user = wp_get_current_user();
-            if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+            // if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+            if (in_array('asset', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
                 $asset_script = <<<'ASSET_SCRIPT'
             jQuery(document).ready(function($) {
                 // Variabile per tracciare se l'inizializzazione è completata
@@ -6371,7 +6373,8 @@ class IncidentiMetaBoxes {
             }
 
             // Per utenti Asset: cambia "Modifica" in "Visualizza"
-            if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+            //if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+            if (in_array('asset', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
                 if (isset($actions['edit'])) {
                     // Salva il link originale ma cambia il testo
                     $edit_link = $actions['edit'];
@@ -6402,7 +6405,8 @@ class IncidentiMetaBoxes {
      */
     public function remove_bulk_actions_for_asset($bulk_actions) {
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+        //if (in_array('asset', $current_user->roles) || in_array('supervisor', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
+        if (in_array('asset', $current_user->roles) || in_array('prefettura', $current_user->roles)) {
             // Rimuovi tutte le azioni di gruppo
             return array();
             
@@ -6419,10 +6423,13 @@ class IncidentiMetaBoxes {
      */
     public function hide_asset_ui_elements() {
         $current_user = wp_get_current_user();
-        if (in_array('asset', $current_user->roles) || 
+        /* if (in_array('asset', $current_user->roles) || 
             in_array('supervisor', $current_user->roles) || 
             in_array('prefettura', $current_user->roles) ||
-            !current_user_can('manage_options')) { // Aggiunta questa riga
+            !current_user_can('manage_options')) { */
+        if (in_array('asset', $current_user->roles) || 
+            in_array('prefettura', $current_user->roles) ||
+            !current_user_can('manage_options')) {
             $screen = get_current_screen();
             if ($screen && $screen->post_type === 'incidente_stradale') {
                 ?>
@@ -6481,11 +6488,14 @@ class IncidentiMetaBoxes {
         public function customize_asset_list_view() {
             $current_user = wp_get_current_user();
             // Aggiunto controllo per utenti non admin
-            if (in_array('asset', $current_user->roles) || 
+            /* if (in_array('asset', $current_user->roles) || 
                 in_array('supervisor', $current_user->roles) || 
                 in_array('prefettura', $current_user->roles) ||
-                !current_user_can('manage_options')) { // Questa è la riga aggiunta
-                
+                !current_user_can('manage_options')) { */
+            if (in_array('asset', $current_user->roles) || 
+                in_array('prefettura', $current_user->roles) ||
+                !current_user_can('manage_options')) {
+                        
                 // Rimuovi la possibilità di modificare lo stato dei post
                 add_filter('user_can_richedit', '__return_false');
                 

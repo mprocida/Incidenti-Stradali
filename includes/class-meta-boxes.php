@@ -1415,10 +1415,6 @@ class IncidentiMetaBoxes {
                             data-saved-value="<?php echo esc_attr($numero_strada); ?>">
                         <option value=""><?php _e('Seleziona strada statale', 'incidenti-stradali'); ?></option>
                     </select>
-                    
-                    <p class="description" id="numero_strada_description">
-                        <?php _e('Numero identificativo della strada (es. SS7, SP101, A14)', 'incidenti-stradali'); ?>
-                    </p>
                 </td>
             </tr>
             <tr id="progressiva_row">

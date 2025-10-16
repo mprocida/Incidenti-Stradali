@@ -4512,6 +4512,14 @@ class IncidentiMetaBoxes {
                         var opzioni = naturaToTipoMapping[natura];
                         var keys = Object.keys(opzioni);
                         
+                        /* if (keys.length === 1) {
+                            // Se c'è una sola opzione, selezionala automaticamente e disabilita il campo
+                            var uniqueKey = keys[0];
+                            var selected = (uniqueKey === savedValue) ? ' selected' : '';
+                            $tipoSelect.append('<option value="' + uniqueKey + '"' + selected + '>' + opzioni[uniqueKey] + '</option>');
+                            $tipoSelect.prop('disabled', true);
+                            $tipoSelect.val(uniqueKey); */
+
                         if (keys.length === 1) {
                             // Se c'è una sola opzione, selezionala automaticamente e disabilita il campo
                             var uniqueKey = keys[0];
@@ -4520,13 +4528,27 @@ class IncidentiMetaBoxes {
                             $tipoSelect.prop('disabled', true);
                             $tipoSelect.val(uniqueKey);
                             
+                            // AGGIUNTO: Campo hidden per garantire l'invio del valore
+                            var $existingHidden = $('#circostanza_tipo_hidden');
+                            if ($existingHidden.length) {
+                                $existingHidden.val(uniqueKey);
+                            } else {
+                                $tipoSelect.after('<input type="hidden" id="circostanza_tipo_hidden" name="circostanza_tipo" value="' + uniqueKey + '">');
+                            }
+                            
                             // Trigger change per aggiornare le circostanze
                             setTimeout(function() {
                                 $tipoSelect.trigger('change');
                             }, 100);
+                        /* } else {
+                            // Se ci sono più opzioni, abilita il campo e popolalo
+                            $tipoSelect.prop('disabled', false); */
                         } else {
                             // Se ci sono più opzioni, abilita il campo e popolalo
                             $tipoSelect.prop('disabled', false);
+                            
+                            // AGGIUNTO: Rimuovi campo hidden se esiste
+                            $('#circostanza_tipo_hidden').remove();
                             $.each(opzioni, function(key, value) {
                                 var selected = (key === savedValue) ? ' selected' : '';
                                 $tipoSelect.append('<option value="' + key + '"' + selected + '>' + value + '</option>');

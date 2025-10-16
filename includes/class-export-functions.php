@@ -168,6 +168,42 @@ class IncidentiExportFunctions {
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        <?php _e('Tipologia Infortunati', 'incidenti-stradali'); ?>
+                    </th>
+                    <td>
+                        <select name="tipologia_infortunati" class="regular-text">
+                            <option value="">
+                                <?php _e('Tutti i tipi', 'incidenti-stradali'); ?>
+                            </option>
+                            <option value="con_morti">
+                                <?php _e('Incidente con morti', 'incidenti-stradali'); ?>
+                            </option>
+                            <option value="solo_morti">
+                                <?php _e('Incidente con solo morti', 'incidenti-stradali'); ?>
+                            </option>
+                            <option value="con_feriti">
+                                <?php _e('Incidente con feriti', 'incidenti-stradali'); ?>
+                            </option>
+                            <option value="solo_feriti">
+                                <?php _e('Incidente con solo feriti', 'incidenti-stradali'); ?>
+                            </option>
+                            <option value="morti_e_feriti">
+                                <?php _e('Incidente con morti e feriti', 'incidenti-stradali'); ?>
+                            </option>
+                            <option value="morti_o_feriti">
+                                <?php _e('Incidente con morti o feriti', 'incidenti-stradali'); ?>
+                            </option>
+                            <option value="senza_infortunati">
+                                <?php _e('Incidente senza infortunati', 'incidenti-stradali'); ?>
+                            </option>
+                        </select>
+                        <p class="description">
+                            <?php _e('Filtra per tipologia di infortunati', 'incidenti-stradali'); ?>
+                        </p>
+                    </td>
+                </tr>
             </table>
             <?php submit_button(__('Esporta TXT ISTAT (1939 caratteri)', 'incidenti-stradali'), 'primary'); ?>
         </form>
@@ -280,8 +316,10 @@ class IncidentiExportFunctions {
         $data_inizio = sanitize_text_field($_POST['data_inizio']);
         $data_fine = sanitize_text_field($_POST['data_fine']);
         $comune_filtro = sanitize_text_field($_POST['comune_filtro']);
+        $tipologia_infortunati = sanitize_text_field($_POST['tipologia_infortunati']);
         
-        $incidenti = $this->get_incidenti_for_export($data_inizio, $data_fine, $comune_filtro);
+        /* $incidenti = $this->get_incidenti_for_export($data_inizio, $data_fine, $comune_filtro); */
+        $incidenti = $this->get_incidenti_for_export($data_inizio, $data_fine, $comune_filtro, $tipologia_infortunati);
         
         if (empty($incidenti)) {
             wp_redirect(add_query_arg(array(
@@ -333,7 +371,7 @@ class IncidentiExportFunctions {
     /**
      * Get incidenti for export
      */
-    private function get_incidenti_for_export($data_inizio, $data_fine, $comune_filtro = '') {
+    /* private function get_incidenti_for_export($data_inizio, $data_fine, $comune_filtro = '') {
         $args = array(
             'post_type' => 'incidente_stradale',
             'post_status' => 'publish',
@@ -357,6 +395,101 @@ class IncidentiExportFunctions {
         }
         
         return get_posts($args);
+    } */
+
+    private function get_incidenti_for_export($data_inizio, $data_fine, $comune_filtro = '', $tipologia_infortunati = '') {
+        $args = array(
+            'post_type' => 'incidente_stradale',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                array(
+                    'key' => 'data_incidente',
+                    'value' => array($data_inizio, $data_fine),
+                    'compare' => 'BETWEEN',
+                    'type' => 'DATE'
+                )
+            )
+        );
+        
+        if (!empty($comune_filtro)) {
+            $args['meta_query'][] = array(
+                'key' => 'comune_incidente',
+                'value' => $comune_filtro,
+                'compare' => '='
+            );
+        }
+        
+        $incidenti = get_posts($args);
+        
+        // Applica filtro tipologia infortunati se specificato
+        if (!empty($tipologia_infortunati)) {
+            $incidenti = array_filter($incidenti, function($incidente) use ($tipologia_infortunati) {
+                return $this->check_tipologia_infortunati($incidente->ID, $tipologia_infortunati);
+            });
+        }
+        
+        return $incidenti;
+    }
+
+    /**
+     * Verifica se un incidente corrisponde alla tipologia infortunati richiesta
+     */
+    private function check_tipologia_infortunati($post_id, $tipologia) {
+        $morti = 0;
+        $feriti = 0;
+        
+        // Conta conducenti morti e feriti
+        for ($i = 1; $i <= 3; $i++) {
+            $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
+            if ($esito === '1') $morti++;
+            elseif ($esito === '2') $feriti++;
+        }
+        
+        // Conta passeggeri morti e feriti
+        for ($i = 1; $i <= 3; $i++) {
+            for ($p = 1; $p <= 4; $p++) {
+                $esito = get_post_meta($post_id, 'veicolo_' . $i . '_passeggero_' . $p . '_esito', true);
+                if ($esito === '1') $morti++;
+                elseif ($esito === '2') $feriti++;
+            }
+        }
+        
+        // Conta pedoni morti e feriti
+        for ($i = 1; $i <= 5; $i++) {
+            $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
+            if ($esito === '1') $morti++;
+            elseif ($esito === '2') $feriti++;
+        }
+        
+        // Conta altri infortunati
+        $altri_morti_m = intval(get_post_meta($post_id, 'altri_morti_maschi', true) ?: 0);
+        $altri_morti_f = intval(get_post_meta($post_id, 'altri_morti_femmine', true) ?: 0);
+        $altri_feriti_m = intval(get_post_meta($post_id, 'altri_feriti_maschi', true) ?: 0);
+        $altri_feriti_f = intval(get_post_meta($post_id, 'altri_feriti_femmine', true) ?: 0);
+        
+        $morti += $altri_morti_m + $altri_morti_f;
+        $feriti += $altri_feriti_m + $altri_feriti_f;
+        
+        // Applica la logica del filtro
+        switch ($tipologia) {
+            case 'con_morti':
+                return ($morti > 0);
+            case 'solo_morti':
+                return ($morti > 0 && $feriti == 0);
+            case 'con_feriti':
+                return ($feriti > 0);
+            case 'solo_feriti':
+                return ($feriti > 0 && $morti == 0);
+            case 'morti_e_feriti':
+                return ($morti > 0 && $feriti > 0);
+            case 'morti_o_feriti':
+                return ($morti > 0 || $feriti > 0);
+            case 'senza_infortunati':
+                return ($morti == 0 && $feriti == 0);
+            default:
+                return true;
+        }
     }
     
     /**

@@ -4569,10 +4569,46 @@ class IncidentiMetaBoxes {
                     }
                 }
 
+                // Funzione per gestire la visibilità dei campi Veicolo B in base alla natura e al tipo di incidente
+                function handleVeicoloBVisibility() {
+                    var natura = $('#natura_incidente').val();
+                    var tipoIncidente = $('#circostanza_tipo').val();
+                    
+                    // Trova le righe (tr) che contengono i campi Veicolo B
+                    var $difettoVeicoloBRow = $('#difetto_veicolo_b').closest('tr');
+                    var $statoPsicofisicoBRow = $('#stato_psicofisico_b').closest('tr');
+                    
+                    // Logica: nascondi se natura = 'B' (Tra veicolo e pedoni) OPPURE tipoIncidente = 'investimento'
+                    var shouldHide = (natura === 'B' || tipoIncidente === 'investimento');
+                    
+                    if (shouldHide) {
+                        // Nascondi i campi
+                        $difettoVeicoloBRow.hide();
+                        $statoPsicofisicoBRow.hide();
+                        
+                        // Resetta i valori dei campi nascosti (opzionale ma consigliato)
+                        $('#difetto_veicolo_b').val('');
+                        $('#stato_psicofisico_b').val('');
+                    } else {
+                        // Mostra i campi
+                        $difettoVeicoloBRow.show();
+                        $statoPsicofisicoBRow.show();
+                    }
+                }
+
                 // Listener per il cambio della natura dell'incidente
                 $('#natura_incidente').on('change', function() {
                     var natura = $(this).val();
                     updateTipoIncidenteOptions(natura);
+
+                    // Applica la gestione della visibilità di Veicolo B
+                    handleVeicoloBVisibility();
+                });
+
+                // Listener per il cambio del tipo di incidente (circostanza_tipo)
+                $('#circostanza_tipo').on('change', function() {
+                    // NUOVO: Applica la gestione della visibilità di Veicolo B
+                    handleVeicoloBVisibility();
                 });
 
                 // Inizializzazione al caricamento della pagina
@@ -4580,6 +4616,11 @@ class IncidentiMetaBoxes {
                 if (naturaCorrente) {
                     updateTipoIncidenteOptions(naturaCorrente);
                 }
+
+                // Applica la visibilità dei campi Veicolo B anche al caricamento (per modifica incidente esistente)
+                setTimeout(function() {
+                    handleVeicoloBVisibility();
+                }, 200);
 
                 // Definizione completa dei codici circostanze per tipo di incidente
                 var circostanzeData = {

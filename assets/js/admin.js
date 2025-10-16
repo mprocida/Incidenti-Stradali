@@ -2032,20 +2032,40 @@ jQuery(document).ready(function($) {
                 var keys = Object.keys(opzioni);
                 
                 // PRESERVA: Auto-selezione e disabilitazione per opzione singola
-                if (keys.length === 1) {
+                /* if (keys.length === 1) {
+                    var uniqueKey = keys[0];
+                    $tipoSelect.append('<option value="' + uniqueKey + '" selected>' + opzioni[uniqueKey] + '</option>');
+                    $tipoSelect.prop('disabled', true);
+                    $tipoSelect.val(uniqueKey); */
+
+                    if (keys.length === 1) {
                     var uniqueKey = keys[0];
                     $tipoSelect.append('<option value="' + uniqueKey + '" selected>' + opzioni[uniqueKey] + '</option>');
                     $tipoSelect.prop('disabled', true);
                     $tipoSelect.val(uniqueKey);
+                    
+                    // Crea campo hidden per inviare il valore anche se il select è disabilitato
+                    var $existingHidden = $('#circostanza_tipo_hidden');
+                    if ($existingHidden.length) {
+                        $existingHidden.val(uniqueKey);
+                    } else {
+                        $tipoSelect.after('<input type="hidden" id="circostanza_tipo_hidden" name="circostanza_tipo" value="' + uniqueKey + '">');
+                    }
                     
                     // PRESERVA: Trigger del cambio per aggiornare le circostanze
                     setTimeout(function() {
                         $tipoSelect.trigger('change');
                     }, 100);
                     
-                } else {
+                /* } else {
+                    // PRESERVA: Gestione opzioni multiple
+                    $tipoSelect.prop('disabled', false); */
+                    } else {
                     // PRESERVA: Gestione opzioni multiple
                     $tipoSelect.prop('disabled', false);
+                    
+                    // AGGIUNTO: Rimuovi campo hidden se esiste
+                    $('#circostanza_tipo_hidden').remove();
                     $.each(opzioni, function(key, value) {
                         // MIGLIORA: Seleziona l'opzione se corrisponde al valore salvato
                         var selected = (key === savedValue) ? ' selected' : '';

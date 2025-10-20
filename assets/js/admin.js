@@ -296,7 +296,8 @@ jQuery(document).ready(function($) {
             $numeroVeicoli.show();
         } else {
             $numeroVeicoli.hide();
-            $('#numero_veicoli_coinvolti').val('1');
+            /* $('#numero_veicoli_coinvolti').val('1'); */
+            $('#numero_veicoli_coinvolti').val('1').trigger('change');
         }
 
         // Gestisci le opzioni del numero veicoli coinvolti per "Tra veicoli in marcia"

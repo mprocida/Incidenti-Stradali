@@ -1308,7 +1308,8 @@ class IncidentiExportFunctions {
                 $this->safe_meta_string($post_id, 'minuti_incidente')
             );
             $row[] = "Lecce";
-            $row[] = $this->get_comune_name($this->safe_meta_string($post_id, 'comune_incidente'));
+            //$row[] = $this->get_comune_name($this->safe_meta_string($post_id, 'comune_incidente'));
+            $row[] = $this->get_codice_catastale($this->safe_meta_string($post_id, 'comune_incidente'));
             $row[] = $this->get_natura_incidente_name($this->safe_meta_string($post_id, 'xlsx_tipo_incidente') ?: 0);
             $row[] = $this->get_tipo_strada_name($this->safe_meta_string($post_id, 'tipo_strada') ?: 0);
             $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato') ?: 0;
@@ -2109,6 +2110,117 @@ private function get_province_data() {
         }
         
         return $codice_comune;
+    }
+
+    /**
+     * Converte codice ISTAT comune in codice catastale
+     */
+    private function get_codice_catastale($codice_comune) {
+        if (empty($codice_comune)) {
+            return $codice_comune;
+        }
+        
+        // Mappatura codici ISTAT → Codici Catastali (Provincia Lecce)
+        $mapping_catastale = array(
+            '002' => 'A184', // ALESSANO
+            '003' => 'A185', // ALEZIO
+            '004' => 'A208', // ALLISTE
+            '005' => 'A281', // ANDRANO
+            '006' => 'A350', // ARADEO
+            '007' => 'A425', // ARNESANO
+            '008' => 'A572', // BAGNOLO DEL SALENTO
+            '009' => 'B086', // BOTRUGNO
+            '010' => 'B413', // CALIMERA
+            '011' => 'B506', // CAMPI SALENTINA
+            '012' => 'B616', // CANNOLE
+            '013' => 'B690', // CAPRARICA DI LECCE
+            '014' => 'B792', // CARMIANO
+            '015' => 'B822', // CARPIGNANO SALENTINO
+            '016' => 'B936', // CASARANO
+            '017' => 'C334', // CASTRI DI LECCE
+            '018' => 'C335', // CASTRIGNANO DE' GRECI
+            '019' => 'C336', // CASTRIGNANO DEL CAPO
+            '096' => 'M261', // CASTRO
+            '020' => 'C377', // CAVALLINO
+            '021' => 'C865', // COLLEPASSO
+            '022' => 'C978', // COPERTINO
+            '023' => 'D006', // CORIGLIANO D'OTRANTO
+            '024' => 'D044', // CORSANO
+            '025' => 'D223', // CURSI
+            '026' => 'D237', // CUTROFIANO
+            '027' => 'D305', // DISO
+            '028' => 'D851', // GAGLIANO DEL CAPO
+            '029' => 'D862', // GALATINA
+            '030' => 'D863', // GALATONE
+            '031' => 'D883', // GALLIPOLI
+            '032' => 'E053', // GIUGGIANELLO
+            '033' => 'E061', // GIURDIGNANO
+            '034' => 'E227', // GUAGNANO
+            '035' => 'E506', // LECCE
+            '036' => 'E538', // LEQUILE
+            '037' => 'E563', // LEVERANO
+            '038' => 'E629', // LIZZANELLO
+            '039' => 'E815', // MAGLIE
+            '040' => 'E979', // MARTANO
+            '041' => 'E984', // MARTIGNANO
+            '042' => 'F054', // MATINO
+            '043' => 'F101', // MELENDUGNO
+            '044' => 'F109', // MELISSANO
+            '045' => 'F117', // MELPIGNANO
+            '046' => 'F194', // MIGGIANO
+            '047' => 'F221', // MINERVINO DI LECCE
+            '048' => 'F604', // MONTERONI DI LECCE
+            '049' => 'F623', // MONTESANO SALENTINO
+            '050' => 'F716', // MORCIANO DI LEUCA
+            '051' => 'F816', // MURO LECCESE
+            '052' => 'F842', // NARDO'
+            '053' => 'F881', // NEVIANO
+            '054' => 'F916', // NOCIGLIA
+            '055' => 'F970', // NOVOLI
+            '056' => 'G136', // ORTELLE
+            '057' => 'G188', // OTRANTO
+            '058' => 'G285', // PALMARIGGI
+            '059' => 'G325', // PARABITA
+            '060' => 'G378', // PATU'
+            '061' => 'G751', // POGGIARDO
+            '097' => 'M263', // PORTO CESAREO
+            '098' => 'M428', // PRESICCE-ACQUARICA
+            '063' => 'H147', // RACALE
+            '064' => 'H632', // RUFFANO
+            '065' => 'H708', // SALICE SALENTINO
+            '066' => 'H729', // SALVE
+            '095' => 'M264', // SAN CASSIANO
+            '068' => 'H793', // SAN CESARIO DI LECCE
+            '069' => 'H826', // SAN DONATO DI LECCE
+            '071' => 'I115', // SAN PIETRO IN LAMA
+            '067' => 'H757', // SANARICA
+            '070' => 'I059', // SANNICOLA
+            '072' => 'I172', // SANTA CESAREA TERME
+            '073' => 'I549', // SCORRANO
+            '074' => 'I559', // SECLI'
+            '075' => 'I780', // SOGLIANO CAVOUR
+            '076' => 'I800', // SOLETO
+            '077' => 'I887', // SPECCHIA
+            '078' => 'I923', // SPONGANO
+            '079' => 'I930', // SQUINZANO
+            '080' => 'I950', // STERNATIA
+            '081' => 'L008', // SUPERSANO
+            '082' => 'L010', // SURANO
+            '083' => 'L011', // SURBO
+            '084' => 'L064', // TAURISANO
+            '085' => 'L074', // TAVIANO
+            '086' => 'L166', // TIGGIANO
+            '087' => 'L383', // TREPUZZI
+            '088' => 'L419', // TRICASE
+            '089' => 'L462', // TUGLIE
+            '090' => 'L484', // UGENTO
+            '091' => 'L485', // UGGIANO LA CHIESA
+            '092' => 'L711', // VEGLIE
+            '093' => 'L776', // VERNOLE
+            '094' => 'M187'  // ZOLLINO
+        );
+        
+        return isset($mapping_catastale[$codice_comune]) ? $mapping_catastale[$codice_comune] : $codice_comune;
     }
 
     /**

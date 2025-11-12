@@ -271,7 +271,7 @@ class IncidentiImportFunctions {
     /**
      * Check for duplicate incidents based on key fields
      */
-    private function check_for_duplicates($data) {
+    /* private function check_for_duplicates($data) {
         global $wpdb;
         
         $data_incidente = $data['data_incidente'];
@@ -305,6 +305,37 @@ class IncidentiImportFunctions {
             $comune_incidente,
             $latitudine,
             $longitudine
+        )); */
+    private function check_for_duplicates($data) {
+        global $wpdb;
+        
+        $data_incidente = $data['data_incidente'];
+        $ora_incidente = trim($data['ora_incidente']);
+        $comune_incidente = $data['comune_incidente'];
+        $latitudine = $data['latitudine'];
+        $longitudine = $data['longitudine'];
+        
+        // MODIFICA: Rimossa la verifica di latitudine/longitudine perché potrebbero essere vuote
+        // Usiamo solo data + ora + comune come chiave primaria per il controllo duplicati
+        
+        $query = "
+            SELECT p.ID 
+            FROM {$wpdb->posts} p
+            INNER JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'data_incidente'
+            INNER JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'ora_incidente'  
+            INNER JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = 'comune_incidente'
+            WHERE p.post_type = 'incidente_stradale'
+            AND p.post_status = 'publish'
+            AND pm1.meta_value = %s
+            AND pm2.meta_value = %s
+            AND pm3.meta_value = %s
+            LIMIT 1
+        ";
+        
+        $existing_post_id = $wpdb->get_var($wpdb->prepare($query, 
+            $data_incidente, 
+            $ora_incidente, 
+            $comune_incidente
         ));
         
         return array(

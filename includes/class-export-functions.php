@@ -1310,12 +1310,15 @@ class IncidentiExportFunctions {
             $row[] = "Lecce";
             //$row[] = $this->get_comune_name($this->safe_meta_string($post_id, 'comune_incidente'));
             $row[] = $this->get_codice_catastale($this->safe_meta_string($post_id, 'comune_incidente'));
-            $row[] = $this->get_natura_incidente_name($this->safe_meta_string($post_id, 'xlsx_tipo_incidente') ?: 0);
-            $row[] = $this->get_tipo_strada_name($this->safe_meta_string($post_id, 'tipo_strada') ?: 0);
+            //$row[] = $this->get_natura_incidente_name($this->safe_meta_string($post_id, 'xlsx_tipo_incidente') ?: 0);
+            $row[] = $this->get_tipo_incidente_code($this->safe_meta_string($post_id, 'xlsx_tipo_incidente'));
+            //$row[] = $this->get_tipo_strada_name($this->safe_meta_string($post_id, 'tipo_strada') ?: 0);
+            $row[] = $this->get_tipo_strada_code($this->safe_meta_string($post_id, 'tipo_strada'));
             $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato') ?: 0;
             //$row[] = $this->get_organo_rilevazione_name($this->safe_meta_string($post_id, 'organo_rilevazione'));
             $row[] = "Polizia locale";
-            $row[] = $this->get_caratteristiche_name($this->safe_meta_string($post_id, 'xlsx_caratteristiche') ?: 0);
+            //$row[] = $this->get_caratteristiche_name($this->safe_meta_string($post_id, 'xlsx_caratteristiche') ?: 0);
+            $row[] = str_pad($this->safe_meta_string($post_id, 'xlsx_caratteristiche') ?: 0, 2, '0', STR_PAD_LEFT);
             $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale') ?: 0;
             
             // Veicoli coinvolti
@@ -1367,7 +1370,8 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'denominazione_strada') ?: 0;
             $row[] = $this->safe_meta_string($post_id, 'progressiva_km');
             $row[] = $this->safe_meta_string($post_id, 'progressiva_m') ?: 0;
-            $row[] = $this->get_geometria_strada_name($this->safe_meta_string($post_id, 'geometria_strada') ?: "Non specificato");
+            //$row[] = $this->get_geometria_strada_name($this->safe_meta_string($post_id, 'geometria_strada') ?: "Non specificato");
+            $row[] = $this->safe_meta_string($post_id, 'geometria_strada') ?: 0;
             
             // Circostanze
             $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione') ?: 0;
@@ -2122,6 +2126,7 @@ private function get_province_data() {
         
         // Mappatura codici ISTAT → Codici Catastali (Provincia Lecce)
         $mapping_catastale = array(
+            '001' => 'A042', // ACQUARICA
             '002' => 'A184', // ALESSANO
             '003' => 'A185', // ALEZIO
             '004' => 'A208', // ALLISTE
@@ -2183,6 +2188,7 @@ private function get_province_data() {
             '059' => 'G325', // PARABITA
             '060' => 'G378', // PATU'
             '061' => 'G751', // POGGIARDO
+            '062' => 'H047', // PRESICCE
             '097' => 'M263', // PORTO CESAREO
             '098' => 'M428', // PRESICCE-ACQUARICA
             '063' => 'H147', // RACALE
@@ -2321,6 +2327,66 @@ private function get_province_data() {
         );
         
         return isset($geometrie[$codice_geometria]) ? $geometrie[$codice_geometria] : $codice_geometria;
+    }
+
+    /**
+     * Converte nome tipologia incidente in codice numerico
+     */
+    private function get_tipo_incidente_code($nome_incidente) {
+        $mappatura = array(
+            'Altro' => '8',
+            'Fuoriuscita/Sbandamento' => '3',
+            'Investimento animale' => '6',
+            'Investimento pedone' => '7',
+            'Scontro frontale' => '1',
+            'Scontro laterale' => '2',
+            'Tamponamento' => '4',
+            'Urto con ostacolo fisso' => '5'
+        );
+        
+        return isset($mappatura[$nome_incidente]) ? $mappatura[$nome_incidente] : '8';
+    }
+
+    /**
+     * Converte codice/nome tipo strada nel codice corretto
+     */
+    private function get_tipo_strada_code($valore) {
+        // Mappatura nome -> codice
+        $mappatura_nomi = array(
+            'Altro' => '0',
+            'Autostrada' => '1',
+            'Provinciale' => '4',
+            'Regionale' => '3',
+            'Statale' => '2',
+            'Strada comunale' => '5'
+        );
+        
+        // Se è un nome, converte in codice
+        if (isset($mappatura_nomi[$valore])) {
+            return $mappatura_nomi[$valore];
+        }
+        
+        // Mappatura vecchi codici -> nuovi codici
+        $mappatura_codici = array(
+            '0' => '3', // Regionale entro abitato -> Regionale
+            '1' => '5', // Strada urbana -> Strada comunale
+            '2' => '4', // Provinciale entro abitato -> Provinciale
+            '3' => '2', // Statale entro abitato -> Statale
+            '4' => '5', // Strada comunale extraurbana -> Strada comunale
+            '5' => '4', // Strada provinciale fuori abitato -> Provinciale
+            '6' => '2', // Strada statale fuori abitato -> Statale
+            '7' => '1', // Autostrada -> Autostrada
+            '8' => '0', // Altra strada -> Altro
+            '9' => '3'  // Strada regionale fuori abitato -> Regionale
+        );
+        
+        // Se è un vecchio codice, converte
+        if (isset($mappatura_codici[$valore])) {
+            return $mappatura_codici[$valore];
+        }
+        
+        // Altrimenti restituisce 0 (Altro)
+        return '0';
     }
 
     /**

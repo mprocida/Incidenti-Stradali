@@ -225,14 +225,14 @@ class IncidentiImportFunctions {
             $mapped_data = $this->map_row_data($row);   
             
             // Controllo anti-duplicazione prima della creazione
-            $duplicate_check = $this->check_for_duplicates($mapped_data);
+            /* $duplicate_check = $this->check_for_duplicates($mapped_data);
             if ($duplicate_check['is_duplicate']) {
                 $errors++;
                 $duplicate_codes[] = $duplicate_check['existing_post_id'];
                 error_log("Incidente riga $line_number non importato - duplicato di post ID: " . $duplicate_check['existing_post_id']);
                 $line_number++;
                 continue; // Salta alla prossima riga
-            }
+            } */
 
             /*
             $validation_result = $this->validate_row_data($mapped_data);

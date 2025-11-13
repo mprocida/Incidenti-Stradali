@@ -1226,6 +1226,7 @@ class IncidentiMetaBoxes {
      */
     private function get_comuni_lecce() {
         return array(
+            '001' => 'Acquarica',
             '002' => 'Alessano', 
             '003' => 'Alezio',
             '004' => 'Alliste',
@@ -1287,6 +1288,7 @@ class IncidentiMetaBoxes {
             '059' => 'Parabita',
             '060' => 'Patu`',
             '061' => 'Poggiardo',
+            '062' => 'Presicce',
             '097' => 'Porto Cesareo',
             '098' => 'Presicce-Acquarica',
             '063' => 'Racale',
@@ -5486,6 +5488,7 @@ class IncidentiMetaBoxes {
         }
         
         $mappatura_enti_comuni = array(
+            'pm_acquarica' => array('001' => 'Acquarica'),
             'pm_alessano' => array('002' => 'Alessano'),
             'pm_alezio' => array('003' => 'Alezio'),
             'pm_alliste' => array('004' => 'Alliste'),
@@ -5547,6 +5550,7 @@ class IncidentiMetaBoxes {
             'pm_parabita' => array('059' => 'Parabita'),
             'pm_patu' => array('060' => 'Patu`'),
             'pm_poggiardo' => array('061' => 'Poggiardo'),
+            'pm_presicce' => array('062' => 'Presicce'),
             'pm_porto_cesareo' => array('097' => 'Porto Cesareo'),
             'pm_presicce_acquarica' => array('098' => 'Presicce-Acquarica'),
             'pm_racale' => array('063' => 'Racale'),
@@ -5686,6 +5690,8 @@ class IncidentiMetaBoxes {
                 'pm_ruffano' => 'POLIZIA MUNICIPALE DI RUFFANO',
                 'pm_ugento' => 'POLIZIA MUNICIPALE DI UGENTO',
                 'pm_taurisano' => 'POLIZIA MUNICIPALE DI TAURISANO',
+                'pm_acquarica' => 'POLIZIA MUNICIPALE DI ACQUARICA',
+                'pm_presicce' => 'POLIZIA MUNICIPALE DI PRESICCE',
                 'pm_presicce_acquarica' => 'POLIZIA MUNICIPALE DI PRESICCE-ACQUARICA',
                 'pm_racale' => 'POLIZIA MUNICIPALE DI RACALE',
                 'pm_taviano' => 'POLIZIA MUNICIPALE DI TAVIANO',

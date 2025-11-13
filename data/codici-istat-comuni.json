@@ -5,6 +5,7 @@
   "source": "ISTAT - Istituto Nazionale di Statistica",
   "comuni": {
     "075": {
+      "001": "Acquarica",
       "002": "Alessano", 
       "003": "Alezio",
       "004": "Alliste",
@@ -66,6 +67,7 @@
       "059": "Parabita",
       "060": "Patu`",
       "061": "Poggiardo",
+      "062": "Presicce",
       "097": "Porto Cesareo",
       "098": "Presicce-Acquarica",
       "063": "Racale",

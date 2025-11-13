@@ -335,6 +335,7 @@ class IncidentiUserRoles {
         return array(
             'agente_polizia_stradale' => 'Agente di Polizia Stradale',
             'carabiniere' => 'Carabiniere',
+            'pm_acquarica' => 'POLIZIA MUNICIPALE DI ACQUARICA',
             'pm_alessano' => 'POLIZIA MUNICIPALE DI ALESSANO',
             'pm_alezio' => 'POLIZIA MUNICIPALE DI ALEZIO',
             'pm_alliste' => 'POLIZIA MUNICIPALE DI ALLISTE',
@@ -397,6 +398,7 @@ class IncidentiUserRoles {
             'pm_patu' => 'POLIZIA MUNICIPALE DI PATU',
             'pm_poggiardo' => 'POLIZIA MUNICIPALE DI POGGIARDO',
             'pm_porto_cesareo' => 'POLIZIA MUNICIPALE DI PORTO CESAREO',
+            'pm_presicce' => 'POLIZIA MUNICIPALE DI PRESICCE',
             'pm_presicce_acquarica' => 'POLIZIA MUNICIPALE DI PRESICCE-ACQUARICA',
             'pm_racale' => 'POLIZIA MUNICIPALE DI RACALE',
             'pm_ruffano' => 'POLIZIA MUNICIPALE DI RUFFANO',
@@ -440,6 +442,7 @@ class IncidentiUserRoles {
      */
     private function get_mapping_enti_comuni() {
         return array(
+            'pm_acquarica' => '001',
             'pm_alessano' => '002',
             'pm_alezio' => '003',
             'pm_alliste' => '004',
@@ -501,6 +504,7 @@ class IncidentiUserRoles {
             'pm_parabita' => '059',
             'pm_patu' => '060',
             'pm_poggiardo' => '061',
+            'pm_presicce' => '062',
             'pm_porto_cesareo' => '097',
             'pm_presicce_acquarica' => '098',
             'pm_racale' => '063',

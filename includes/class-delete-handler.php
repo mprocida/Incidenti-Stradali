@@ -13,6 +13,50 @@ class IncidentiDeleteHandler {
         // Messaggi personalizzati
         add_action('admin_notices', array($this, 'show_delete_messages'));
     }
+
+    /**
+     * Pre-carica dati per bulk operation (NUOVO METODO)
+     */
+    private function preload_bulk_data($post_ids) {
+        global $wpdb;
+        
+        $ids_string = implode(',', array_map('intval', $post_ids));
+        
+        // Una query per tutti i post types
+        $post_types = $wpdb->get_results(
+            "SELECT ID, post_type, post_author FROM {$wpdb->posts} WHERE ID IN ($ids_string)",
+            OBJECT_K
+        );
+        
+        // Una query per tutte le date
+        $post_dates = $wpdb->get_results(
+            "SELECT post_id, meta_value as data_incidente 
+            FROM {$wpdb->postmeta} 
+            WHERE post_id IN ($ids_string) AND meta_key = 'data_incidente'",
+            OBJECT_K
+        );
+        
+        // Cache comuni utenti
+        $user_comuni = array();
+        if (!current_user_can('manage_all_incidenti')) {
+            $user_comune = get_user_meta(get_current_user_id(), 'comune_assegnato', true);
+            if ($user_comune) {
+                $post_comuni = $wpdb->get_results(
+                    "SELECT post_id, meta_value as comune 
+                    FROM {$wpdb->postmeta} 
+                    WHERE post_id IN ($ids_string) AND meta_key = 'comune_incidente'",
+                    OBJECT_K
+                );
+                $user_comuni = array('current' => $user_comune, 'posts' => $post_comuni);
+            }
+        }
+        
+        return array(
+            'types' => $post_types,
+            'dates' => $post_dates,
+            'comuni' => $user_comuni
+        );
+    }
     
     /**
      * Gestisce le bulk actions di eliminazione
@@ -25,21 +69,54 @@ class IncidentiDeleteHandler {
         $processed = 0;
         $errors = array();
         
+        // OTTIMIZZAZIONE: Pre-carica tutti i dati necessari
+        $bulk_data = $this->preload_bulk_data($post_ids);
+        $data_blocco = get_option('incidenti_data_blocco_modifica');
+        $user_id = get_current_user_id();
+        $can_manage_all = current_user_can('manage_all_incidenti');
+
+        // OTTIMIZZAZIONE: Disabilita hook temporaneamente
+        $this->disable_hooks_for_bulk();
+
         foreach ($post_ids as $post_id) {
-            if (get_post_type($post_id) !== 'incidente_stradale') {
+            // Verifica tipo usando cache
+            if (!isset($bulk_data['types'][$post_id]) || 
+                $bulk_data['types'][$post_id]->post_type !== 'incidente_stradale') {
                 continue;
             }
             
-            // Verifica permessi
-            if (!$this->user_can_delete_incident($post_id)) {
-                $errors[] = sprintf(__('Non hai i permessi per eliminare l\'incidente #%d', 'incidenti-stradali'), $post_id);
-                continue;
-            }
-            
-            // Verifica restrizioni data
-            if (!$this->can_delete_by_date($post_id)) {
-                $errors[] = sprintf(__('Impossibile eliminare l\'incidente #%d: data bloccata', 'incidenti-stradali'), $post_id);
-                continue;
+            // Verifica permessi usando dati pre-caricati
+            if (!$can_manage_all) {
+                // Verifica permessi base
+                if (!current_user_can('delete_incidente', $post_id)) {
+                    $errors[] = sprintf(__('Non hai i permessi per eliminare l\'incidente #%d', 'incidenti-stradali'), $post_id);
+                    continue;
+                }
+                
+                // Verifica autore
+                if ($bulk_data['types'][$post_id]->post_author != $user_id && 
+                    !current_user_can('delete_others_incidenti')) {
+                    $errors[] = sprintf(__('Non hai i permessi per eliminare l\'incidente #%d', 'incidenti-stradali'), $post_id);
+                    continue;
+                }
+                
+                // Verifica comune usando cache
+                if (!empty($bulk_data['comuni']['current'])) {
+                    $post_comune = isset($bulk_data['comuni']['posts'][$post_id]) ? 
+                                  $bulk_data['comuni']['posts'][$post_id]->comune : null;
+                    if ($post_comune && $bulk_data['comuni']['current'] !== $post_comune) {
+                        $errors[] = sprintf(__('Non hai i permessi per eliminare l\'incidente #%d', 'incidenti-stradali'), $post_id);
+                        continue;
+                    }
+                }
+                
+                // Verifica data usando cache
+                if ($data_blocco && isset($bulk_data['dates'][$post_id])) {
+                    if (strtotime($bulk_data['dates'][$post_id]->data_incidente) < strtotime($data_blocco)) {
+                        $errors[] = sprintf(__('Impossibile eliminare l\'incidente #%d: data bloccata', 'incidenti-stradali'), $post_id);
+                        continue;
+                    }
+                }
             }
             
             // Esegui l'azione
@@ -62,6 +139,9 @@ class IncidentiDeleteHandler {
                 $errors[] = sprintf(__('Errore nell\'elaborazione dell\'incidente #%d', 'incidenti-stradali'), $post_id);
             }
         }
+
+        // OTTIMIZZAZIONE: Riabilita hook
+        $this->enable_hooks_for_bulk();
         
         // Aggiungi risultati alla URL di redirect
         $redirect_to = add_query_arg(array(
@@ -76,6 +156,37 @@ class IncidentiDeleteHandler {
         }
         
         return $redirect_to;
+    }
+
+    /**
+     * Disabilita hook pesanti durante bulk operations
+     */
+    private function disable_hooks_for_bulk() {
+        // Usa proprietà statica invece di define per maggiore controllo
+        if (!isset($GLOBALS['incidenti_bulk_operation'])) {
+            $GLOBALS['incidenti_bulk_operation'] = true;
+        }
+        
+        // Questi hook verranno automaticamente ripristinati al prossimo 
+        // caricamento perché registrati nel costruttore della classe
+        remove_action('wp_trash_post', array('IncidentiMetaBoxes', 'on_post_trashed'));
+        remove_action('before_delete_post', array('IncidentiMetaBoxes', 'on_post_deleted'));
+        remove_action('untrash_post', array('IncidentiMetaBoxes', 'on_post_untrashed'));
+    }
+
+    /**
+     * Riabilita hook dopo bulk operations
+     */
+    private function enable_hooks_for_bulk() {
+        // Resetta il flag globale
+        if (isset($GLOBALS['incidenti_bulk_operation'])) {
+            $GLOBALS['incidenti_bulk_operation'] = false;
+        }
+        
+        // NOTA: Non serve re-aggiungere gli hook con add_action() perché:
+        // 1. WordPress farà un redirect dopo questa operazione
+        // 2. Al prossimo caricamento il costruttore li registrerà di nuovo
+        // 3. Gli hook rimossi influenzano solo la richiesta corrente
     }
     
     /**

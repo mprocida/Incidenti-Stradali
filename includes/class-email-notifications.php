@@ -22,6 +22,16 @@ class IncidentiEmailNotifications {
         if ($post->post_type !== 'incidente_stradale') {
             return;
         }
+
+        // Skip notifiche durante bulk operations
+        if (!empty($GLOBALS['incidenti_bulk_operation'])) {
+            return;
+        }
+        
+        // Skip notifiche per operazioni di eliminazione
+        if ($new_status === 'trash' || $old_status === 'trash') {
+            return;
+        }
         
         // Notify when incident is published
         if ($new_status === 'publish' && $old_status !== 'publish') {

@@ -47,6 +47,11 @@ class IncidentiStradaliPlugin {
     
     public function __construct() {
         // Include required files first
+        // Aumenta limiti per operazioni massive
+        @ini_set('memory_limit', '512M');
+        @ini_set('max_execution_time', '600');
+        @ini_set('max_input_vars', '5000');
+
         $this->include_files();
         
         add_action('init', array($this, 'init'));
@@ -102,6 +107,7 @@ class IncidentiStradaliPlugin {
             'includes/class-user-roles.php',
             'includes/class-export-functions.php',
             'includes/class-import-functions.php',
+            'includes/class-import-istat-functions.php',
             'includes/class-validation.php',
             'includes/class-shortcodes.php',
             'includes/class-admin-settings.php',
@@ -144,6 +150,10 @@ class IncidentiStradaliPlugin {
 
         if (class_exists('IncidentiImportFunctions')) {
             new IncidentiImportFunctions();
+        }
+
+        if (class_exists('IncidentiIstatImportFunctions')) {
+            new IncidentiIstatImportFunctions();
         }
         
         if (class_exists('IncidentiValidation')) {

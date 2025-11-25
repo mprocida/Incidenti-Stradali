@@ -5459,6 +5459,11 @@ class IncidentiMetaBoxes {
      * NUOVO: Gestisce quando un post viene spostato nel cestino
      */
     public function on_post_trashed($post_id) {
+        // Skip durante bulk operations
+        if (!empty($GLOBALS['incidenti_bulk_operation'])) {
+            return;
+        }
+        
         if (get_post_type($post_id) === 'incidente_stradale') {
             error_log("Incidente {$post_id} spostato nel cestino da utente " . get_current_user_id());
         }
@@ -5468,6 +5473,11 @@ class IncidentiMetaBoxes {
      * NUOVO: Gestisce quando un post viene eliminato definitivamente
      */
     public function on_post_deleted($post_id) {
+        // Skip durante bulk operations
+        if (!empty($GLOBALS['incidenti_bulk_operation'])) {
+            return;
+        }
+        
         if (get_post_type($post_id) === 'incidente_stradale') {
             error_log("Incidente {$post_id} eliminato definitivamente da utente " . get_current_user_id());
         }
@@ -5477,6 +5487,11 @@ class IncidentiMetaBoxes {
      * NUOVO: Gestisce quando un post viene ripristinato dal cestino
      */
     public function on_post_untrashed($post_id) {
+        // Skip durante bulk operations
+        if (!empty($GLOBALS['incidenti_bulk_operation'])) {
+            return;
+        }
+        
         if (get_post_type($post_id) === 'incidente_stradale') {
             error_log("Incidente {$post_id} ripristinato dal cestino da utente " . get_current_user_id());
         }

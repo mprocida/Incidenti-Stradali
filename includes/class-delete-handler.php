@@ -59,6 +59,47 @@ class IncidentiDeleteHandler {
     }
     
     /**
+     * Eliminazione massiva ottimizzata con query dirette
+     */
+    private function bulk_delete_optimized($post_ids) {
+        global $wpdb;
+        
+        $ids_string = implode(',', array_map('intval', $post_ids));
+        
+        // Elimina tutti i postmeta in una query
+        $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE post_id IN ($ids_string)");
+        
+        // Elimina tutti i post in una query
+        $wpdb->query("DELETE FROM {$wpdb->posts} WHERE ID IN ($ids_string)");
+        
+        // Pulisci cache
+        foreach ($post_ids as $post_id) {
+            clean_post_cache($post_id);
+        }
+        
+        return count($post_ids);
+    }
+
+    /**
+     * Processa eliminazioni in chunks per evitare timeout
+     */
+    private function process_in_chunks($post_ids, $chunk_size = 100) {
+        $chunks = array_chunk($post_ids, $chunk_size);
+        $total_processed = 0;
+        
+        foreach ($chunks as $chunk) {
+            $total_processed += $this->bulk_delete_optimized($chunk);
+            
+            // Previeni timeout
+            if (function_exists('set_time_limit')) {
+                set_time_limit(30);
+            }
+        }
+        
+        return $total_processed;
+    }
+
+    /**
      * Gestisce le bulk actions di eliminazione
      */
     public function handle_bulk_actions($redirect_to, $doaction, $post_ids) {
@@ -78,7 +119,7 @@ class IncidentiDeleteHandler {
         // OTTIMIZZAZIONE: Disabilita hook temporaneamente
         $this->disable_hooks_for_bulk();
 
-        foreach ($post_ids as $post_id) {
+        /* foreach ($post_ids as $post_id) {
             // Verifica tipo usando cache
             if (!isset($bulk_data['types'][$post_id]) || 
                 $bulk_data['types'][$post_id]->post_type !== 'incidente_stradale') {
@@ -131,13 +172,54 @@ class IncidentiDeleteHandler {
                 case 'untrash':
                     $success = wp_untrash_post($post_id);
                     break;
-            }
+            } */
+
+        // Array per raccogliere ID da eliminare in batch
+        $ids_to_delete = array();
+        $ids_to_trash = array();
+        $ids_to_untrash = array();
+
+        foreach ($post_ids as $post_id) {
+            // ... mantieni tutte le verifiche permessi esistenti ...
             
-            if ($success) {
-                $processed++;
-            } else {
-                $errors[] = sprintf(__('Errore nell\'elaborazione dell\'incidente #%d', 'incidenti-stradali'), $post_id);
+            // Invece di eliminare subito, aggiungi all'array appropriato
+            switch ($doaction) {
+                case 'trash':
+                    $ids_to_trash[] = $post_id;
+                    break;
+                case 'delete':
+                    $ids_to_delete[] = $post_id;
+                    break;
+                case 'untrash':
+                    $ids_to_untrash[] = $post_id;
+                    break;
             }
+        }
+
+        // Elabora in batch
+        if (!empty($ids_to_delete)) {
+            // Se più di 100 item, usa chunking
+            if (count($ids_to_delete) > 100) {
+                $processed += $this->process_in_chunks($ids_to_delete, 100);
+            } else {
+                $processed += $this->bulk_delete_optimized($ids_to_delete);
+            }
+        }
+        if (!empty($ids_to_trash)) {
+            foreach ($ids_to_trash as $id) {
+                if (wp_trash_post($id)) $processed++;
+            }
+        }
+        if (!empty($ids_to_untrash)) {
+            foreach ($ids_to_untrash as $id) {
+                if (wp_untrash_post($id)) $processed++;
+            }
+        }            
+            
+        if ($success) {
+            $processed++;
+        } else {
+            $errors[] = sprintf(__('Errore nell\'elaborazione dell\'incidente #%d', 'incidenti-stradali'), $post_id);
         }
 
         // OTTIMIZZAZIONE: Riabilita hook
@@ -161,17 +243,36 @@ class IncidentiDeleteHandler {
     /**
      * Disabilita hook pesanti durante bulk operations
      */
+    /**
+     * Disabilita hook pesanti durante bulk operations
+     */
     private function disable_hooks_for_bulk() {
-        // Usa proprietà statica invece di define per maggiore controllo
         if (!isset($GLOBALS['incidenti_bulk_operation'])) {
             $GLOBALS['incidenti_bulk_operation'] = true;
         }
         
-        // Questi hook verranno automaticamente ripristinati al prossimo 
-        // caricamento perché registrati nel costruttore della classe
+        // === HOOK DEL PLUGIN ===
+        // Rimuovi hook logging
         remove_action('wp_trash_post', array('IncidentiMetaBoxes', 'on_post_trashed'));
         remove_action('before_delete_post', array('IncidentiMetaBoxes', 'on_post_deleted'));
         remove_action('untrash_post', array('IncidentiMetaBoxes', 'on_post_untrashed'));
+        
+        // CRITICO: Rimuovi hook pesanti del plugin
+        remove_action('save_post', array('IncidentiMetaBoxes', 'save_meta_boxes'));
+        remove_filter('wp_insert_post_data', array('IncidentiValidation', 'validate_before_save'), 10);
+        remove_action('transition_post_status', array('IncidentiEmailNotifications', 'handle_post_status_change'), 10);
+        
+        // === HOOK WORDPRESS PER TRASH (spostamento nel cestino) ===
+        remove_action('transition_post_status', '_transition_post_status', 10);
+        
+        // === HOOK WORDPRESS PER DELETE (eliminazione definitiva) ===
+        remove_action('delete_post', '_wp_delete_post_menu_item');
+        remove_action('before_delete_post', 'wp_delete_post_revisions');
+        remove_action('deleted_post', 'wp_cache_set_posts_last_changed');
+        
+        // Disabilita aggiornamento term count durante bulk delete
+        wp_defer_term_counting(true);
+        wp_defer_comment_counting(true);
     }
 
     /**
@@ -183,10 +284,13 @@ class IncidentiDeleteHandler {
             $GLOBALS['incidenti_bulk_operation'] = false;
         }
         
-        // NOTA: Non serve re-aggiungere gli hook con add_action() perché:
-        // 1. WordPress farà un redirect dopo questa operazione
-        // 2. Al prossimo caricamento il costruttore li registrerà di nuovo
-        // 3. Gli hook rimossi influenzano solo la richiesta corrente
+        // Riabilita conteggi differiti
+        wp_defer_term_counting(false);
+        wp_defer_comment_counting(false);
+        
+        // NOTA: Gli hook con add_action/remove_action verranno 
+        // automaticamente re-registrati al prossimo caricamento
+        // perché sono nel costruttore delle classi
     }
     
     /**

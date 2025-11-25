@@ -606,7 +606,7 @@ class IncidentiExportFunctions {
             
             // Campo 11-14: Numero d'ordine
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($post_id, 4, '0', STR_PAD_LEFT);
+            $esitoTXT[$indTXT] = mb_str_pad(mb_substr($post_id,0,4), 4, '0', STR_PAD_LEFT);
             
             // Campo 15-16: Giorno
             $giorno = substr($data_incidente, 8, 2);
@@ -1112,12 +1112,12 @@ class IncidentiExportFunctions {
             //Campo 1565-1568: Progressiva chilometrica
             $progressiva_km = $this->safe_meta_string($post_id, 'progressiva_km');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($progressiva_km ?: '', 4, '0', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($progressiva_km ?: '', 4, '0', STR_PAD_LEFT);
 
             //Campo 1569-1571: Ettometrica
             $progressiva_m = $this->safe_meta_string($post_id, 'progressiva_m');
             $indTXT++;
-            $esitoTXT[$indTXT] = mb_str_pad($progressiva_m ?: '', 3, '0', STR_PAD_RIGHT);
+            $esitoTXT[$indTXT] = mb_str_pad($progressiva_m ?: '', 3, '0', STR_PAD_LEFT);
 
             // ===== VEICOLI - CILINDRATA (Posizioni 1572-1730) =====
             for ($numVeicolo = 1; $numVeicolo <= 3; $numVeicolo++) {

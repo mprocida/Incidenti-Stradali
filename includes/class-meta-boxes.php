@@ -29,6 +29,8 @@ class IncidentiMetaBoxes {
         add_filter('bulk_actions-edit-incidente_stradale', array($this, 'remove_bulk_actions_for_asset'));
         add_action('admin_head', array($this, 'hide_asset_ui_elements'));
         add_action('admin_init', array($this, 'customize_asset_list_view'));
+
+        add_action('admin_print_footer_scripts-edit.php', array($this, 'change_bulk_form_method'));
     }
     
     public function add_meta_boxes() {
@@ -2153,8 +2155,8 @@ class IncidentiMetaBoxes {
                     <tr>
                         <th><i style="font-weight: 400;"><?php _e('Condizioni Manto', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <i><label><input type="radio" name="condizioni_manto" value="aperto" <?php checked($condizioni_manto, 'aperto'); ?>> <?php _e('Tappeto d\'usura aperto', 'incidenti-stradali'); ?></label></i><br>
-                            <i><label><input type="radio" name="condizioni_manto" value="chiuso" <?php checked($condizioni_manto, 'chiuso'); ?>> <?php _e('Tappeto d\'usura chiuso', 'incidenti-stradali'); ?></label></i>
+                            <i><label><input type="radio" name="condizioni_manto" value="1" <?php checked($condizioni_manto, '1'); ?>> <?php _e('Tappeto d\'usura aperto', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="condizioni_manto" value="2" <?php checked($condizioni_manto, '2'); ?>> <?php _e('Tappeto d\'usura chiuso', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                 </table>
@@ -2320,24 +2322,24 @@ class IncidentiMetaBoxes {
                     <tr>
                         <th><i><?php _e('Orientamento del conducente', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <i><label><input type="radio" name="orientamento_conducente" value="sole_frontale" <?php checked($orientamento_conducente, 'sole_frontale'); ?>> <?php _e('Sole frontale', 'incidenti-stradali'); ?></label></i><br>
-                            <i><label><input type="radio" name="orientamento_conducente" value="sole_laterale" <?php checked($orientamento_conducente, 'sole_laterale'); ?>> <?php _e('Sole laterale', 'incidenti-stradali'); ?></label></i><br>
-                            <i><label><input type="radio" name="orientamento_conducente" value="sole_dietro" <?php checked($orientamento_conducente, 'sole_dietro'); ?>> <?php _e('Sole da dietro', 'incidenti-stradali'); ?></label></i><br>
-                            <i><label><input type="radio" name="orientamento_conducente" value="non_rilevabile" <?php checked($orientamento_conducente, 'non_rilevabile'); ?>> <?php _e('Non rilevabile', 'incidenti-stradali'); ?></i></label>
+                            <i><label><input type="radio" name="orientamento_conducente" value="1" <?php checked($orientamento_conducente, '1'); ?>> <?php _e('Sole frontale', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="orientamento_conducente" value="2" <?php checked($orientamento_conducente, '2'); ?>> <?php _e('Sole laterale', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="orientamento_conducente" value="3" <?php checked($orientamento_conducente, '3'); ?>> <?php _e('Sole da dietro', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="orientamento_conducente" value="4" <?php checked($orientamento_conducente, '4'); ?>> <?php _e('Non rilevabile', 'incidenti-stradali'); ?></i></label>
                         </td>
                     </tr>
                     <tr>
                         <th><i><?php _e('Presenza banchina', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <i><label><input type="checkbox" name="presenza_banchina" value="1" <?php checked($presenza_banchina, '1'); ?>> <?php _e('Presente', 'incidenti-stradali'); ?></label></i>
+                            <i><label><input type="checkbox" name="presenza_banchina" value="01" <?php checked($presenza_banchina, '01'); ?>> <?php _e('Presente', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                     <tr>
                         <th><i><?php _e('Presenza barriere', 'incidenti-stradali'); ?></i></th>
                         <td>
-                            <i><label><input type="radio" name="presenza_barriere" value="si" <?php checked($presenza_barriere, 'si'); ?>> <?php _e('Sì', 'incidenti-stradali'); ?></label></i><br>
-                            <i><label><input type="radio" name="presenza_barriere" value="no" <?php checked($presenza_barriere, 'no'); ?>> <?php _e('No', 'incidenti-stradali'); ?></label></i><br>
-                            <i><label><input type="radio" name="presenza_barriere" value="danneggiate" <?php checked($presenza_barriere, 'danneggiate'); ?>> <?php _e('Danneggiate', 'incidenti-stradali'); ?></label></i>
+                            <i><label><input type="radio" name="presenza_barriere" value="01" <?php checked($presenza_barriere, '01'); ?>> <?php _e('Sì', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="presenza_barriere" value="02" <?php checked($presenza_barriere, '02'); ?>> <?php _e('No', 'incidenti-stradali'); ?></label></i><br>
+                            <i><label><input type="radio" name="presenza_barriere" value="03" <?php checked($presenza_barriere, '03'); ?>> <?php _e('Danneggiate', 'incidenti-stradali'); ?></label></i>
                         </td>
                     </tr>
                 </table>
@@ -2974,6 +2976,7 @@ class IncidentiMetaBoxes {
     
     echo '</div>';
 }
+
         
         // NUOVO: Sezione Trasportati
         echo '<h4>' . __('Trasportati', 'incidenti-stradali') . '</h4>';
@@ -6664,4 +6667,36 @@ class IncidentiMetaBoxes {
                 <?php
             }
         }
-}
+        /**
+         * Cambia il metodo del form delle bulk actions da GET a POST
+         */
+        public function change_bulk_form_method() {
+            global $typenow;
+            
+            if ($typenow !== 'incidente_stradale') {
+                return;
+            }
+            
+            ?>
+            <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                $('#posts-filter').attr('method', 'post');
+                
+                $('#posts-filter').on('submit', function(e) {
+                    var action = $('select[name="action"]').val() || $('select[name="action2"]').val();
+                    
+                    if (action && action !== '-1') {
+                        if (!$(this).find('input[name="post_type"]').length) {
+                            $('<input>').attr({
+                                type: 'hidden',
+                                name: 'post_type',
+                                value: 'incidente_stradale'
+                            }).appendTo(this);
+                        }
+                    }
+                });
+            });
+            </script>
+            <?php
+        }
+    }

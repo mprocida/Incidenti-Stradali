@@ -1338,7 +1338,7 @@ class IncidentiShortcodes {
             $morti = 0;
             $feriti = 0;
 
-            // Count drivers casualties
+            /* // Count drivers casualties
             for ($i = 1; $i <= 3; $i++) {
                 $esito = isset($all_meta['conducente_' . $i . '_esito'][0]) ? $all_meta['conducente_' . $i . '_esito'][0] : '';
                 if ($esito == '3' || $esito == '4') $morti++;
@@ -1361,7 +1361,13 @@ class IncidentiShortcodes {
                     if ($esito == '3' || $esito == '4') $morti++;
                     if ($esito == '2') $feriti++;
                 }
-            }
+            } */
+
+            // Usa i campi riepilogo già calcolati (molto più veloce)
+            $morti_24h = intval(get_post_meta($post_id, 'riepilogo_morti_24h', true));
+            $morti_2_30gg = intval(get_post_meta($post_id, 'riepilogo_morti_2_30gg', true));
+            $morti = $morti_24h + $morti_2_30gg;
+            $feriti = intval(get_post_meta($post_id, 'riepilogo_feriti', true));
 
             // Conta altri morti e feriti per veicolo
             for ($i = 1; $i <= 3; $i++) {

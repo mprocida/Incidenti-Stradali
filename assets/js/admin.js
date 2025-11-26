@@ -375,10 +375,13 @@ jQuery(document).ready(function($) {
         }
         
         // Initialize map
-        var lat = parseFloat($('#latitudine').val()) || 41.9028;
-        var lng = parseFloat($('#longitudine').val()) || 12.4964;
+        /* var lat = parseFloat($('#latitudine').val()) || 41.9028;
+        var lng = parseFloat($('#longitudine').val()) || 12.4964; */
+        var lat = parseFloat($('#latitudine').val()) || 40.3512508652161;
+        var lng = parseFloat($('#longitudine').val()) || 18.173951042516418;
         
-        coordinateMap = L.map('coordinate-map').setView([lat, lng], lat === 41.9028 ? 6 : 15);
+        /* coordinateMap = L.map('coordinate-map').setView([lat, lng], lat === 41.9028 ? 6 : 15); */
+        coordinateMap = L.map('coordinate-map').setView([lat, lng], lat === 40.3512508652161 ? 6 : 15);
         
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'

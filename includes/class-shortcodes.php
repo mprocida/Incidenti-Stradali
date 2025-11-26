@@ -143,8 +143,10 @@ class IncidentiShortcodes {
             'width' => '100%',
             'height' => '400px',
             'zoom' => '10',
-            'center_lat' => '41.9028',
-            'center_lng' => '12.4964',
+            /* 'center_lat' => '41.9028',
+            'center_lng' => '12.4964', */
+            'center_lat' => '40.3512508652161',
+            'center_lng' => '18.173951042516418',
             'comune' => '',
             'periodo' => '',
             'data_inizio' => '',
@@ -354,12 +356,17 @@ class IncidentiShortcodes {
                         nonce: incidenti_ajax.nonce,
                         filters: filters,
                         page: page,
-                        per_page: 500
+                        per_page: 2000
                     },
                     success: function(response) {
                         isLoading = false;
                         
+                        //test timing
+                        var start = performance.now();
                         if (response.success) {
+                            //test timing
+                            //var start = performance.now();
+
                             var data = response.data;
                             var pagination = data.pagination;
                             
@@ -377,6 +384,9 @@ class IncidentiShortcodes {
                                 markersLayer.addLayer(leafletMarker);
                                 allMarkers.push(marker);
                             });
+                            //test timing
+                            /* var end = performance.now();
+                            console.log("Eccolo: " + (end-start)); */
                             
                             globalStats.totale += data.stats.totale;
                             globalStats.morti += data.stats.morti;
@@ -407,6 +417,9 @@ class IncidentiShortcodes {
                             hideProgress();
                             console.error('Error loading markers:', response.data);
                         }
+                        //test timing
+                        var end = performance.now();
+                        console.log("Eccolo: " + (end-start));
                     },
                     error: function(xhr, status, error) {
                         isLoading = false;
@@ -1211,10 +1224,10 @@ class IncidentiShortcodes {
         
         $filters = isset($_POST['filters']) ? $_POST['filters'] : array();
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 500; // Chunk di 500
-        
+        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 2000; // Chunk di 2000
+
         // Limita per_page per sicurezza
-        $per_page = min($per_page, 1000);
+        $per_page = min($per_page, 2000);
 
         // Build query
         $args = array(

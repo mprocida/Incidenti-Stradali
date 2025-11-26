@@ -182,7 +182,7 @@ class IncidentiStradaliPlugin {
     
     public function enqueue_scripts() {
         wp_enqueue_script('jquery');
-        wp_enqueue_script('incidenti-frontend', INCIDENTI_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), INCIDENTI_VERSION, true);
+        /* wp_enqueue_script('incidenti-frontend', INCIDENTI_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), INCIDENTI_VERSION, true); */
         wp_enqueue_style('incidenti-frontend', INCIDENTI_PLUGIN_URL . 'assets/css/frontend.css', array(), INCIDENTI_VERSION);
         
         // Leaflet for maps

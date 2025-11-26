@@ -576,7 +576,8 @@ get_header();
                     });
                     
                     // Initialize map
-                    var map = L.map('incidenti-map').setView([41.9028, 12.4964], 6);
+                    /* var map = L.map('incidenti-map').setView([41.9028, 12.4964], 6); */
+                    var map = L.map('incidenti-map').setView([40.3512508652161, 18.173951042516418], 6);
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors'
                     }).addTo(map);

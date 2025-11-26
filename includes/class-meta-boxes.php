@@ -4191,7 +4191,7 @@ class IncidentiMetaBoxes {
                             id="latitudine" 
                             name="latitudine" 
                             value="<?php echo esc_attr($latitudine); ?>" 
-                            placeholder="es. 41.902783"
+                            placeholder="es. 40.351250"
                             class="incidenti-coordinate-input">
                     </td>
                 </tr>
@@ -4202,7 +4202,7 @@ class IncidentiMetaBoxes {
                             id="longitudine" 
                             name="longitudine" 
                             value="<?php echo esc_attr($longitudine); ?>" 
-                            placeholder="es. 12.496366"
+                            placeholder="es. 18.173951"
                             class="incidenti-coordinate-input">
                     </td>
                 </tr>
@@ -4228,7 +4228,8 @@ class IncidentiMetaBoxes {
                 scrollWheelZoom: true,
                 doubleClickZoom: true,
                 boxZoom: false
-            }).setView([41.9028, 12.4964], 6);
+            /* }).setView([41.9028, 12.4964], 6); */
+            }).setView([40.3512508652161, 18.173951042516418], 6);
             
             // Aggiungi tile layer con attributo
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

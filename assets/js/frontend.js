@@ -35,7 +35,8 @@ jQuery(document).ready(function($) {
         
         // Get map configuration from data attributes or defaults
         var config = {
-            center: [$map.data('center-lat') || 41.9028, $map.data('center-lng') || 12.4964],
+            /* center: [$map.data('center-lat') || 41.9028, $map.data('center-lng') || 12.4964], */
+            center: [$map.data('center-lat') || 40.3512508652161, $map.data('center-lng') || 18.173951042516418],
             zoom: $map.data('zoom') || 10,
             cluster: $map.data('cluster') !== false,
             style: $map.data('style') || 'default'
@@ -122,20 +123,29 @@ jQuery(document).ready(function($) {
                 nonce: incidenti_ajax.nonce,
                 filters: filters,
                 page: page,
-                per_page: 500  // Carica 500 marker alla volta
+                per_page: 2000  // Carica 2000 marker alla volta
             },
             success: function(response) {
                 if (response.success) {
+
                     // Accumula i marker
                     accumulatedMarkers = accumulatedMarkers.concat(response.data.markers);
                     
                     // Aggiungi i marker di questa pagina alla mappa
                     addMarkersToMap(mapId, response.data.markers);
-                    
                     // Aggiorna progresso
                     var pagination = response.data.pagination;
                     updateLoadingProgress(mapId, pagination.current_page, pagination.total_pages);
                     
+                    // Fit map ai marker SOLO alla prima pagina per centrare subito
+                    if (page === 1 && accumulatedMarkers.length > 0 && markersLayer.getBounds) {
+                        try {
+                            map.fitBounds(markersLayer.getBounds(), {padding: [20, 20]});
+                        } catch(e) {
+                            console.log('Bounds iniziali non disponibili');
+                        }
+                    }
+
                     // Se ci sono altre pagine, carica la prossima
                     if (pagination.has_more) {
                         // Piccolo delay per non sovraccaricare
@@ -153,12 +163,12 @@ jQuery(document).ready(function($) {
                             stats_html: response.data.stats_html
                         });
                         
-                        // Fit map ai marker se ci sono
+                        // Fit finale della mappa
                         if (accumulatedMarkers.length > 0 && markersLayer.getBounds) {
                             try {
                                 map.fitBounds(markersLayer.getBounds(), {padding: [20, 20]});
                             } catch(e) {
-                                console.log('Bounds non disponibili');
+                                console.log('Bounds finali non disponibili');
                             }
                         }
                         

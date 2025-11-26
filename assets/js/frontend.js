@@ -88,9 +88,9 @@ jQuery(document).ready(function($) {
     }
     
     /**
-     * Load markers for a specific map
+     * Load markers for a specific map - VERSIONE CON CARICAMENTO PROGRESSIVO
      */
-    function loadMapMarkers(mapId) {
+    function loadMapMarkers(mapId, page, accumulatedMarkers) {
         var $container = $('#' + mapId).closest('.incidenti-map-container');
         var map = window[mapId + '_map'];
         var markersLayer = window[mapId + '_markers'];
@@ -99,8 +99,16 @@ jQuery(document).ready(function($) {
             return;
         }
         
-        // Show loading state
-        $container.addClass('loading');
+        // Inizializza parametri
+        page = page || 1;
+        accumulatedMarkers = accumulatedMarkers || [];
+        
+        // Prima pagina: mostra loading e pulisci i marker
+        if (page === 1) {
+            $container.addClass('loading');
+            markersLayer.clearLayers();
+            updateLoadingProgress(mapId, 0, 0);
+        }
         
         // Get filter values
         var filters = getMapFilters(mapId);
@@ -112,15 +120,52 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'get_incidenti_markers',
                 nonce: incidenti_ajax.nonce,
-                filters: filters
+                filters: filters,
+                page: page,
+                per_page: 500  // Carica 500 marker alla volta
             },
             success: function(response) {
-                $container.removeClass('loading');
-                
                 if (response.success) {
-                    updateMapMarkers(mapId, response.data);
-                    updateMapStats(mapId, response.data);
+                    // Accumula i marker
+                    accumulatedMarkers = accumulatedMarkers.concat(response.data.markers);
+                    
+                    // Aggiungi i marker di questa pagina alla mappa
+                    addMarkersToMap(mapId, response.data.markers);
+                    
+                    // Aggiorna progresso
+                    var pagination = response.data.pagination;
+                    updateLoadingProgress(mapId, pagination.current_page, pagination.total_pages);
+                    
+                    // Se ci sono altre pagine, carica la prossima
+                    if (pagination.has_more) {
+                        // Piccolo delay per non sovraccaricare
+                        setTimeout(function() {
+                            loadMapMarkers(mapId, page + 1, accumulatedMarkers);
+                        }, 100);
+                    } else {
+                        // Caricamento completato
+                        $container.removeClass('loading');
+                        
+                        // Aggiorna statistiche con dati finali
+                        updateMapStats(mapId, {
+                            markers: accumulatedMarkers,
+                            stats: response.data.stats,
+                            stats_html: response.data.stats_html
+                        });
+                        
+                        // Fit map ai marker se ci sono
+                        if (accumulatedMarkers.length > 0 && markersLayer.getBounds) {
+                            try {
+                                map.fitBounds(markersLayer.getBounds(), {padding: [20, 20]});
+                            } catch(e) {
+                                console.log('Bounds non disponibili');
+                            }
+                        }
+                        
+                        hideLoadingProgress(mapId);
+                    }
                 } else {
+                    $container.removeClass('loading');
                     showMapError(mapId, response.data || 'Errore nel caricamento dei dati');
                 }
             },
@@ -129,6 +174,74 @@ jQuery(document).ready(function($) {
                 showMapError(mapId, 'Errore di connessione: ' + error);
             }
         });
+    }
+
+    /**
+     * Aggiunge marker alla mappa senza cancellare quelli esistenti
+     */
+    function addMarkersToMap(mapId, markers) {
+        var map = window[mapId + '_map'];
+        var markersLayer = window[mapId + '_markers'];
+        
+        if (!map || !markersLayer || !markers) {
+            return;
+        }
+        
+        var icons = getCustomIcons();
+        
+        markers.forEach(function(markerData) {
+            var icon = getMarkerIcon(markerData, icons);
+            
+            var marker = L.marker([markerData.lat, markerData.lng], {
+                icon: icon
+            });
+            
+            if (markerData.popup) {
+                marker.bindPopup(markerData.popup, {
+                    maxWidth: 300,
+                    className: 'incidente-popup'
+                });
+            }
+            
+            if (markerData.id) {
+                marker.on('click', function() {
+                    loadIncidentDetails(markerData.id, marker);
+                });
+            }
+            
+            markersLayer.addLayer(marker);
+        });
+    }
+
+    /**
+     * Mostra progresso caricamento
+     */
+    function updateLoadingProgress(mapId, current, total) {
+        var $container = $('#' + mapId).closest('.incidenti-map-container');
+        var $progress = $container.find('.loading-progress');
+        
+        if ($progress.length === 0) {
+            $container.find('.incidenti-map-wrapper').append(
+                '<div class="loading-progress">' +
+                '<span class="progress-text">Caricamento incidenti...</span>' +
+                '<div class="progress-bar"><div class="progress-fill"></div></div>' +
+                '</div>'
+            );
+            $progress = $container.find('.loading-progress');
+        }
+        
+        if (total > 0) {
+            var percent = Math.round((current / total) * 100);
+            $progress.find('.progress-text').text('Caricamento: ' + percent + '% (' + current + '/' + total + ' pagine)');
+            $progress.find('.progress-fill').css('width', percent + '%');
+        }
+        
+        $progress.show();
+    }
+
+    function hideLoadingProgress(mapId) {
+        var $container = $('#' + mapId).closest('.incidenti-map-container');
+        $container.find('.loading-progress').fadeOut();
     }
     
     /**

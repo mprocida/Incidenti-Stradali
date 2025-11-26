@@ -24,6 +24,10 @@ class IncidentiShortcodes {
         
         // Enqueue scripts for shortcodes
         add_action('wp_enqueue_scripts', array($this, 'enqueue_shortcode_scripts'));
+
+        // Hook per invalidare cache quando modifichi/elimini incidenti
+        add_action('save_post', array($this, 'invalida_cache_markers'));
+        add_action('delete_post', array($this, 'invalida_cache_markers'));
     }
 
     public function enqueue_shortcode_scripts() {
@@ -1224,10 +1228,17 @@ class IncidentiShortcodes {
         
         $filters = isset($_POST['filters']) ? $_POST['filters'] : array();
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 2000; // Chunk di 2000
-
-        // Limita per_page per sicurezza
+        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 2000;
         $per_page = min($per_page, 2000);
+
+        // **OTTIMIZZAZIONE 1**: Cache con transient
+        $cache_key = 'incidenti_markers_' . md5(serialize($filters) . '_' . $page . '_' . $per_page);
+        $cached = get_transient($cache_key);
+        
+        if (false !== $cached) {
+            wp_send_json_success($cached);
+            return;
+        }
 
         // Build query
         $args = array(
@@ -1236,6 +1247,7 @@ class IncidentiShortcodes {
             'posts_per_page' => $per_page,
             'paged' => $page,
             'meta_query' => array(
+                'relation' => 'AND',
                 array(
                     'key' => 'latitudine',
                     'compare' => 'EXISTS'
@@ -1248,275 +1260,271 @@ class IncidentiShortcodes {
         );
         
         if (!empty($filters['comune'])) {
-                $args['meta_query'][] = array(
-                    'key' => 'comune_incidente',
-                    'value' => sanitize_text_field($filters['comune']),
-                    'compare' => '='
-                );
+            $args['meta_query'][] = array(
+                'key' => 'comune_incidente',
+                'value' => sanitize_text_field($filters['comune']),
+                'compare' => '='
+            );
+        }
+        
+        if (!empty($filters['periodo'])) {
+            $date_query = $this->get_date_query_for_period($filters['periodo']);
+            if ($date_query) {
+                $args['meta_query'][] = $date_query;
             }
-            
-            if (!empty($filters['periodo'])) {
-                $date_query = $this->get_date_query_for_period($filters['periodo']);
-                if ($date_query) {
-                    $args['meta_query'][] = $date_query;
-                }
-            }
-            
-            if (!empty($filters['data_inizio']) && !empty($filters['data_fine'])) {
-                $args['meta_query'][] = array(
-                    'key' => 'data_incidente',
-                    'value' => array($filters['data_inizio'], $filters['data_fine']),
-                    'compare' => 'BETWEEN',
-                    'type' => 'DATE'
-                );
-            }
+        }
+        
+        if (!empty($filters['data_inizio']) && !empty($filters['data_fine'])) {
+            $args['meta_query'][] = array(
+                'key' => 'data_incidente',
+                'value' => array($filters['data_inizio'], $filters['data_fine']),
+                'compare' => 'BETWEEN',
+                'type' => 'DATE'
+            );
+        }
 
-            // Filtro tipologia strada
-            if (!empty($filters['tipologia_strada'])) {
-                $args['meta_query'][] = array(
-                    'key' => 'tipo_strada',
-                    'value' => sanitize_text_field($filters['tipologia_strada']),
-                    'compare' => '='
-                );
-            }
+        if (!empty($filters['tipologia_strada'])) {
+            $args['meta_query'][] = array(
+                'key' => 'tipo_strada',
+                'value' => sanitize_text_field($filters['tipologia_strada']),
+                'compare' => '='
+            );
+        }
 
-            // Filtro indirizzo/denominazione strada
-            if (!empty($filters['indirizzo'])) {
-                $search_term = sanitize_text_field($filters['indirizzo']);
-                $args['meta_query'][] = array(
-                    'relation' => 'OR',
-                    array(
-                        'key' => 'denominazione_strada',
-                        'value' => $search_term,
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => 'numero_strada',
-                        'value' => $search_term,
-                        'compare' => 'LIKE'
-                    )
-                );
-            }
-
-            // Filtro tipologia infortunati
-            if (!empty($filters['tipologia_infortunati'])) {
-                $tipologia = $filters['tipologia_infortunati'];
-                
-                // Nota: non possiamo filtrare a livello di query perché i dati sono calcolati dinamicamente
-                // Il filtro verrà applicato nel loop successivo
-                $filtro_infortunati_attivo = $tipologia;
-            } else {
-                $filtro_infortunati_attivo = false;
-            }
-            
-            $incidenti = get_posts($args);
-            
-            $markers = array();
-            $stats = array('totale' => 0, 'morti' => 0, 'feriti' => 0, 'solo_danni' => 0);
-            
-            foreach ($incidenti as $incidente) {
-                $post_id = $incidente->ID;
-                $lat = get_post_meta($post_id, 'latitudine', true);
-                $lng = get_post_meta($post_id, 'longitudine', true);
-                
-                if (empty($lat) || empty($lng)) continue;
-                
-                // Count casualties
-                $morti = 0;
-                $feriti = 0;
-
-                // Count drivers casualties
-                for ($i = 1; $i <= 3; $i++) {
-                    $esito = get_post_meta($post_id, 'conducente_' . $i . '_esito', true);
-                    if ($esito == '3' || $esito == '4') $morti++;
-                    if ($esito == '2') $feriti++;
-                }
-
-                // Count pedestrians casualties
-                $num_pedoni = get_post_meta($post_id, 'numero_pedoni_coinvolti', true) ?: 0;
-                for ($i = 1; $i <= intval($num_pedoni); $i++) {
-                    $esito = get_post_meta($post_id, 'pedone_' . $i . '_esito', true);
-                    if ($esito == '3' || $esito == '4') $morti++;
-                    if ($esito == '2') $feriti++;
-                }
-
-                // Count passengers casualties if applicable
-                for ($i = 1; $i <= 3; $i++) {
-                    $num_trasportati = get_post_meta($post_id, 'veicolo_' . $i . '_numero_trasportati', true) ?: 0;
-                    for ($j = 1; $j <= intval($num_trasportati) && $j <= 4; $j++) {
-                        $esito = get_post_meta($post_id, 'veicolo_' . $i . '_trasportato_' . $j . '_esito', true);
-                        if ($esito == '3' || $esito == '4') $morti++;
-                        if ($esito == '2') $feriti++;
-                    }
-                }
-
-                // Conta altri morti e feriti per veicolo
-                for ($i = 1; $i <= 3; $i++) {
-                    $altri_morti_m = get_post_meta($post_id, 'veicolo_' . $i . '_altri_morti_maschi', true) ?: 0;
-                    $altri_morti_f = get_post_meta($post_id, 'veicolo_' . $i . '_altri_morti_femmine', true) ?: 0;
-                    $altri_feriti_m = get_post_meta($post_id, 'veicolo_' . $i . '_altri_feriti_maschi', true) ?: 0;
-                    $altri_feriti_f = get_post_meta($post_id, 'veicolo_' . $i . '_altri_feriti_femmine', true) ?: 0;
-                    
-                    $morti += intval($altri_morti_m) + intval($altri_morti_f);
-                    $feriti += intval($altri_feriti_m) + intval($altri_feriti_f);
-                }
-
-                // Conta altri veicoli generali
-                $altri_morti_m_gen = get_post_meta($post_id, 'altri_morti_maschi', true) ?: 0;
-                $altri_morti_f_gen = get_post_meta($post_id, 'altri_morti_femmine', true) ?: 0;
-                $altri_feriti_m_gen = get_post_meta($post_id, 'altri_feriti_maschi', true) ?: 0;
-                $altri_feriti_f_gen = get_post_meta($post_id, 'altri_feriti_femmine', true) ?: 0;
-
-                $morti += intval($altri_morti_m_gen) + intval($altri_morti_f_gen);
-                $feriti += intval($altri_feriti_m_gen) + intval($altri_feriti_f_gen);
-
-                // Applica filtro tipologia infortunati se attivo
-                if ($filtro_infortunati_attivo) {
-                    $include_incident = false;
-                    
-                    switch ($filtro_infortunati_attivo) {
-                        case 'con_morti':
-                            $include_incident = ($morti > 0);
-                            break;
-                            
-                        case 'solo_morti':
-                            $include_incident = ($morti > 0 && $feriti == 0);
-                            break;
-                            
-                        case 'con_feriti':
-                            $include_incident = ($feriti > 0);
-                            break;
-                            
-                        case 'solo_feriti':
-                            $include_incident = ($feriti > 0 && $morti == 0);
-                            break;
-                            
-                        case 'morti_e_feriti':
-                            $include_incident = ($morti > 0 && $feriti > 0);
-                            break;
-                            
-                        case 'morti_o_feriti':
-                            $include_incident = ($morti > 0 || $feriti > 0);
-                            break;
-                            
-                        case 'senza_infortunati':
-                            $include_incident = ($morti == 0 && $feriti == 0);
-                            break;
-                            
-                        default:
-                            $include_incident = true;
-                    }
-                    
-                    // Se l'incidente non passa il filtro, salta al prossimo
-                    if (!$include_incident) {
-                        continue;
-                    }
-                }
-                
-                $data = get_post_meta($post_id, 'data_incidente', true);
-                $ora = get_post_meta($post_id, 'ora_incidente', true);
-                $minuti = get_post_meta($post_id, 'minuti_incidente', true) ?: '00';
-                $comune_codice = get_post_meta($post_id, 'comune_incidente', true);
-                $organo_rilevazione = get_post_meta($post_id, 'organo_rilevazione', true);
-                
-                // Get nome comune from codice ISTAT
-                $nome_comune = $this->get_nome_comune_from_codice($comune_codice);
-                
-                // Get organo rilevazione description
-                $organo_desc = $this->get_organo_rilevazione_description($organo_rilevazione);
-                
-                // Format data italiana
-                $data_italiana = '';
-                if ($data) {
-                    $data_italiana = date('d/m/Y', strtotime($data));
-                }
-                
-                // Format ora
-                $ora_formattata = $ora . ':' . $minuti;
-                
-                // Generate popup content with new format
-                $popup_content = '<div class="incidente-popup">';
-                
-                // Codice (titolo con link)
-                $edit_link = get_edit_post_link($post_id);
-                $popup_content .= '<h4><a href="' . esc_url($edit_link) . '" target="_blank" style="color: #0073aa; text-decoration: none;">';
-                $popup_content .= '#' . str_pad($post_id, 4, '0', STR_PAD_LEFT) . ': ' . esc_html($incidente->post_title);
-                $popup_content .= '</a></h4>';
-                
-                // Data e ora
-                $popup_content .= '<p><strong>📅 Data/Ora:</strong> ' . $data_italiana . ' ' . $ora_formattata . '</p>';
-                
-                // Comune
-                $popup_content .= '<p><strong>🏛️ Comune:</strong> ' . esc_html($nome_comune) . '</p>';
-                
-                // Ente/Organo rilevazione
-                $popup_content .= '<p><strong>👮 Ente:</strong> ' . esc_html($organo_desc) . '</p>';
-                
-                // Coordinate
-                $popup_content .= '<p><strong>📍 Coordinate:</strong> ' . number_format(floatval($lat), 6) . ', ' . number_format(floatval($lng), 6) . '</p>';
-                
-                // Vittime (se presenti)
-                if ($morti > 0 || $feriti > 0) {
-                    $popup_content .= '<hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">';
-                    if ($morti > 0) {
-                        $popup_content .= '<p class="morti" style="color: #d63384; font-weight: bold;">💀 ' . $morti . ' ' . _n('morto', 'morti', $morti, 'incidenti-stradali') . '</p>';
-                    }
-                    if ($feriti > 0) {
-                        $popup_content .= '<p class="feriti" style="color: #fd7e14; font-weight: bold;">🚑 ' . $feriti . ' ' . _n('ferito', 'feriti', $feriti, 'incidenti-stradali') . '</p>';
-                    }
-                }
-                
-                $popup_content .= '</div>';
-                
-                $markers[] = array(
-                    'lat' => floatval($lat),
-                    'lng' => floatval($lng),
-                    'morti' => $morti,
-                    'feriti' => $feriti,
-                    'popup' => $popup_content,
-                    'id' => $post_id
-                );
-                
-                // Update statistics (resto del codice rimane uguale...)
-                $stats['totale']++;
-                $stats['morti'] += $morti;
-                $stats['feriti'] += $feriti;
-                if ($morti == 0 && $feriti == 0) $stats['solo_danni']++;
-            }
-            
-            // Generate stats HTML (resto rimane uguale...)
-            $stats_html = '<div class="map-stats-summary">';
-            $stats_html .= '<span>' . sprintf(__('Totale: %d incidenti', 'incidenti-stradali'), $stats['totale']) . '</span>';
-            $stats_html .= '<span class="morti">' . sprintf(__('Morti: %d', 'incidenti-stradali'), $stats['morti']) . '</span>';
-            $stats_html .= '<span class="feriti">' . sprintf(__('Feriti: %d', 'incidenti-stradali'), $stats['feriti']) . '</span>';
-            $stats_html .= '<span>' . sprintf(__('Solo danni: %d', 'incidenti-stradali'), $stats['solo_danni']) . '</span>';
-            $stats_html .= '</div>';
-            
-            /* wp_send_json_success(array(
-                'markers' => $markers,
-                'stats' => $stats,
-                'stats_html' => $stats_html
-            )); */
-            // Calcola totale pagine
-            $total_query = new WP_Query(array_merge($args, array(
-                'posts_per_page' => -1,
-                'fields' => 'ids'
-            )));
-            $total_posts = $total_query->found_posts;
-            $total_pages = ceil($total_posts / $per_page);
-
-            wp_send_json_success(array(
-                'markers' => $markers,
-                'stats' => $stats,
-                'stats_html' => $stats_html,
-                'pagination' => array(
-                    'current_page' => $page,
-                    'total_pages' => $total_pages,
-                    'total_posts' => $total_posts,
-                    'per_page' => $per_page,
-                    'has_more' => ($page < $total_pages)
+        if (!empty($filters['indirizzo'])) {
+            $search_term = sanitize_text_field($filters['indirizzo']);
+            $args['meta_query'][] = array(
+                'relation' => 'OR',
+                array(
+                    'key' => 'denominazione_strada',
+                    'value' => $search_term,
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => 'numero_strada',
+                    'value' => $search_term,
+                    'compare' => 'LIKE'
                 )
-            ));
+            );
+        }
+
+        // Filtro tipologia infortunati (torna come prima, post-query)
+        $filtro_infortunati_attivo = !empty($filters['tipologia_infortunati']) ? $filters['tipologia_infortunati'] : false;
+        
+        // **OTTIMIZZAZIONE 2**: Esegui una sola query e usa found_posts
+        $query = new WP_Query($args);
+        $incidenti = $query->posts;
+        
+        $markers = array();
+        $stats = array('totale' => 0, 'morti' => 0, 'feriti' => 0, 'solo_danni' => 0);
+        
+        // **OTTIMIZZAZIONE 3**: Pre-carica tutti i meta in una volta
+        if (!empty($incidenti)) {
+            update_meta_cache('post', wp_list_pluck($incidenti, 'ID'));
+        }
+        
+        foreach ($incidenti as $incidente) {
+            $post_id = $incidente->ID;
+            
+            // **OTTIMIZZAZIONE 4**: Prendi tutti i meta di questo post in una volta
+            $all_meta = get_post_meta($post_id);
+            
+            $lat = isset($all_meta['latitudine'][0]) ? $all_meta['latitudine'][0] : '';
+            $lng = isset($all_meta['longitudine'][0]) ? $all_meta['longitudine'][0] : '';
+            
+            if (empty($lat) || empty($lng)) continue;
+            
+            // Calcola morti e feriti (versione ottimizzata)
+            $morti = 0;
+            $feriti = 0;
+
+            // Count drivers casualties
+            for ($i = 1; $i <= 3; $i++) {
+                $esito = isset($all_meta['conducente_' . $i . '_esito'][0]) ? $all_meta['conducente_' . $i . '_esito'][0] : '';
+                if ($esito == '3' || $esito == '4') $morti++;
+                if ($esito == '2') $feriti++;
+            }
+
+            // Count pedestrians casualties
+            $num_pedoni = isset($all_meta['numero_pedoni_coinvolti'][0]) ? intval($all_meta['numero_pedoni_coinvolti'][0]) : 0;
+            for ($i = 1; $i <= $num_pedoni; $i++) {
+                $esito = isset($all_meta['pedone_' . $i . '_esito'][0]) ? $all_meta['pedone_' . $i . '_esito'][0] : '';
+                if ($esito == '3' || $esito == '4') $morti++;
+                if ($esito == '2') $feriti++;
+            }
+
+            // Count passengers casualties
+            for ($i = 1; $i <= 3; $i++) {
+                $num_trasportati = isset($all_meta['veicolo_' . $i . '_numero_trasportati'][0]) ? intval($all_meta['veicolo_' . $i . '_numero_trasportati'][0]) : 0;
+                for ($j = 1; $j <= $num_trasportati && $j <= 4; $j++) {
+                    $esito = isset($all_meta['veicolo_' . $i . '_trasportato_' . $j . '_esito'][0]) ? $all_meta['veicolo_' . $i . '_trasportato_' . $j . '_esito'][0] : '';
+                    if ($esito == '3' || $esito == '4') $morti++;
+                    if ($esito == '2') $feriti++;
+                }
+            }
+
+            // Conta altri morti e feriti per veicolo
+            for ($i = 1; $i <= 3; $i++) {
+                $altri_morti_m = isset($all_meta['veicolo_' . $i . '_altri_morti_maschi'][0]) ? intval($all_meta['veicolo_' . $i . '_altri_morti_maschi'][0]) : 0;
+                $altri_morti_f = isset($all_meta['veicolo_' . $i . '_altri_morti_femmine'][0]) ? intval($all_meta['veicolo_' . $i . '_altri_morti_femmine'][0]) : 0;
+                $altri_feriti_m = isset($all_meta['veicolo_' . $i . '_altri_feriti_maschi'][0]) ? intval($all_meta['veicolo_' . $i . '_altri_feriti_maschi'][0]) : 0;
+                $altri_feriti_f = isset($all_meta['veicolo_' . $i . '_altri_feriti_femmine'][0]) ? intval($all_meta['veicolo_' . $i . '_altri_feriti_femmine'][0]) : 0;
+                
+                $morti += $altri_morti_m + $altri_morti_f;
+                $feriti += $altri_feriti_m + $altri_feriti_f;
+            }
+
+            // Conta altri veicoli generali
+            $altri_morti_m_gen = isset($all_meta['altri_morti_maschi'][0]) ? intval($all_meta['altri_morti_maschi'][0]) : 0;
+            $altri_morti_f_gen = isset($all_meta['altri_morti_femmine'][0]) ? intval($all_meta['altri_morti_femmine'][0]) : 0;
+            $altri_feriti_m_gen = isset($all_meta['altri_feriti_maschi'][0]) ? intval($all_meta['altri_feriti_maschi'][0]) : 0;
+            $altri_feriti_f_gen = isset($all_meta['altri_feriti_femmine'][0]) ? intval($all_meta['altri_feriti_femmine'][0]) : 0;
+
+            $morti += $altri_morti_m_gen + $altri_morti_f_gen;
+            $feriti += $altri_feriti_m_gen + $altri_feriti_f_gen;
+
+            // Applica filtro tipologia infortunati
+            if ($filtro_infortunati_attivo) {
+                $include_incident = false;
+                
+                switch ($filtro_infortunati_attivo) {
+                    case 'con_morti':
+                        $include_incident = ($morti > 0);
+                        break;
+                        
+                    case 'solo_morti':
+                        $include_incident = ($morti > 0 && $feriti == 0);
+                        break;
+                        
+                    case 'con_feriti':
+                        $include_incident = ($feriti > 0);
+                        break;
+                        
+                    case 'solo_feriti':
+                        $include_incident = ($feriti > 0 && $morti == 0);
+                        break;
+                        
+                    case 'morti_e_feriti':
+                        $include_incident = ($morti > 0 && $feriti > 0);
+                        break;
+                        
+                    case 'morti_o_feriti':
+                        $include_incident = ($morti > 0 || $feriti > 0);
+                        break;
+                        
+                    case 'senza_infortunati':
+                        $include_incident = ($morti == 0 && $feriti == 0);
+                        break;
+                        
+                    default:
+                        $include_incident = true;
+                }
+                
+                if (!$include_incident) {
+                    continue;
+                }
+            }
+            
+            // Recupera altri dati usando l'array $all_meta
+            $data = isset($all_meta['data_incidente'][0]) ? $all_meta['data_incidente'][0] : '';
+            $ora = isset($all_meta['ora_incidente'][0]) ? $all_meta['ora_incidente'][0] : '';
+            $minuti = isset($all_meta['minuti_incidente'][0]) ? $all_meta['minuti_incidente'][0] : '00';
+            $comune_codice = isset($all_meta['comune_incidente'][0]) ? $all_meta['comune_incidente'][0] : '';
+            $organo_rilevazione = isset($all_meta['organo_rilevazione'][0]) ? $all_meta['organo_rilevazione'][0] : '';
+            
+            // Get nome comune e organo
+            $nome_comune = $this->get_nome_comune_from_codice($comune_codice);
+            $organo_desc = $this->get_organo_rilevazione_description($organo_rilevazione);
+            
+            // Format data italiana
+            $data_italiana = '';
+            if ($data) {
+                $data_italiana = date('d/m/Y', strtotime($data));
+            }
+            
+            // Format ora
+            $ora_formattata = $ora . ':' . $minuti;
+            
+            // Generate popup content (mantiene HTML come prima)
+            $popup_content = '<div class="incidente-popup">';
+            
+            $edit_link = get_edit_post_link($post_id);
+            $popup_content .= '<h4><a href="' . esc_url($edit_link) . '" target="_blank" style="color: #0073aa; text-decoration: none;">';
+            $popup_content .= '#' . str_pad($post_id, 4, '0', STR_PAD_LEFT) . ': ' . esc_html($incidente->post_title);
+            $popup_content .= '</a></h4>';
+            
+            $popup_content .= '<p><strong>📅 Data/Ora:</strong> ' . $data_italiana . ' ' . $ora_formattata . '</p>';
+            $popup_content .= '<p><strong>🏛️ Comune:</strong> ' . esc_html($nome_comune) . '</p>';
+            $popup_content .= '<p><strong>👮 Ente:</strong> ' . esc_html($organo_desc) . '</p>';
+            $popup_content .= '<p><strong>📍 Coordinate:</strong> ' . number_format(floatval($lat), 6) . ', ' . number_format(floatval($lng), 6) . '</p>';
+            
+            if ($morti > 0 || $feriti > 0) {
+                $popup_content .= '<hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">';
+                if ($morti > 0) {
+                    $popup_content .= '<p class="morti" style="color: #d63384; font-weight: bold;">💀 ' . $morti . ' ' . _n('morto', 'morti', $morti, 'incidenti-stradali') . '</p>';
+                }
+                if ($feriti > 0) {
+                    $popup_content .= '<p class="feriti" style="color: #fd7e14; font-weight: bold;">🚑 ' . $feriti . ' ' . _n('ferito', 'feriti', $feriti, 'incidenti-stradali') . '</p>';
+                }
+            }
+            
+            $popup_content .= '</div>';
+            
+            $markers[] = array(
+                'lat' => floatval($lat),
+                'lng' => floatval($lng),
+                'morti' => $morti,
+                'feriti' => $feriti,
+                'popup' => $popup_content,
+                'id' => $post_id
+            );
+            
+            // Update statistics
+            $stats['totale']++;
+            $stats['morti'] += $morti;
+            $stats['feriti'] += $feriti;
+            if ($morti == 0 && $feriti == 0) $stats['solo_danni']++;
+        }
+        
+        // Generate stats HTML
+        $stats_html = '<div class="map-stats-summary">';
+        $stats_html .= '<span>' . sprintf(__('Totale: %d incidenti', 'incidenti-stradali'), $stats['totale']) . '</span>';
+        $stats_html .= '<span class="morti">' . sprintf(__('Morti: %d', 'incidenti-stradali'), $stats['morti']) . '</span>';
+        $stats_html .= '<span class="feriti">' . sprintf(__('Feriti: %d', 'incidenti-stradali'), $stats['feriti']) . '</span>';
+        $stats_html .= '<span>' . sprintf(__('Solo danni: %d', 'incidenti-stradali'), $stats['solo_danni']) . '</span>';
+        $stats_html .= '</div>';
+        
+        // **OTTIMIZZAZIONE 5**: Usa found_posts della query già eseguita
+        $total_posts = $query->found_posts;
+        $total_pages = ceil($total_posts / $per_page);
+
+        $response = array(
+            'markers' => $markers,
+            'stats' => $stats,
+            'stats_html' => $stats_html,
+            'pagination' => array(
+                'current_page' => $page,
+                'total_pages' => $total_pages,
+                'total_posts' => $total_posts,
+                'per_page' => $per_page,
+                'has_more' => ($page < $total_pages)
+            )
+        );
+        
+        // **OTTIMIZZAZIONE 6**: Cache per 5 minuti
+        set_transient($cache_key, $response, 5 * MINUTE_IN_SECONDS);
+        
+        wp_send_json_success($response);
+    }
+
+    public function invalida_cache_markers($post_id) {
+        if (get_post_type($post_id) !== 'incidente_stradale') {
+            return;
+        }
+        
+        global $wpdb;
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_incidenti_markers_%'");
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_incidenti_markers_%'");
     }
 
     public function debug_meta_fields() {

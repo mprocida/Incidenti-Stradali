@@ -365,11 +365,7 @@ class IncidentiShortcodes {
                     success: function(response) {
                         isLoading = false;
                         
-                        //test timing
-                        var start = performance.now();
                         if (response.success) {
-                            //test timing
-                            //var start = performance.now();
 
                             var data = response.data;
                             var pagination = data.pagination;
@@ -388,9 +384,6 @@ class IncidentiShortcodes {
                                 markersLayer.addLayer(leafletMarker);
                                 allMarkers.push(marker);
                             });
-                            //test timing
-                            /* var end = performance.now();
-                            console.log("Eccolo: " + (end-start)); */
                             
                             globalStats.totale += data.stats.totale;
                             globalStats.morti += data.stats.morti;
@@ -415,15 +408,12 @@ class IncidentiShortcodes {
                                         console.log('Bounds error:', e);
                                     }
                                 }
-                                console.log('Caricamento completato: ' + allMarkers.length + ' incidenti');
+                                //console.log('Caricamento completato: ' + allMarkers.length + ' incidenti');
                             }
                         } else {
                             hideProgress();
                             console.error('Error loading markers:', response.data);
                         }
-                        //test timing
-                        var end = performance.now();
-                        console.log("Eccolo: " + (end-start));
                     },
                     error: function(xhr, status, error) {
                         isLoading = false;
@@ -486,31 +476,11 @@ class IncidentiShortcodes {
                     $('#' + mapId + '-custom-dates').show();
                 } else {
                     $('#' + mapId + '-custom-dates').hide();
-                    loadMarkers(1, true);
                 }
             });
 
-            $('#' + mapId + '-comune-filter').on('change', function() { loadMarkers(1, true); });
-            $('#' + mapId + '-tipologia-strada-filter').on('change', function() { loadMarkers(1, true); });
-            $('#' + mapId + '-tipologia-infortunati-filter').on('change', function() { loadMarkers(1, true); });
-
-            var indirizzoTimeout;
-            $('#' + mapId + '-indirizzo-filter').on('input', function() {
-                clearTimeout(indirizzoTimeout);
-                indirizzoTimeout = setTimeout(function() {
-                    loadMarkers(1, true);
-                }, 500);
-            });
-
-            $('#' + mapId + '-data-inizio, #' + mapId + '-data-fine').on('change', function() {
-                if ($('#' + mapId + '-periodo-filter').val() === 'custom') {
-                    loadMarkers(1, true);
-                }
-            });
-
-            $('#' + mapId + '-indirizzo-filter').on('keypress', function(e) {
-                if (e.which === 13) { loadMarkers(1, true); }
-            });
+            // Load initial markers - QUESTA RIGA DEVE RIMANERE!
+            loadMarkers(1, true);
 
             // Load initial markers
             loadMarkers(1, true);

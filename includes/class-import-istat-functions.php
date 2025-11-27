@@ -1,9 +1,9 @@
 <?php
 /**
- * Incidenti Import Functions
+ * Incidenti Import ISTAT Functions - VERSIONE ULTRA-OTTIMIZZATA
  * 
  * @package IncidentiStradali
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 if (!defined('ABSPATH')) {
@@ -11,7 +11,14 @@ if (!defined('ABSPATH')) {
 }
 
 class IncidentiIstatImportFunctions {
-        private function get_comune_name($codice) {
+    
+    /**
+     * Cache per controllo duplicati ottimizzato
+     */
+    private $duplicate_cache = array();
+    private $duplicate_cache_loaded = false;
+    
+    private function get_comune_name($codice) {
         $comuni = array(
             '002' => 'Alessano', '003' => 'Alezio', '004' => 'Alliste', '005' => 'Andrano',
             '006' => 'Aradeo', '007' => 'Arnesano', '008' => 'Bagnolo Del Salento', '009' => 'Botrugno',
@@ -43,6 +50,10 @@ class IncidentiIstatImportFunctions {
     }
 
     public function __construct() {
+        // Aumenta limiti PHP per import pesanti
+        @ini_set('memory_limit', '512M');
+        @ini_set('max_execution_time', '600');
+        
         add_action('admin_menu', array($this, 'add_import_istat_menu'), 22);
         add_action('admin_post_import_incidenti_istat_txt', array($this, 'handle_txt_import'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts')); 
@@ -53,12 +64,12 @@ class IncidentiIstatImportFunctions {
      */
     public function add_import_istat_menu() {
         add_submenu_page(
-            'edit.php?post_type=incidente_stradale',           // Parent menu
-            __('Importa ISTAT', 'incidenti-stradali'),         // Page title
-            __('Importa ISTAT', 'incidenti-stradali'),         // Menu title
-            'edit_posts',                                       // Capability
-            'incidenti-import-istat',                          // Menu slug (UNICO)
-            array($this, 'import_page')                  // Callback function
+            'edit.php?post_type=incidente_stradale',
+            __('Importa ISTAT', 'incidenti-stradali'),
+            __('Importa ISTAT', 'incidenti-stradali'),
+            'edit_posts',
+            'incidenti-import-istat',
+            array($this, 'import_page')
         );
     }
     
@@ -69,16 +80,9 @@ class IncidentiIstatImportFunctions {
         if (!current_user_can('edit_posts')) {
             wp_die(__('Non hai i permessi per accedere a questa pagina.', 'incidenti-stradali'));
         }
-        // Messaggi di risultato
+        
         $message = '';
         $message_type = '';
-        
-        /* if (isset($_GET['imported'])) {
-            $imported = intval($_GET['imported']);
-            $errors = intval($_GET['errors']);
-            $message = sprintf(__('Importazione completata: %d incidenti importati, %d errori.', 'incidenti-stradali'), $imported, $errors);
-            $message_type = $errors > 0 ? 'warning' : 'success';
-        } */
 
         if (isset($_GET['imported'])) {
             $imported = intval($_GET['imported']);
@@ -92,7 +96,7 @@ class IncidentiIstatImportFunctions {
                 $duplicate_count = count($duplicate_codes);
                 $message .= ' ' . sprintf(__('%d incidenti non importati perché duplicati (codici: %s).', 'incidenti-stradali'), 
                     $duplicate_count, 
-                    implode(', ', array_slice($duplicate_codes, 0, 10)) // Mostra max 10 codici
+                    implode(', ', array_slice($duplicate_codes, 0, 10))
                 );
             }
             
@@ -125,18 +129,12 @@ class IncidentiIstatImportFunctions {
             return;
         }
         
-        $separator = sanitize_text_field($_POST['separator']);
         $result = $this->process_txt_file($uploaded_file);
         
         // Cleanup uploaded file
         wp_delete_file($uploaded_file);
         
         $redirect_url = admin_url('edit.php?post_type=incidente_stradale&page=incidenti-import-istat');
-        /* if ($result['success']) {
-            $redirect_url .= '&imported=' . $result['imported'] . '&errors=' . $result['errors'];
-        } else {
-            $redirect_url .= '&error=' . urlencode($result['message']);
-        } */
 
         if ($result['success']) {
             $redirect_url .= '&imported=' . $result['imported'] . '&errors=' . $result['errors'];
@@ -186,77 +184,110 @@ class IncidentiIstatImportFunctions {
     }
     
     /**
-     * Handle AJAX file upload
-     */
-    private function handle_file_upload_ajax() {
-        if (!isset($_FILES['txt_file'])) {
-            return new WP_Error('no_file', __('Nessun file selezionato.', 'incidenti-stradali'));
-        }
-        
-        return $this->handle_file_upload();
-    }
-    
-    /**
-     * Process full TXT file
+     * Process full TXT file - VERSIONE ULTRA-OTTIMIZZATA
      */
     private function process_txt_file($file_path) {      
         $handle = fopen($file_path, 'r');
         if (!$handle) {
             return array('success' => false, 'message' => __('Impossibile leggere il file.', 'incidenti-stradali'));
         }
-        
-        // Leggi header
-        /*
-        $required_fields = array('data_incidente', 'ora_incidente', 'comune_incidente', 'denominazione_strada', 'numero_veicoli_coinvolti');
-        */
+
+        // ===== OTTIMIZZAZIONI PERFORMANCE =====
+        // Disabilita revisioni durante import
+        add_filter('wp_revisions_to_keep', '__return_false');
+
+        // Disabilita altri hook che rallentano
+        remove_action('post_updated', 'wp_save_post_revision');
+        remove_action('save_post', 'wp_save_post_revision');
+
+        // Aumenta buffer lettura file
+        stream_set_chunk_size($handle, 8192);
+
+        // Disabilita term counting per velocizzare
+        wp_defer_term_counting(true);
+        wp_defer_comment_counting(true);
+
+        // Carica cache duplicati UNA VOLTA (se necessario)
+        // $this->load_duplicate_cache();
+        // ===== FINE OTTIMIZZAZIONI =====
+
         $imported = 0;
         $errors = 0;
         $duplicate_codes = array();
         $line_number = 1;
         
+        // Batch processing per ridurre pressione memoria
+        $batch_size = 100;
+        $batch = array();
+        
         while (($row = fgets($handle)) !== false) {
-            // Pulisci la riga
             $row = trim($row);
-            // Salta le righe vuote
             if (empty($row)) {
                 continue;
             }
             
-            $mapped_data = $this->map_row_data($row);   
+            $batch[] = $row;
             
-            // Controllo anti-duplicazione prima della creazione
+            // Processa batch quando raggiunge la dimensione
+            if (count($batch) >= $batch_size) {
+                foreach ($batch as $line) {
+                    $mapped_data = $this->map_row_data($line);
+                    
+                    // Controllo anti-duplicazione (commentato per ora)
+                    /* $duplicate_check = $this->check_for_duplicates($mapped_data);
+                    if ($duplicate_check['is_duplicate']) {
+                        $errors++;
+                        $duplicate_codes[] = $duplicate_check['existing_post_id'];
+                        error_log("Incidente riga $line_number non importato - duplicato di post ID: " . $duplicate_check['existing_post_id']);
+                        $line_number++;
+                        continue;
+                    } */
+                    
+                    $post_id = $this->create_incidente_from_data($mapped_data);
+                    if ($post_id) {
+                        $imported++;
+                    } else {
+                        $errors++;
+                        error_log("Errore creazione incidente riga $line_number");
+                    }
+                    $line_number++;
+                }
+                
+                $batch = array(); // Reset batch
+                
+                // Libera memoria ogni batch
+                gc_collect_cycles();
+            }
+        }
+        
+        // Processa righe rimaste nel batch
+        foreach ($batch as $line) {
+            $mapped_data = $this->map_row_data($line);
+            
             /* $duplicate_check = $this->check_for_duplicates($mapped_data);
             if ($duplicate_check['is_duplicate']) {
                 $errors++;
                 $duplicate_codes[] = $duplicate_check['existing_post_id'];
                 error_log("Incidente riga $line_number non importato - duplicato di post ID: " . $duplicate_check['existing_post_id']);
                 $line_number++;
-                continue; // Salta alla prossima riga
+                continue;
             } */
-
-            /*
-            $validation_result = $this->validate_row_data($mapped_data);
-            */
-            /* *
-            if ($validation_result['valid']) {
-           */ /***/    
-           $post_id = $this->create_incidente_from_data($mapped_data);
-                if ($post_id) {
-                    $imported++;
-                } else {
-                    $errors++;
-                    error_log("Errore creazione incidente riga $line_number");
-                }
-
-                /***/
-        /*    } else {
+            
+            $post_id = $this->create_incidente_from_data($mapped_data);
+            if ($post_id) {
+                $imported++;
+            } else {
                 $errors++;
-                error_log("Errore validazione riga $line_number: " . implode(', ', $validation_result['errors']));
+                error_log("Errore creazione incidente riga $line_number");
             }
-           * */
-             $line_number++;
-
+            $line_number++;
         }
+
+        // ===== RIABILITA TUTTO =====
+        remove_filter('wp_revisions_to_keep', '__return_false');
+        wp_defer_term_counting(false);
+        wp_defer_comment_counting(false);
+        // ===== FINE RIABILITAZIONE =====
 
         fclose($handle);
         
@@ -269,47 +300,72 @@ class IncidentiIstatImportFunctions {
     }
 
     /**
-     * Check for duplicate incidents based on key fields
+     * Carica cache duplicati UNA VOLTA
      */
-    private function check_for_duplicates($data) {
+    private function load_duplicate_cache() {
         global $wpdb;
         
-        $data_incidente = $data['data_incidente'];
-        $ora_incidente = trim($data['ora_incidente']);
-        $comune_incidente = $data['comune_incidente'];
-        $latitudine = $data['latitudine'];
-        $longitudine = $data['longitudine'];
+        error_log("Caricamento cache duplicati in memoria...");
         
-        // Query per cercare incidenti con gli stessi campi chiave
-        $query = "
-            SELECT p.ID 
+        $results = $wpdb->get_results("
+            SELECT 
+                p.ID,
+                MAX(CASE WHEN pm.meta_key = 'data_incidente' THEN pm.meta_value END) as data_inc,
+                MAX(CASE WHEN pm.meta_key = 'ora_incidente' THEN pm.meta_value END) as ora_inc,
+                MAX(CASE WHEN pm.meta_key = 'comune_incidente' THEN pm.meta_value END) as comune_inc,
+                MAX(CASE WHEN pm.meta_key = 'latitudine' THEN pm.meta_value END) as lat,
+                MAX(CASE WHEN pm.meta_key = 'longitudine' THEN pm.meta_value END) as lng
             FROM {$wpdb->posts} p
-            INNER JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'data_incidente'
-            INNER JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'ora_incidente'  
-            INNER JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = 'comune_incidente'
-            INNER JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = 'latitudine'
-            INNER JOIN {$wpdb->postmeta} pm5 ON p.ID = pm5.post_id AND pm5.meta_key = 'longitudine'
+            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
             WHERE p.post_type = 'incidente_stradale'
             AND p.post_status = 'publish'
-            AND pm1.meta_value = %s
-            AND pm2.meta_value = %s
-            AND pm3.meta_value = %s
-            AND pm4.meta_value = %s
-            AND pm5.meta_value = %s
-            LIMIT 1
-        ";
+            AND pm.meta_key IN ('data_incidente', 'ora_incidente', 'comune_incidente', 'latitudine', 'longitudine')
+            GROUP BY p.ID
+        ", ARRAY_A);
         
-        $existing_post_id = $wpdb->get_var($wpdb->prepare($query, 
-            $data_incidente, 
-            $ora_incidente, 
-            $comune_incidente,
-            $latitudine,
-            $longitudine
-        ));
-            
+        foreach ($results as $row) {
+            $cache_key = sprintf(
+                '%s_%s_%s_%s_%s',
+                $row['data_inc'],
+                trim($row['ora_inc']),
+                $row['comune_inc'],
+                $row['lat'],
+                $row['lng']
+            );
+            $this->duplicate_cache[$cache_key] = $row['ID'];
+        }
+        
+        $this->duplicate_cache_loaded = true;
+        error_log("Cache duplicati caricata: " . count($this->duplicate_cache) . " incidenti");
+    }
+
+    /**
+     * Check for duplicate incidents - VERSIONE OTTIMIZZATA
+     */
+    private function check_for_duplicates($data) {
+        if (!$this->duplicate_cache_loaded) {
+            $this->load_duplicate_cache();
+        }
+        
+        $cache_key = sprintf(
+            '%s_%s_%s_%s_%s',
+            $data['data_incidente'],
+            trim($data['ora_incidente']),
+            $data['comune_incidente'],
+            $data['latitudine'],
+            $data['longitudine']
+        );
+        
+        if (isset($this->duplicate_cache[$cache_key])) {
+            return array(
+                'is_duplicate' => true,
+                'existing_post_id' => $this->duplicate_cache[$cache_key]
+            );
+        }
+        
         return array(
-            'is_duplicate' => !empty($existing_post_id),
-            'existing_post_id' => $existing_post_id
+            'is_duplicate' => false,
+            'existing_post_id' => null
         );
     }
      
@@ -321,7 +377,6 @@ class IncidentiIstatImportFunctions {
             "data_incidente" => "0000-00-00",
             "provincia_incidente" => "000",
             "comune_incidente" => "000",
-           // "post_id" => "0000",
             "organo_rilevazione" => " ",
             "organo_coordinatore" => " ",
             "tipo_strada" => " ",
@@ -335,21 +390,18 @@ class IncidentiIstatImportFunctions {
             "segnaletica_strada" => " ",
             "condizioni_meteo" => " ",
             "dettaglio_natura" => "  ",
-            //4. Tipo di veicoli coinvolti
             "veicolo_1_tipo" => "  ",
             "veicolo_2_tipo" => "  ",
             "veicolo_3_tipo" => "  ",
             "veicolo_1_peso_totale" => "    ",
             "veicolo_2_peso_totale" => "    ",
             "veicolo_3_peso_totale" => "    ",
-            //5. Circostanze accertate o presunte dell'incidente
             "circostanza_veicolo_a" => "  ",
             "difetto_veicolo_a" => "  ",
             "stato_psicofisico_a" => "  ",
             "circostanza_veicolo_b" => "  ",
             "difetto_veicolo_b" => "  ",
             "stato_psicofisico_b" => "  ",
-            //6. Veicoli coinvolti
             "veicolo_1_targa" => "        ",
             "veicolo_1_sigla_estero" => "   ",
             "veicolo_1_anno_immatricolazione" => "  ",
@@ -359,15 +411,12 @@ class IncidentiIstatImportFunctions {
             "veicolo_3_targa" => "        ",
             "veicolo_3_sigla_estero" => "   ",
             "veicolo_3_anno_immatricolazione" => "  ",
-            // 7. Conseguenze dell'incidente alle persone
-            // Veicolo A: conducente
             "conducente_1_eta" => "  ",
             "conducente_1_sesso" => " ",
             "conducente_1_esito" => " ",
             "conducente_1_tipo_patente" => " ",
             "conducente_1_anno_patente" => "  ",
             "conducente_1_tipologia_incidente" => " ",
-            // Passeggeri veicolo A
             "veicolo_1_trasportato_1_esito" => " ",
             "veicolo_1_trasportato_1_eta" => "  ",
             "veicolo_1_trasportato_1_sesso" => " ",
@@ -380,19 +429,16 @@ class IncidentiIstatImportFunctions {
             "veicolo_1_trasportato_4_esito" => " ",
             "veicolo_1_trasportato_4_eta" => "  ",
             "veicolo_1_trasportato_4_sesso" => " ",
-            // Altri passeggeri infortunati sul veicolo A
             "veicolo_1_altri_morti_maschi" => "  ",
             "veicolo_1_altri_morti_femmine" => "  ",
             "veicolo_1_altri_feriti_maschi" => "  ",
             "veicolo_1_altri_feriti_femmine" => "  ",
-            // Veicolo B: conducente
             "conducente_2_eta" => "  ",
             "conducente_2_sesso" => " ",
             "conducente_2_esito" => " ",
             "conducente_2_tipo_patente" => " ",
             "conducente_2_anno_patente" => "  ",
             "conducente_2_tipologia_incidente" => " ",
-            // Passeggeri veicolo B
             "veicolo_2_trasportato_1_esito" => " ",
             "veicolo_2_trasportato_1_eta" => "  ",
             "veicolo_2_trasportato_1_sesso" => " ",
@@ -405,19 +451,16 @@ class IncidentiIstatImportFunctions {
             "veicolo_2_trasportato_4_esito" => " ",
             "veicolo_2_trasportato_4_eta" => "  ",
             "veicolo_2_trasportato_4_sesso" => " ",
-            // Altri passeggeri infortunati sul veicolo B
             "veicolo_2_altri_morti_maschi" => "  ",
             "veicolo_2_altri_morti_femmine" => "  ",
             "veicolo_2_altri_feriti_maschi" => "  ",
             "veicolo_2_altri_feriti_femmine" => "  ",
-            // Veicolo C: conducente
             "conducente_3_eta" => "  ",
             "conducente_3_sesso" => " ",
             "conducente_3_esito" => " ",
             "conducente_3_tipo_patente" => " ",
             "conducente_3_anno_patente" => "  ",
             "conducente_3_tipologia_incidente" => " ",
-            // Passeggeri veicolo C
             "veicolo_3_trasportato_1_esito" => " ",
             "veicolo_3_trasportato_1_eta" => "  ",
             "veicolo_3_trasportato_1_sesso" => " ",
@@ -430,13 +473,10 @@ class IncidentiIstatImportFunctions {
             "veicolo_3_trasportato_4_esito" => " ",
             "veicolo_3_trasportato_4_eta" => "  ",
             "veicolo_3_trasportato_4_sesso" => " ",
-            // Altri passeggeri infortunati sul veicolo C
             "veicolo_3_altri_morti_maschi" => "  ",
             "veicolo_3_altri_morti_femmine" => "  ",
             "veicolo_3_altri_feriti_maschi" => "  ",
             "veicolo_3_altri_feriti_femmine" => "  ",
-
-            // Pedoni coinvolti
             "pedone_morto_1_sesso" => "  ",
             "pedone_morto_1_eta" => "  ",
             "pedone_morto_2_sesso" => "  ",
@@ -453,24 +493,15 @@ class IncidentiIstatImportFunctions {
             "pedone_ferito_3_eta" => "  ",
             "pedone_ferito_4_sesso" => "  ",
             "pedone_ferito_4_eta" => "  ",
-
-            // Altri veicoli coinvolti altre ai veicoli A, B e C, e persone infortunate
             "numero_altri_veicoli" => "  ",
             "altri_morti_maschi" => "  ",
             "altri_morti_femmine" => "  ",
             "altri_feriti_maschi" => "  ",
             "altri_feriti_femmine" => "  ",
-
-            // Riepilogo infortunati
             "riepilogo_morti_24h" => "  ",
             "riepilogo_morti_2_30gg" => "  ",
             "riepilogo_feriti" => "  ",
-            //$mapped_data[""] = trim(mb_substr($row, 284, 9));
-
-            // Specifiche sulla denominazione della strada
             "denominazione_strada" => "",
-
-            // Specifiche per l'inserimento del nome e cognome dei morti
             "morto_1_nome" => "",
             "morto_1_cognome" => "",
             "morto_2_nome" => "",   
@@ -479,8 +510,6 @@ class IncidentiIstatImportFunctions {
             "morto_3_cognome" => "",
             "morto_4_nome" => "",
             "morto_4_cognome" => "",
-
-            //Specifiche per l'inserimento del nome, cognome e luogo di ricovero dei feriti
             "ferito_1_nome" => "",
             "ferito_1_cognome" => "",
             "ferito_1_istituto" => "",
@@ -505,14 +534,10 @@ class IncidentiIstatImportFunctions {
             "ferito_8_nome" => "",
             "ferito_8_cognome" => "",
             "ferito_8_istituto" => "",
-            //"spazio_istat_1" => "",
-
-            // Specifiche per la georeferenziazione 
             "tipo_coordinata" => "1",
             "sistema_di_proiezione" => "2",
             "longitudine" => "",
             "latitudine" => "",
-            //"spazio_istat_2" => " ",
             "ora_incidente" => "",
             "minuti_incidente" => "",
             "codice_carabinieri" => "",
@@ -521,23 +546,15 @@ class IncidentiIstatImportFunctions {
             "veicolo_1_cilindrata" => "",
             "veicolo_2_cilindrata" => "",
             "veicolo_3_cilindrata" => "",
-            //"spazio_istat_3" => "",
             "localizzazione_extra_ab" => "",
             "localita_incidente" => "",
-
-            // Riservato agli Enti in convenzione con Istat
             "codice__ente" => "",
-            //"spazio_istat_4" => "",
-
-            // Specifiche per la registrazione delle informazioni sulla Cittadinanza dei conducenti dei veicoli A, B e C 1781-1882 
             "conducente_1_nazionalita" => "",
             "conducente_1_nazionalita_altro" => "",
             "conducente_2_nazionalita" => "",
             "conducente_2_nazionalita_altro" => "",
             "conducente_3_nazionalita" => "",
             "conducente_3_nazionalita_altro" => "",
-
-            // Nuove variabili 2020
             "veicolo_1_tipo_rimorchio" => "",
             "veicolo_1_targa_rimorchio" => "",
             "veicolo_2_tipo_rimorchio" => "",
@@ -545,7 +562,6 @@ class IncidentiIstatImportFunctions {
             "veicolo_3_tipo_rimorchio" => "",
             "veicolo_3_targa_rimorchio" => "",
             "codice_strada_aci" => "",
-            // DA CALCOLARE
             "ente_rilevatore" => "",
             "natura_incidente" => "A",
             "numero_veicoli_coinvolti" => "1",
@@ -567,22 +583,21 @@ class IncidentiIstatImportFunctions {
             "veicolo_3_trasportato_3_sedile" => "",
             "veicolo_3_trasportato_4_sedile" => "",
         );
+        
         $numero_veicoli_coinvolti = 0;
         $numero_pedoni_feriti = 0;
         $numero_pedoni_morti = 0;
 
         mb_internal_encoding("UTF-8");
-        
 
-        // Estrai i campi dal tracciato (esempio con campi fissi)
+        // Estrai i campi dal tracciato
         $data_incidente_anno = trim(mb_substr($row, 0, 2));
         $data_incidente_mese = trim(mb_substr($row, 2, 2));
         $mapped_data["provincia_incidente"] = trim(mb_substr($row, 4, 3));
         $mapped_data["comune_incidente"] = trim(mb_substr($row, 7, 3));
-        //$mapped_data["post_id"] = trim(mb_substr($row, 10, 4));
         $data_incidente_giorno = trim(mb_substr($row, 14, 2));
-        //$mapped_data[""] = trim(mb_substr($row, 16, 2));
         $mapped_data["organo_rilevazione"] = trim(mb_substr($row, 18, 1));
+        
         if($mapped_data["organo_rilevazione"] == "1") {
             $mapped_data["ente_rilevatore"] = "Agente di Polizia stradale";
         } elseif($mapped_data["organo_rilevazione"] == "2") {
@@ -596,13 +611,12 @@ class IncidentiIstatImportFunctions {
         } elseif($mapped_data["organo_rilevazione"] == "6") {
             $mapped_data["ente_rilevatore"] = "Agente di Polizia provinciale";
         }
-        //$mapped_data[""] = trim(mb_substr($row, 19, 5));
+        
         $mapped_data["organo_coordinatore"] = trim(mb_substr($row, 24, 1));
         $mapped_data["tipo_strada"] = trim(mb_substr($row, 25, 1));
         $mapped_data["numero_strada"] = trim(mb_substr($row, 26, 3));
         $mapped_data["illuminazione"] = trim(mb_substr($row, 29, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 30, 2));
-        $mapped_data["tronco_strada"] =  str_replace("0","",trim(mb_substr($row, 32, 2)));    
+        $mapped_data["tronco_strada"] = str_replace("0","",trim(mb_substr($row, 32, 2)));    
         $mapped_data["geometria_strada"] = trim(mb_substr($row, 34, 1));
         $mapped_data["pavimentazione_strada"] = trim(mb_substr($row, 35, 1));
         $mapped_data["intersezione_tronco"] = str_replace("0","",trim(mb_substr($row, 36, 2)));
@@ -610,6 +624,7 @@ class IncidentiIstatImportFunctions {
         $mapped_data["segnaletica_strada"] = trim(mb_substr($row, 39, 1));
         $mapped_data["condizioni_meteo"] = trim(mb_substr($row, 40, 1));
         $mapped_data["dettaglio_natura"] = trim(mb_substr($row, 41, 2));
+        
         if (preg_match('/^(01|02|03|04)$/', $mapped_data["dettaglio_natura"])) {
             $mapped_data["natura_incidente"] = 'A';
             $mapped_data["dettaglio_natura"] = str_replace("0","",$mapped_data["dettaglio_natura"]);
@@ -622,7 +637,8 @@ class IncidentiIstatImportFunctions {
         } elseif (preg_match('/^(10|11|12)$/', $mapped_data["dettaglio_natura"])) {
             $mapped_data["natura_incidente"] = 'D';
         }
-        //4. Tipo di veicoli coinvolti
+        
+        // Tipo di veicoli coinvolti
         $mapped_data["veicolo_1_tipo"] = ltrim(trim(mb_substr($row, 43, 2)), '0');
         if ($mapped_data["veicolo_1_tipo"] !== '  ') {
             $numero_veicoli_coinvolti++;
@@ -635,16 +651,13 @@ class IncidentiIstatImportFunctions {
         if ($mapped_data["veicolo_3_tipo"] !== '  ') {
             $numero_veicoli_coinvolti++;
         }
-        //$mapped_data[""] = trim(mb_substr($row, 49, 4));
-        //$mapped_data[""] = trim(mb_substr($row, 53, 4));
-        //$mapped_data[""] = trim(mb_substr($row, 57, 4));
+        
         $mapped_data["veicolo_1_peso_totale"] = trim(mb_substr($row, 61, 4));
         $mapped_data["veicolo_2_peso_totale"] = trim(mb_substr($row, 65, 4));
         $mapped_data["veicolo_3_peso_totale"] = trim(mb_substr($row, 69, 4));
-        // calcola il numero di veicoli coinvolti
-        $mapped_data["numero_veicoli_coinvolti"] =  $numero_veicoli_coinvolti;
+        $mapped_data["numero_veicoli_coinvolti"] = $numero_veicoli_coinvolti;
 
-        //5. Circostanze accertate o presunte dell'incidente
+        // Circostanze accertate o presunte dell'incidente
         $mapped_data["circostanza_veicolo_a"] = trim(mb_substr($row, 73, 2));
         $mapped_data["difetto_veicolo_a"] = trim(mb_substr($row, 75, 2));
         $mapped_data["stato_psicofisico_a"] = trim(mb_substr($row, 77, 2));
@@ -652,24 +665,18 @@ class IncidentiIstatImportFunctions {
         $mapped_data["difetto_veicolo_b"] = trim(mb_substr($row, 81, 2));
         $mapped_data["stato_psicofisico_b"] = trim(mb_substr($row, 83, 2));
 
-        //6. Veicoli coinvolti
+        // Veicoli coinvolti
         $mapped_data["veicolo_1_targa"] = trim(mb_substr($row, 85, 8));
         $mapped_data["veicolo_1_sigla_estero"] = trim(mb_substr($row, 93, 3));
         $mapped_data["veicolo_1_anno_immatricolazione"] = trim(mb_substr($row, 96, 2));
-        //$mapped_data[""] = trim(mb_substr($row, 98, 2));
-        //$mapped_data[""] = trim(mb_substr($row, 100, 3));
         $mapped_data["veicolo_2_targa"] = trim(mb_substr($row, 103, 8));
         $mapped_data["veicolo_2_sigla_estero"] = trim(mb_substr($row, 111, 3));
         $mapped_data["veicolo_2_anno_immatricolazione"] = trim(mb_substr($row, 114, 2));
-        //$mapped_data[""] = trim(mb_substr($row, 116, 2));
-        //$mapped_data[""] = trim(mb_substr($row, 118, 3));
         $mapped_data["veicolo_3_targa"] = trim(mb_substr($row, 121, 8));
         $mapped_data["veicolo_3_sigla_estero"] = trim(mb_substr($row, 129, 3));
         $mapped_data["veicolo_3_anno_immatricolazione"] = trim(mb_substr($row, 132, 2));
-        //$mapped_data[""] = trim(mb_substr($row, 134, 2));
-        //$mapped_data[""] = trim(mb_substr($row, 136, 3));
 
-        // 7. Conseguenze dell'incidente alle persone
+        // Conseguenze dell'incidente alle persone
         // Veicolo A: conducente
         $mapped_data["conducente_1_eta"] = trim(mb_substr($row, 139, 2));
         $mapped_data["conducente_1_sesso"] = trim(mb_substr($row, 141, 1));
@@ -677,9 +684,7 @@ class IncidentiIstatImportFunctions {
         $mapped_data["conducente_1_tipo_patente"] = trim(mb_substr($row, 143, 1));
         $mapped_data["conducente_1_anno_patente"] = trim(mb_substr($row, 144, 2));
         $mapped_data["conducente_1_tipologia_incidente"] = trim(mb_substr($row, 146, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 147, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 148, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 149, 1));
+        
         // Passeggeri veicolo A
         $mapped_data["veicolo_1_trasportato_1_esito"] = trim(mb_substr($row, 150, 1));
         $mapped_data["veicolo_1_trasportato_1_eta"] = trim(mb_substr($row, 151, 2));
@@ -707,9 +712,7 @@ class IncidentiIstatImportFunctions {
         $mapped_data["conducente_2_tipo_patente"] = trim(mb_substr($row, 178, 1));
         $mapped_data["conducente_2_anno_patente"] = trim(mb_substr($row, 179, 2));
         $mapped_data["conducente_2_tipologia_incidente"] = trim(mb_substr($row, 181, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 182, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 183, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 184, 1));
+        
         // Passeggeri veicolo B
         $mapped_data["veicolo_2_trasportato_1_esito"] = trim(mb_substr($row, 185, 1));
         $mapped_data["veicolo_2_trasportato_1_eta"] = trim(mb_substr($row, 186, 2));
@@ -737,14 +740,11 @@ class IncidentiIstatImportFunctions {
         $mapped_data["conducente_3_tipo_patente"] = trim(mb_substr($row, 213, 1));
         $mapped_data["conducente_3_anno_patente"] = trim(mb_substr($row, 214, 2));
         $mapped_data["conducente_3_tipologia_incidente"] = trim(mb_substr($row, 216, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 217, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 218, 1));
-        //$mapped_data[""] = trim(mb_substr($row, 219, 1));
 
-        // Controlla i pedoni morti
-        for ($i = 1; $i <=  $numero_veicoli_coinvolti; $i++) {
+        // Controlla tipologia incidente conducenti
+        for ($i = 1; $i <= $numero_veicoli_coinvolti; $i++) {
             if (empty($mapped_data["conducente_{$i}_tipologia_incidente"])) {
-                $mapped_data["conducente_{$i}_tipologia_incidente"]="0";
+                $mapped_data["conducente_{$i}_tipologia_incidente"] = "0";
             }
         }
 
@@ -785,27 +785,30 @@ class IncidentiIstatImportFunctions {
         $mapped_data["pedone_morto_4_eta"] = trim(mb_substr($row, 263, 2));
         $mapped_data["pedone_ferito_4_sesso"] = trim(mb_substr($row, 265, 1));
         $mapped_data["pedone_ferito_4_eta"] = trim(mb_substr($row, 266, 2));
-        // Controlla i pedoni morti
+        
+        // Conta pedoni morti e feriti
         for ($i = 1; $i <= 4; $i++) {
             if (!empty($mapped_data["pedone_morto_{$i}_sesso"]) or !empty($mapped_data["pedone_morto_{$i}_eta"])) {
                 $numero_pedoni_morti++;
             }
         }
 
-        // Controlla i pedoni feriti
         for ($i = 1; $i <= 4; $i++) {
             if (!empty($mapped_data["pedone_ferito_{$i}_sesso"]) or !empty($mapped_data["pedone_ferito_{$i}_eta"])) {
                 $numero_pedoni_feriti++;
             }
         }
-        $mapped_data["numero_pedoni_feriti"] =  $numero_pedoni_feriti;
-        $mapped_data["numero_pedoni_morti"] =  $numero_pedoni_morti;
-        $veicolo_numero_trasportati = 0;
-        // Controllo i Passeggeri dei veicoli A, B e C
+        
+        $mapped_data["numero_pedoni_feriti"] = $numero_pedoni_feriti;
+        $mapped_data["numero_pedoni_morti"] = $numero_pedoni_morti;
+        
+        // Controllo passeggeri dei veicoli A, B e C
         for ($numveicolo = 1; $numveicolo <= $numero_veicoli_coinvolti; $numveicolo++) {
             $veicolo_numero_trasportati = 0;
             for ($i = 1; $i <= 4; $i++) {
-                if (!empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_esito"]) or !empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_sesso"]) or !empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_eta"])) {
+                if (!empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_esito"]) or 
+                    !empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_sesso"]) or 
+                    !empty($mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_eta"])) {
                     $veicolo_numero_trasportati++;
                     if($i == 1){
                         $mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_sedile"] = "anteriore";
@@ -813,24 +816,24 @@ class IncidentiIstatImportFunctions {
                         $mapped_data["veicolo_{$numveicolo}_trasportato_{$i}_sedile"] = "posteriore";
                     }
                 }
-                $mapped_data["veicolo_{$numveicolo}_numero_trasportati"] =  $veicolo_numero_trasportati;
             }
+            $mapped_data["veicolo_{$numveicolo}_numero_trasportati"] = $veicolo_numero_trasportati;
         }
-        // Altri veicoli coinvolti altre ai veicoli A, B e C, e persone infortunate Da 01 a 99
+        
+        // Altri veicoli coinvolti
         $mapped_data["numero_altri_veicoli"] = trim(mb_substr($row, 268, 2));
         $mapped_data["altri_morti_maschi"] = trim(mb_substr($row, 270, 2));
         $mapped_data["altri_morti_femmine"] = trim(mb_substr($row, 272, 2));
         $mapped_data["altri_feriti_maschi"] = trim(mb_substr($row, 274, 2));
         $mapped_data["altri_feriti_femmine"] = trim(mb_substr($row, 276, 2));
 
-        // Riepilogo infortunati 00
+        // Riepilogo infortunati
         $mapped_data["riepilogo_morti_24h"] = trim(mb_substr($row, 278, 2));
         $mapped_data["riepilogo_morti_2_30gg"] = trim(mb_substr($row, 280, 2));
         $mapped_data["riepilogo_feriti"] = trim(mb_substr($row, 282, 2));
 
         // Specifiche sulla denominazione della strada
         $mapped_data["denominazione_strada"] = trim(mb_substr($row, 293, 57));
-        //$mapped_data[""] = trim(mb_substr($row, 350, 100));
 
         // Specifiche per l'inserimento del nome e cognome dei morti
         $mapped_data["morto_1_nome"] = trim(mb_substr($row, 450, 30));
@@ -867,14 +870,12 @@ class IncidentiIstatImportFunctions {
         $mapped_data["ferito_8_nome"] = trim(mb_substr($row, 1320, 30));
         $mapped_data["ferito_8_cognome"] = trim(mb_substr($row, 1350, 30));
         $mapped_data["ferito_8_istituto"] = trim(mb_substr($row, 1380, 30));
-        //$mapped_data["spazio_istat_1"] = trim(mb_substr($row, 1410, 10));
 
         // Specifiche per la georeferenziazione 
         $mapped_data["tipo_coordinata"] = trim(mb_substr($row, 1420, 1));
         $mapped_data["sistema_di_proiezione"] = trim(mb_substr($row, 1421, 1));
         $mapped_data["longitudine"] = str_replace(",", ".", trim(mb_substr($row, 1422, 50)));
         $mapped_data["latitudine"] = str_replace(",", ".", trim(mb_substr($row, 1472, 50)));
-        //$mapped_data["spazio_istat_2"] = trim(mb_substr($row, 1522, 8));
         $mapped_data["ora_incidente"] = trim(mb_substr($row, 1530, 2));
         $mapped_data["minuti_incidente"] = trim(mb_substr($row, 1532, 2));
         $mapped_data["codice_carabinieri"] = trim(mb_substr($row, 1534, 30));
@@ -883,24 +884,21 @@ class IncidentiIstatImportFunctions {
         $mapped_data["veicolo_1_cilindrata"] = trim(mb_substr($row, 1571, 5));
         $mapped_data["veicolo_2_cilindrata"] = trim(mb_substr($row, 1576, 5));
         $mapped_data["veicolo_3_cilindrata"] = trim(mb_substr($row, 1581, 5));
-        //$mapped_data["spazio_istat_3"] = trim(mb_substr($row, 1586, 4));
         $mapped_data["localizzazione_extra_ab"] = trim(mb_substr($row, 1590, 100));
         $mapped_data["localita_incidente"] = trim(mb_substr($row, 1690, 40));
 
         // Riservato agli Enti in convenzione con Istat
         $mapped_data["codice__ente"] = trim(mb_substr($row, 1730, 40));
-        //$mapped_data["spazio_istat_4"] = trim(mb_substr($row, 1770, 10));
 
-        // Specifiche per la registrazione delle informazioni sulla Cittadinanza dei conducenti dei veicoli A, B e C 1781-1882 
-        //$mapped_data["conducente_1_italiano"] = trim(mb_substr($row, 1780, 1));
+        // Specifiche per la registrazione delle informazioni sulla Cittadinanza dei conducenti
         $mapped_data["conducente_1_nazionalita"] = trim(mb_substr($row, 1781, 3));
         $mapped_data["conducente_1_nazionalita_altro"] = trim(mb_substr($row, 1784, 30));
         $mapped_data["conducente_1_nazionalita"] = $mapped_data["conducente_1_nazionalita"] ."-" . $mapped_data["conducente_1_nazionalita_altro"];
-        //$mapped_data["conducente_2_italiano"] = trim(mb_substr($row, 1814, 1));
+        
         $mapped_data["conducente_2_nazionalita"] = trim(mb_substr($row, 1815, 3));
         $mapped_data["conducente_2_nazionalita_altro"] = trim(mb_substr($row, 1818, 30));
         $mapped_data["conducente_2_nazionalita"] = $mapped_data["conducente_2_nazionalita"] ."-" . $mapped_data["conducente_2_nazionalita_altro"];
-        //$mapped_data["conducente_3_italiano"] = trim(mb_substr($row, 1848, 1));
+        
         $mapped_data["conducente_3_nazionalita"] = trim(mb_substr($row, 1849, 3));
         $mapped_data["conducente_3_nazionalita_altro"] = trim(mb_substr($row, 1852, 30));
         $mapped_data["conducente_3_nazionalita"] = $mapped_data["conducente_3_nazionalita"] ."-" . $mapped_data["conducente_3_nazionalita_altro"];
@@ -920,355 +918,142 @@ class IncidentiIstatImportFunctions {
     }
     
     /**
-     * Validate row data
-     */
-    private function validate_row_data($data) {
-        $errors = array();
-        /*
-        $required_fields = array('data_incidente', 'ora_incidente', 'comune_incidente', 'denominazione_strada');
-        
-        // Check required fields
-        foreach ($required_fields as $field) {
-            if (empty($data[$field])) {
-                $errors[] = sprintf(__('Campo obbligatorio mancante: %s', 'incidenti-stradali'), $field);
-            }
-        }
-        
-        // Validate date format
-        if (!empty($data['data_incidente'])) {
-            $date = DateTime::createFromFormat('Y-m-d', $data['data_incidente']);
-            if (!$date || $date->format('Y-m-d') !== $data['data_incidente']) {
-                $errors[] = __('Formato data non valido. Usare YYYY-MM-DD', 'incidenti-stradali');
-            }
-        }
-        
-        // Validate time format
-        if (!empty($data['ora_incidente'])) {
-            if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $data['ora_incidente'])) {
-                $errors[] = __('Formato ora non valido. Usare HH:MM', 'incidenti-stradali');
-            }
-        }
-        
-        // Validate comune code
-        if (!empty($data['comune_incidente'])) {
-            if (!preg_match('/^\d{3}$/', $data['comune_incidente'])) {
-                $errors[] = __('Codice comune deve essere di 3 cifre', 'incidenti-stradali');
-            }
-        }
-        
-        // Validate numero veicoli
-        if (!empty($data['numero_veicoli_coinvolti'])) {
-            $num_veicoli = intval($data['numero_veicoli_coinvolti']);
-            if ($num_veicoli < 1 || $num_veicoli > 3) {
-                $errors[] = __('Numero veicoli deve essere tra 1 e 3', 'incidenti-stradali');
-            }
-        }
-        */
-        return array(
-            'valid' => empty($errors),
-            'errors' => $errors
-        );
-    }
-    
-    /**
-     * Create incidente from TXT data
+     * Create incidente from TXT data - VERSIONE ULTRA-OTTIMIZZATA
      */
     private function create_incidente_from_data($data) {
-        // Crea il post
-        $post_data = array(
+        global $wpdb;
+        
+        // ===== STEP 1: GENERA CODICE ENTE PRIMA DI CREARE IL POST =====
+        $progressivo_temp = '99999';
+        $anno = substr($data['data_incidente'], 2, 2);
+        
+        $id_ente = '01';
+        if (!empty($data['organo_rilevazione'])) {
+            $ente_map = array('1' => '01', '2' => '02', '4' => '04', '6' => '06');
+            $id_ente = isset($ente_map[$data['organo_rilevazione']]) ? $ente_map[$data['organo_rilevazione']] : '99';
+        }
+        
+        $id_comune = str_pad($data['comune_incidente'], 3, '0', STR_PAD_LEFT);
+        $codice_ente_temp = $progressivo_temp . $anno . $id_ente . $id_comune;
+        
+        // ===== STEP 2: CREA POST CON TITOLO TEMPORANEO =====
+        $post_id = wp_insert_post(array(
             'post_type' => 'incidente_stradale',
             'post_status' => 'publish',
-            /* 'post_title' => sprintf(
-                __('Incidente del %s in %s', 'incidenti-stradali'),
-                $data['data_incidente'],
-                $data['denominazione_strada']
-            ), */
-            'post_title' => 'Incidente in elaborazione...',
-            //'post_author' => get_current_user_id()
+            'post_title' => $codice_ente_temp,
             'post_author' => $this->get_or_create_import_user()
-        );
-        
-        $post_id = wp_insert_post($post_data);
+        ), true);
         
         if (is_wp_error($post_id)) {
             return false;
         }
         
-        // Salva meta data usando gli stessi campi della classe MetaBoxes
-        $meta_fields = array(
-            'data_incidente',
-            'provincia_incidente',
-            'comune_incidente',
-            'organo_rilevazione',
-            'organo_coordinatore',
-            'tipo_strada',
-            'numero_strada',
-            'illuminazione',
-            'tronco_strada',
-            'geometria_strada',
-            'pavimentazione_strada',
-            'intersezione_tronco',
-            'stato_fondo_strada',
-            'segnaletica_strada',
-            'condizioni_meteo',
-            'dettaglio_natura',
-            'veicolo_1_tipo',
-            'veicolo_2_tipo',
-            'veicolo_3_tipo',
-            'veicolo_1_peso_totale',
-            'veicolo_2_peso_totale',
-            'veicolo_3_peso_totale',
-            'circostanza_veicolo_a',
-            'difetto_veicolo_a',
-            'stato_psicofisico_a',
-            'circostanza_veicolo_b',
-            'difetto_veicolo_b',
-            'stato_psicofisico_b',
-            'veicolo_1_targa',
-            'veicolo_1_sigla_estero',
-            'veicolo_1_anno_immatricolazione',
-            'veicolo_2_targa',
-            'veicolo_2_sigla_estero',
-            'veicolo_2_anno_immatricolazione',
-            'veicolo_3_targa',
-            'veicolo_3_sigla_estero',
-            'veicolo_3_anno_immatricolazione',
-            'conducente_1_eta',
-            'conducente_1_sesso',
-            'conducente_1_esito',
-            'conducente_1_tipo_patente',
-            'conducente_1_anno_patente',
-            'conducente_1_tipologia_incidente',
-            'veicolo_1_trasportato_1_esito',
-            'veicolo_1_trasportato_1_eta',
-            'veicolo_1_trasportato_1_sesso',
-            'veicolo_1_trasportato_2_esito',
-            'veicolo_1_trasportato_2_eta',
-            'veicolo_1_trasportato_2_sesso',
-            'veicolo_1_trasportato_3_esito',
-            'veicolo_1_trasportato_3_eta',
-            'veicolo_1_trasportato_3_sesso',
-            'veicolo_1_trasportato_4_esito',
-            'veicolo_1_trasportato_4_eta',
-            'veicolo_1_trasportato_4_sesso',
-            'veicolo_1_altri_morti_maschi',
-            'veicolo_1_altri_morti_femmine',
-            'veicolo_1_altri_feriti_maschi',
-            'veicolo_1_altri_feriti_femmine',
-            'conducente_2_eta',
-            'conducente_2_sesso',
-            'conducente_2_esito',
-            'conducente_2_tipo_patente',
-            'conducente_2_anno_patente',
-            'conducente_2_tipologia_incidente',
-            'veicolo_2_trasportato_1_esito',
-            'veicolo_2_trasportato_1_eta',
-            'veicolo_2_trasportato_1_sesso',
-            'veicolo_2_trasportato_2_esito',
-            'veicolo_2_trasportato_2_eta',
-            'veicolo_2_trasportato_2_sesso',
-            'veicolo_2_trasportato_3_esito',
-            'veicolo_2_trasportato_3_eta',
-            'veicolo_2_trasportato_3_sesso',
-            'veicolo_2_trasportato_4_esito',
-            'veicolo_2_trasportato_4_eta',
-            'veicolo_2_trasportato_4_sesso',
-            'veicolo_2_altri_morti_maschi',
-            'veicolo_2_altri_morti_femmine',
-            'veicolo_2_altri_feriti_maschi',
-            'veicolo_2_altri_feriti_femmine',
-            'conducente_3_eta',
-            'conducente_3_sesso',
-            'conducente_3_esito',
-            'conducente_3_tipo_patente',
-            'conducente_3_anno_patente',
-            'conducente_3_tipologia_incidente',
-            'veicolo_3_trasportato_1_esito',
-            'veicolo_3_trasportato_1_eta',
-            'veicolo_3_trasportato_1_sesso',
-            'veicolo_3_trasportato_2_esito',
-            'veicolo_3_trasportato_2_eta',
-            'veicolo_3_trasportato_2_sesso',
-            'veicolo_3_trasportato_3_esito',
-            'veicolo_3_trasportato_3_eta',
-            'veicolo_3_trasportato_3_sesso',
-            'veicolo_3_trasportato_4_esito',
-            'veicolo_3_trasportato_4_eta',
-            'veicolo_3_trasportato_4_sesso',
-            'veicolo_3_altri_morti_maschi',
-            'veicolo_3_altri_morti_femmine',
-            'veicolo_3_altri_feriti_maschi',
-            'veicolo_3_altri_feriti_femmine',
-            'pedone_morto_1_sesso',
-            'pedone_morto_1_eta',
-            'pedone_ferito_1_sesso',
-            'pedone_ferito_1_eta',
-            'pedone_morto_2_sesso',
-            'pedone_morto_2_eta',
-            'pedone_ferito_2_sesso',
-            'pedone_ferito_2_eta',
-            'pedone_morto_3_sesso',
-            'pedone_morto_3_eta',
-            'pedone_ferito_3_sesso',
-            'pedone_ferito_3_eta',
-            'pedone_morto_4_sesso',
-            'pedone_morto_4_eta',
-            'pedone_ferito_4_sesso',
-            'pedone_ferito_4_eta',
-            'numero_altri_veicoli',
-            'altri_morti_maschi',
-            'altri_morti_femmine',
-            'altri_feriti_maschi',
-            'altri_feriti_femmine',
-            'riepilogo_morti_24h',
-            'riepilogo_morti_2_30gg',
-            'riepilogo_feriti',
-            'denominazione_strada',
-            'morto_1_nome',
-            'morto_1_cognome',
-            'morto_2_nome',
-            'morto_2_cognome',
-            'morto_3_nome',
-            'morto_3_cognome',
-            'morto_4_nome',
-            'morto_4_cognome',
-            'ferito_1_nome',
-            'ferito_1_cognome',
-            'ferito_1_istituto',
-            'ferito_2_nome',
-            'ferito_2_cognome',
-            'ferito_2_istituto',
-            'ferito_3_nome',
-            'ferito_3_cognome',
-            'ferito_3_istituto',
-            'ferito_4_nome',
-            'ferito_4_cognome',
-            'ferito_4_istituto',
-            'ferito_5_nome',
-            'ferito_5_cognome',
-            'ferito_5_istituto',
-            'ferito_6_nome',
-            'ferito_6_cognome',
-            'ferito_6_istituto',
-            'ferito_7_nome',
-            'ferito_7_cognome',
-            'ferito_7_istituto',
-            'ferito_8_nome',
-            'ferito_8_cognome',
-            'ferito_8_istituto',
-            'spazio_istat_1',
-            'tipo_coordinata',
-            'sistema_di_proiezione',
-            'longitudine',
-            'latitudine',
-            'spazio_istat_2',
-            'ora_incidente',
-            'minuti_incidente',
-            'codice_carabinieri',
-            'progressiva_km',
-            'progressiva_m',
-            'veicolo_1_cilindrata',
-            'veicolo_2_cilindrata',
-            'veicolo_3_cilindrata',
-            'spazio_istat_3',
-            'localizzazione_extra_ab',
-            'localita_incidente',
-            'codice__ente',
-            'spazio_istat_4',
-            'conducente_1_italiano',
-            'conducente_1_nazionalita',
-            //'conducente_1_nazionalita_altro',
-            'conducente_2_italiano',
-            'conducente_2_nazionalita',
-            //'conducente_2_nazionalita_altro',
-            'conducente_3_italiano',
-            'conducente_3_nazionalita',
-            //'conducente_3_nazionalita_altro',
-            'veicolo_1_tipo_rimorchio',
-            'veicolo_1_targa_rimorchio',
-            'veicolo_2_tipo_rimorchio',
-            'veicolo_2_targa_rimorchio',
-            'veicolo_3_tipo_rimorchio',
-            'veicolo_3_targa_rimorchio',
-            'codice_strada_aci',
-            // CAMPI CALCOLATI
-            'ente_rilevatore',
-            'natura_incidente',
-            'comune_incidente',
-            'numero_veicoli_coinvolti',
-            'numero_pedoni_feriti',
-            'numero_pedoni_morti',
-            'veicolo_1_numero_trasportati',
-            'veicolo_2_numero_trasportati',
-            'veicolo_3_numero_trasportati',
-            'veicolo_1_trasportato_1_sedile',
-            'veicolo_1_trasportato_2_sedile',
-            'veicolo_1_trasportato_3_sedile',
-            'veicolo_1_trasportato_4_sedile',
-            'veicolo_2_trasportato_1_sedile',
-            'veicolo_2_trasportato_2_sedile',
-            'veicolo_2_trasportato_3_sedile',
-            'veicolo_2_trasportato_4_sedile',
-            'veicolo_3_trasportato_1_sedile',
-            'veicolo_3_trasportato_2_sedile',
-            'veicolo_3_trasportato_3_sedile',
-            'veicolo_3_trasportato_4_sedile',
+        // ===== STEP 3: AGGIORNA CODICE ENTE CON POST_ID REALE =====
+        $progressivo = str_pad($post_id, 5, '0', STR_PAD_LEFT);
+        $codice_ente_finale = $progressivo . $anno . $id_ente . $id_comune;
+        
+        // Aggiorna titolo con codice finale
+        $wpdb->update(
+            $wpdb->posts,
+            array('post_title' => $codice_ente_finale),
+            array('ID' => $post_id),
+            array('%s'),
+            array('%d')
         );
         
-        foreach ($meta_fields as $field) {
-            if (isset($data[$field]) && !empty($data[$field])) {
-                update_post_meta($post_id, $field, sanitize_text_field($data[$field]));
-            }
-        }
-        
-        // Set default values for missing required fields
+        // ===== STEP 4: PREPARA TUTTI I META (INCLUSO CODICE_ENTE) =====
+        // Aggiungi valori di default
         if (empty($data['provincia_incidente'])) {
-            update_post_meta($post_id, 'provincia_incidente', '000');
+            $data['provincia_incidente'] = '000';
+        }
+        if (empty($data['numero_veicoli_coinvolti'])) {
+            $data['numero_veicoli_coinvolti'] = '1';
         }
         
-        if (empty($data['numero_veicoli_coinvolti'])) {
-            update_post_meta($post_id, 'numero_veicoli_coinvolti', '1');
-        }
-
-        // Genera automaticamente il codice__ente e aggiorna il titolo
-        if (!empty($data['data_incidente']) && !empty($data['provincia_incidente']) && !empty($data['comune_incidente'])) {
-            
-            // Genera il progressivo (5 cifre) basato sull'ID del post
-            $progressivo = str_pad($post_id, 5, '0', STR_PAD_LEFT);
-            
-            // Anno (2 cifre)
-            $anno = substr($data['data_incidente'], 2, 2); // YYMMDD -> YY
-            
-            // ID Ente (2 cifre) - mappa l'organo di rilevazione
-            $id_ente = '01'; // Default
-            if (!empty($data['organo_rilevazione'])) {
-                switch ($data['organo_rilevazione']) {
-                    case '1': $id_ente = '01'; break; // Polizia Stradale
-                    case '2': $id_ente = '02'; break; // Carabinieri
-                    case '4': $id_ente = '04'; break; // Polizia Municipale
-                    case '6': $id_ente = '06'; break; // Polizia Provinciale
-                    default: $id_ente = '99'; break; // Altri
-                }
+        // Aggiungi codice_ente ai dati
+        $data['codice__ente'] = $codice_ente_finale;
+        
+        // Lista completa dei campi meta (ordine alfabetico per manutenibilità)
+        $meta_fields = array(
+            'altri_feriti_femmine', 'altri_feriti_maschi', 'altri_morti_femmine', 'altri_morti_maschi',
+            'circostanza_veicolo_a', 'circostanza_veicolo_b', 'codice__ente', 'codice_carabinieri', 'codice_strada_aci',
+            'comune_incidente', 'condizioni_meteo', 'conducente_1_anno_patente', 'conducente_1_esito', 'conducente_1_eta',
+            'conducente_1_nazionalita', 'conducente_1_sesso', 'conducente_1_tipo_patente', 'conducente_1_tipologia_incidente',
+            'conducente_2_anno_patente', 'conducente_2_esito', 'conducente_2_eta', 'conducente_2_nazionalita',
+            'conducente_2_sesso', 'conducente_2_tipo_patente', 'conducente_2_tipologia_incidente',
+            'conducente_3_anno_patente', 'conducente_3_esito', 'conducente_3_eta', 'conducente_3_nazionalita',
+            'conducente_3_sesso', 'conducente_3_tipo_patente', 'conducente_3_tipologia_incidente',
+            'data_incidente', 'denominazione_strada', 'dettaglio_natura', 'difetto_veicolo_a', 'difetto_veicolo_b',
+            'ente_rilevatore', 'ferito_1_cognome', 'ferito_1_istituto', 'ferito_1_nome',
+            'ferito_2_cognome', 'ferito_2_istituto', 'ferito_2_nome',
+            'ferito_3_cognome', 'ferito_3_istituto', 'ferito_3_nome',
+            'ferito_4_cognome', 'ferito_4_istituto', 'ferito_4_nome',
+            'ferito_5_cognome', 'ferito_5_istituto', 'ferito_5_nome',
+            'ferito_6_cognome', 'ferito_6_istituto', 'ferito_6_nome',
+            'ferito_7_cognome', 'ferito_7_istituto', 'ferito_7_nome',
+            'ferito_8_cognome', 'ferito_8_istituto', 'ferito_8_nome',
+            'geometria_strada', 'illuminazione', 'intersezione_tronco', 'latitudine', 'localita_incidente',
+            'localizzazione_extra_ab', 'longitudine', 'minuti_incidente', 'morto_1_cognome', 'morto_1_nome',
+            'morto_2_cognome', 'morto_2_nome', 'morto_3_cognome', 'morto_3_nome', 'morto_4_cognome', 'morto_4_nome',
+            'natura_incidente', 'numero_altri_veicoli', 'numero_pedoni_feriti', 'numero_pedoni_morti',
+            'numero_strada', 'numero_veicoli_coinvolti', 'ora_incidente', 'organo_coordinatore', 'organo_rilevazione',
+            'pavimentazione_strada', 'pedone_ferito_1_eta', 'pedone_ferito_1_sesso', 'pedone_ferito_2_eta',
+            'pedone_ferito_2_sesso', 'pedone_ferito_3_eta', 'pedone_ferito_3_sesso', 'pedone_ferito_4_eta',
+            'pedone_ferito_4_sesso', 'pedone_morto_1_eta', 'pedone_morto_1_sesso', 'pedone_morto_2_eta',
+            'pedone_morto_2_sesso', 'pedone_morto_3_eta', 'pedone_morto_3_sesso', 'pedone_morto_4_eta',
+            'pedone_morto_4_sesso', 'progressiva_km', 'progressiva_m', 'provincia_incidente',
+            'riepilogo_feriti', 'riepilogo_morti_24h', 'riepilogo_morti_2_30gg', 'segnaletica_strada',
+            'sistema_di_proiezione', 'stato_fondo_strada', 'stato_psicofisico_a', 'stato_psicofisico_b',
+            'tipo_coordinata', 'tipo_strada', 'tronco_strada',
+            'veicolo_1_altri_feriti_femmine', 'veicolo_1_altri_feriti_maschi', 'veicolo_1_altri_morti_femmine',
+            'veicolo_1_altri_morti_maschi', 'veicolo_1_anno_immatricolazione', 'veicolo_1_cilindrata',
+            'veicolo_1_numero_trasportati', 'veicolo_1_peso_totale', 'veicolo_1_sigla_estero', 'veicolo_1_targa',
+            'veicolo_1_targa_rimorchio', 'veicolo_1_tipo', 'veicolo_1_tipo_rimorchio',
+            'veicolo_1_trasportato_1_esito', 'veicolo_1_trasportato_1_eta', 'veicolo_1_trasportato_1_sedile',
+            'veicolo_1_trasportato_1_sesso', 'veicolo_1_trasportato_2_esito', 'veicolo_1_trasportato_2_eta',
+            'veicolo_1_trasportato_2_sedile', 'veicolo_1_trasportato_2_sesso', 'veicolo_1_trasportato_3_esito',
+            'veicolo_1_trasportato_3_eta', 'veicolo_1_trasportato_3_sedile', 'veicolo_1_trasportato_3_sesso',
+            'veicolo_1_trasportato_4_esito', 'veicolo_1_trasportato_4_eta', 'veicolo_1_trasportato_4_sedile',
+            'veicolo_1_trasportato_4_sesso',
+            'veicolo_2_altri_feriti_femmine', 'veicolo_2_altri_feriti_maschi', 'veicolo_2_altri_morti_femmine',
+            'veicolo_2_altri_morti_maschi', 'veicolo_2_anno_immatricolazione', 'veicolo_2_cilindrata',
+            'veicolo_2_numero_trasportati', 'veicolo_2_peso_totale', 'veicolo_2_sigla_estero', 'veicolo_2_targa',
+            'veicolo_2_targa_rimorchio', 'veicolo_2_tipo', 'veicolo_2_tipo_rimorchio',
+            'veicolo_2_trasportato_1_esito', 'veicolo_2_trasportato_1_eta', 'veicolo_2_trasportato_1_sedile',
+            'veicolo_2_trasportato_1_sesso', 'veicolo_2_trasportato_2_esito', 'veicolo_2_trasportato_2_eta',
+            'veicolo_2_trasportato_2_sedile', 'veicolo_2_trasportato_2_sesso', 'veicolo_2_trasportato_3_esito',
+            'veicolo_2_trasportato_3_eta', 'veicolo_2_trasportato_3_sedile', 'veicolo_2_trasportato_3_sesso',
+            'veicolo_2_trasportato_4_esito', 'veicolo_2_trasportato_4_eta', 'veicolo_2_trasportato_4_sedile',
+            'veicolo_2_trasportato_4_sesso',
+            'veicolo_3_altri_feriti_femmine', 'veicolo_3_altri_feriti_maschi', 'veicolo_3_altri_morti_femmine',
+            'veicolo_3_altri_morti_maschi', 'veicolo_3_anno_immatricolazione', 'veicolo_3_cilindrata',
+            'veicolo_3_numero_trasportati', 'veicolo_3_peso_totale', 'veicolo_3_sigla_estero', 'veicolo_3_targa',
+            'veicolo_3_targa_rimorchio', 'veicolo_3_tipo', 'veicolo_3_tipo_rimorchio',
+            'veicolo_3_trasportato_1_esito', 'veicolo_3_trasportato_1_eta', 'veicolo_3_trasportato_1_sedile',
+            'veicolo_3_trasportato_1_sesso', 'veicolo_3_trasportato_2_esito', 'veicolo_3_trasportato_2_eta',
+            'veicolo_3_trasportato_2_sedile', 'veicolo_3_trasportato_2_sesso', 'veicolo_3_trasportato_3_esito',
+            'veicolo_3_trasportato_3_eta', 'veicolo_3_trasportato_3_sedile', 'veicolo_3_trasportato_3_sesso',
+            'veicolo_3_trasportato_4_esito', 'veicolo_3_trasportato_4_eta', 'veicolo_3_trasportato_4_sedile',
+            'veicolo_3_trasportato_4_sesso'
+        );
+        
+        // ===== STEP 5: BATCH INSERT =====
+        $meta_values = array();
+        foreach ($meta_fields as $field) {
+            if (isset($data[$field]) && $data[$field] !== '') {
+                $meta_values[] = $wpdb->prepare(
+                    "(%d, %s, %s)",
+                    $post_id,
+                    $field,
+                    sanitize_text_field($data[$field])
+                );
             }
-            
-            // ID Comune (3 cifre) - dai dati ISTAT
-            $id_comune = str_pad($data['comune_incidente'], 3, '0', STR_PAD_LEFT);
-            
-            // Componi il codice finale
-            $codice_ente = $progressivo . $anno . $id_ente . $id_comune;
-            
-            // Salva il codice__ente
-            update_post_meta($post_id, 'codice__ente', $codice_ente);
-            
-            // Aggiorna il titolo del post con il codice generato
-            global $wpdb;
-            $wpdb->update(
-                $wpdb->posts,
-                array('post_title' => $codice_ente),
-                array('ID' => $post_id),
-                array('%s'),
-                array('%d')
-            );
+        }
+        
+        // Inserisci tutto in una query sola
+        if (!empty($meta_values)) {
+            $query = "INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) VALUES " . implode(',', $meta_values);
+            $wpdb->query($query);
         }
         
         return $post_id;
@@ -1278,26 +1063,22 @@ class IncidentiIstatImportFunctions {
      * Ottieni o crea l'utente per le importazioni
      */
     private function get_or_create_import_user() {
-        // Cerca l'utente esistente
         $user = get_user_by('login', 'importuser');
         
         if ($user) {
             return $user->ID;
         }
         
-        // Se non esiste, crealo
         $user_id = wp_create_user(
-            'importuser',                    // username
-            wp_generate_password(),          // password casuale
-            'import@' . get_bloginfo('url')  // email
+            'importuser',
+            wp_generate_password(),
+            'import@' . get_bloginfo('url')
         );
         
         if (is_wp_error($user_id)) {
-            // Se fallisce la creazione, usa l'utente corrente
             return get_current_user_id();
         }
         
-        // Assegna il ruolo "Import" (se esiste)
         $user = new WP_User($user_id);
         $user->set_role('import');
         
@@ -1308,7 +1089,7 @@ class IncidentiIstatImportFunctions {
      * Redirect with error message
      */
     private function redirect_with_error($message) {
-        $redirect_url = admin_url('edit.php?post_type=incidente_stradale&page=incidenti-import&error=' . urlencode($message));
+        $redirect_url = admin_url('edit.php?post_type=incidente_stradale&page=incidenti-import-istat&error=' . urlencode($message));
         wp_redirect($redirect_url);
         exit;
     }
@@ -1317,20 +1098,6 @@ class IncidentiIstatImportFunctions {
      * Enqueue admin scripts
      */
     public function enqueue_admin_scripts($hook) {
-        // Carica solo nella pagina di import
-        /* if ($hook !== 'incidente_stradale_page_incidenti-import') {
-            return;
-        }
-        
-        wp_enqueue_script(
-            'incidenti-admin-js',
-            INCIDENTI_PLUGIN_URL . 'assets/js/admin.js',
-            array('jquery'),
-            '1.0.0',
-            true
-        ); */
-        
-        // Passa variabili JavaScript
         wp_localize_script('incidenti-admin-js', 'incidenti_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('import_incidenti_nonce')

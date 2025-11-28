@@ -1292,8 +1292,26 @@ class IncidentiExportFunctions {
         );
         
         // Prepara i dati per Excel
-        $data = array($headers); // Prima riga con intestazioni
-        
+
+        // Prima riga: Titolo in grassetto con bordi, unita su 41 colonne
+        $titolo_text = 'Esportazione Incidenti per Ministero Interni - Periodo: Anno in corso';
+        $titolo_styled = '<style font-weight="bold" border="thin" text-align="left">' . $titolo_text . '</style>';
+
+        // Riga vuota
+        $empty_row = array('');
+
+        // Terza riga: Headers in grassetto con bordi
+        $headers_styled = array();
+        foreach ($headers as $header) {
+            $headers_styled[] = '<style font-weight="bold" border="thin">' . $header . '</style>';
+        }
+
+        $data = array(
+            array($titolo_styled),  // Prima riga: titolo (verrà unita dopo)
+            $empty_row,              // Seconda riga: vuota
+            $headers_styled          // Terza riga: intestazioni
+        );
+
         foreach ($incidenti as $incidente) {
             $post_id = $incidente->ID;
             
@@ -1307,7 +1325,7 @@ class IncidentiExportFunctions {
                 $this->safe_meta_string($post_id, 'ora_incidente'),
                 $this->safe_meta_string($post_id, 'minuti_incidente')
             );
-            $row[] = "Lecce";
+            $row[] = "075";
             //$row[] = $this->get_comune_name($this->safe_meta_string($post_id, 'comune_incidente'));
             $row[] = $this->get_codice_catastale($this->safe_meta_string($post_id, 'comune_incidente'));
             //$row[] = $this->get_natura_incidente_name($this->safe_meta_string($post_id, 'xlsx_tipo_incidente') ?: 0);
@@ -1316,10 +1334,11 @@ class IncidentiExportFunctions {
             $row[] = $this->get_tipo_strada_code($this->safe_meta_string($post_id, 'tipo_strada'));
             $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato') ?: 0;
             //$row[] = $this->get_organo_rilevazione_name($this->safe_meta_string($post_id, 'organo_rilevazione'));
-            $row[] = "Polizia locale";
+            $row[] = "2";
             //$row[] = $this->get_caratteristiche_name($this->safe_meta_string($post_id, 'xlsx_caratteristiche') ?: 0);
             $row[] = str_pad($this->safe_meta_string($post_id, 'xlsx_caratteristiche') ?: 0, 2, '0', STR_PAD_LEFT);
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale') ?: 0;
+            $cantiere_value = $this->safe_meta_string($post_id, 'xlsx_cantiere_stradale');
+            $row[] = ($cantiere_value === 'S' || $cantiere_value === 'N') ? $cantiere_value : 'N';
             
             // Veicoli coinvolti
             /* $row[] = $this->safe_meta_string($post_id, 'xlsx_n_autovettura');
@@ -1368,23 +1387,39 @@ class IncidentiExportFunctions {
             
             // Informazioni strada
             $row[] = $this->safe_meta_string($post_id, 'denominazione_strada') ?: 0;
-            $row[] = $this->safe_meta_string($post_id, 'progressiva_km');
-            $row[] = $this->safe_meta_string($post_id, 'progressiva_m') ?: 0;
+            $km_value = $this->safe_meta_string($post_id, 'progressiva_km');
+            $row[] = (empty($km_value) || $km_value == '0') ? ' ' : $km_value;
+            $metri_value = $this->safe_meta_string($post_id, 'progressiva_m');
+            $row[] = (empty($metri_value) || $metri_value == '0') ? ' ' : $metri_value;
             //$row[] = $this->get_geometria_strada_name($this->safe_meta_string($post_id, 'geometria_strada') ?: "Non specificato");
             $row[] = $this->safe_meta_string($post_id, 'geometria_strada') ?: 0;
             
             // Circostanze
             $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione') ?: 0;
             $row[] = $this->safe_meta_string($post_id, 'xlsx_contromano') ?: 0;
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_dettaglio_persone_decedute') ?: 0;
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_positivita') ?: 0;
+            $dettaglio_value = $this->safe_meta_string($post_id, 'xlsx_dettaglio_persone_decedute');
+            $row[] = (empty($dettaglio_value) || $dettaglio_value == '0') ? ' ' : $dettaglio_value;
+            $positivita_text = $this->safe_meta_string($post_id, 'xlsx_positivita');
+            $positivita_map = array(
+                'Entrambi' => '4',
+                'Droga' => '3',
+                'Alcol' => '2',
+                'Negativo' => '1'
+            );
+            $row[] = isset($positivita_map[$positivita_text]) ? $positivita_map[$positivita_text] : '';
             $row[] = $this->safe_meta_string($post_id, 'xlsx_art_cds') ?: 0;
             
             // Coordinate
             $row[] = $this->safe_meta_string($post_id, 'latitudine');
             $row[] = $this->safe_meta_string($post_id, 'longitudine');
             
-            $data[] = $row;
+            // Applica bordi a tutte le celle dati
+            $row_styled = array();
+            foreach ($row as $cell) {
+                $row_styled[] = '<style border="thin">' . $cell . '</style>';
+            }
+            
+            $data[] = $row_styled;
         }
         
         // Crea directory se non esistente
@@ -1397,6 +1432,24 @@ class IncidentiExportFunctions {
         // Genera il file Excel
         try {
             $xlsx = SimpleXLSXGen::fromArray($data);
+            
+            // Unisci le celle A1:AO1 (41 colonne) per il titolo
+            $xlsx->mergeCells('A1:AO1');
+            
+            // Imposta larghezza uniforme per tutte le 41 colonne (15 è una larghezza standard)
+            $num_cols = 41;
+            $col_width = 15; // Larghezza in unità Excel (puoi modificare questo valore)
+            
+            for ($col = 0; $col < $num_cols; $col++) {
+                $col_letter = '';
+                if ($col < 26) {
+                    $col_letter = chr(65 + $col); // A-Z
+                } else {
+                    $col_letter = 'A' . chr(65 + ($col - 26)); // AA-AO
+                }
+                $xlsx->setColWidth($col_letter, $col_width);
+            }
+            
             $xlsx->saveAs($filepath);
             return true;
         } catch (Exception $e) {

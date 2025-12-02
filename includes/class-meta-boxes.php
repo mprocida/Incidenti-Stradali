@@ -1123,6 +1123,7 @@ class IncidentiMetaBoxes {
      */
     private function get_polizie_municipali() {
         return array(
+            'POLIZIA MUNICIPALE DI ACQUARICA',
             'POLIZIA MUNICIPALE DI ALESSANO',
             'POLIZIA MUNICIPALE DI ALEZIO',
             'POLIZIA MUNICIPALE DI ALLISTE',

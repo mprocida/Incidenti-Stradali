@@ -1332,7 +1332,7 @@ class IncidentiExportFunctions {
             $row[] = $this->get_tipo_incidente_code($this->safe_meta_string($post_id, 'xlsx_tipo_incidente'));
             //$row[] = $this->get_tipo_strada_name($this->safe_meta_string($post_id, 'tipo_strada') ?: 0);
             $row[] = $this->get_tipo_strada_code($this->safe_meta_string($post_id, 'tipo_strada'));
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato') ?: 0;
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_centro_abitato') ?: 'N';
             //$row[] = $this->get_organo_rilevazione_name($this->safe_meta_string($post_id, 'organo_rilevazione'));
             $row[] = "2";
             //$row[] = $this->get_caratteristiche_name($this->safe_meta_string($post_id, 'xlsx_caratteristiche') ?: 0);
@@ -1373,7 +1373,7 @@ class IncidentiExportFunctions {
             $row[] = $conteggi_veicoli['monopattini'];
             $row[] = $conteggi_veicoli['altri_micromobilita'];
             $row[] = $conteggi_veicoli['altri_veicoli'];
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_trasportanti_merci_pericolose') ?: 0;
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_trasportanti_merci_pericolose') ?: 'N';
             // Conteggi persone
             $val1_pedoni_feriti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_feriti');
             $val2_pedoni_morti = (int) $this->safe_meta_string($post_id, 'numero_pedoni_morti');
@@ -1395,16 +1395,16 @@ class IncidentiExportFunctions {
             $row[] = $this->safe_meta_string($post_id, 'geometria_strada') ?: 0;
             
             // Circostanze
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione') ?: 0;
-            $row[] = $this->safe_meta_string($post_id, 'xlsx_contromano') ?: 0;
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_omissione') ?: 'N';
+            $row[] = $this->safe_meta_string($post_id, 'xlsx_contromano') ?: 'N';
             $dettaglio_value = $this->safe_meta_string($post_id, 'xlsx_dettaglio_persone_decedute');
             $row[] = (empty($dettaglio_value) || $dettaglio_value == '0') ? ' ' : $dettaglio_value;
             $positivita_text = $this->safe_meta_string($post_id, 'xlsx_positivita');
             $positivita_map = array(
-                'Entrambi' => '4',
-                'Droga' => '3',
-                'Alcol' => '2',
-                'Negativo' => '1'
+                'Entrambi' => '3',
+                'Droga' => '2',
+                'Alcol' => '1',
+                'Negativo' => '0'
             );
             $row[] = isset($positivita_map[$positivita_text]) ? $positivita_map[$positivita_text] : '';
             $row[] = $this->safe_meta_string($post_id, 'xlsx_art_cds') ?: 0;

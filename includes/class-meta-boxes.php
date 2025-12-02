@@ -6697,22 +6697,28 @@ class IncidentiMetaBoxes {
             ?>
             <script type="text/javascript">
             jQuery(document).ready(function($) {
-                $('#posts-filter').attr('method', 'post');
+            // NON cambiare il metodo di default - lascia GET per i filtri
+            
+            $('#posts-filter').on('submit', function(e) {
+                var action = $('select[name="action"]').val() || $('select[name="action2"]').val();
                 
-                $('#posts-filter').on('submit', function(e) {
-                    var action = $('select[name="action"]').val() || $('select[name="action2"]').val();
+                // Cambia in POST SOLO se c'è una bulk action selezionata
+                if (action && action !== '-1') {
+                    $(this).attr('method', 'post');
                     
-                    if (action && action !== '-1') {
-                        if (!$(this).find('input[name="post_type"]').length) {
-                            $('<input>').attr({
-                                type: 'hidden',
-                                name: 'post_type',
-                                value: 'incidente_stradale'
-                            }).appendTo(this);
-                        }
+                    if (!$(this).find('input[name="post_type"]').length) {
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'post_type',
+                            value: 'incidente_stradale'
+                        }).appendTo(this);
                     }
-                });
+                } else {
+                    // Altrimenti mantieni GET per i filtri
+                    $(this).attr('method', 'get');
+                }
             });
+        });
             </script>
             <?php
         }

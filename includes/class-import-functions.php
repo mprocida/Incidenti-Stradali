@@ -1756,13 +1756,13 @@ class IncidentiImportFunctions {
             }
         }
 
-// ID Comune (3 cifre) dai dati ISTAT
-if (isset($data['comune_incidente']) && !empty($data['comune_incidente'])) {
-    $id_comune = str_pad($data['comune_incidente'], 3, '0', STR_PAD_LEFT);
-}
+        // ID Comune (3 cifre) dai dati ISTAT
+        if (isset($data['comune_incidente']) && !empty($data['comune_incidente'])) {
+            $id_comune = str_pad($data['comune_incidente'], 3, '0', STR_PAD_LEFT);
+        }
 
-// Componi il codice finale: PROGRESSIVO + ANNO + ENTE + COMUNE
-$codice_ente = $progressivo . $anno . $id_ente . $id_comune;
+        // Componi il codice finale: PROGRESSIVO + ANNO + ENTE + COMUNE
+        $codice_ente = $progressivo . $anno . $id_ente . $id_comune;
 
         // Aggiorna titolo e codice__ente con query diretta
         if (!empty($codice_ente) && $codice_ente !== '000') {

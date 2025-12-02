@@ -284,20 +284,71 @@ class IncidentiCustomPostType {
         }
 
         // Filtro per autore (solo per amministratori)
-        if (current_user_can('manage_all_incidenti') && !empty($_GET['author'])) {
+        /* if (current_user_can('manage_all_incidenti') && !empty($_GET['author'])) {
             $query->set('author', intval($_GET['author']));
+        } */
+        // Gestisci filtro autore da GET o POST
+        $author_filter = '';
+        if (current_user_can('manage_all_incidenti')) {
+            $author_filter = !empty($_GET['author']) ? $_GET['author'] : (!empty($_POST['author']) ? $_POST['author'] : '');
+        }
+        if (!empty($author_filter)) {
+            $query->set('author', intval($author_filter));
         }
 
-        // Filtro Ente (solo per amministratori)
+        /*// Filtro Ente (solo per amministratori)
         if (current_user_can('manage_all_incidenti') && !empty($_GET['ente_filter'])) {
-            $ente_filter = sanitize_text_field($_GET['ente_filter']);
-            
+            $ente_filter = sanitize_text_field($_GET['ente_filter']); */
+        // Filtro Ente (solo per amministratori) - supporta GET e POST
+        $ente_filter = '';
+        if (current_user_can('manage_all_incidenti')) {
+            $ente_filter = !empty($_GET['ente_filter']) ? $_GET['ente_filter'] : (!empty($_POST['ente_filter']) ? $_POST['ente_filter'] : '');
+        }
+        if (!empty($ente_filter)) {
+            $ente_filter = sanitize_text_field($ente_filter);
             $meta_query = $query->get('meta_query') ?: array();
             $meta_query[] = array(
                 'key' => 'ente_rilevatore',
                 'value' => $ente_filter,
                 'compare' => '='
             );
+            $query->set('meta_query', $meta_query);
+        }
+
+        // Filtro Data (solo per amministratori) - supporta GET e POST
+        $data_da = '';
+        $data_a = '';
+        if (current_user_can('manage_all_incidenti')) {
+            $data_da = !empty($_GET['data_incidente_da']) ? $_GET['data_incidente_da'] : (!empty($_POST['data_incidente_da']) ? $_POST['data_incidente_da'] : '');
+            $data_a = !empty($_GET['data_incidente_a']) ? $_GET['data_incidente_a'] : (!empty($_POST['data_incidente_a']) ? $_POST['data_incidente_a'] : '');
+        }
+        
+        if (!empty($data_da) || !empty($data_a)) {
+            $meta_query = $query->get('meta_query') ? $query->get('meta_query') : array();
+            
+            $date_meta_query = array('key' => 'data_incidente');
+            
+            if (!empty($data_da) && !empty($data_a)) {
+                // Entrambe le date specificate - filtro BETWEEN
+                $date_meta_query['value'] = array(
+                    sanitize_text_field($data_da),
+                    sanitize_text_field($data_a)
+                );
+                $date_meta_query['compare'] = 'BETWEEN';
+                $date_meta_query['type'] = 'DATE';
+            } elseif (!empty($data_da)) {
+                // Solo data da - filtro >=
+                $date_meta_query['value'] = sanitize_text_field($data_da);
+                $date_meta_query['compare'] = '>=';
+                $date_meta_query['type'] = 'DATE';
+            } elseif (!empty($data_a)) {
+                // Solo data a - filtro <=
+                $date_meta_query['value'] = sanitize_text_field($data_a);
+                $date_meta_query['compare'] = '<=';
+                $date_meta_query['type'] = 'DATE';
+            }
+            
+            $meta_query[] = $date_meta_query;
             $query->set('meta_query', $meta_query);
         }
         
@@ -412,6 +463,16 @@ class IncidentiCustomPostType {
             
             echo '</select>';
         }
+        
+        // Filtro Data (solo per amministratori)
+        $data_da = isset($_GET['data_incidente_da']) ? sanitize_text_field($_GET['data_incidente_da']) : '';
+        $data_a = isset($_GET['data_incidente_a']) ? sanitize_text_field($_GET['data_incidente_a']) : '';
+        
+        echo '<label for="filter-data-da" style="margin-left: 8px; vertical-align: top;">' . __('Data di rilevazione da:', 'incidenti-stradali') . '</label>';
+        echo '<input type="date" name="data_incidente_da" id="filter-data-da" value="' . esc_attr($data_da) . '" style="margin-left: 4px; vertical-align: top;">';
+        
+        echo '<label for="filter-data-a" style="margin-left: 8px; vertical-align: top;">' . __('a:', 'incidenti-stradali') . '</label>';
+        echo '<input type="date" name="data_incidente_a" id="filter-data-a" value="' . esc_attr($data_a) . '" style="margin-left: 4px; vertical-align: top;">';
     }
     
 }
